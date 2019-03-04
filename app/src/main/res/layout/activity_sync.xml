@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:id="@+id/rl_content_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.sync.SyncActivity">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_tourist_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hospedajes para Turistas"/>
+
+            <TextView
+                android:id="@+id/tv_cuban_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hospedajes para Cubanos"
+                />
+
+            <TextView
+                android:id="@+id/tv_both_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ambos"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</layout>

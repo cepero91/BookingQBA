@@ -1,0 +1,75 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "com.infinitum.bookingqba"
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
+
+        multiDexEnabled true
+    }
+    dataBinding {
+        enabled = true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    implementation "com.android.support.constraint:constraint-layout:1.1.2"
+    implementation "com.android.support:recyclerview-v7:$supportLibVersion"
+
+    //Multidex
+    implementation "com.android.support:multidex:$multidex"
+
+    //Live data & ViewModel
+    implementation "android.arch.lifecycle:extensions:${archComponentsVersion}"
+    implementation "android.arch.lifecycle:reactivestreams:${archComponentsVersion}"
+    implementation "android.arch.lifecycle:runtime:${archComponentsVersion}"
+
+    //Room
+    implementation "android.arch.persistence.room:runtime:${roomVersion}"
+    implementation 'com.android.support:support-v4:27.0.2'
+    annotationProcessor "android.arch.persistence.room:compiler:${roomVersion}"
+    implementation "android.arch.persistence.room:rxjava2:${roomVersion}"
+
+    //Dagger
+    implementation "com.google.dagger:dagger:${daggerVersion}"
+    implementation "com.google.dagger:dagger-android-support:${daggerVersion}"
+    implementation "com.google.dagger:dagger-android:${daggerVersion}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
+    annotationProcessor "com.google.dagger:dagger-android-processor:${daggerVersion}"
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+
+    //Rx-Java
+    implementation "io.reactivex.rxjava2:rxandroid:${rxandroid}"
+    implementation "io.reactivex.rxjava2:rxjava:${rxjava}"
+
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+
+    //Timber
+    implementation "com.jakewharton.timber:timber:${timber}"
+
+    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:2.0.3'
+
+}
