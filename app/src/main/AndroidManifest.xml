@@ -14,7 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".view.MainActivity"/>
-        <activity android:name=".view.splash.SplashActivity" >
+        <activity android:name=".view.splash.SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +23,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.sync.SyncActivity" />
-        <activity android:name=".view.tutorial.TutorialActivity"></activity>
+        <activity android:name=".view.tutorial.TutorialActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

@@ -2,13 +2,17 @@ package com.infinitum.bookingqba.view.splash;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivitySplashBinding;
 import com.infinitum.bookingqba.view.MainActivity;
 import com.infinitum.bookingqba.view.tutorial.TutorialActivity;
+import com.moos.library.CircleProgressView;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -23,6 +27,6 @@ public class SplashActivity extends AppCompatActivity {
             startActivity(new Intent(SplashActivity.this, TutorialActivity.class));
         });
 
-
     }
+
 }
