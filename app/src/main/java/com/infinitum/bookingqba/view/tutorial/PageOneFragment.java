@@ -4,6 +4,7 @@ package com.infinitum.bookingqba.view.tutorial;
 import android.animation.AnimatorSet;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.databinding.FragmentPageOneBinding;
 import com.infinitum.bookingqba.util.GlideApp;
 
 
@@ -32,6 +34,7 @@ import timber.log.Timber;
  */
 public class PageOneFragment extends Fragment {
 
+    private FragmentPageOneBinding pageOneBinding;
 
     public PageOneFragment() {
         // Required empty public constructor
@@ -51,7 +54,8 @@ public class PageOneFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_page_one, container, false);
+        pageOneBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_page_one,container,false);
+        return pageOneBinding.getRoot();
     }
 
     @Override

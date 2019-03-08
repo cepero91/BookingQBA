@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="pages_title_dimen">16sp</dimen>
+    <dimen name="pages_imageview">240dp</dimen>
+    <dimen name="pages_title_margin_top">14dp</dimen>
+    <dimen name="pages_title_margin_bottom">6dp</dimen>
+    <dimen name="pages_desc_dimen">14sp</dimen>
+
+    <dimen name="dots_size">8dp</dimen>
+    <dimen name="dots_spacing">2dp</dimen>
+    <dimen name="dots_radius">8dp</dimen>
+
+    <dimen name="pages_content_p_left">35dp</dimen>
+    <dimen name="pages_content_p_right">35dp</dimen>
+    <dimen name="pages_content_m_top">40dp</dimen>
+    <dimen name="pages_progress_dimen_w">230dp</dimen>
+    <dimen name="pages_progress_dimen_h">230dp</dimen>
+    <dimen name="pages_progress_m_top">-16dp</dimen>
+    <dimen name="pages_checkbox_m_top">16dp</dimen>
+    <dimen name="pages_check_text_size">10sp</dimen>
+    <dimen name="root_pages_btn_text_size">12sp</dimen>
+</resources>

@@ -15,10 +15,14 @@ import com.infinitum.bookingqba.view.tutorial.PageOneFragment;
 import com.infinitum.bookingqba.view.tutorial.PageThreeFragment;
 import com.infinitum.bookingqba.view.tutorial.PageTwoFragment;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class TutorialPagerAdapter extends FragmentStatePagerAdapter {
-    private SparseArray<Fragment>registerdFragments = new SparseArray<>();
+    private WeakReference<Fragment> weakReference;
+    private SparseArray<WeakReference<Fragment>>registerdFragments = new SparseArray<>();
 
     public TutorialPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -27,13 +31,13 @@ public class TutorialPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0: // Fragment # 0 - This will show FirstFragment
+            case 0:
                 return PageOneFragment.newInstance();
-            case 1: // Fragment # 0 - This will show FirstFragment different title
+            case 1:
                 return PageTwoFragment.newInstance();
-            case 2: // Fragment # 0 - This will show FirstFragment different title
+            case 2:
                 return PageThreeFragment.newInstance();
-            case 3: // Fragment # 0 - This will show FirstFragment different title
+            case 3:
                 return PageFourFragment.newInstance();
             default:
                 return null;
@@ -47,9 +51,9 @@ public class TutorialPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        Fragment fragment = (Fragment) super.instantiateItem(container, position);
-        registerdFragments.put(position,fragment);
-        return fragment;
+        weakReference = new WeakReference<>((Fragment) super.instantiateItem(container, position));
+        registerdFragments.put(position,weakReference);
+        return registerdFragments.get(position).get();
     }
 
     @Override
@@ -60,6 +64,6 @@ public class TutorialPagerAdapter extends FragmentStatePagerAdapter {
 
 
     public Fragment getRegisteredFragment(int position){
-        return registerdFragments.get(position);
+        return registerdFragments.get(position).get();
     }
 }

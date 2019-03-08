@@ -3,4 +3,12 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="bienvenidos">Bienvenidos</string>
+    <string name="navega_y_compara">Navega y Compara</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor ipsum dolor, ipsum dolor ipsum dolor ipsum dolor ipsum dolor.</string>
+    <string name="llega_a_tu_destino">Llega a tu destino</string>
+    <string name="hora_de_actualizar">Hora de Actualizar</string>
+    <string name="para_el_correcto"> Antes dinos que tipo de renta buscas.</string>
+    <string name="para_turistas_extranjeros">Para turistas extranjeros</string>
+    <string name="para_cubanos">Para cubanos</string>
 </resources>

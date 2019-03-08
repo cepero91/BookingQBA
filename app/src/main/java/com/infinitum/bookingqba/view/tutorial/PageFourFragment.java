@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.view.tutorial;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,8 +13,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.databinding.FragmentPageFourBinding;
 import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
 import com.infinitum.bookingqba.viewmodel.SyncViewModel;
 import com.moos.library.CircleProgressView;
@@ -35,10 +38,10 @@ import timber.log.Timber;
  */
 public class PageFourFragment extends BasePageFragment implements CircleProgressView.CircleProgressUpdateListener{
 
-    private CircleProgressView circleProgressView;
-
     private SyncViewModel syncViewModel;
     private Disposable disposable;
+
+    private FragmentPageFourBinding pageFourBinding;
 
 
     public PageFourFragment() {
@@ -59,23 +62,24 @@ public class PageFourFragment extends BasePageFragment implements CircleProgress
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        pageFourBinding.progressViewCircle.setGraduatedEnabled(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_page_four, container, false);
-        circleProgressView = view.findViewById(R.id.progressView_circle);
-        return view;
+        pageFourBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_page_four, container, false);
+        return pageFourBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         syncViewModel = ViewModelProviders.of(this, viewModelFactory).get(SyncViewModel.class);
-        circleProgressView.setGraduatedEnabled(true);
-        circleProgressView.setEndProgress(100);
-        compositeDisposable = new CompositeDisposable();
+
+        pageFourBinding.progressViewCircle.setProgressViewUpdateListener(this);
+        pageFourBinding.progressViewCircle.setEndProgress(100);
     }
 
     public void startDownload(){
@@ -90,14 +94,12 @@ public class PageFourFragment extends BasePageFragment implements CircleProgress
                 .subscribeWith(new DisposableSingleObserver<List<ProvinceEntity>>() {
                     @Override
                     public void onSuccess(List<ProvinceEntity> provinceEntityList) {
-                        circleProgressView.setProgress(5);
-                        circleProgressView.startProgressAnimation();
-                        Timber.e("Success");
+                        pageFourBinding.progressViewCircle.setProgress(5);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-//                        Light.error(getView(), "Error", Snackbar.LENGTH_SHORT).show();
+                        mListener.onDownloadError(e.getMessage());
                     }
                 });
         compositeDisposable.add(disposable);

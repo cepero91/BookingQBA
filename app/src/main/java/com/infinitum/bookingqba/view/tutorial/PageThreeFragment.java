@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.view.tutorial;
 
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.databinding.FragmentPageThreeBinding;
 import com.infinitum.bookingqba.util.GlideApp;
 
 /**
@@ -20,7 +22,7 @@ import com.infinitum.bookingqba.util.GlideApp;
  */
 public class PageThreeFragment extends Fragment {
 
-    private AppCompatImageView imageView;
+    private FragmentPageThreeBinding pageThreeBinding;
 
 
     public PageThreeFragment() {
@@ -40,14 +42,13 @@ public class PageThreeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_page_two, container, false);
-        imageView = view.findViewById(R.id.iv_use_case);
-        return view;
+        pageThreeBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_page_two, container, false);
+        return pageThreeBinding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        GlideApp.with(view.getContext()).load(R.drawable.destination_use_case).into(imageView);
+        GlideApp.with(this).load(R.drawable.destination_use_case).into(pageThreeBinding.ivUseCase);
     }
 }

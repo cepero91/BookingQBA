@@ -23,7 +23,7 @@ public abstract class BasePageFragment extends Fragment {
     @Inject
     ViewModelFactory viewModelFactory;
 
-    private PageFourInterface mListener;
+    protected PageFourInterface mListener;
 
     protected CompositeDisposable compositeDisposable;
 
@@ -50,7 +50,7 @@ public abstract class BasePageFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        compositeDisposable.clear();
+        compositeDisposable = null;
     }
 
 
