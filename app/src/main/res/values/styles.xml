@@ -14,4 +14,14 @@
         <item name="android:windowBackground">@color/White_100</item>
     </style>
 
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:popupBackground">@color/colorPrimary</item>
+        <item name="android:colorBackground">@color/colorPrimary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:animateFirstView">true</item>
+        <item name="android:animateLayoutChanges">true</item>
+    </style>
+
 </resources>

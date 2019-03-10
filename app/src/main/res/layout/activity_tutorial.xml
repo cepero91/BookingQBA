@@ -30,7 +30,8 @@
                 android:text="Atras"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="@dimen/root_pages_btn_text_size"
-                android:visibility="gone" />
+                android:alpha="0"
+                />
 
             <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
                 android:id="@+id/dots_indicator"

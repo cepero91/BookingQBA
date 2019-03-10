@@ -15,16 +15,6 @@
             app:srcCompat="@drawable/shape_gradient_bg_splash"/>
 
 
-        <Button
-            android:id="@+id/btn_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
-            android:text="Siguiente" />
-
-
         <android.support.v7.widget.AppCompatImageView
             android:layout_width="250dp"
             android:layout_height="250dp"

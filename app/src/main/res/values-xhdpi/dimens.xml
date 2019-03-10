@@ -12,7 +12,7 @@
 
     <dimen name="pages_content_p_left">35dp</dimen>
     <dimen name="pages_content_p_right">35dp</dimen>
-    <dimen name="pages_content_m_top">40dp</dimen>
+    <dimen name="pages_content_m_top">50dp</dimen>
     <dimen name="pages_progress_dimen_w">240dp</dimen>
     <dimen name="pages_progress_dimen_h">240dp</dimen>
     <dimen name="pages_progress_m_top">-18dp</dimen>

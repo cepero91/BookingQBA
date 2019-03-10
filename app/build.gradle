@@ -88,5 +88,13 @@ dependencies {
     //Snacky
     implementation 'com.github.matecode:Snacky:1.0.3'
 
+    //agregadas
+    implementation 'com.mikhaellopez:circularimageview:3.2.0'
+    implementation 'com.github.vivchar:RendererRecyclerViewAdapter:2.5.0'
+    implementation "com.airbnb.android:lottie:$lottieVersion"
+    implementation 'com.github.florent37:shapeofview:1.2.0'
+    implementation 'com.facebook.shimmer:shimmer:0.4.0'
+    implementation 'com.fujiyuu75:sequent:0.2.1'
+
 
 }

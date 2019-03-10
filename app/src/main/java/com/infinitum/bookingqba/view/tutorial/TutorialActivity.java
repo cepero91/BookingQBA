@@ -1,27 +1,20 @@
 package com.infinitum.bookingqba.view.tutorial;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.support.design.widget.Snackbar;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.Button;
-import android.widget.FrameLayout;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityTutorialBinding;
 import com.infinitum.bookingqba.view.adapters.TutorialPagerAdapter;
-import com.moos.library.CircleProgressView;
-import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
+import com.infinitum.bookingqba.view.home.HomeActivity;
+import com.infinitum.bookingqba.view.interaction.PageFourInteraction;
 
 import java.lang.ref.WeakReference;
 
@@ -33,10 +26,9 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
 import de.mateware.snacky.Snacky;
-import timber.log.Timber;
 
 public class TutorialActivity extends DaggerAppCompatActivity implements ViewPager.OnPageChangeListener
-        , View.OnClickListener,PageFourInterface, HasSupportFragmentInjector {
+        , View.OnClickListener, PageFourInteraction, HasSupportFragmentInjector {
 
     private WeakReference<Fragment> wFragment;
     private TutorialPagerAdapter adapterViewPager;
@@ -52,10 +44,11 @@ public class TutorialActivity extends DaggerAppCompatActivity implements ViewPag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidInjection.inject(this);
-        tutorialBinding = DataBindingUtil.setContentView(this,R.layout.activity_tutorial);
+        tutorialBinding = DataBindingUtil.setContentView(this, R.layout.activity_tutorial);
 
         tutorialBinding.btnUpdate.setOnClickListener(this);
         tutorialBinding.btnNext.setOnClickListener(this);
+        tutorialBinding.btnBack.setOnClickListener(this);
 
         adapterViewPager = new TutorialPagerAdapter(getSupportFragmentManager());
 
@@ -80,14 +73,13 @@ public class TutorialActivity extends DaggerAppCompatActivity implements ViewPag
     }
 
 
-    public void updateBtnAndAnimate(int position){
+    public void updateBtnAndAnimate(int position) {
         if (position > 0 && position < 3) {
             showAnimateView(tutorialBinding.btnBack);
-//            tutorialBinding.btnBack.setVisibility(View.VISIBLE);
-            tutorialBinding.btnNext.setVisibility(View.VISIBLE);
             tutorialBinding.btnUpdate.setVisibility(View.GONE);
+            tutorialBinding.btnNext.setVisibility(View.VISIBLE);
         } else if (position == 0) {
-            tutorialBinding.btnBack.setVisibility(View.GONE);
+            hideEnableView(tutorialBinding.btnBack);
             tutorialBinding.btnNext.setVisibility(View.VISIBLE);
             tutorialBinding.btnUpdate.setVisibility(View.GONE);
         } else if (position == 3) {
@@ -108,39 +100,61 @@ public class TutorialActivity extends DaggerAppCompatActivity implements ViewPag
             case R.id.btn_update: {
                 wFragment = new WeakReference<>(adapterViewPager.getRegisteredFragment(3));
                 ((PageFourFragment) wFragment.get()).startDownload();
-            } break;
+            }
+            break;
+            case R.id.btn_next: {
+                int pos = tutorialBinding.onboardingViewpager.getCurrentItem()+1;
+                tutorialBinding.onboardingViewpager.setCurrentItem(pos,true);
+            }
+            break;
+            case R.id.btn_back: {
+                int pos = tutorialBinding.onboardingViewpager.getCurrentItem()-1;
+                tutorialBinding.onboardingViewpager.setCurrentItem(pos,true);
+            }
+            break;
+
         }
     }
 
 
     @Override
     public void onDownloadSuccess() {
-
+        Snacky.builder()
+                .setActivity(TutorialActivity.this)
+                .setText("Actualizacion exitosa")
+                .setDuration(1500)
+                .success()
+                .show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startActivity(new Intent(TutorialActivity.this, HomeActivity.class));
+                TutorialActivity.this.finish();
+            }
+        },1500);
     }
 
     @Override
     public void onDownloadError(String msg) {
-        Snackbar.make(tutorialBinding.flContentBtns,msg,Snackbar.LENGTH_SHORT).show();
+        Snacky.builder()
+                .setActivity(TutorialActivity.this)
+                .setText(msg)
+                .setDuration(Snacky.LENGTH_SHORT)
+                .error()
+                .show();
     }
 
-    private void showAnimateView(View view){
-        view.setVisibility(View.VISIBLE);
-        ObjectAnimator animator = ObjectAnimator.ofFloat(view,"alpha",1,0);
-        animator.setDuration(3000).setInterpolator(new AccelerateInterpolator());
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(animator);
+    private void showAnimateView(View view) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(view, "alpha", 1f);
+        animator.setDuration(500).setInterpolator(new AccelerateInterpolator());
+        animator.start();
+        view.setEnabled(true);
     }
 
-    private void hideAnimateView(View view){
-        ObjectAnimator animator = ObjectAnimator.ofFloat(view,"alpha",1);
+    private void hideEnableView(View view) {
+        view.setEnabled(false);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(view, "alpha", 0f);
         animator.setDuration(300).setInterpolator(new AccelerateInterpolator());
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation, boolean isReverse) {
-                view.setVisibility(View.GONE);
-            }
-        });
-        animatorSet.play(animator);
+        animator.start();
     }
 }

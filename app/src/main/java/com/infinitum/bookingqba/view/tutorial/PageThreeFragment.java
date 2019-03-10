@@ -42,7 +42,7 @@ public class PageThreeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        pageThreeBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_page_two, container, false);
+        pageThreeBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_page_three, container, false);
         return pageThreeBinding.getRoot();
     }
 

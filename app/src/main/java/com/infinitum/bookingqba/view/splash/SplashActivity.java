@@ -11,21 +11,27 @@ import android.view.View;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivitySplashBinding;
 import com.infinitum.bookingqba.view.MainActivity;
+import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.tutorial.TutorialActivity;
-import com.moos.library.CircleProgressView;
+
 
 public class SplashActivity extends AppCompatActivity {
 
     private ActivitySplashBinding splashBinding;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         splashBinding = DataBindingUtil.setContentView(this,R.layout.activity_splash);
 
-        splashBinding.btnNext.setOnClickListener(v -> {
-            startActivity(new Intent(SplashActivity.this, TutorialActivity.class));
-        });
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+             startActivity(new Intent(SplashActivity.this,HomeActivity.class));
+             SplashActivity.this.finish();
+            }
+        },1500);
 
     }
 

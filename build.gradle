@@ -12,6 +12,7 @@ ext {
     rxandroid = "2.0.2"
     timber = "4.7.1"
     multidex = "1.0.3"
+    lottieVersion = "2.7.0"
 
     firebaseAds = "16.0.1"
     firebaseCore = "16.0.6"

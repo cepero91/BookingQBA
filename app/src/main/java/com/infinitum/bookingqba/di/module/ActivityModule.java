@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.di.module;
 
 
 import com.infinitum.bookingqba.view.MainActivity;
+import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.tutorial.TutorialActivity;
 
 import dagger.Module;
@@ -15,5 +16,8 @@ public interface ActivityModule {
 
     @ContributesAndroidInjector(modules = FragmentModule.class)
     TutorialActivity bindTutorialActivity();
+
+    @ContributesAndroidInjector(modules = FragmentModule.class)
+    HomeActivity bindHomeActivity();
 
 }

@@ -1,10 +1,8 @@
 package com.infinitum.bookingqba.di.module;
 
-import com.infinitum.bookingqba.view.tutorial.BasePageFragment;
+import com.infinitum.bookingqba.view.home.HomeFragment;
+import com.infinitum.bookingqba.view.base.BasePageFragment;
 import com.infinitum.bookingqba.view.tutorial.PageFourFragment;
-import com.infinitum.bookingqba.view.tutorial.PageFourInterface;
-import com.infinitum.bookingqba.view.tutorial.PageOneFragment;
-import com.infinitum.bookingqba.view.tutorial.PageTwoFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -17,6 +15,11 @@ public interface FragmentModule {
 
     @ContributesAndroidInjector
     PageFourFragment bindPageFourFragment();
+
+
+    @ContributesAndroidInjector
+    HomeFragment bindHomeFragment();
+
 
 
 }

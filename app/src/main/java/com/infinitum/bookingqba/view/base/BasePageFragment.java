@@ -1,15 +1,10 @@
-package com.infinitum.bookingqba.view.tutorial;
+package com.infinitum.bookingqba.view.base;
 
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.view.interaction.PageFourInteraction;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
@@ -21,9 +16,9 @@ import io.reactivex.disposables.CompositeDisposable;
 public abstract class BasePageFragment extends Fragment {
 
     @Inject
-    ViewModelFactory viewModelFactory;
+    protected ViewModelFactory viewModelFactory;
 
-    protected PageFourInterface mListener;
+    protected PageFourInteraction mListener;
 
     protected CompositeDisposable compositeDisposable;
 
@@ -37,8 +32,8 @@ public abstract class BasePageFragment extends Fragment {
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
-        if (context instanceof PageFourInterface) {
-            mListener = (PageFourInterface) context;
+        if (context instanceof PageFourInteraction) {
+            mListener = (PageFourInteraction) context;
             compositeDisposable = new CompositeDisposable();
         } else {
             throw new RuntimeException(context.toString()
