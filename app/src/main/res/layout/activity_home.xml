@@ -1,44 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".view.home.HomeActivity"
-    android:fitsSystemWindows="true"
-    >
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Toolbar -->
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        android:fitsSystemWindows="true"
-        >
-
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-
-            <include layout="@layout/toolbar"/>
-
-
-        </android.support.design.widget.CollapsingToolbarLayout>
-
-    </android.support.design.widget.AppBarLayout>
-
-    <!-- Main Content -->
-    <FrameLayout
-        android:id="@+id/frame_container"
+    <com.infideap.drawerbehavior.AdvanceDrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        android:background="@color/White_100"
+        android:fitsSystemWindows="true"
+        tools:openDrawer="start">
+
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/main_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            tools:context=".view.home.HomeActivity">
+
+            <!-- Toolbar -->
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/app_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:fitsSystemWindows="true"
+                android:theme="@style/AppTheme.AppBarOverlay">
+
+                <android.support.design.widget.CollapsingToolbarLayout
+                    android:id="@+id/toolbar_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.Toolbar
+                        android:id="@+id/toolbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        android:background="@color/colorPrimary"
+                        app:popupTheme="@style/AppTheme.PopupOverlay"
+                        app:contentInsetLeft="0dp"
+                        app:contentInsetStart="0dp"
+                        app:contentInsetStartWithNavigation="0dp"
+                        />
+
+                </android.support.design.widget.CollapsingToolbarLayout>
+
+            </android.support.design.widget.AppBarLayout>
+
+            <!-- Main Content -->
+            <FrameLayout
+                android:id="@+id/frame_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        </android.support.design.widget.CoordinatorLayout>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            android:background="@color/White_100"
+            app:headerLayout="@layout/nav_header_drawer"
+            app:menu="@menu/menu_home" />
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/nav_view_notification"
+            android:background="@color/White_100"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:fitsSystemWindows="false">
+
+            <FrameLayout
+                android:id="@+id/filter_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </android.support.design.widget.NavigationView>
 
 
-</android.support.design.widget.CoordinatorLayout>
+    </com.infideap.drawerbehavior.AdvanceDrawerLayout>
+
+</layout>

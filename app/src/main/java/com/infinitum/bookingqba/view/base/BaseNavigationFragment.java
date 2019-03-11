@@ -20,6 +20,7 @@ public abstract class BaseNavigationFragment extends Fragment {
     ViewModelFactory viewModelFactory;
 
     protected FragmentNavInteraction mListener;
+    protected Context mContext;
 
     public BaseNavigationFragment() {
         // Required empty public constructor
@@ -32,6 +33,7 @@ public abstract class BaseNavigationFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof FragmentNavInteraction) {
             mListener = (FragmentNavInteraction) context;
+            mContext = context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentListener");
@@ -42,6 +44,7 @@ public abstract class BaseNavigationFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        mContext = null;
     }
 
 

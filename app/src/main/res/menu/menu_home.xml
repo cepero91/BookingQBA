@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="Inicio" />
+        <item
+            android:id="@+id/nav_list"
+            android:icon="@drawable/ic_th_list"
+            android:title="Rentas" />
+        <item
+            android:id="@+id/nav_wish_list"
+            android:icon="@drawable/ic_scroll"
+            android:title="Lista de Deseo" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_user_alt"
+            android:title="Perfil" />
+
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/ic_user_alt"
+            android:title="Configuracion" />
+    </group>
+
+</menu>

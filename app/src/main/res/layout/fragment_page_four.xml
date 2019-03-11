@@ -1,97 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center_horizontal"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/pages_content_p_left"
-    android:paddingRight="@dimen/pages_content_p_right"
-    tools:context=".view.tutorial.PageFourFragment">
-
-    <com.moos.library.CircleProgressView
-        android:id="@+id/progressView_circle"
-        android:layout_width="@dimen/pages_progress_dimen_w"
-        android:layout_height="@dimen/pages_progress_dimen_h"
-        android:layout_marginTop="@dimen/pages_progress_m_top"
-        app:animateType="AccelerateDecelerateInterpolator"
-        app:end_color="#00796B"
-        app:isFilled="false"
-        app:isTracked="true"
-        app:progressTextColor="#FF5722"
-        app:progressTextSize="36sp"
-        app:start_color="#64FFDA"
-        app:start_progress="0"
-        app:trackColor="#B2DFDB"
-        app:track_width="22dp" />
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
-        android:id="@+id/ll_content_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/pages_content_p_left"
+        android:paddingRight="@dimen/pages_content_p_right"
+        tools:context=".view.tutorial.PageFourFragment">
 
-        <TextView
-            android:id="@+id/tv_title"
+        <com.moos.library.CircleProgressView
+            android:id="@+id/progressView_circle"
+            android:layout_width="@dimen/pages_progress_dimen_w"
+            android:layout_height="@dimen/pages_progress_dimen_h"
+            android:layout_marginTop="@dimen/pages_progress_m_top"
+            app:animateType="AccelerateDecelerateInterpolator"
+            app:end_color="#00796B"
+            app:isFilled="false"
+            app:isTracked="true"
+            app:progressTextColor="#FF5722"
+            app:progressTextSize="36sp"
+            app:start_color="#64FFDA"
+            app:start_progress="0"
+            app:trackColor="#B2DFDB"
+            app:track_width="22dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_content_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="@dimen/pages_title_margin_bottom"
-            android:fontFamily="@font/robotoblack"
-            android:text="@string/hora_de_actualizar"
-            android:textAlignment="center"
-            android:textSize="@dimen/pages_title_dimen" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_description"
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/pages_title_margin_bottom"
+                android:fontFamily="@font/robotoblack"
+                android:text="@string/hora_de_actualizar"
+                android:textAlignment="center"
+                android:textSize="@dimen/pages_title_dimen" />
+
+            <TextView
+                android:id="@+id/tv_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/robotoregular"
+                android:text="@string/para_el_correcto"
+                android:textAlignment="center"
+                android:textSize="@dimen/pages_desc_dimen" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_checkbox_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/robotoregular"
-            android:text="@string/para_el_correcto"
-            android:textAlignment="center"
-            android:textSize="@dimen/pages_desc_dimen" />
+            android:layout_margin="@dimen/pages_checkbox_m_top"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/cb_tourist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="#FF5722"
+                android:fontFamily="@font/robotoregular"
+                android:gravity="center"
+                android:text="@string/para_turistas_extranjeros"
+                android:textAlignment="center"
+                android:textSize="@dimen/pages_check_text_size" />
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/cb_cuban"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="#FF5722"
+                android:fontFamily="@font/robotoregular"
+                android:gravity="center"
+                android:text="@string/para_cubanos"
+                android:textAlignment="center"
+                android:textSize="@dimen/pages_check_text_size" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_checkbox_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/pages_checkbox_m_top"
-        android:orientation="vertical">
-
-        <android.support.v7.widget.AppCompatCheckBox
-            android:id="@+id/cb_tourist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="#FF5722"
-            android:fontFamily="@font/robotoregular"
-            android:gravity="center"
-            android:text="@string/para_turistas_extranjeros"
-            android:textAlignment="center"
-            android:textSize="@dimen/pages_check_text_size" />
-
-        <android.support.v7.widget.AppCompatCheckBox
-            android:id="@+id/cb_cuban"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="#FF5722"
-            android:fontFamily="@font/robotoregular"
-            android:gravity="center"
-            android:text="@string/para_cubanos"
-            android:textAlignment="center"
-            android:textSize="@dimen/pages_check_text_size" />
-
-    </LinearLayout>
-
-
-</LinearLayout>
-
-
-
+</layout>
 

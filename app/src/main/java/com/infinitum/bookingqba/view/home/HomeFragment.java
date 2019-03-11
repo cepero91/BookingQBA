@@ -1,9 +1,11 @@
 package com.infinitum.bookingqba.view.home;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.GridLayoutManager;
@@ -23,6 +25,7 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.CompositeViewStateP
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.databinding.FragmentHomeBinding;
 import com.infinitum.bookingqba.view.adapters.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.composite.RecyclerViewItem;
 import com.infinitum.bookingqba.view.adapters.headeritem.HeaderItem;
@@ -44,8 +47,9 @@ public class HomeFragment extends BaseNavigationFragment {
 
     private RendererRecyclerViewAdapter recyclerViewAdapter;
     private GridLayoutManager mLayoutManager;
-    private RecyclerView recyclerView;
     private DataGenerator dataGenerator = new DataGenerator();
+
+    private FragmentHomeBinding fragmentHomeBinding;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -66,24 +70,27 @@ public class HomeFragment extends BaseNavigationFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-        initRecycleView(view);
-        return view;
+        fragmentHomeBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_home, container, false);
+        return fragmentHomeBinding.getRoot();
     }
 
 
-    public void initRecycleView(View view){
-        recyclerView = view.findViewById(R.id.recycler_view);
-        recyclerViewAdapter = new RendererRecyclerViewAdapter(getActivity());
-
+    public void initRecycleView(){
+        recyclerViewAdapter = new RendererRecyclerViewAdapter();
         recyclerViewAdapter.registerRenderer(getHeader());
-
         recyclerViewAdapter.registerRenderer(getCompositeRent());
-
         recyclerViewAdapter.setItems(dataGenerator.getRZComposite());
-        recyclerView.setAdapter(recyclerViewAdapter);
-        recyclerView.setLayoutManager(setupLayoutManager());
-        recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
+
+        fragmentHomeBinding.recyclerView.setAdapter(recyclerViewAdapter);
+        fragmentHomeBinding.recyclerView.setLayoutManager(setupLayoutManager());
+        fragmentHomeBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initRecycleView();
     }
 
     @NonNull
@@ -131,7 +138,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 HeaderItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_header_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-                        .setOnClickListener(R.id.tv_view_all, (v -> onItemClick(v,model)))
+                        .setOnClickListener(R.id.tv_view_all, (v -> mListener.onItemClick(v,model)))
         );
     }
 
@@ -142,7 +149,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 (model, finder, payloads) -> finder
                         .find(R.id.fork_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
                         .find(R.id.fork_avatar, (ViewProvider<AppCompatImageView>) view -> view.setImageResource(model.getIdImage()))
-                        .setOnClickListener(R.id.ll_ref_zone_content, (v -> onItemClick(v,model)))
+                        .setOnClickListener(R.id.ll_ref_zone_content, (v -> mListener.onItemClick(v,model)))
         );
     }
 
@@ -152,7 +159,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 RentPopItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-                        .setOnClickListener(R.id.cl_rent_home_content, (v -> onItemClick(v,model)))
+                        .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v,model)))
         );
     }
 
@@ -162,25 +169,19 @@ public class HomeFragment extends BaseNavigationFragment {
                 RentNewItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-                        .setOnClickListener(R.id.cl_rent_home_content, (v -> onItemClick(v,model)))
+                        .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v,model)))
         );
     }
 
-    public void onItemClick(View view, BaseItem viewModel) {
-        if (viewModel instanceof HeaderItem) {
-            Toast.makeText(getActivity(), viewModel.getmName() + " View All", Toast.LENGTH_SHORT).show();
-        }else if (viewModel instanceof RZoneItem) {
-            Toast.makeText(getActivity(), viewModel.getmName(), Toast.LENGTH_SHORT).show();
-        } else if (viewModel instanceof RentPopItem) {
-            Toast.makeText(getActivity(), viewModel.getmName(), Toast.LENGTH_SHORT).show();
-        }else if (viewModel instanceof RentNewItem) {
-            Toast.makeText(getActivity(), viewModel.getmName(), Toast.LENGTH_SHORT).show();
-        }
+
+    @Override
+    public void onDestroyView() {
+        fragmentHomeBinding.recyclerView.setAdapter(null);
+        super.onDestroyView();
     }
 
-
-
-
-
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

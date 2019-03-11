@@ -11,4 +11,6 @@
     <string name="para_el_correcto"> Antes dinos que tipo de renta buscas.</string>
     <string name="para_turistas_extranjeros">Para turistas extranjeros</string>
     <string name="para_cubanos">Para cubanos</string>
+    <string name="navigation_drawer_open">open</string>
+    <string name="navigation_drawer_close">close</string>
 </resources>

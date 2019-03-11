@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.view.tutorial;
 
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.widget.LinearLayout;
 
 
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.databinding.FragmentPageFourBinding;
 import com.infinitum.bookingqba.model.local.entity.MunicipalityEntity;
 import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
 import com.infinitum.bookingqba.view.base.BasePageFragment;
@@ -40,9 +42,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class PageFourFragment extends BasePageFragment {
 
-    private CircleProgressView circleProgressView;
-    private AppCompatCheckBox mCheckBoxTourist,mCheckBoxCuban;
-    private LinearLayout mContentCheckBox;
+    private FragmentPageFourBinding fourBinding;
 
     private SyncViewModel syncViewModel;
     private Disposable disposable;
@@ -69,19 +69,15 @@ public class PageFourFragment extends BasePageFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        circleProgressView.setEndProgress(20);
-        circleProgressView.setGraduatedEnabled(true);
+        fourBinding.progressViewCircle.setEndProgress(20);
+        fourBinding.progressViewCircle.setGraduatedEnabled(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_page_four, container, false);
-        circleProgressView = view.findViewById(R.id.progressView_circle);
-        mCheckBoxTourist = view.findViewById(R.id.cb_tourist);
-        mCheckBoxCuban = view.findViewById(R.id.cb_cuban);
-        mContentCheckBox = view.findViewById(R.id.ll_checkbox_content);
-        return view;
+        fourBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_page_four, container, false);
+        return fourBinding.getRoot();
     }
 
     @Override
@@ -100,13 +96,13 @@ public class PageFourFragment extends BasePageFragment {
 
     private boolean validateCheckBoxes(){
         boolean isValid = true;
-        if(!mCheckBoxTourist.isChecked() && !mCheckBoxCuban.isChecked()){
+        if(!fourBinding.cbTourist.isChecked() && !fourBinding.cbCuban.isChecked()){
             isValid = false;
         }
         if(!isValid){
             Animation animationText = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
             animationText.setFillAfter(true);
-            mContentCheckBox.startAnimation(animationText);
+            fourBinding.llCheckboxContent.startAnimation(animationText);
         }
         return isValid;
     }
@@ -120,7 +116,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<ProvinceEntity>>() {
                     @Override
                     public void onSuccess(List<ProvinceEntity> provinceEntityList) {
-                        circleProgressView.setProgress(5);
+                        fourBinding.progressViewCircle.setProgress(5);
                         addProvinces(provinceEntityList);
                     }
 
@@ -140,7 +136,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        circleProgressView.setProgress(10);
+                        fourBinding.progressViewCircle.setProgress(10);
                         syncMunicipalities();
                     }
 
@@ -160,7 +156,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<MunicipalityEntity>>() {
                     @Override
                     public void onSuccess(List<MunicipalityEntity> municipalityEntityList) {
-                        circleProgressView.setProgress(15);
+                        fourBinding.progressViewCircle.setProgress(15);
                         addMunicipalities(municipalityEntityList);
                     }
 
@@ -180,7 +176,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        circleProgressView.setProgress(20);
+                        fourBinding.progressViewCircle.setProgress(20);
                         isSync = false;
                         mListener.onDownloadSuccess();
                     }

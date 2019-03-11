@@ -1,9 +1,11 @@
 package com.infinitum.bookingqba.view.splash;
 
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,19 +21,18 @@ public class SplashActivity extends AppCompatActivity {
 
     private ActivitySplashBinding splashBinding;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        splashBinding = DataBindingUtil.setContentView(this,R.layout.activity_splash);
+        splashBinding = DataBindingUtil.setContentView(this, R.layout.activity_splash);
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-             startActivity(new Intent(SplashActivity.this,HomeActivity.class));
-             SplashActivity.this.finish();
+                startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+                SplashActivity.this.finish();
             }
-        },1500);
+        }, 1500);
 
     }
 
