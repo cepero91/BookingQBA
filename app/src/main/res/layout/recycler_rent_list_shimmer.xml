@@ -46,36 +46,42 @@
                 app:layout_constraintStart_toEndOf="@+id/iv_rent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/tv_name"
+                <ImageView
+                    android:id="@+id/iv_name"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsbold"
-                    android:text="Renta Lucky"
-                    android:textSize="16sp" />
+                    android:layout_height="20dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/material_color_grey_300"
+                    />
 
-                <TextView
-                    android:id="@+id/tv_address"
+                <ImageView
+                    android:id="@+id/iv_address"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsregular"
-                    android:maxLines="2"
-                    android:ellipsize="end"
-                    android:text="Lorem ipsum dolor ipsum loren dolor" />
+                    android:layout_height="25dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@color/material_color_grey_300"
+                    />
 
-                <include
-                    layout="@layout/layout_star_rating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:id="@+id/iv_star"
+                    android:layout_width="100dp"
+                    android:layout_height="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/material_color_grey_300"
+                    />
 
-                <TextView
-                    android:id="@+id/tv_price"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="$189"
-                    android:textSize="20sp"
-                    android:layout_marginTop="5dp"
-                    android:fontFamily="@font/poppinsbold"/>
+                <ImageView
+                    android:id="@+id/iv_price"
+                    android:layout_width="140dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@color/material_color_grey_300"
+                    />
+
+
 
 
             </LinearLayout>

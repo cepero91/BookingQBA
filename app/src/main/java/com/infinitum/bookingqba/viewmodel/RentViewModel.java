@@ -10,7 +10,6 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
-import com.infinitum.bookingqba.view.adapters.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.filter.CheckableItem;
 import com.infinitum.bookingqba.view.adapters.filter.ReferenceZoneViewItem;
 import com.infinitum.bookingqba.view.adapters.filter.AmenitieViewItem;
@@ -27,11 +26,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.Single;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class RentViewModel extends android.arch.lifecycle.ViewModel {
@@ -106,7 +100,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         List<RentListItem> items = new ArrayList<>();
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndGalery entity : listResource.data) {
-                items.add(new RentListItem(entity.getId(), entity.getName(), R.drawable.shape_placeholder, entity.getPrice(), entity.getAddress(), entity.getGaleries().get(0).getImageByte()));
+                items.add(new RentListItem(entity.getId(), entity.getName(), R.drawable.shape_placeholder_circle, entity.getPrice(), entity.getAddress(), entity.getGaleries().get(0).getImageByte()));
             }
         }
         return Flowable.just(items)

@@ -99,7 +99,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             mFragment = getSupportFragmentManager().getFragment(savedInstanceState, STATE_ACTIVE_FRAGMENT);
         }
         if (mFragment == null) {
-            mFragment = RentListFragment.newInstance("","");
+            mFragment = HomeFragment.newInstance();
         }
         fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.frame_container,
@@ -130,6 +130,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         getMenuInflater().inflate(R.menu.menu_filter, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -9,6 +9,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -90,9 +92,19 @@ public class RentListFragment extends BaseNavigationFragment {
 
         rentViewModel = ViewModelProviders.of(this,viewModelFactory).get(RentViewModel.class);
 
+        rentListBinding.setIsLoading(true);
+        rentListBinding.slShimmer.startShimmer();
+
         loadData();
 
 //        initRecycleView();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem menuItem = menu.findItem(R.id.action_filter_panel);
+        menuItem.setVisible(true);
+        super.onPrepareOptionsMenu(menu);
     }
 
     private void loadData() {
@@ -137,7 +149,11 @@ public class RentListFragment extends BaseNavigationFragment {
         recyclerViewAdapter.setItems(rentList);
         rentListBinding.recyclerView.setAdapter(recyclerViewAdapter);
         rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
-        rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
+        rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(0, 5));
+
+        rentListBinding.slShimmer.stopShimmer();
+        rentListBinding.setIsLoading(false);
+
     }
 
     public RecyclerView.LayoutManager setupLayoutManager() {
@@ -153,7 +169,7 @@ public class RentListFragment extends BaseNavigationFragment {
                         .find(R.id.tv_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
                         .find(R.id.tv_address, (ViewProvider<TextView>) view -> view.setText(model.getmAddress()))
                         .find(R.id.iv_rent, (ViewProvider<ImageView>) view ->
-                                GlideApp.with(getView()).load(model.getImageByte()).into(view))
+                                GlideApp.with(getView()).load(model.getImageByte()).placeholder(R.drawable.placeholder).into(view))
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.valueOf(String.valueOf(model.getmPrice()))))
                         .setOnClickListener(R.id.cl_rent_item_content, (v -> mListener.onItemClick(v,model)))
         );

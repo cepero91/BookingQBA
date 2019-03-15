@@ -10,11 +10,13 @@ import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepo
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.view.adapters.baseitem.RecyclerViewItem;
 import com.infinitum.bookingqba.view.adapters.home.HeaderItem;
+import com.infinitum.bookingqba.view.adapters.home.RentNewItem;
 import com.infinitum.bookingqba.view.adapters.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.home.RZoneItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -55,20 +57,26 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
                 .subscribeOn(Schedulers.io());
     }
 
-    public Flowable<Resource<List<ViewModel>>> getRents() {
+    public Flowable<Resource<List<ViewModel>>> getPopRents() {
         return rentRepository.allRent()
-                .flatMap(this::transformRentEntity)
+                .flatMap(this::transformPopRentEntity)
                 .subscribeOn(Schedulers.io());
     }
 
-    private Flowable<Resource<List<ViewModel>>> transformRentEntity(Resource<List<RentAndGalery>> listResource) {
-        List<com.github.vivchar.rendererrecyclerviewadapter.ViewModel> compositeList = new ArrayList<>();
+    public Flowable<Resource<List<ViewModel>>> getNewRents() {
+        return rentRepository.allRent()
+                .flatMap(this::transformNewRentEntity)
+                .subscribeOn(Schedulers.io());
+    }
+
+    private Flowable<Resource<List<ViewModel>>> transformPopRentEntity(Resource<List<RentAndGalery>> listResource) {
+        List<ViewModel> compositeList = new ArrayList<>();
         List<RentPopItem> items = new ArrayList<>();
         if (listResource.data != null && listResource.data.size() > 0) {
             for(RentAndGalery entity: listResource.data){
                 items.add(new RentPopItem(entity.getId(),entity.getName(),entity.getGaleries().get(0).getImageByte()));
             }
-            compositeList.add(new RecyclerViewItem(3,items));
+            compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(),items));
         }
         return Flowable.just(compositeList)
                 .map(Resource::success)
@@ -76,13 +84,31 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
                 .subscribeOn(Schedulers.io());
     }
 
+    private Flowable<Resource<List<ViewModel>>> transformNewRentEntity(Resource<List<RentAndGalery>> listResource) {
+        List<ViewModel> compositeList = new ArrayList<>();
+        List<RentNewItem> items = new ArrayList<>();
+        if (listResource.data != null && listResource.data.size() > 0) {
+            for(RentAndGalery entity: listResource.data){
+                items.add(new RentNewItem(entity.getId(),entity.getName(),entity.getGaleries().get(0).getImageByte()));
+            }
+            compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(),items));
+        }
+        return Flowable.just(compositeList)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+
     public Flowable<Resource<List<ViewModel>>> getAllItems(){
-        return Flowable.combineLatest(getReferencesZone(), getRents(), (listResource, listResource2) -> {
+        return Flowable.combineLatest(getReferencesZone(), getPopRents(),getNewRents(), (listResource, listResource2, listResource3) -> {
             List<com.github.vivchar.rendererrecyclerviewadapter.ViewModel> allItems = new ArrayList<>();
             if(listResource.data!=null && listResource2.data!=null) {
                 allItems.addAll(listResource.data);
                 allItems.add(new HeaderItem("2","Lo mas popular"));
                 allItems.addAll(listResource2.data);
+                allItems.add(new HeaderItem("3","Lo mas nuevo"));
+                allItems.addAll(listResource3.data);
             }
             return Resource.success(allItems);
         }).subscribeOn(Schedulers.io());

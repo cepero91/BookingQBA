@@ -6,6 +6,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
@@ -95,7 +96,13 @@ public class FilterFragment extends Fragment {
 
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
 
+        filterBinding.setIsLoading(true);
+        filterBinding.slShimmerRzone.startShimmer();
+        filterBinding.slShimmerAmenities.startShimmer();
+        filterBinding.slShimmerStar.startShimmer();
+
         testingFilter();
+
 
     }
 
@@ -146,6 +153,10 @@ public class FilterFragment extends Fragment {
                         if (mapResourse.containsKey("Star")) {
                             setStarAdapter(mapResourse.get("Star"));
                         }
+                        filterBinding.setIsLoading(false);
+                        filterBinding.slShimmerRzone.stopShimmer();
+                        filterBinding.slShimmerAmenities.stopShimmer();
+                        filterBinding.slShimmerStar.stopShimmer();
                     }
 
                     @Override

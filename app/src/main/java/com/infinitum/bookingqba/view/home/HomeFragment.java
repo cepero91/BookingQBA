@@ -9,6 +9,8 @@ import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -95,6 +97,13 @@ public class HomeFragment extends BaseNavigationFragment {
 
     }
 
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem menuItem = menu.findItem(R.id.action_filter_panel);
+        menuItem.setVisible(false);
+        super.onPrepareOptionsMenu(menu);
+    }
+
     public void initRecycleView() {
         recyclerViewAdapter = new RendererRecyclerViewAdapter();
         recyclerViewAdapter.registerRenderer(getHeader());
@@ -173,7 +182,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
-                                GlideApp.with(getView()).load(model.getmImage()).into(view))
+                                GlideApp.with(getView()).load(model.getmImage()).placeholder(R.drawable.placeholder).into(view))
                         .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
         );
     }
@@ -184,6 +193,8 @@ public class HomeFragment extends BaseNavigationFragment {
                 RentNewItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
+                        .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
+                                GlideApp.with(getView()).load(model.getmImage()).placeholder(R.drawable.placeholder).into(view))
                         .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
         );
     }
@@ -260,7 +271,9 @@ public class HomeFragment extends BaseNavigationFragment {
                     }
                 }
         ).registerRenderer(getReferenceZone())
-                .registerRenderer(getRentPopItem(R.layout.recycler_rent_pop_item));
+                .registerRenderer(getRentPopItem(R.layout.recycler_rent_pop_item))
+                .registerRenderer(getRentNewItem(R.layout.recycler_rent_new_item));
+
     }
 
 

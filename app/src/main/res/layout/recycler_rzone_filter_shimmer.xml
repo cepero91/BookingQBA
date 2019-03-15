@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/shape_rzone_filter_ship_unselected"
     android:padding="10dp"
+    android:layout_margin="5dp"
     android:orientation="vertical">
 
     <android.support.v7.widget.AppCompatImageView
@@ -14,18 +15,16 @@
         android:layout_height="50dp"
         android:layout_gravity="center"
         android:scaleType="centerCrop"
-        app:srcCompat="@drawable/ic_history"/>
+        app:srcCompat="@drawable/shape_placeholder_square"/>
 
-    <TextView
+    <ImageView
         android:id="@+id/tv_rzone_filter_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
         android:layout_gravity="center"
         android:layout_marginTop="5dp"
-        android:fontFamily="@font/poppinsregular"
-        android:includeFontPadding="false"
-        android:text="Amenitie"
-        android:textSize="14sp" />
+        android:background="@color/material_color_grey_300"
+        />
 
 </LinearLayout>
 
