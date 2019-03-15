@@ -1,25 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    android:id="@+id/cl_rent_home_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_rent_home_content"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/iv_rent"
-        android:layout_width="320dp"
-        android:layout_height="180dp"
+    <FrameLayout
+        android:id="@+id/fl_iv_rent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:foreground="@drawable/shape_placeholder"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/shape_placeholder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:id="@+id/iv_rent"
+            android:layout_width="@dimen/home_iv_pop_width"
+            android:layout_height="@dimen/home_iv_pop_height"
+            app:siBorderAlpha="0"
+            app:siRadius="20dp" />
+
+    </FrameLayout>
 
     <include
         android:id="@+id/i_layout_star"
@@ -28,17 +36,17 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="25dp"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_rent"
+        app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:fontFamily="@font/robotoregular"
-        android:textSize="18sp"
+        android:fontFamily="@font/poppinsbold"
+        android:textColor="@color/White_100"
         android:text="Titulo"
+        android:textSize="@dimen/home_rent_pop_title_size"
         app:layout_constraintBottom_toTopOf="@+id/i_layout_star"
         app:layout_constraintStart_toStartOf="@+id/i_layout_star" />
 

@@ -1,12 +1,10 @@
 package com.infinitum.bookingqba.view.home;
 
-import android.content.Context;
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,11 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.github.vivchar.rendererrecyclerviewadapter.CompositeViewHolder;
 import com.github.vivchar.rendererrecyclerviewadapter.CompositeViewState;
 import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
+import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.github.vivchar.rendererrecyclerviewadapter.ViewState;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.CompositeViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.CompositeViewStateProvider;
@@ -26,19 +25,26 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentHomeBinding;
-import com.infinitum.bookingqba.view.adapters.baseitem.BaseItem;
-import com.infinitum.bookingqba.view.adapters.composite.RecyclerViewItem;
-import com.infinitum.bookingqba.view.adapters.headeritem.HeaderItem;
-import com.infinitum.bookingqba.view.adapters.rentitem.RentNewItem;
-import com.infinitum.bookingqba.view.adapters.rentitem.RentPopItem;
-import com.infinitum.bookingqba.view.adapters.rzoneitem.RZoneItem;
+import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.util.GlideApp;
+import com.infinitum.bookingqba.view.adapters.baseitem.RecyclerViewItem;
+import com.infinitum.bookingqba.view.adapters.home.HeaderItem;
+import com.infinitum.bookingqba.view.adapters.home.RentNewItem;
+import com.infinitum.bookingqba.view.adapters.home.RentPopItem;
+import com.infinitum.bookingqba.view.adapters.home.RZoneItem;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
+import com.infinitum.bookingqba.viewmodel.HomeViewModel;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.List;
 
-import dagger.android.support.AndroidSupportInjection;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.ResourceSubscriber;
 
 
 public class HomeFragment extends BaseNavigationFragment {
@@ -50,6 +56,8 @@ public class HomeFragment extends BaseNavigationFragment {
     private DataGenerator dataGenerator = new DataGenerator();
 
     private FragmentHomeBinding fragmentHomeBinding;
+    private HomeViewModel homeViewModel;
+    private Disposable disposable;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -70,27 +78,31 @@ public class HomeFragment extends BaseNavigationFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        fragmentHomeBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_home, container, false);
+        fragmentHomeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
         return fragmentHomeBinding.getRoot();
-    }
-
-
-    public void initRecycleView(){
-        recyclerViewAdapter = new RendererRecyclerViewAdapter();
-        recyclerViewAdapter.registerRenderer(getHeader());
-        recyclerViewAdapter.registerRenderer(getCompositeRent());
-        recyclerViewAdapter.setItems(dataGenerator.getRZComposite());
-
-        fragmentHomeBinding.recyclerView.setAdapter(recyclerViewAdapter);
-        fragmentHomeBinding.recyclerView.setLayoutManager(setupLayoutManager());
-        fragmentHomeBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
-
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initRecycleView();
+
+        setHasOptionsMenu(true);
+
+        homeViewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
+
+        testingRecycleView();
+
+
+    }
+
+    public void initRecycleView() {
+        recyclerViewAdapter = new RendererRecyclerViewAdapter();
+        recyclerViewAdapter.registerRenderer(getHeader());
+        recyclerViewAdapter.registerRenderer(getCompositeRent());
+        recyclerViewAdapter.setItems(dataGenerator.getRZComposite());
+        fragmentHomeBinding.recyclerView.setAdapter(recyclerViewAdapter);
+        fragmentHomeBinding.recyclerView.setLayoutManager(setupLayoutManager());
+        fragmentHomeBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
     }
 
     @NonNull
@@ -99,7 +111,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 R.layout.recycler_composite,
                 R.id.recycler_view,
                 RecyclerViewItem.class,
-                Collections.singletonList(new BetweenSpacesItemDecoration(5, 5)),
+                Collections.singletonList(new BetweenSpacesItemDecoration(5, 0)),
                 new CompositeViewStateProvider<RecyclerViewItem, CompositeViewHolder>() {
                     @Override
                     public ViewState createViewState(@NonNull final CompositeViewHolder holder) {
@@ -115,6 +127,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 .registerRenderer(getRentPopItem(R.layout.recycler_rent_pop_item))
                 .registerRenderer(getRentNewItem(R.layout.recycler_rent_new_item));
     }
+
 
     public RecyclerView.LayoutManager setupLayoutManager() {
         mLayoutManager = new GridLayoutManager(getActivity(), MAX_SPAN_COUNT);
@@ -138,7 +151,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 HeaderItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_header_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-                        .setOnClickListener(R.id.tv_view_all, (v -> mListener.onItemClick(v,model)))
+                        .setOnClickListener(R.id.tv_view_all, (v -> mListener.onItemClick(v, model)))
         );
     }
 
@@ -147,9 +160,9 @@ public class HomeFragment extends BaseNavigationFragment {
                 R.layout.recycler_ref_zone_item,
                 RZoneItem.class,
                 (model, finder, payloads) -> finder
-                        .find(R.id.fork_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-                        .find(R.id.fork_avatar, (ViewProvider<AppCompatImageView>) view -> view.setImageResource(model.getIdImage()))
-                        .setOnClickListener(R.id.ll_ref_zone_content, (v -> mListener.onItemClick(v,model)))
+                        .find(R.id.tv_ref_zone, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
+                        .find(R.id.iv_ref_zone, (ViewProvider<AppCompatImageView>) view -> GlideApp.with(getView()).load(model.getmImage()).into(view))
+                        .setOnClickListener(R.id.ll_ref_zone_content, (v -> mListener.onItemClick(v, model)))
         );
     }
 
@@ -159,7 +172,9 @@ public class HomeFragment extends BaseNavigationFragment {
                 RentPopItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-                        .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v,model)))
+                        .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
+                                GlideApp.with(getView()).load(model.getmImage()).into(view))
+                        .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
         );
     }
 
@@ -169,7 +184,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 RentNewItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-                        .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v,model)))
+                        .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
         );
     }
 
@@ -184,4 +199,69 @@ public class HomeFragment extends BaseNavigationFragment {
     public void onDestroy() {
         super.onDestroy();
     }
+
+
+    //TESTING
+
+
+    public void testingRecycleView() {
+        fragmentHomeBinding.recyclerView.setLayoutManager(setupLayoutManager());
+        fragmentHomeBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(2, 0));
+        loadData();
+    }
+
+    public void loadData() {
+        disposable = homeViewModel.getAllItems()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new ResourceSubscriber<Resource<List<ViewModel>>>() {
+                    @Override
+                    public void onNext(Resource<List<ViewModel>> listResource) {
+                        setItemsAdapter(listResource.data);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    public void setItemsAdapter(List<ViewModel> rZoneItems) {
+        recyclerViewAdapter = new RendererRecyclerViewAdapter();
+        recyclerViewAdapter.registerRenderer(getHeader());
+        recyclerViewAdapter.registerRenderer(testComposite());
+        recyclerViewAdapter.setItems(rZoneItems);
+        fragmentHomeBinding.recyclerView.setAdapter(recyclerViewAdapter);
+    }
+
+    @NonNull
+    private CompositeViewBinder<?> testComposite() {
+        return (CompositeViewBinder) new CompositeViewBinder<>(
+                R.layout.recycler_composite,
+                R.id.recycler_view,
+                RecyclerViewItem.class,
+                Collections.singletonList(new BetweenSpacesItemDecoration(2, 0)),
+                new CompositeViewStateProvider<RecyclerViewItem, CompositeViewHolder>() {
+                    @Override
+                    public ViewState createViewState(@NonNull final CompositeViewHolder holder) {
+                        return new CompositeViewState(holder);
+                    }
+
+                    @Override
+                    public int createViewStateID(@NonNull final RecyclerViewItem model) {
+                        return model.getID();
+                    }
+                }
+        ).registerRenderer(getReferenceZone())
+                .registerRenderer(getRentPopItem(R.layout.recycler_rent_pop_item));
+    }
+
+
 }

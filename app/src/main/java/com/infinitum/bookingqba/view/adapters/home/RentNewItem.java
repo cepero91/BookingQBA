@@ -1,12 +1,12 @@
-package com.infinitum.bookingqba.view.adapters.rzoneitem;
+package com.infinitum.bookingqba.view.adapters.home;
 
 import com.infinitum.bookingqba.view.adapters.baseitem.BaseItem;
 
-public class RZoneItem extends BaseItem{
+public class RentNewItem extends BaseItem {
 
     private int idImage;
 
-    public RZoneItem(int id, String mName, int idImage) {
+    public RentNewItem(String id, String mName, int idImage) {
         super(id, mName);
         this.idImage = idImage;
     }

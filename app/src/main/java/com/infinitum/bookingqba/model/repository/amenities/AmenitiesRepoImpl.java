@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.amenities;
 
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -11,6 +12,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
@@ -62,6 +64,14 @@ public class AmenitiesRepoImpl implements AmenitiesRepository {
     @Override
     public Completable insertAmenities(List<AmenitiesEntity> amenitiesEntityList) {
         return Completable.fromAction(() -> qbaDao.upsertAmenities(amenitiesEntityList))
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Flowable<Resource<List<AmenitiesEntity>>> fetchLocal() {
+        return qbaDao.getAllAmenities()
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());
     }
 }

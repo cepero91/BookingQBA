@@ -5,6 +5,9 @@ public final class Constants {
     //API
     public static final String BASIC_URL_API = "http://192.168.137.1:8000";
 
+    //SHARED PREFERENCES KEY
+    public static final String PREF_DOWNLOAD_LEVEL = "DownloadLevel";
+
     //DATABASE
     public static final String DATABASE_NAME = "bookingQBA.db";
     public static final String PROVINCE_TABLE_NAME = "Province";

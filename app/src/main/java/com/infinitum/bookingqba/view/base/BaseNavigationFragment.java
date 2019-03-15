@@ -17,10 +17,12 @@ import io.reactivex.disposables.CompositeDisposable;
 public abstract class BaseNavigationFragment extends Fragment {
 
     @Inject
-    ViewModelFactory viewModelFactory;
+    protected ViewModelFactory viewModelFactory;
+
+    protected CompositeDisposable compositeDisposable;
 
     protected FragmentNavInteraction mListener;
-    protected Context mContext;
+
 
     public BaseNavigationFragment() {
         // Required empty public constructor
@@ -33,7 +35,7 @@ public abstract class BaseNavigationFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof FragmentNavInteraction) {
             mListener = (FragmentNavInteraction) context;
-            mContext = context;
+            compositeDisposable = new CompositeDisposable();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentListener");
@@ -44,7 +46,7 @@ public abstract class BaseNavigationFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        mContext = null;
+        compositeDisposable.clear();
     }
 
 

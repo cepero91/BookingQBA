@@ -1,18 +1,20 @@
-package com.infinitum.bookingqba.view.adapters.rentlist;
+package com.infinitum.bookingqba.view.adapters.rent;
 
 import com.infinitum.bookingqba.view.adapters.baseitem.BaseItem;
 
 public class RentListItem extends BaseItem {
 
     private int idImage;
-    private int mPrice;
+    private double mPrice;
     private String mAddress;
+    private byte[] imageByte;
 
-    public RentListItem(int id, String mName, int idImage, int mPrice, String mAddress) {
+    public RentListItem(String id, String mName, int idImage, double mPrice, String mAddress, byte[] imageByte) {
         super(id, mName);
         this.idImage = idImage;
         this.mPrice = mPrice;
         this.mAddress = mAddress;
+        this.imageByte = imageByte;
     }
 
     public int getIdImage() {
@@ -23,11 +25,11 @@ public class RentListItem extends BaseItem {
         this.idImage = idImage;
     }
 
-    public int getmPrice() {
+    public double getmPrice() {
         return mPrice;
     }
 
-    public void setmPrice(int mPrice) {
+    public void setmPrice(double mPrice) {
         this.mPrice = mPrice;
     }
 
@@ -37,5 +39,13 @@ public class RentListItem extends BaseItem {
 
     public void setmAddress(String mAddress) {
         this.mAddress = mAddress;
+    }
+
+    public byte[] getImageByte() {
+        return imageByte;
+    }
+
+    public void setImageByte(byte[] imageByte) {
+        this.imageByte = imageByte;
     }
 }

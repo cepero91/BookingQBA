@@ -94,9 +94,10 @@ dependencies {
 
     //Circle Image View
     implementation 'com.mikhaellopez:circularimageview:3.2.0'
+    implementation 'com.github.siyamed:android-shape-imageview:0.9.3@aar'
 
     //Adapter
-    implementation 'com.github.vivchar:RendererRecyclerViewAdapter:2.5.1'
+    implementation 'com.github.vivchar:RendererRecyclerViewAdapter:2.6.0'
 
     implementation "com.airbnb.android:lottie:$lottieVersion"
     implementation 'com.github.florent37:shapeofview:1.2.0'
@@ -105,6 +106,20 @@ dependencies {
 
     //Panels
     implementation 'com.infideap.drawerbehavior:drawer-behavior:0.1.5'
+
+    //Expansion panel
+    implementation 'com.github.florent37:expansionpanel:1.1.1'
+
+    //Flexbox
+    implementation "com.google.android:flexbox:$flexbox"
+
+
+    //Para revisar
+    implementation 'com.github.iammert:ScalingLayout:1.2.1'
+
+    implementation 'com.github.PierfrancescoSoffritti:SlidingDrawer:0.11'
+
+    implementation 'com.github.ome450901:SimpleRatingBar:1.4.2'
 
 
 }

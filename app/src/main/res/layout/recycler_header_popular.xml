@@ -4,8 +4,8 @@
     android:layout_width = "match_parent"
     android:layout_height = "wrap_content"
     android:layout_marginTop="20dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="25dp"
+    android:layout_marginLeft="@dimen/home_header_m_left"
+    android:layout_marginRight="@dimen/home_header_m_right"
     >
 
     <TextView
@@ -16,9 +16,9 @@
         android:layout_marginLeft="15dp"
         android:layout_gravity = "center|start"
         android:text = "Lo mas popular"
-        android:fontFamily="@font/robotobold"
+        android:fontFamily="@font/poppinsbold"
         android:textColor = "@color/material_color_grey_500"
-        android:textSize = "18sp"
+        android:textSize = "@dimen/home_header_pop_title_size"
         />
 
     <TextView
@@ -27,7 +27,10 @@
         android:layout_height = "wrap_content"
         android:layout_gravity = "end|center"
         android:background="@drawable/shape_btn_ship"
+        android:includeFontPadding="false"
         android:text = "Ver todos"
+        android:fontFamily="@font/poppinsregular"
+        android:textSize="@dimen/home_header_pop_btn_size"
         android:textColor = "@color/colorPrimary"
         />
 </FrameLayout>

@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.di.module;
 
+import com.infinitum.bookingqba.view.filter.FilterFragment;
 import com.infinitum.bookingqba.view.home.HomeFragment;
 import com.infinitum.bookingqba.view.base.BasePageFragment;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
@@ -24,6 +25,9 @@ public interface FragmentModule {
 
     @ContributesAndroidInjector
     RentListFragment bindRentListFragment();
+
+    @ContributesAndroidInjector
+    FilterFragment bindFilterFragment();
 
 
 

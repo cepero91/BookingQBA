@@ -1,4 +1,4 @@
-package com.infinitum.bookingqba.view.adapters.composite;
+package com.infinitum.bookingqba.view.adapters.baseitem;
 
 import android.support.annotation.NonNull;
 

@@ -1,5 +1,8 @@
 package com.infinitum.bookingqba.model.repository.referencezone;
 
+import android.util.Base64;
+
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -11,6 +14,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
@@ -45,7 +49,7 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
         ArrayList<ReferenceZoneEntity> listEntity = new ArrayList<>();
         ReferenceZoneEntity entity;
         for (ReferenceZone item : gsonList) {
-            entity = new ReferenceZoneEntity(item.getId(), item.getNombre());
+            entity = new ReferenceZoneEntity(item.getId(), item.getNombre(), Base64.decode(item.getImagen(),Base64.DEFAULT));
             listEntity.add(entity);
         }
         return listEntity;
@@ -62,5 +66,14 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
     @Override
     public Completable insertReferencesMode(List<ReferenceZoneEntity> referenceZoneEntities) {
         return Completable.fromAction(() -> qbaDao.upsertReferencesZone(referenceZoneEntities)).subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Flowable<Resource<List<ReferenceZoneEntity>>> allReferencesZone() {
+        return qbaDao.getAllReferencesZone()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
     }
 }

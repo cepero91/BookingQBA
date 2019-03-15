@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.di;
 
 
+
 import com.infinitum.bookingqba.BookingQBApp;
 import com.infinitum.bookingqba.di.module.ActivityModule;
 import com.infinitum.bookingqba.di.module.AppModule;
@@ -8,6 +9,7 @@ import com.infinitum.bookingqba.di.module.DatabaseModule;
 import com.infinitum.bookingqba.di.module.FragmentModule;
 import com.infinitum.bookingqba.di.module.NetModule;
 import com.infinitum.bookingqba.di.module.RepositoryModule;
+import com.infinitum.bookingqba.di.module.SharedPreferencesModule;
 import com.infinitum.bookingqba.di.module.ViewModelModule;
 
 import javax.inject.Singleton;
@@ -26,6 +28,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
         AppModule.class,
         NetModule.class,
         DatabaseModule.class,
+        SharedPreferencesModule.class,
         RepositoryModule.class,
         ViewModelModule.class
 })

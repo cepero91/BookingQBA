@@ -19,4 +19,13 @@
     <dimen name="pages_checkbox_m_top">18dp</dimen>
     <dimen name="pages_check_text_size">14sp</dimen>
     <dimen name="root_pages_btn_text_size">14sp</dimen>
+    <dimen name="ref_zone_title_size">16sp</dimen>
+    <dimen name="home_ref_zone_iv_size">70dp</dimen>
+    <dimen name="home_iv_pop_width">320dp</dimen>
+    <dimen name="home_iv_pop_height">180dp</dimen>
+    <dimen name="home_rent_pop_title_size">18sp</dimen>
+    <dimen name="home_header_pop_title_size">18sp</dimen>
+    <dimen name="home_header_pop_btn_size">12sp</dimen>
+    <dimen name="home_header_m_left">10dp</dimen>
+    <dimen name="home_header_m_right">25dp</dimen>
 </resources>

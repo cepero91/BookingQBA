@@ -4,10 +4,10 @@ import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 
 public class BaseItem implements ViewModel{
 
-    private int id;
+    private String id;
     private String mName;
 
-    public BaseItem(int id, String mName) {
+    public BaseItem(String id, String mName) {
         this.id = id;
         this.mName = mName;
     }
@@ -26,12 +26,12 @@ public class BaseItem implements ViewModel{
         if (!mName.equals(that.mName)) {
             return false;
         }
-        return id==that.id;
+        return id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return id;
+        return id.hashCode();
     }
 
     @Override
@@ -39,11 +39,11 @@ public class BaseItem implements ViewModel{
         return mName;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

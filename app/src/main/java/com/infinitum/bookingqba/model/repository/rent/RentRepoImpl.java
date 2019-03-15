@@ -1,7 +1,9 @@
 package com.infinitum.bookingqba.model.repository.rent;
 
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
+import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.Poi;
@@ -14,6 +16,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
@@ -87,5 +90,23 @@ public class RentRepoImpl implements RentRepository {
     public Completable insertRents(List<RentEntity> rentEntityList) {
         return Completable.fromAction(() -> qbaDao.upsertRents(rentEntityList))
                 .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Flowable<Resource<List<RentAndGalery>>> allRent() {
+        return qbaDao.getAllRents()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Flowable<Resource<List<RentAndGalery>>> allRentWithFirstImage() {
+        return qbaDao.getAllRentsWithFirstImage()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
     }
 }

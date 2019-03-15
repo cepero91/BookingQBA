@@ -1,11 +1,11 @@
 package com.infinitum.bookingqba.view.rents;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,13 +19,19 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentRentListBinding;
-import com.infinitum.bookingqba.view.adapters.rentitem.RentNewItem;
-import com.infinitum.bookingqba.view.adapters.rentlist.RentListItem;
+import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.util.GlideApp;
+import com.infinitum.bookingqba.view.adapters.rent.RentListItem;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
-import com.infinitum.bookingqba.view.home.DataGenerator;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
+import com.infinitum.bookingqba.viewmodel.RentViewModel;
 
-import timber.log.Timber;
+import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,13 +45,11 @@ public class RentListFragment extends BaseNavigationFragment {
     private static final String PROVINCE_PARAM = "param1";
     private static final String REFERENCE_ZONE_PARAM = "param2";
 
-
     private String mProvinceParam;
     private String mReferenceZoneParam;
 
-    private RendererRecyclerViewAdapter recyclerViewAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private DataGenerator dataGenerator = new DataGenerator();
+    private RentViewModel rentViewModel;
+    private Disposable disposable;
 
 
     public RentListFragment() {
@@ -81,22 +85,63 @@ public class RentListFragment extends BaseNavigationFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initRecycleView();
+
+        setHasOptionsMenu(true);
+
+        rentViewModel = ViewModelProviders.of(this,viewModelFactory).get(RentViewModel.class);
+
+        loadData();
+
+//        initRecycleView();
     }
 
-    public void initRecycleView(){
-        recyclerViewAdapter = new RendererRecyclerViewAdapter();
-        recyclerViewAdapter.registerRenderer(getRentListItem(R.layout.recycler_rent_list_item));
-        recyclerViewAdapter.setItems(dataGenerator.getRentListItems());
+    private void loadData() {
+        disposable = rentViewModel.getRents()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new ResourceSubscriber<Resource<List<RentListItem>>>() {
+                    @Override
+                    public void onNext(Resource<List<RentListItem>> listResource) {
+                        if(listResource.data!=null){
+                            setItemsAdapter(listResource.data);
+                        }
+                    }
 
+                    @Override
+                    public void onError(Throwable t) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
+
+//    public void initRecycleView(){
+//        RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
+//        recyclerViewAdapter.registerRenderer(getRentListItem(R.layout.recycler_rent_list_item));
+//        recyclerViewAdapter.setItems(dataGenerator.getRentListItems());
+//
+//        rentListBinding.recyclerView.setAdapter(recyclerViewAdapter);
+//        rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
+//        rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
+//
+//    }
+
+    public void setItemsAdapter(List<RentListItem> rentList) {
+        RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
+        recyclerViewAdapter.registerRenderer(getRentListItem(R.layout.recycler_rent_list_item));
+        recyclerViewAdapter.setItems(rentList);
         rentListBinding.recyclerView.setAdapter(recyclerViewAdapter);
         rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
         rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
-
     }
 
     public RecyclerView.LayoutManager setupLayoutManager() {
-        mLayoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         return mLayoutManager;
     }
 
@@ -107,8 +152,9 @@ public class RentListFragment extends BaseNavigationFragment {
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
                         .find(R.id.tv_address, (ViewProvider<TextView>) view -> view.setText(model.getmAddress()))
-                        .find(R.id.iv_rent, (ViewProvider<ImageView>) view -> view.setImageResource(model.getIdImage()))
-                        .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.valueOf(model.getmPrice())))
+                        .find(R.id.iv_rent, (ViewProvider<ImageView>) view ->
+                                GlideApp.with(getView()).load(model.getImageByte()).into(view))
+                        .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.valueOf(String.valueOf(model.getmPrice()))))
                         .setOnClickListener(R.id.cl_rent_item_content, (v -> mListener.onItemClick(v,model)))
         );
     }
