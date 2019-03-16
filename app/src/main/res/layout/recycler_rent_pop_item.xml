@@ -29,15 +29,23 @@
 
     </FrameLayout>
 
-    <include
-        android:id="@+id/i_layout_star"
-        layout="@layout/layout_star_rating"
+    <com.willy.ratingbar.BaseRatingBar
+        android:id="@+id/sr_scale_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="25dp"
         app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:srb_rating="4"
+        app:srb_stepSize="0.5"
+        app:srb_starWidth="20dp"
+        app:srb_starHeight="20dp"
+        app:srb_starPadding="3dp"
+        app:srb_clickable="false"
+        app:srb_drawableFilled="@drawable/ic_star"
+        app:srb_drawableEmpty="@drawable/ic_star_o"/>
+
 
     <TextView
         android:id="@+id/tv_title"
@@ -45,9 +53,10 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppinsbold"
         android:textColor="@color/White_100"
+        android:paddingLeft="5dp"
         android:text="Titulo"
         android:textSize="@dimen/home_rent_pop_title_size"
-        app:layout_constraintBottom_toTopOf="@+id/i_layout_star"
-        app:layout_constraintStart_toStartOf="@+id/i_layout_star" />
+        app:layout_constraintBottom_toTopOf="@+id/sr_scale_rating"
+        app:layout_constraintStart_toStartOf="@+id/sr_scale_rating" />
 
 </android.support.constraint.ConstraintLayout>

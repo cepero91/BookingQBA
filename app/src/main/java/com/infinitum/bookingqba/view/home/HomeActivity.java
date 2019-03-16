@@ -111,7 +111,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     @Override
     public void onItemClick(View view, BaseItem baseItem) {
         if (baseItem instanceof HeaderItem) {
-            mFragment = RentListFragment.newInstance("", "");
+            mFragment = RentListFragment.newInstance("", "",((HeaderItem)baseItem).getOrderType());
             fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.frame_container,
                     mFragment).commit();
@@ -157,9 +157,19 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     public void onBackPressed() {
         if (homeBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             homeBinding.drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (homeBinding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            return;
+        }
+        if (homeBinding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             homeBinding.drawerLayout.closeDrawer(GravityCompat.END);
-        } else {
+            return;
+        }
+        if(mFragment instanceof RentListFragment){
+            mFragment = HomeFragment.newInstance();
+            fragmentManager.beginTransaction().replace(R.id.frame_container,
+                    mFragment).commit();
+            return;
+        }
+        if(mFragment instanceof HomeFragment){
             super.onBackPressed();
         }
     }

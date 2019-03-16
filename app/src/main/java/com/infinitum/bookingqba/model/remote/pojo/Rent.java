@@ -37,6 +37,9 @@ public class Rent {
     @SerializedName("longitud")
     @Expose
     private String longitud;
+    @SerializedName("rating")
+    @Expose
+    private Float rating;
     @SerializedName("cant_habitaciones")
     @Expose
     private Integer cantHabitaciones;
@@ -239,5 +242,13 @@ public class Rent {
 
     public void setFechaModificado(String fechaModificado) {
         this.fechaModificado = fechaModificado;
+    }
+
+    public Float getRating() {
+        return rating;
+    }
+
+    public void setRating(Float rating) {
+        this.rating = rating;
     }
 }

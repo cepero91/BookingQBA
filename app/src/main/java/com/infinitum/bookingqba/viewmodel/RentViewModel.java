@@ -89,8 +89,8 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return Flowable.just(viewItemList);
     }
 
-    public Flowable<Resource<List<RentListItem>>> getRents() {
-        return rentRepository.allRentWithFirstImage()
+    public Flowable<Resource<List<RentListItem>>> getRents(char orderType) {
+        return rentRepository.allRentWithFirstImage(orderType)
                 .flatMap(this::transformRentEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -100,7 +100,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         List<RentListItem> items = new ArrayList<>();
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndGalery entity : listResource.data) {
-                items.add(new RentListItem(entity.getId(), entity.getName(), R.drawable.shape_placeholder_circle, entity.getPrice(), entity.getAddress(), entity.getGaleries().get(0).getImageByte()));
+                items.add(new RentListItem(entity.getId(), entity.getName(), entity.getPrice(), entity.getAddress(), entity.getGaleries().get(0).getImageByte(),entity.getRating()));
             }
         }
         return Flowable.just(items)

@@ -272,12 +272,28 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    @Query("SELECT id,name,address,price FROM Rent")
+    @Query("SELECT id,name,address,price, rating FROM Rent")
     public abstract Flowable<List<RentAndGalery>>getAllRents();
 
+    /**
+     * CAMBIAR ESTE METODO PARA QUE SOLO DEVUELVA LA PRIMERA IMAGEN
+     * @return
+     */
     @Transaction
-    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id")
-    public abstract Flowable<List<RentAndGalery>>getAllRentsWithFirstImage();
+    @Query("SELECT id,name,address,price,rating FROM Rent ORDER BY rating DESC LIMIT 5")
+    public abstract Flowable<List<RentAndGalery>>getFivePopRents();
+
+    @Transaction
+    @Query("SELECT id,name,address,price,rating FROM Rent ORDER BY created DESC LIMIT 5")
+    public abstract Flowable<List<RentAndGalery>>getFiveNewRents();
+
+    @Transaction
+    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.rating DESC")
+    public abstract Flowable<List<RentAndGalery>>getAllPopRent();
+
+    @Transaction
+    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.created DESC")
+    public abstract Flowable<List<RentAndGalery>>getAllNewRent();
 
     //------------------------- MODOS DE RENTA ---------------------------//
 

@@ -23,6 +23,9 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
+import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_NEW;
+import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
+
 public class RentRepoImpl implements RentRepository {
 
     private Retrofit retrofit;
@@ -36,6 +39,7 @@ public class RentRepoImpl implements RentRepository {
 
     /**
      * Prepara la peticion del API
+     *
      * @return
      */
     private Single<List<Rent>> fetchRents() {
@@ -44,6 +48,7 @@ public class RentRepoImpl implements RentRepository {
 
     /**
      * Transforma entidad JSON a entidad de Base de Datos
+     *
      * @param gsonList
      * @return
      */
@@ -61,6 +66,7 @@ public class RentRepoImpl implements RentRepository {
             entity.setPhoneHomeNumber(item.getTelcasa());
             entity.setLatitude(Double.parseDouble(item.getLatitud()));
             entity.setLongitude(Double.parseDouble(item.getLongitud()));
+            entity.setRating(item.getRating());
             entity.setMaxRooms(item.getCantHabitaciones());
             entity.setMaxBeds(item.getCantCamas());
             entity.setMaxBath(item.getCantBannos());
@@ -102,8 +108,34 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public Flowable<Resource<List<RentAndGalery>>> allRentWithFirstImage() {
-        return qbaDao.getAllRentsWithFirstImage()
+    public Flowable<Resource<List<RentAndGalery>>> allRentWithFirstImage(char orderType) {
+        if (orderType == ORDER_TYPE_POPULAR) {
+            return qbaDao.getAllPopRent()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .map(Resource::success)
+                    .onErrorReturn(Resource::error);
+        } else {
+            return qbaDao.getAllNewRent()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .map(Resource::success)
+                    .onErrorReturn(Resource::error);
+        }
+    }
+
+    @Override
+    public Flowable<Resource<List<RentAndGalery>>> fivePopRent() {
+        return qbaDao.getFivePopRents()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Flowable<Resource<List<RentAndGalery>>> fiveNewRent() {
+        return qbaDao.getFiveNewRents()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .map(Resource::success)

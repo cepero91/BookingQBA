@@ -27,6 +27,7 @@ import com.infinitum.bookingqba.view.adapters.rent.RentListItem;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
+import com.willy.ratingbar.BaseRatingBar;
 
 import java.util.List;
 
@@ -34,6 +35,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.ResourceSubscriber;
+
+import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,9 +49,11 @@ public class RentListFragment extends BaseNavigationFragment {
 
     private static final String PROVINCE_PARAM = "param1";
     private static final String REFERENCE_ZONE_PARAM = "param2";
+    private static final String ORDER_TYPE_PARAM = "param3";
 
     private String mProvinceParam;
     private String mReferenceZoneParam;
+    private char mOrderType = ORDER_TYPE_POPULAR;
 
     private RentViewModel rentViewModel;
     private Disposable disposable;
@@ -59,11 +64,12 @@ public class RentListFragment extends BaseNavigationFragment {
     }
 
 
-    public static RentListFragment newInstance(String province, String reference) {
+    public static RentListFragment newInstance(String province, String reference, char orderType) {
         RentListFragment fragment = new RentListFragment();
         Bundle args = new Bundle();
         args.putString(PROVINCE_PARAM, province);
         args.putString(REFERENCE_ZONE_PARAM, reference);
+        args.putChar(ORDER_TYPE_PARAM, orderType);
         fragment.setArguments(args);
         return fragment;
     }
@@ -74,6 +80,7 @@ public class RentListFragment extends BaseNavigationFragment {
         if (getArguments() != null) {
             mProvinceParam = getArguments().getString(PROVINCE_PARAM);
             mReferenceZoneParam = getArguments().getString(REFERENCE_ZONE_PARAM);
+            mOrderType = getArguments().getChar(ORDER_TYPE_PARAM);
         }
     }
 
@@ -108,7 +115,7 @@ public class RentListFragment extends BaseNavigationFragment {
     }
 
     private void loadData() {
-        disposable = rentViewModel.getRents()
+        disposable = rentViewModel.getRents(mOrderType)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new ResourceSubscriber<Resource<List<RentListItem>>>() {
@@ -168,6 +175,7 @@ public class RentListFragment extends BaseNavigationFragment {
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
                         .find(R.id.tv_address, (ViewProvider<TextView>) view -> view.setText(model.getmAddress()))
+                        .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.iv_rent, (ViewProvider<ImageView>) view ->
                                 GlideApp.with(getView()).load(model.getImageByte()).placeholder(R.drawable.placeholder).into(view))
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.valueOf(String.valueOf(model.getmPrice()))))

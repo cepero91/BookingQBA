@@ -10,11 +10,11 @@
         android:id="@+id/fl_iv_rent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:foreground="@drawable/shape_placeholder_rounded"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:foreground="@drawable/shape_placeholder_circle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,40 +22,30 @@
 
         <com.github.siyamed.shapeimageview.RoundedImageView
             android:id="@+id/iv_rent"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="@dimen/home_iv_pop_width"
+            android:layout_height="@dimen/home_iv_pop_height"
             app:siBorderAlpha="0"
             app:siRadius="20dp" />
 
     </FrameLayout>
 
-
-    <com.willy.ratingbar.BaseRatingBar
-        android:id="@+id/sr_scale_rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/iv_layout_star"
+        android:layout_width="100dp"
+        android:layout_height="15dp"
+        android:background="@color/material_color_grey_200"
         android:layout_marginBottom="10dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="25dp"
         app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srb_rating="4"
-        app:srb_stepSize="0.5"
-        app:srb_starWidth="16dp"
-        app:srb_starHeight="16dp"
-        app:srb_starPadding="2dp"
-        app:srb_clickable="false"
-        app:srb_drawableFilled="@drawable/ic_star"
-        app:srb_drawableEmpty="@drawable/ic_star_o"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
+    <ImageView
         android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/poppinsbold"
-        android:text="Titulo"
-        android:textColor="@color/White_100"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/sr_scale_rating"
-        app:layout_constraintStart_toStartOf="@+id/sr_scale_rating" />
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/material_color_grey_200"
+        app:layout_constraintBottom_toTopOf="@+id/iv_layout_star"
+        app:layout_constraintStart_toStartOf="@+id/iv_layout_star" />
 
 </android.support.constraint.ConstraintLayout>

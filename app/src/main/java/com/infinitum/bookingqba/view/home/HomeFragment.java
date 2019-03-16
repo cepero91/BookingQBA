@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.view.home;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
@@ -38,6 +39,7 @@ import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.HomeViewModel;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.willy.ratingbar.BaseRatingBar;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -92,7 +94,16 @@ public class HomeFragment extends BaseNavigationFragment {
 
         homeViewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
 
-        testingRecycleView();
+        fragmentHomeBinding.setIsLoading(true);
+        fragmentHomeBinding.slShimmerHome.startShimmer();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                testingRecycleView();
+            }
+        },1000);
+
 
 
     }
@@ -181,6 +192,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 RentPopItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
+                        .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
                                 GlideApp.with(getView()).load(model.getmImage()).placeholder(R.drawable.placeholder).into(view))
                         .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
@@ -193,6 +205,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 RentNewItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
+                        .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
                                 GlideApp.with(getView()).load(model.getmImage()).placeholder(R.drawable.placeholder).into(view))
                         .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
@@ -250,6 +263,10 @@ public class HomeFragment extends BaseNavigationFragment {
         recyclerViewAdapter.registerRenderer(testComposite());
         recyclerViewAdapter.setItems(rZoneItems);
         fragmentHomeBinding.recyclerView.setAdapter(recyclerViewAdapter);
+
+        fragmentHomeBinding.slShimmerHome.stopShimmer();
+        fragmentHomeBinding.setIsLoading(false);
+
     }
 
     @NonNull

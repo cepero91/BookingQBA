@@ -86,7 +86,6 @@ public class GalerieRepoImpl implements GalerieRepository {
                     .getSingleImages(item.getImageUrl())
                     .subscribeOn(Schedulers.io())
                     .doOnSuccess(responseBody -> {
-                        Timber.e("onSuccess segundo flatmap");
                         byte[] bytes = responseBody.bytes();
                         item.setImageByte(bytes);
                     });

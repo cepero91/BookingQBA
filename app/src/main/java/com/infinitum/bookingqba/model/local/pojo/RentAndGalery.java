@@ -14,6 +14,7 @@ public class RentAndGalery {
     private String name;
     private String address;
     private double price;
+    private float rating;
 
     @Relation(parentColumn = "id", entityColumn = "rent")
     private List<GalerieEntity> galeries;
@@ -23,11 +24,12 @@ public class RentAndGalery {
         this.name = name;
     }
 
-    public RentAndGalery(String id, String name, String address, double price, List<GalerieEntity> galeries) {
+    public RentAndGalery(String id, String name, String address, double price, float rating, List<GalerieEntity> galeries) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.price = price;
+        this.rating = rating;
         this.galeries = galeries;
     }
 
@@ -69,5 +71,13 @@ public class RentAndGalery {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
     }
 }

@@ -26,4 +26,8 @@ public final class Constants {
     public static final String RENT_DRAW_TYPE_TABLE_NAME = "RentDrawType";
     public static final String RENT_POI_TABLE_NAME = "RentPoi";
 
+    public static final char ORDER_TYPE_POPULAR = 'r'; // Represent attrib rating
+    public static final char ORDER_TYPE_NEW = 'c'; // Represent attrib created
+
+
 }

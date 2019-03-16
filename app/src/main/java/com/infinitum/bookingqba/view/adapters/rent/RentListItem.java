@@ -4,25 +4,17 @@ import com.infinitum.bookingqba.view.adapters.baseitem.BaseItem;
 
 public class RentListItem extends BaseItem {
 
-    private int idImage;
     private double mPrice;
     private String mAddress;
     private byte[] imageByte;
+    private float rating;
 
-    public RentListItem(String id, String mName, int idImage, double mPrice, String mAddress, byte[] imageByte) {
+    public RentListItem(String id, String mName, double mPrice, String mAddress, byte[] imageByte, float rating) {
         super(id, mName);
-        this.idImage = idImage;
         this.mPrice = mPrice;
         this.mAddress = mAddress;
         this.imageByte = imageByte;
-    }
-
-    public int getIdImage() {
-        return idImage;
-    }
-
-    public void setIdImage(int idImage) {
-        this.idImage = idImage;
+        this.rating = rating;
     }
 
     public double getmPrice() {
@@ -47,5 +39,13 @@ public class RentListItem extends BaseItem {
 
     public void setImageByte(byte[] imageByte) {
         this.imageByte = imageByte;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
     }
 }

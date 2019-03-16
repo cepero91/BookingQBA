@@ -64,6 +64,9 @@ public class RentEntity {
 
     private double longitude;
 
+    @NonNull
+    private float rating;
+
     private int maxRooms;
 
     private int capability;
@@ -73,6 +76,12 @@ public class RentEntity {
     private int maxBath;
 
     private double price;
+
+    @NonNull
+    private Date created;
+
+    @NonNull
+    private Date updated;
 
     @NonNull
     private String rentMode;
@@ -86,18 +95,12 @@ public class RentEntity {
     @NonNull
     private String referenceZone;
 
-    @NonNull
-    private Date created;
-
-    @NonNull
-    private Date updated;
-
     @Ignore
     public RentEntity(@NonNull String id) {
         this.id = id;
     }
 
-    public RentEntity(String id, @NonNull String name, @NonNull String address, String slogan, @NonNull String description, @NonNull String email, @NonNull String phoneNumber, @NonNull String phoneHomeNumber, double latitude, double longitude, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, @NonNull Date created, @NonNull Date updated) {
+    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, String slogan, @NonNull String description, @NonNull String email, @NonNull String phoneNumber, @NonNull String phoneHomeNumber, double latitude, double longitude, @NonNull float rating, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull Date updated, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -108,17 +111,18 @@ public class RentEntity {
         this.phoneHomeNumber = phoneHomeNumber;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.rating = rating;
         this.maxRooms = maxRooms;
         this.capability = capability;
         this.maxBeds = maxBeds;
         this.maxBath = maxBath;
         this.price = price;
+        this.created = created;
+        this.updated = updated;
         this.rentMode = rentMode;
         this.rules = rules;
         this.municipality = municipality;
         this.referenceZone = referenceZone;
-        this.created = created;
-        this.updated = updated;
     }
 
     public String getId() {
@@ -299,5 +303,14 @@ public class RentEntity {
 
     public void setUpdated(@NonNull Date updated) {
         this.updated = updated;
+    }
+
+    @NonNull
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(@NonNull float rating) {
+        this.rating = rating;
     }
 }

@@ -18,5 +18,9 @@ public interface RentRepository {
 
     Flowable<Resource<List<RentAndGalery>>> allRent();
 
-    Flowable<Resource<List<RentAndGalery>>> allRentWithFirstImage();
+    Flowable<Resource<List<RentAndGalery>>> allRentWithFirstImage(char orderType);
+
+    Flowable<Resource<List<RentAndGalery>>> fivePopRent();
+
+    Flowable<Resource<List<RentAndGalery>>> fiveNewRent();
 }

@@ -23,6 +23,9 @@ import javax.inject.Inject;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_NEW;
+import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
+
 public class HomeViewModel extends android.arch.lifecycle.ViewModel {
 
     private ReferenceZoneRepository referenceZoneRepository;
@@ -58,13 +61,13 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     public Flowable<Resource<List<ViewModel>>> getPopRents() {
-        return rentRepository.allRent()
+        return rentRepository.fivePopRent()
                 .flatMap(this::transformPopRentEntity)
                 .subscribeOn(Schedulers.io());
     }
 
     public Flowable<Resource<List<ViewModel>>> getNewRents() {
-        return rentRepository.allRent()
+        return rentRepository.fiveNewRent()
                 .flatMap(this::transformNewRentEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -74,7 +77,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         List<RentPopItem> items = new ArrayList<>();
         if (listResource.data != null && listResource.data.size() > 0) {
             for(RentAndGalery entity: listResource.data){
-                items.add(new RentPopItem(entity.getId(),entity.getName(),entity.getGaleries().get(0).getImageByte()));
+                items.add(new RentPopItem(entity.getId(),entity.getName(),entity.getGaleries().get(0).getImageByte(),entity.getRating()));
             }
             compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(),items));
         }
@@ -89,7 +92,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         List<RentNewItem> items = new ArrayList<>();
         if (listResource.data != null && listResource.data.size() > 0) {
             for(RentAndGalery entity: listResource.data){
-                items.add(new RentNewItem(entity.getId(),entity.getName(),entity.getGaleries().get(0).getImageByte()));
+                items.add(new RentNewItem(entity.getId(),entity.getName(),entity.getGaleries().get(0).getImageByte(),entity.getRating()));
             }
             compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(),items));
         }
@@ -105,9 +108,9 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
             List<com.github.vivchar.rendererrecyclerviewadapter.ViewModel> allItems = new ArrayList<>();
             if(listResource.data!=null && listResource2.data!=null) {
                 allItems.addAll(listResource.data);
-                allItems.add(new HeaderItem("2","Lo mas popular"));
+                allItems.add(new HeaderItem(UUID.randomUUID().toString(),"Lo mas popular",ORDER_TYPE_POPULAR));
                 allItems.addAll(listResource2.data);
-                allItems.add(new HeaderItem("3","Lo mas nuevo"));
+                allItems.add(new HeaderItem(UUID.randomUUID().toString(),"Lo mas nuevo",ORDER_TYPE_NEW));
                 allItems.addAll(listResource3.data);
             }
             return Resource.success(allItems);

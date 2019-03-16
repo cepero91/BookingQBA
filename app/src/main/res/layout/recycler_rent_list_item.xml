@@ -39,8 +39,7 @@
                 android:layout_marginStart="10dp"
                 android:orientation="vertical"
                 android:paddingTop="8dp"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp"
+                android:paddingRight="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/iv_rent"
@@ -52,6 +51,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppinsbold"
                     android:text="Renta Lucky"
+                    android:paddingLeft="3dp"
                     android:textSize="16sp" />
 
                 <TextView
@@ -61,12 +61,23 @@
                     android:fontFamily="@font/poppinsregular"
                     android:maxLines="2"
                     android:ellipsize="end"
+                    android:paddingLeft="3dp"
                     android:text="Lorem ipsum dolor ipsum loren dolor" />
 
-                <include
-                    layout="@layout/layout_star_rating"
+                <com.willy.ratingbar.BaseRatingBar
+                    android:id="@+id/sr_scale_rating"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:srb_rating="4"
+                    app:srb_stepSize="0.5"
+                    app:srb_starWidth="16dp"
+                    app:srb_starHeight="16dp"
+                    app:srb_starPadding="2dp"
+                    app:srb_clickable="false"
+                    app:srb_drawableFilled="@drawable/ic_star"
+                    app:srb_drawableEmpty="@drawable/ic_star_o"/>
 
                 <TextView
                     android:id="@+id/tv_price"
@@ -75,6 +86,7 @@
                     android:text="$189"
                     android:textSize="20sp"
                     android:layout_marginTop="5dp"
+                    android:paddingLeft="3dp"
                     android:fontFamily="@font/poppinsbold"/>
 
 
