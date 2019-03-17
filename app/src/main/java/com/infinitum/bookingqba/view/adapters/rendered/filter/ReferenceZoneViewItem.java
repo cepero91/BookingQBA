@@ -1,6 +1,6 @@
-package com.infinitum.bookingqba.view.adapters.filter;
+package com.infinitum.bookingqba.view.adapters.rendered.filter;
 
-import com.infinitum.bookingqba.view.adapters.baseitem.BaseItem;
+import com.infinitum.bookingqba.view.adapters.rendered.baseitem.BaseItem;
 
 public class ReferenceZoneViewItem extends CheckableItem {
 

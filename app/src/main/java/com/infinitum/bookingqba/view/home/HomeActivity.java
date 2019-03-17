@@ -9,6 +9,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,11 +18,11 @@ import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
-import com.infinitum.bookingqba.view.adapters.baseitem.BaseItem;
-import com.infinitum.bookingqba.view.adapters.home.HeaderItem;
-import com.infinitum.bookingqba.view.adapters.home.RentNewItem;
-import com.infinitum.bookingqba.view.adapters.home.RentPopItem;
-import com.infinitum.bookingqba.view.adapters.home.RZoneItem;
+import com.infinitum.bookingqba.view.adapters.rendered.baseitem.BaseItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.HeaderItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.RentNewItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.RentPopItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.RZoneItem;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.view.filter.FilterFragment;
@@ -69,6 +70,12 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         toggle.syncState();
 
         homeBinding.navView.setNavigationItemSelectedListener(this);
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        DrawerLayout.LayoutParams params = (DrawerLayout.LayoutParams) homeBinding.navViewNotification.getLayoutParams();
+        params.width = metrics.widthPixels;
+        homeBinding.navViewNotification.setLayoutParams(params);
 
         homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
         homeBinding.drawerLayout.setViewScale(Gravity.START, 0.9f);

@@ -1,5 +1,7 @@
 package com.infinitum.bookingqba.model.local.database;
 
+import android.arch.paging.DataSource;
+import android.arch.paging.LivePagedListProvider;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -271,7 +273,6 @@ public abstract class BookingQBADao {
     }
 
 
-    @Transaction
     @Query("SELECT id,name,address,price, rating FROM Rent")
     public abstract Flowable<List<RentAndGalery>>getAllRents();
 
@@ -279,21 +280,20 @@ public abstract class BookingQBADao {
      * CAMBIAR ESTE METODO PARA QUE SOLO DEVUELVA LA PRIMERA IMAGEN
      * @return
      */
-    @Transaction
     @Query("SELECT id,name,address,price,rating FROM Rent ORDER BY rating DESC LIMIT 5")
     public abstract Flowable<List<RentAndGalery>>getFivePopRents();
 
-    @Transaction
     @Query("SELECT id,name,address,price,rating FROM Rent ORDER BY created DESC LIMIT 5")
     public abstract Flowable<List<RentAndGalery>>getFiveNewRents();
 
-    @Transaction
     @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.rating DESC")
     public abstract Flowable<List<RentAndGalery>>getAllPopRent();
 
-    @Transaction
     @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.created DESC")
     public abstract Flowable<List<RentAndGalery>>getAllNewRent();
+
+    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.created DESC")
+    public abstract DataSource.Factory<Integer, RentAndGalery> rentAllNewRentPaged();
 
     //------------------------- MODOS DE RENTA ---------------------------//
 

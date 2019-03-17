@@ -1,5 +1,7 @@
 package com.infinitum.bookingqba.model.repository.rent;
 
+import android.arch.paging.DataSource;
+
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -140,5 +143,10 @@ public class RentRepoImpl implements RentRepository {
                 .observeOn(Schedulers.io())
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public DataSource.Factory<Integer,RentAndGalery> getRentPaged() {
+        return qbaDao.rentAllNewRentPaged();
     }
 }

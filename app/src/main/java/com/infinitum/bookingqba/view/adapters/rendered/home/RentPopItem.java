@@ -1,7 +1,6 @@
-package com.infinitum.bookingqba.view.adapters.home;
+package com.infinitum.bookingqba.view.adapters.rendered.home;
 
-import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
-import com.infinitum.bookingqba.view.adapters.baseitem.BaseItem;
+import com.infinitum.bookingqba.view.adapters.rendered.baseitem.BaseItem;
 
 public class RentPopItem extends BaseItem {
 

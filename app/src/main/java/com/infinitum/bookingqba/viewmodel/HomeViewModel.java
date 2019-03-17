@@ -8,11 +8,11 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.repository.province.ProvinceRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
-import com.infinitum.bookingqba.view.adapters.baseitem.RecyclerViewItem;
-import com.infinitum.bookingqba.view.adapters.home.HeaderItem;
-import com.infinitum.bookingqba.view.adapters.home.RentNewItem;
-import com.infinitum.bookingqba.view.adapters.home.RentPopItem;
-import com.infinitum.bookingqba.view.adapters.home.RZoneItem;
+import com.infinitum.bookingqba.view.adapters.rendered.baseitem.RecyclerViewItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.HeaderItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.RentNewItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.RentPopItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.RZoneItem;
 
 import java.util.ArrayList;
 import java.util.List;

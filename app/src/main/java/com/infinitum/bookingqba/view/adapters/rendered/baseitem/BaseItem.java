@@ -1,4 +1,4 @@
-package com.infinitum.bookingqba.view.adapters.baseitem;
+package com.infinitum.bookingqba.view.adapters.rendered.baseitem;
 
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 

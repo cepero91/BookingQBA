@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,15 +31,14 @@ import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentHomeBinding;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.util.GlideApp;
-import com.infinitum.bookingqba.view.adapters.baseitem.RecyclerViewItem;
-import com.infinitum.bookingqba.view.adapters.home.HeaderItem;
-import com.infinitum.bookingqba.view.adapters.home.RentNewItem;
-import com.infinitum.bookingqba.view.adapters.home.RentPopItem;
-import com.infinitum.bookingqba.view.adapters.home.RZoneItem;
+import com.infinitum.bookingqba.view.adapters.rendered.baseitem.RecyclerViewItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.HeaderItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.RentNewItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.RentPopItem;
+import com.infinitum.bookingqba.view.adapters.rendered.home.RZoneItem;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.HomeViewModel;
-import com.mikhaellopez.circularimageview.CircularImageView;
 import com.willy.ratingbar.BaseRatingBar;
 
 import java.lang.reflect.Type;
@@ -97,13 +97,7 @@ public class HomeFragment extends BaseNavigationFragment {
         fragmentHomeBinding.setIsLoading(true);
         fragmentHomeBinding.slShimmerHome.startShimmer();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                testingRecycleView();
-            }
-        },1000);
-
+        testingRecycleView();
 
 
     }
@@ -229,6 +223,7 @@ public class HomeFragment extends BaseNavigationFragment {
 
 
     public void testingRecycleView() {
+        ViewCompat.setNestedScrollingEnabled(fragmentHomeBinding.recyclerView,false);
         fragmentHomeBinding.recyclerView.setLayoutManager(setupLayoutManager());
         fragmentHomeBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(2, 0));
         loadData();

@@ -1,6 +1,6 @@
-package com.infinitum.bookingqba.view.adapters.home;
+package com.infinitum.bookingqba.view.adapters.rendered.home;
 
-import com.infinitum.bookingqba.view.adapters.baseitem.BaseItem;
+import com.infinitum.bookingqba.view.adapters.rendered.baseitem.BaseItem;
 
 public class RentNewItem extends BaseItem {
 

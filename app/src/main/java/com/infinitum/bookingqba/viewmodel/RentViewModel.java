@@ -1,8 +1,13 @@
 package com.infinitum.bookingqba.viewmodel;
 
 
+import android.arch.core.util.Function;
+import android.arch.lifecycle.LiveData;
+import android.arch.paging.DataSource;
+import android.arch.paging.LivePagedListBuilder;
+import android.arch.paging.PagedList;
+
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
-import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
@@ -10,10 +15,10 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
-import com.infinitum.bookingqba.view.adapters.filter.CheckableItem;
-import com.infinitum.bookingqba.view.adapters.filter.ReferenceZoneViewItem;
-import com.infinitum.bookingqba.view.adapters.filter.AmenitieViewItem;
-import com.infinitum.bookingqba.view.adapters.filter.StarViewItem;
+import com.infinitum.bookingqba.view.adapters.rendered.filter.CheckableItem;
+import com.infinitum.bookingqba.view.adapters.rendered.filter.ReferenceZoneViewItem;
+import com.infinitum.bookingqba.view.adapters.rendered.filter.AmenitieViewItem;
+import com.infinitum.bookingqba.view.adapters.rendered.filter.StarViewItem;
 import com.infinitum.bookingqba.view.adapters.rent.RentListItem;
 
 import java.util.ArrayList;
@@ -36,6 +41,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private RentRepository rentRepository;
     private ReferenceZoneRepository rzoneRepository;
     private Map<String, List<ViewModel>> filterMap;
+    private LiveData<PagedList<RentListItem>> ldRentsList;
 
     @Inject
     public RentViewModel(AmenitiesRepository amenitiesRepository, RentRepository rentRepository, ReferenceZoneRepository rzoneRepository) {
@@ -43,6 +49,22 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         this.rentRepository = rentRepository;
         this.rzoneRepository = rzoneRepository;
         filterMap = new HashMap<>();
+    }
+
+    public LiveData<PagedList<RentListItem>> getLdRentsList(){
+        DataSource.Factory<Integer,RentListItem> dataSource = rentRepository.getRentPaged().mapByPage(new Function<List<RentAndGalery>, List<RentListItem>>() {
+            @Override
+            public List<RentListItem> apply(List<RentAndGalery> input) {
+                List<RentListItem> itemsUi = new ArrayList<>();
+                for(RentAndGalery entity: input){
+                    itemsUi.add(new RentListItem(entity.getId(),entity.getName(),entity.getPrice(),entity.getAddress(),entity.getGaleries().get(0).getImageByte(),entity.getRating()));
+                }
+                return itemsUi;
+            }
+        });
+        LivePagedListBuilder<Integer, RentListItem> pagedListBuilder= new LivePagedListBuilder<>(dataSource, 10);
+        ldRentsList = pagedListBuilder.build();
+        return ldRentsList;
     }
 
     public Flowable<Map<String, List<ViewModel>>> getMapFilterItems() {

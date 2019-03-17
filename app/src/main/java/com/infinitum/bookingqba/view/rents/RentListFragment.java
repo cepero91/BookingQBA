@@ -1,7 +1,9 @@
 package com.infinitum.bookingqba.view.rents;
 
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.arch.paging.PagedList;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,6 +26,7 @@ import com.infinitum.bookingqba.databinding.FragmentRentListBinding;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.rent.RentListItem;
+import com.infinitum.bookingqba.view.adapters.rent.RentPagerAdapter;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
@@ -56,7 +59,8 @@ public class RentListFragment extends BaseNavigationFragment {
     private char mOrderType = ORDER_TYPE_POPULAR;
 
     private RentViewModel rentViewModel;
-    private Disposable disposable;
+
+    private RentPagerAdapter pagerAdapter;
 
 
     public RentListFragment() {
@@ -102,7 +106,9 @@ public class RentListFragment extends BaseNavigationFragment {
         rentListBinding.setIsLoading(true);
         rentListBinding.slShimmer.startShimmer();
 
-        loadData();
+//        loadData();
+
+        loadDataPag();
 
 //        initRecycleView();
     }
@@ -114,14 +120,33 @@ public class RentListFragment extends BaseNavigationFragment {
         super.onPrepareOptionsMenu(menu);
     }
 
+    private void loadDataPag() {
+
+        pagerAdapter = new RentPagerAdapter(getActivity().getLayoutInflater());
+
+        rentViewModel.getLdRentsList().observe(this, new Observer<PagedList<RentListItem>>() {
+            @Override
+            public void onChanged(@Nullable PagedList<RentListItem> rentListItems) {
+                pagerAdapter.submitList(rentListItems);
+                rentListBinding.recyclerView.setAdapter(pagerAdapter);
+                rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
+                rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(0, 5));
+                rentListBinding.slShimmer.stopShimmer();
+                rentListBinding.setIsLoading(false);
+            }
+        });
+
+    }
+
+
     private void loadData() {
-        disposable = rentViewModel.getRents(mOrderType)
+        Disposable disposable = rentViewModel.getRents(mOrderType)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new ResourceSubscriber<Resource<List<RentListItem>>>() {
                     @Override
                     public void onNext(Resource<List<RentListItem>> listResource) {
-                        if(listResource.data!=null){
+                        if (listResource.data != null) {
                             setItemsAdapter(listResource.data);
                         }
                     }

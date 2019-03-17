@@ -1,4 +1,4 @@
-package com.infinitum.bookingqba.view.adapters.filter;
+package com.infinitum.bookingqba.view.adapters.rendered.filter;
 
 public class StarViewItem extends CheckableItem{
 
