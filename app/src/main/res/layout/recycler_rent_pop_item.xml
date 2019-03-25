@@ -59,4 +59,17 @@
         app:layout_constraintBottom_toTopOf="@+id/sr_scale_rating"
         app:layout_constraintStart_toStartOf="@+id/sr_scale_rating" />
 
+    <TextView
+        android:id="@+id/tv_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/shape_rent_pop_price_square"
+        android:fontFamily="@font/poppinsbold"
+        android:includeFontPadding="false"
+        android:textColor="@color/White_100"
+        android:text="Precio"
+        app:layout_constraintEnd_toEndOf="@+id/fl_iv_rent"
+        app:layout_constraintTop_toTopOf="@+id/fl_iv_rent" />
+
 </android.support.constraint.ConstraintLayout>

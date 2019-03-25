@@ -19,19 +19,75 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="$PROJECT_DIR$/../FONT AWESOME/110912-font-awesome/png/filter-tool-black-shape.png" />
-                                      <entry key="outputName" value="ic_action_filter" />
-                                      <entry key="theme" value="HOLO_DARK" />
+                                      <entry key="imageAsset" value="$PROJECT_DIR$/../FONT AWESOME/110912-font-awesome/png/sign-out-option.png" />
+                                      <entry key="outputName" value="ic_action_sign_out" />
+                                      <entry key="theme" value="CUSTOM" />
+                                      <entry key="themeColor" value="ff5722" />
                                     </map>
                                   </option>
                                 </PersistentState>
                               </value>
                             </entry>
-                          </map>
-                        </option>
-                        <option name="values">
-                          <map>
-                            <entry key="outputIconType" value="ACTIONBAR" />
+                            <entry key="launcher">
+                              <value>
+                                <PersistentState>
+                                  <option name="children">
+                                    <map>
+                                      <entry key="foregroundImage">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="scalingPercent" value="80" />
+                                                <entry key="trimmed" value="true" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                    </map>
+                                  </option>
+                                  <option name="values">
+                                    <map>
+                                      <entry key="backgroundAssetType" value="COLOR" />
+                                      <entry key="backgroundColor" value="ffffff" />
+                                      <entry key="foregroundImage" value="/Volumes/MAMÁ/LOGO/4x/pArtboard 1 copy 6xxxhdpi.png" />
+                                      <entry key="legacyIconShape" value="CIRCLE" />
+                                      <entry key="webIconShape" value="CIRCLE" />
+                                    </map>
+                                  </option>
+                                </PersistentState>
+                              </value>
+                            </entry>
+                            <entry key="launcherLegacy">
+                              <value>
+                                <PersistentState>
+                                  <option name="children">
+                                    <map>
+                                      <entry key="image">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="paddingPercent" value="10" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                    </map>
+                                  </option>
+                                  <option name="values">
+                                    <map>
+                                      <entry key="assetType" value="IMAGE" />
+                                      <entry key="cropped" value="true" />
+                                      <entry key="iconShape" value="NONE" />
+                                      <entry key="imageAsset" value="/Volumes/MAMÁ/LOGO/4x/pArtboard 1 copy 6xxxhdpi.png" />
+                                    </map>
+                                  </option>
+                                </PersistentState>
+                              </value>
+                            </entry>
                           </map>
                         </option>
                       </PersistentState>
@@ -68,8 +124,11 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_star_o" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/Font-Awesome-SVG-PNG-master/Font-Awesome-SVG-PNG-master/black/svg/star-o.svg" />
+                            <entry key="height" value="512" />
+                            <entry key="outputName" value="ic_dot_circle" />
+                            <entry key="overrideSize" value="true" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/fontawesome-free-5.7.2-desktop/svgs/solid/dot-circle.svg" />
+                            <entry key="width" value="512" />
                           </map>
                         </option>
                       </PersistentState>

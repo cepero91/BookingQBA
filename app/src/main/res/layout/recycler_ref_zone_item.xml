@@ -27,7 +27,7 @@
                 android:layout_height="@dimen/home_ref_zone_iv_size"
                 android:scaleType="centerCrop"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_nature" />
+                />
 
 
             <android.support.v7.widget.AppCompatTextView

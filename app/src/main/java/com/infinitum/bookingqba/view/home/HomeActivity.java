@@ -1,5 +1,7 @@
 package com.infinitum.bookingqba.view.home;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -18,14 +20,19 @@ import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
+import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.view.adapters.rendered.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.rendered.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.rendered.home.RentNewItem;
 import com.infinitum.bookingqba.view.adapters.rendered.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.rendered.home.RZoneItem;
+import com.infinitum.bookingqba.view.adapters.rent.RentListItem;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.view.filter.FilterFragment;
+import com.infinitum.bookingqba.view.interaction.LoginInteraction;
+import com.infinitum.bookingqba.view.profile.LoginFragment;
+import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 
 import java.util.List;
@@ -39,9 +46,15 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
 
+import static com.infinitum.bookingqba.util.Constants.USER_ID;
+import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
+import static com.infinitum.bookingqba.util.Constants.USER_NAME;
+import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
+import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
+
 public class HomeActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector,
         FragmentNavInteraction, NavigationView.OnNavigationItemSelectedListener,
-        FilterInteraction {
+        FilterInteraction, LoginInteraction {
 
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
     private ActivityHomeBinding homeBinding;
@@ -52,6 +65,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentDispatchingAndroidInjector;
+
+    @Inject
+    SharedPreferences sharedPreferences;
 
 
     @Override
@@ -64,11 +80,18 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
         initializeFragment(savedInstanceState);
 
+        initDrawerLayout();
+
+
+    }
+
+    private void initDrawerLayout() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, homeBinding.drawerLayout, homeBinding.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         homeBinding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        homeBinding.navView.getMenu().getItem(0).setChecked(true);
         homeBinding.navView.setNavigationItemSelectedListener(this);
 
         DisplayMetrics metrics = new DisplayMetrics();
@@ -81,8 +104,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         homeBinding.drawerLayout.setViewScale(Gravity.START, 0.9f);
         homeBinding.drawerLayout.setRadius(Gravity.START, 35);
         homeBinding.drawerLayout.setViewElevation(Gravity.START, 20);
-
-
     }
 
     private void setupToolbar() {
@@ -99,7 +120,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         getSupportFragmentManager().putFragment(outState, STATE_ACTIVE_FRAGMENT, mFragment);
         super.onSaveInstanceState(outState);
     }
-
 
     private void initializeFragment(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
@@ -118,16 +138,21 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     @Override
     public void onItemClick(View view, BaseItem baseItem) {
         if (baseItem instanceof HeaderItem) {
-            mFragment = RentListFragment.newInstance("", "",((HeaderItem)baseItem).getOrderType());
+            mFragment = RentListFragment.newInstance("", "", ((HeaderItem) baseItem).getOrderType());
             fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.frame_container,
                     mFragment).commit();
+            homeBinding.navView.getMenu().getItem(1).setChecked(true);
         } else if (baseItem instanceof RZoneItem) {
             Toast.makeText(this, baseItem.getmName(), Toast.LENGTH_SHORT).show();
         } else if (baseItem instanceof RentPopItem) {
             Toast.makeText(this, baseItem.getmName(), Toast.LENGTH_SHORT).show();
         } else if (baseItem instanceof RentNewItem) {
             Toast.makeText(this, baseItem.getmName(), Toast.LENGTH_SHORT).show();
+        } else if (baseItem instanceof RentListItem) {
+            Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
+            intent.putExtra("uuid",baseItem.getId());
+            startActivity(intent);
         }
     }
 
@@ -148,7 +173,16 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                     filterFragment = FilterFragment.newInstance();
                 }
                 fragmentManager.beginTransaction().replace(R.id.filter_container, filterFragment).commit();
-                homeBinding.drawerLayout.openDrawer(Gravity.END);
+                homeBinding.drawerLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        homeBinding.drawerLayout.openDrawer(Gravity.END);
+                    }
+                }, 200);
+                break;
+            case R.id.action_login:
+                LoginFragment lf = LoginFragment.newInstance();
+                lf.show(fragmentManager, "LoginFragment");
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -157,6 +191,27 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        int id = menuItem.getItemId();
+        if (id == R.id.nav_home) {
+            mFragment = HomeFragment.newInstance();
+        } else if (id == R.id.nav_list) {
+            mFragment = RentListFragment.newInstance("", "", ' ');
+        } else if (id == R.id.nav_profile) {
+            mFragment = LoginFragment.newInstance();
+        }
+        if (mFragment != null) {
+            // Highlight the selected item has been done by NavigationView
+            menuItem.setChecked(true);
+            // Close drawer
+            homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
+            homeBinding.drawerLayout.postDelayed(() -> {
+                // Inflate the new Fragment with the new RecyclerView and a new Adapter
+                fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.frame_container, mFragment).commit();
+            }, 300);
+
+            return true;
+        }
         return false;
     }
 
@@ -170,13 +225,12 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             homeBinding.drawerLayout.closeDrawer(GravityCompat.END);
             return;
         }
-        if(mFragment instanceof RentListFragment){
-            mFragment = HomeFragment.newInstance();
-            fragmentManager.beginTransaction().replace(R.id.frame_container,
-                    mFragment).commit();
+        if (mFragment instanceof RentListFragment) {
+            MenuItem menuItem = homeBinding.navView.getMenu().findItem(R.id.nav_home);
+            onNavigationItemSelected(menuItem);
             return;
         }
-        if(mFragment instanceof HomeFragment){
+        if (mFragment instanceof HomeFragment) {
             super.onBackPressed();
         }
     }
@@ -190,6 +244,23 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     @Override
     public void onFilterClick(Map<String, List<String>> map) {
+
+    }
+
+    @Override
+    public void onLogin(User user) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(USER_IS_AUTH,true);
+        editor.putString(USER_ID,user.getUserId());
+        editor.putString(USER_NAME,user.getUserName());
+        editor.putString(USER_TOKEN,user.getToken());
+        editor.putInt(USER_RENTS,user.getMaxRents());
+        editor.apply();
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onLogout() {
 
     }
 }

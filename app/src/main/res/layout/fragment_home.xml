@@ -9,157 +9,93 @@
             type="Boolean" />
     </data>
 
-    <android.support.v4.widget.NestedScrollView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:overScrollMode="never"
-        android:paddingTop="10dp">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            android:paddingTop="10dp"
+            android:visibility="visible">
 
-            <android.support.v7.widget.CardView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
-                android:layout_marginTop="5dp"
-                app:cardCornerRadius="25dp"
-                app:cardElevation="8dp"
-                app:cardPreventCornerOverlap="true">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:layout_marginTop="5dp"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="8dp"
+                    app:cardPreventCornerOverlap="true">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp">
+
+                        <com.jaredrummler.materialspinner.MaterialSpinner
+                            android:id="@+id/spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:background="@drawable/shape_oval_spinner"
+                            android:textAppearance="@style/MySpinnerTextStyle"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            app:ms_hint="A que Provincia viaja"
+                            app:ms_dropdown_max_height="@dimen/mat_spinner_drop_height"
+                            app:ms_text_color="@color/material_color_grey_500"
+                            app:ms_hint_color="@color/material_color_grey_300"
+                            />
+
+                    </FrameLayout>
+
+                </android.support.v7.widget.CardView>
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start|center"
-                        android:layout_marginLeft="10dp"
-                        android:text="A que provincia se dirige"
-                        android:textColor="@color/material_color_blue_grey_200" />
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end|center"
-                        android:layout_marginRight="10dp"
-                        android:tint="@color/colorPrimaryDark"
-                        app:srcCompat="@drawable/ic_search_24dp" />
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:paddingBottom="15dp"
+                        android:paddingTop="10dp"
+                        app:layoutManager="android.support.v7.widget.GridLayoutManager"
+                        app:visibleGone="@{!safeUnbox(isLoading)}"
+                        />
 
                 </FrameLayout>
 
-            </android.support.v7.widget.CardView>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:paddingBottom="15dp"
-                    android:paddingTop="10dp"
-                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                    app:visibleGone="@{!isLoading}" />
-
-                <com.facebook.shimmer.ShimmerFrameLayout
-                    android:id="@+id/sl_shimmer_home"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="20dp"
-                    android:paddingTop="10dp"
-                    app:visibleGone="@{isLoading}">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <include layout="@layout/recycler_ref_zone_home_shimmer" />
-
-                            <include layout="@layout/recycler_ref_zone_home_shimmer" />
-
-                            <include layout="@layout/recycler_ref_zone_home_shimmer" />
-
-                        </LinearLayout>
-
-                        <FrameLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="25dp"
-                            android:layout_marginTop="25dp"
-                            android:layout_marginRight="10dp"
-                            android:layout_gravity="start"
-                            >
-
-                            <ImageView
-                                android:layout_width="150dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="start"
-                                android:background="@color/material_color_grey_200" />
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
 
 
-                        </FrameLayout>
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie_loading"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            app:lottie_autoPlay="true"
+            app:lottie_colorFilter="@color/colorPrimaryDark"
+            app:lottie_enableMergePathsForKitKatAndAbove="true"
+            app:lottie_fileName="lottie/circle_loader.json"
+            app:lottie_loop="true"
+            app:visibleGone="@{safeUnbox(isLoading)}" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="horizontal">
+    </FrameLayout>
 
-                            <include layout="@layout/recycler_rent_pop_home_shimmer" />
 
-                        </LinearLayout>
-
-                        <FrameLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="25dp"
-                            android:layout_marginTop="25dp"
-                            android:layout_marginRight="10dp"
-                            >
-
-                            <ImageView
-                                android:layout_width="150dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="start"
-                                android:background="@color/material_color_grey_200" />
-
-                        </FrameLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <include layout="@layout/recycler_rent_new_home_shimmer" />
-
-                            <include layout="@layout/recycler_rent_new_home_shimmer" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </com.facebook.shimmer.ShimmerFrameLayout>
-
-            </FrameLayout>
-
-        </LinearLayout>
-
-    </android.support.v4.widget.NestedScrollView>
 </layout>

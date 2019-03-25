@@ -7,6 +7,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Transaction;
+import android.arch.persistence.room.TypeConverters;
 import android.arch.persistence.room.Update;
 
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
@@ -24,6 +25,8 @@ import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
+import com.infinitum.bookingqba.model.local.pojo.RentDetail;
+import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
 
 import java.util.List;
 
@@ -273,6 +276,7 @@ public abstract class BookingQBADao {
     }
 
 
+    @Transaction
     @Query("SELECT id,name,address,price, rating FROM Rent")
     public abstract Flowable<List<RentAndGalery>>getAllRents();
 
@@ -280,20 +284,30 @@ public abstract class BookingQBADao {
      * CAMBIAR ESTE METODO PARA QUE SOLO DEVUELVA LA PRIMERA IMAGEN
      * @return
      */
+    @Transaction
     @Query("SELECT id,name,address,price,rating FROM Rent ORDER BY rating DESC LIMIT 5")
     public abstract Flowable<List<RentAndGalery>>getFivePopRents();
 
+    @Transaction
     @Query("SELECT id,name,address,price,rating FROM Rent ORDER BY created DESC LIMIT 5")
     public abstract Flowable<List<RentAndGalery>>getFiveNewRents();
 
+    @Transaction
     @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.rating DESC")
     public abstract Flowable<List<RentAndGalery>>getAllPopRent();
 
+    @Transaction
     @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.created DESC")
     public abstract Flowable<List<RentAndGalery>>getAllNewRent();
 
+    @Transaction
     @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.created DESC")
     public abstract DataSource.Factory<Integer, RentAndGalery> rentAllNewRentPaged();
+
+    @Transaction
+    @TypeConverters(DateTypeConverter.class)
+    @Query("SELECT * FROM Rent WHERE id=:uuid")
+    public abstract Flowable<RentDetail>getRentDetailById(String uuid);
 
     //------------------------- MODOS DE RENTA ---------------------------//
 

@@ -6,11 +6,19 @@ public class RentPopItem extends BaseItem {
 
     private byte[] mImage;
     private float rating;
+    private double price;
 
     public RentPopItem(String id, String mName, byte[] mImage, float rating) {
         super(id, mName);
         this.mImage = mImage;
         this.rating = rating;
+    }
+
+    public RentPopItem(String id, String mName, byte[] mImage, float rating, double price) {
+        super(id, mName);
+        this.mImage = mImage;
+        this.rating = rating;
+        this.price = price;
     }
 
     public byte[] getmImage() {
@@ -27,5 +35,13 @@ public class RentPopItem extends BaseItem {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

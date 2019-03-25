@@ -27,12 +27,17 @@ import com.infinitum.bookingqba.model.repository.rentmode.RentModeRepoImpl;
 import com.infinitum.bookingqba.model.repository.rentmode.RentModeRepository;
 import com.infinitum.bookingqba.model.repository.rentpoi.RentPoiRepoImpl;
 import com.infinitum.bookingqba.model.repository.rentpoi.RentPoiRepository;
+import com.infinitum.bookingqba.model.repository.user.UserRepoImp;
+import com.infinitum.bookingqba.model.repository.user.UserRepository;
 
 import dagger.Binds;
 import dagger.Module;
 
 @Module
 public interface RepositoryModule {
+
+    @Binds
+    UserRepository userRepository(UserRepoImp userRepo);
 
     @Binds
     ProvinceRepository provinceRepository(ProvinceRepoImpl provinceRepo);

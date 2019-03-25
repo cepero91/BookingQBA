@@ -23,7 +23,7 @@ import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 @Database(entities = {ProvinceEntity.class, MunicipalityEntity.class, AmenitiesEntity.class, DrawTypeEntity.class,
         PoiTypeEntity.class, PoiEntity.class, ChangeRateEntity.class, RentModeEntity.class,
         ReferenceZoneEntity.class, RentEntity.class, GalerieEntity.class, OfferEntity.class,
-        RentAmenitiesEntity.class, RentPoiEntity.class, RentDrawTypeEntity.class}, version = 1)
+        RentAmenitiesEntity.class, RentPoiEntity.class, RentDrawTypeEntity.class}, version = 1, exportSchema = false)
 public abstract class BookingQBADatabase extends RoomDatabase {
 
     public abstract BookingQBADao dao();

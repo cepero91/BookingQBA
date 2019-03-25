@@ -96,9 +96,6 @@ public class FilterFragment extends Fragment {
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
 
         filterBinding.setIsLoading(true);
-        filterBinding.slShimmerRzone.startShimmer();
-        filterBinding.slShimmerAmenities.startShimmer();
-        filterBinding.slShimmerStar.startShimmer();
 
         testingFilter();
 
@@ -115,17 +112,6 @@ public class FilterFragment extends Fragment {
         }
     }
 
-
-    public void addAmenitiesView(List<AmenitiesEntity> amenitiesEntities) {
-        TextView textView;
-        for (AmenitiesEntity entity : amenitiesEntities) {
-            textView = new TextView(getActivity());
-            textView.setText(entity.getName());
-            textView.setTag(entity.getId());
-            textView.setBackgroundResource(R.drawable.shape_btn_ship);
-//            filterBinding.fbAmenities.addView(textView);
-        }
-    }
 
 
     @Override
@@ -153,9 +139,6 @@ public class FilterFragment extends Fragment {
                             setStarAdapter(mapResourse.get("Star"));
                         }
                         filterBinding.setIsLoading(false);
-                        filterBinding.slShimmerRzone.stopShimmer();
-                        filterBinding.slShimmerAmenities.stopShimmer();
-                        filterBinding.slShimmerStar.stopShimmer();
                     }
 
                     @Override

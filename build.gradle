@@ -2,6 +2,7 @@
 ext {
     supportLibVersion = "28.0.0"
     archComponentsVersion = "1.1.1"
+    paging = "1.0.0"
     daggerVersion = "2.16"
     roomVersion = "1.1.1"
     acraVersion = '5.1.3'

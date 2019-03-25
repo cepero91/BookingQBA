@@ -50,7 +50,7 @@ dependencies {
 
     //Room
     implementation "android.arch.persistence.room:runtime:${roomVersion}"
-    implementation "android.arch.paging:runtime:1.0.0"
+    implementation "android.arch.paging:runtime:${paging}"
     annotationProcessor "android.arch.persistence.room:compiler:${roomVersion}"
     implementation "android.arch.persistence.room:rxjava2:${roomVersion}"
 
@@ -99,10 +99,20 @@ dependencies {
     //Adapter
     implementation 'com.github.vivchar:RendererRecyclerViewAdapter:2.6.0'
 
+    //Lottie animations
     implementation "com.airbnb.android:lottie:$lottieVersion"
-    implementation 'com.github.florent37:shapeofview:1.2.0'
-    implementation 'com.facebook.shimmer:shimmer:0.4.0'
+
+    //Material spinner si da bateo lo del height probar con 1.0.8
+    implementation "com.jaredrummler:material-spinner:1.2.5"
+
+    //Sequence Animation
     implementation 'com.fujiyuu75:sequent:0.2.1'
+
+    //Shape View
+    implementation 'com.github.florent37:shapeofview:1.2.0'
+
+    //Shimmer
+    implementation 'com.facebook.shimmer:shimmer:0.4.0'
 
     //Panels
     implementation 'com.infideap.drawerbehavior:drawer-behavior:0.1.5'
@@ -113,6 +123,8 @@ dependencies {
     //Flexbox
     implementation "com.google.android:flexbox:$flexbox"
 
+    //FancyButton
+    implementation 'com.github.medyo:fancybuttons:1.9.0'
 
     //Para revisar
     implementation 'com.github.iammert:ScalingLayout:1.2.1'

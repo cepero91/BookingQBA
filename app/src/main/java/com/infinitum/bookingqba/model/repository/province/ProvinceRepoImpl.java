@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.province;
 
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -12,6 +13,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableSource;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
@@ -75,5 +77,10 @@ public class ProvinceRepoImpl implements ProvinceRepository {
     @Override
     public Completable insertProvinces(List<ProvinceEntity> provinceEntityList) {
         return Completable.fromAction(() -> qbaDao.upsertProvince(provinceEntityList)).subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Flowable<Resource<List<ProvinceEntity>>> getAllProvinces() {
+        return qbaDao.getAllProvinces().map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
     }
 }

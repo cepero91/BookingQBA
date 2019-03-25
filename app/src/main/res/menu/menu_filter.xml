@@ -3,9 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_login"
+        android:icon="@drawable/ic_sign_in"
+        android:title="Login"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_logout"
+        android:icon="@drawable/ic_sign_out"
+        android:visible="false"
+        android:title="Logout"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_filter_panel"
-        android:orderInCategory="100"
-        android:icon="@drawable/ic_action_filter"
+        android:icon="@drawable/ic_sliders"
         android:title="Filter"
         app:showAsAction="always" />
 

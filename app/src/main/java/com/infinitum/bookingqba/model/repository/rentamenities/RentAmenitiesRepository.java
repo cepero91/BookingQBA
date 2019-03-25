@@ -12,6 +12,6 @@ public interface RentAmenitiesRepository {
 
     Single<List<RentAmenitiesEntity>> fetchRemoteAndTransform();
 
-    Completable insertRentAmenities(List<RentAmenitiesEntity> rentAmenitiesEntityList);
+    Completable insert(List<RentAmenitiesEntity> rentAmenitiesEntityList);
 
 }

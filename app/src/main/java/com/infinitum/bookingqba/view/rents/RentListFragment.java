@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
@@ -91,7 +92,7 @@ public class RentListFragment extends BaseNavigationFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rentListBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_rent_list, container, false);
+        rentListBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_rent_list, container, false);
         return rentListBinding.getRoot();
     }
 
@@ -101,10 +102,10 @@ public class RentListFragment extends BaseNavigationFragment {
 
         setHasOptionsMenu(true);
 
-        rentViewModel = ViewModelProviders.of(this,viewModelFactory).get(RentViewModel.class);
+        rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
 
         rentListBinding.setIsLoading(true);
-        rentListBinding.slShimmer.startShimmer();
+
 
 //        loadData();
 
@@ -122,7 +123,7 @@ public class RentListFragment extends BaseNavigationFragment {
 
     private void loadDataPag() {
 
-        pagerAdapter = new RentPagerAdapter(getActivity().getLayoutInflater());
+        pagerAdapter = new RentPagerAdapter(getActivity().getLayoutInflater(),mListener);
 
         rentViewModel.getLdRentsList().observe(this, new Observer<PagedList<RentListItem>>() {
             @Override
@@ -131,7 +132,6 @@ public class RentListFragment extends BaseNavigationFragment {
                 rentListBinding.recyclerView.setAdapter(pagerAdapter);
                 rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
                 rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(0, 5));
-                rentListBinding.slShimmer.stopShimmer();
                 rentListBinding.setIsLoading(false);
             }
         });
@@ -179,13 +179,10 @@ public class RentListFragment extends BaseNavigationFragment {
         RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
         recyclerViewAdapter.registerRenderer(getRentListItem(R.layout.recycler_rent_list_item));
         recyclerViewAdapter.setItems(rentList);
+        rentListBinding.setIsLoading(false);
         rentListBinding.recyclerView.setAdapter(recyclerViewAdapter);
         rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
         rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(0, 5));
-
-        rentListBinding.slShimmer.stopShimmer();
-        rentListBinding.setIsLoading(false);
-
     }
 
     public RecyclerView.LayoutManager setupLayoutManager() {
@@ -200,11 +197,20 @@ public class RentListFragment extends BaseNavigationFragment {
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
                         .find(R.id.tv_address, (ViewProvider<TextView>) view -> view.setText(model.getmAddress()))
-                        .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
+                        .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> {
+                            view.setRating(model.getRating());
+                            view.setEnabled(false);
+                            view.setClickable(false);
+                            view.setClearRatingEnabled(false);
+                        })
                         .find(R.id.iv_rent, (ViewProvider<ImageView>) view ->
                                 GlideApp.with(getView()).load(model.getImageByte()).placeholder(R.drawable.placeholder).into(view))
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.valueOf(String.valueOf(model.getmPrice()))))
-                        .setOnClickListener(R.id.cl_rent_item_content, (v -> mListener.onItemClick(v,model)))
+                        .setOnClickListener(R.id.cv_content_rent_item, (v ->
+                        {
+                            Toast.makeText(getActivity(), "Click", Toast.LENGTH_SHORT).show();
+                            mListener.onItemClick(v, model);
+                        }))
         );
     }
 

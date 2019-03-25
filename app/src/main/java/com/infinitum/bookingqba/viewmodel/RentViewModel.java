@@ -12,6 +12,7 @@ import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
+import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
@@ -152,14 +153,18 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     public void resetAllFilterItem() {
         Observable.fromIterable(filterMap.values())
-                .flatMap(this::interateViewItem)
+                .flatMap(this::iterateViewItem)
                 .doOnNext(viewModel -> ((CheckableItem)viewModel).setChecked(false))
                 .subscribeOn(Schedulers.io())
                 .subscribe();
     }
 
-    private Observable<ViewModel> interateViewItem(List<ViewModel> viewModels) {
+    private Observable<ViewModel> iterateViewItem(List<ViewModel> viewModels) {
         return Observable.fromIterable(viewModels);
+    }
+
+    public Flowable<Resource<RentDetail>> getRentDetailById(String uuid){
+        return rentRepository.getRentDetailById(uuid).subscribeOn(Schedulers.io());
     }
 
 

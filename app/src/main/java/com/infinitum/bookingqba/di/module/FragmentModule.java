@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.di.module;
 import com.infinitum.bookingqba.view.filter.FilterFragment;
 import com.infinitum.bookingqba.view.home.HomeFragment;
 import com.infinitum.bookingqba.view.base.BasePageFragment;
+import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.tutorial.PageFourFragment;
 
@@ -28,6 +29,9 @@ public interface FragmentModule {
 
     @ContributesAndroidInjector
     FilterFragment bindFilterFragment();
+
+    @ContributesAndroidInjector
+    LoginFragment bindLoginFragment();
 
 
 

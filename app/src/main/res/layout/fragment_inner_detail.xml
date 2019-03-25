@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="description"
+            type="String"/>
+        <variable
+            name="adapter"
+            type="com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter"/>
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.rents.InnerDetailFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/poppinsbold"
+                android:text="Descripcion" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/poppinsregular"
+                android:text="@{description}" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/poppinsbold"
+                android:text="Lugares Cercanos" />
+
+            <View
+                android:layout_width="50dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/material_color_grey_300" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_pois"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppinsregular"
+                android:adapter="@{adapter}" />
+
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>

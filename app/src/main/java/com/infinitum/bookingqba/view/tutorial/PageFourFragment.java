@@ -28,8 +28,10 @@ import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
+import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
+import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.view.base.BasePageFragment;
 import com.infinitum.bookingqba.viewmodel.SyncViewModel;
 import com.moos.library.CircleProgressView;
@@ -141,6 +143,9 @@ public class PageFourFragment extends BasePageFragment {
                 syncRents();
                 break;
             case 9:
+                syncRentAmenities();
+                break;
+            case 10:
                 syncGaleries();
                 break;
         }
@@ -168,7 +173,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<ReferenceZoneEntity>>() {
                     @Override
                     public void onSuccess(List<ReferenceZoneEntity> referenceZoneEntities) {
-                        fourBinding.progressViewCircle.setProgress(5);
+                        fourBinding.progressViewCircle.setProgress(3);
                         saveReferencesZone(referenceZoneEntities);
                     }
 
@@ -188,7 +193,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        fourBinding.progressViewCircle.setProgress(10);
+                        fourBinding.progressViewCircle.setProgress(6);
                         saveDownloadLevel(1);
                         syncProvinces();
                     }
@@ -209,7 +214,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<ProvinceEntity>>() {
                     @Override
                     public void onSuccess(List<ProvinceEntity> provinceEntityList) {
-                        fourBinding.progressViewCircle.setProgress(15);
+                        fourBinding.progressViewCircle.setProgress(9);
                         addProvinces(provinceEntityList);
                     }
 
@@ -229,7 +234,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        fourBinding.progressViewCircle.setProgress(20);
+                        fourBinding.progressViewCircle.setProgress(12);
                         saveDownloadLevel(2);
                         syncMunicipalities();
                     }
@@ -250,7 +255,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<MunicipalityEntity>>() {
                     @Override
                     public void onSuccess(List<MunicipalityEntity> municipalityEntityList) {
-                        fourBinding.progressViewCircle.setProgress(25);
+                        fourBinding.progressViewCircle.setProgress(15);
                         addMunicipalities(municipalityEntityList);
                     }
 
@@ -270,7 +275,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        fourBinding.progressViewCircle.setProgress(30);
+                        fourBinding.progressViewCircle.setProgress(18);
                         saveDownloadLevel(3);
                         syncAmenities();
                     }
@@ -291,7 +296,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<AmenitiesEntity>>() {
                     @Override
                     public void onSuccess(List<AmenitiesEntity> amenitiesEntities) {
-                        fourBinding.progressViewCircle.setProgress(35);
+                        fourBinding.progressViewCircle.setProgress(21);
                         saveAmenities(amenitiesEntities);
                     }
 
@@ -312,7 +317,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        fourBinding.progressViewCircle.setProgress(40);
+                        fourBinding.progressViewCircle.setProgress(24);
                         saveDownloadLevel(4);
                         syncPoiTypes();
                     }
@@ -333,7 +338,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<PoiTypeEntity>>() {
                     @Override
                     public void onSuccess(List<PoiTypeEntity> poiTypeEntities) {
-                        fourBinding.progressViewCircle.setProgress(45);
+                        fourBinding.progressViewCircle.setProgress(27);
                         savePoiTypes(poiTypeEntities);
                     }
 
@@ -354,7 +359,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        fourBinding.progressViewCircle.setProgress(50);
+                        fourBinding.progressViewCircle.setProgress(30);
                         saveDownloadLevel(5);
                         syncPois();
                     }
@@ -375,7 +380,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<PoiEntity>>() {
                     @Override
                     public void onSuccess(List<PoiEntity> poiEntities) {
-                        fourBinding.progressViewCircle.setProgress(55);
+                        fourBinding.progressViewCircle.setProgress(33);
                         savePois(poiEntities);
                     }
 
@@ -396,7 +401,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        fourBinding.progressViewCircle.setProgress(60);
+                        fourBinding.progressViewCircle.setProgress(36);
                         saveDownloadLevel(6);
                         syncRentsMode();
                     }
@@ -417,7 +422,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<RentModeEntity>>() {
                     @Override
                     public void onSuccess(List<RentModeEntity> rentModeEntities) {
-                        fourBinding.progressViewCircle.setProgress(65);
+                        fourBinding.progressViewCircle.setProgress(39);
                         saveRentsMode(rentModeEntities);
                     }
 
@@ -438,7 +443,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        fourBinding.progressViewCircle.setProgress(70);
+                        fourBinding.progressViewCircle.setProgress(42);
                         saveDownloadLevel(7);
                         syncRents();
                     }
@@ -459,7 +464,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<RentEntity>>() {
                     @Override
                     public void onSuccess(List<RentEntity> rentEntities) {
-                        fourBinding.progressViewCircle.setProgress(75);
+                        fourBinding.progressViewCircle.setProgress(45);
                         saveRents(rentEntities);
                     }
 
@@ -479,7 +484,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        fourBinding.progressViewCircle.setProgress(80);
+                        fourBinding.progressViewCircle.setProgress(48);
                         saveDownloadLevel(8);
                         syncDrawsType();
                     }
@@ -500,7 +505,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<DrawTypeEntity>>() {
                     @Override
                     public void onSuccess(List<DrawTypeEntity> drawTypeEntities) {
-                        fourBinding.progressViewCircle.setProgress(85);
+                        fourBinding.progressViewCircle.setProgress(51);
                         saveDrawsType(drawTypeEntities);
                     }
 
@@ -521,8 +526,50 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
-                        fourBinding.progressViewCircle.setProgress(90);
+                        fourBinding.progressViewCircle.setProgress(54);
                         saveDownloadLevel(9);
+                        syncRentAmenities();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        isSync = false;
+                        mListener.onDownloadError(e.getMessage());
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    private void syncRentAmenities() {
+        disposable = syncViewModel.rentAmenitiesList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<List<RentAmenitiesEntity>>() {
+                    @Override
+                    public void onSuccess(List<RentAmenitiesEntity> drawTypeEntities) {
+                        fourBinding.progressViewCircle.setProgress(57);
+                        saveRentAmenities(drawTypeEntities);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        isSync = false;
+                        mListener.onDownloadError(e.getMessage());
+                    }
+                });
+        compositeDisposable.add(disposable);
+
+    }
+
+    private void saveRentAmenities(List<RentAmenitiesEntity> rentAmenitiesEntityList) {
+        disposable = syncViewModel.insertRentAmenities(rentAmenitiesEntityList)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        fourBinding.progressViewCircle.setProgress(60);
+                        saveDownloadLevel(10);
                         syncGaleries();
                     }
 
@@ -542,7 +589,7 @@ public class PageFourFragment extends BasePageFragment {
                 .subscribeWith(new DisposableSingleObserver<List<GalerieEntity>>() {
                     @Override
                     public void onSuccess(List<GalerieEntity> galerieEntities) {
-                        fourBinding.progressViewCircle.setProgress(95);
+                        fourBinding.progressViewCircle.setProgress(90);
                         saveGaleries(galerieEntities);
                     }
 
@@ -564,7 +611,7 @@ public class PageFourFragment extends BasePageFragment {
                     public void onComplete() {
                         isSync = false;
                         fourBinding.progressViewCircle.setProgress(100);
-                        saveDownloadLevel(10);
+                        saveDownloadLevel(11);
                         mListener.onDownloadSuccess();
                     }
 

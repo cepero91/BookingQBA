@@ -7,7 +7,6 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/White_100"
         android:fitsSystemWindows="true"
         tools:openDrawer="start">
 
@@ -62,15 +61,18 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:fitsSystemWindows="false"
-            android:background="@color/White_100"
             app:headerLayout="@layout/nav_header_drawer"
-            app:menu="@menu/menu_home" />
+            app:menu="@menu/menu_home"
+            app:itemTextAppearance="@style/NavItemTextStyle"
+            app:itemBackground="@android:color/transparent"
+            app:itemIconTint="@drawable/selector_navigation_item"
+            app:itemTextColor="@drawable/selector_navigation_item"/>
 
         <android.support.design.widget.NavigationView
             android:id="@+id/nav_view_notification"
-            android:background="@color/White_100"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/material_color_grey_100"
             android:layout_gravity="end"
             android:fitsSystemWindows="false">
 

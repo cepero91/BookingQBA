@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -38,6 +39,15 @@ public class SplashActivity extends DaggerAppCompatActivity {
         splashBinding = DataBindingUtil.setContentView(this, R.layout.activity_splash);
         AndroidInjection.inject(this);
 
+//        PARA PROBAR LEAKS
+//        new Thread() {
+//            public void run() {
+//                while(true) {
+//                    SystemClock.sleep(100);
+//                }
+//            }
+//        }.start();
+
         int downloadLevel = sharedPreferences.getInt(PREF_DOWNLOAD_LEVEL, 0);
 
         new Handler().postDelayed(new Runnable() {
@@ -54,7 +64,7 @@ public class SplashActivity extends DaggerAppCompatActivity {
 
     private void navigateTo(int downloadLevel) {
         Intent intent = new Intent(SplashActivity.this, TutorialActivity.class);
-        if (downloadLevel == 10)
+        if (downloadLevel == 11)
             intent = new Intent(SplashActivity.this, HomeActivity.class);
         startActivity(intent);
         SplashActivity.this.finish();

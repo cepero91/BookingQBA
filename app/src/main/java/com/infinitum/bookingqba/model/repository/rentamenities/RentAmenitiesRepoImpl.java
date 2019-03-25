@@ -46,8 +46,8 @@ public class RentAmenitiesRepoImpl implements RentAmenitiesRepository {
         ArrayList<RentAmenitiesEntity> listEntity = new ArrayList<>();
         RentAmenitiesEntity entity;
         for (RentAmenities item : gsonList) {
-            entity = new RentAmenitiesEntity(item.getId());
             for(Amenities amenities: item.getFacilidades()){
+                entity = new RentAmenitiesEntity(item.getId());
                 entity.setAmenityId(amenities.getId());
                 listEntity.add(entity);
             }
@@ -65,7 +65,7 @@ public class RentAmenitiesRepoImpl implements RentAmenitiesRepository {
     }
 
     @Override
-    public Completable insertRentAmenities(List<RentAmenitiesEntity> rentAmenitiesEntityList) {
+    public Completable insert(List<RentAmenitiesEntity> rentAmenitiesEntityList) {
         return Completable.fromAction(() -> qbaDao.upsertRentAmenities(rentAmenitiesEntityList))
                 .subscribeOn(Schedulers.io());
     }

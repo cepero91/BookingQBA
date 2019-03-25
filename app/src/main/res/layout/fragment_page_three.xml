@@ -31,7 +31,7 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="@dimen/pages_title_margin_bottom"
                 android:layout_marginTop="@dimen/pages_title_margin_top"
-                android:fontFamily="@font/robotoblack"
+                android:fontFamily="@font/poppinsbold"
                 android:text="@string/llega_a_tu_destino"
                 android:textAlignment="center"
                 android:textSize="@dimen/pages_title_dimen" />
@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:fontFamily="@font/robotoregular"
+                android:fontFamily="@font/poppinsregular"
                 android:text="@string/lorem_ipsum"
                 android:textAlignment="center"
                 android:textSize="@dimen/pages_desc_dimen" />

@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.viewmodel;
 
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.repository.province.ProvinceRepository;
@@ -13,6 +14,9 @@ import com.infinitum.bookingqba.view.adapters.rendered.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.rendered.home.RentNewItem;
 import com.infinitum.bookingqba.view.adapters.rendered.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.rendered.home.RZoneItem;
+import com.infinitum.bookingqba.view.adapters.spinneritem.SpinnerProvinceItem;
+
+import org.reactivestreams.Publisher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +25,9 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_NEW;
@@ -40,6 +47,29 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         this.provinceRepository = provinceRepository;
     }
 
+    public Flowable<Resource<List<SpinnerProvinceItem>>> getProvinces() {
+        return provinceRepository
+                .getAllProvinces()
+                .flatMap(this::transformProvinces)
+                .subscribeOn(Schedulers.io());
+    }
+
+    private Flowable<Resource<List<SpinnerProvinceItem>>> transformProvinces(Resource<List<ProvinceEntity>> listResource) {
+        List<SpinnerProvinceItem> spinnerProvinceItems = new ArrayList<>();
+        if (listResource.data != null && listResource.data.size() > 0) {
+            Flowable.fromIterable(listResource.data)
+                    .map(entity -> new SpinnerProvinceItem(entity.getId(), entity.getName()))
+                    .doOnNext(spinnerProvinceItems::add)
+                    .subscribeOn(Schedulers.io())
+                    .subscribe();
+        }
+        return Flowable.just(spinnerProvinceItems)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+
     public Flowable<Resource<List<ViewModel>>> getReferencesZone() {
         return referenceZoneRepository.allReferencesZone()
                 .flatMap(this::transformRZoneEntity).subscribeOn(Schedulers.io());
@@ -49,10 +79,10 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         List<ViewModel> compositeList = new ArrayList<>();
         List<RZoneItem> items = new ArrayList<>();
         if (listResource.data != null && listResource.data.size() > 0) {
-            for(ReferenceZoneEntity entity: listResource.data){
-                items.add(new RZoneItem(entity.getId(),entity.getName(),entity.getImage()));
+            for (ReferenceZoneEntity entity : listResource.data) {
+                items.add(new RZoneItem(entity.getId(), entity.getName(), entity.getImage()));
             }
-            compositeList.add(new RecyclerViewItem(1,items));
+            compositeList.add(new RecyclerViewItem(1, items));
         }
         return Flowable.just(compositeList)
                 .map(Resource::success)
@@ -76,10 +106,10 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         List<ViewModel> compositeList = new ArrayList<>();
         List<RentPopItem> items = new ArrayList<>();
         if (listResource.data != null && listResource.data.size() > 0) {
-            for(RentAndGalery entity: listResource.data){
-                items.add(new RentPopItem(entity.getId(),entity.getName(),entity.getGaleries().get(0).getImageByte(),entity.getRating()));
+            for (RentAndGalery entity : listResource.data) {
+                items.add(new RentPopItem(entity.getId(), entity.getName(), entity.getGaleries().get(0).getImageByte(), entity.getRating(),entity.getPrice()));
             }
-            compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(),items));
+            compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(), items));
         }
         return Flowable.just(compositeList)
                 .map(Resource::success)
@@ -91,10 +121,10 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         List<ViewModel> compositeList = new ArrayList<>();
         List<RentNewItem> items = new ArrayList<>();
         if (listResource.data != null && listResource.data.size() > 0) {
-            for(RentAndGalery entity: listResource.data){
-                items.add(new RentNewItem(entity.getId(),entity.getName(),entity.getGaleries().get(0).getImageByte(),entity.getRating()));
+            for (RentAndGalery entity : listResource.data) {
+                items.add(new RentNewItem(entity.getId(), entity.getName(), entity.getGaleries().get(0).getImageByte(), entity.getRating()));
             }
-            compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(),items));
+            compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(), items));
         }
         return Flowable.just(compositeList)
                 .map(Resource::success)
@@ -103,24 +133,19 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
     }
 
 
-    public Flowable<Resource<List<ViewModel>>> getAllItems(){
-        return Flowable.combineLatest(getReferencesZone(), getPopRents(),getNewRents(), (listResource, listResource2, listResource3) -> {
+    public Flowable<Resource<List<ViewModel>>> getAllItems() {
+        return Flowable.combineLatest(getReferencesZone(), getPopRents(), getNewRents(), (listResource, listResource2, listResource3) -> {
             List<com.github.vivchar.rendererrecyclerviewadapter.ViewModel> allItems = new ArrayList<>();
-            if(listResource.data!=null && listResource2.data!=null) {
+            if (listResource.data != null && listResource2.data != null) {
                 allItems.addAll(listResource.data);
-                allItems.add(new HeaderItem(UUID.randomUUID().toString(),"Lo mas popular",ORDER_TYPE_POPULAR));
+                allItems.add(new HeaderItem(UUID.randomUUID().toString(), "Lo mas popular", ORDER_TYPE_POPULAR));
                 allItems.addAll(listResource2.data);
-                allItems.add(new HeaderItem(UUID.randomUUID().toString(),"Lo mas nuevo",ORDER_TYPE_NEW));
+                allItems.add(new HeaderItem(UUID.randomUUID().toString(), "Lo mas nuevo", ORDER_TYPE_NEW));
                 allItems.addAll(listResource3.data);
             }
             return Resource.success(allItems);
         }).subscribeOn(Schedulers.io());
     }
-
-
-
-
-
 
 
 }

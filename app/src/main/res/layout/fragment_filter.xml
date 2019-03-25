@@ -21,7 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/v_line"
-            android:background="@color/material_color_grey_100"
             android:layout_alignParentStart="true"
             android:clipToPadding="false"
             android:fillViewport="false">
@@ -68,30 +67,24 @@
                                 android:paddingLeft="10dp"
                                 android:paddingRight="10dp"
                                 android:paddingTop="5dp"
-                                app:visibleGone="@{!isLoading}"/>
+                                app:visibleGone="@{!safeUnbox(isLoading)}"/>
 
-                            <com.facebook.shimmer.ShimmerFrameLayout
-                                android:id="@+id/sl_shimmer_rzone"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:layout_gravity="center"
+                                android:scaleType="fitCenter"
+                                android:paddingBottom="10dp"
+                                android:paddingLeft="10dp"
+                                android:paddingRight="10dp"
+                                android:paddingTop="5dp"
                                 android:layout_marginBottom="10dp"
-                                app:visibleGone="@{isLoading}">
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:orientation="horizontal">
-
-                                    <include layout="@layout/recycler_rzone_filter_shimmer" />
-
-                                    <include layout="@layout/recycler_rzone_filter_shimmer" />
-
-                                    <include layout="@layout/recycler_rzone_filter_shimmer" />
-
-                                </LinearLayout>
-
-                            </com.facebook.shimmer.ShimmerFrameLayout>
+                                app:lottie_autoPlay="true"
+                                app:lottie_colorFilter="@color/colorPrimaryDark"
+                                app:lottie_enableMergePathsForKitKatAndAbove="true"
+                                app:lottie_fileName="lottie/circle_loader.json"
+                                app:lottie_loop="true"
+                                app:visibleGone="@{safeUnbox(isLoading)}" />
 
                         </FrameLayout>
 
@@ -136,35 +129,24 @@
                                 android:paddingLeft="10dp"
                                 android:paddingRight="10dp"
                                 android:paddingTop="5dp"
-                                app:visibleGone="@{!isLoading}"/>
+                                app:visibleGone="@{!safeUnbox(isLoading)}"/>
 
-                            <com.facebook.shimmer.ShimmerFrameLayout
-                                android:id="@+id/sl_shimmer_amenities"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:layout_gravity="center"
+                                android:scaleType="fitCenter"
                                 android:paddingBottom="10dp"
                                 android:paddingLeft="10dp"
                                 android:paddingRight="10dp"
                                 android:paddingTop="5dp"
-                                app:visibleGone="@{isLoading}">
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:orientation="horizontal">
-
-                                    <include layout="@layout/recycler_amenities_filter_shimmer" />
-
-                                    <include layout="@layout/recycler_amenities_filter_shimmer" />
-
-                                    <include layout="@layout/recycler_amenities_filter_shimmer" />
-
-
-                                </LinearLayout>
-
-                            </com.facebook.shimmer.ShimmerFrameLayout>
+                                android:layout_marginBottom="10dp"
+                                app:lottie_autoPlay="true"
+                                app:lottie_colorFilter="@color/colorPrimaryDark"
+                                app:lottie_enableMergePathsForKitKatAndAbove="true"
+                                app:lottie_fileName="lottie/circle_loader.json"
+                                app:lottie_loop="true"
+                                app:visibleGone="@{safeUnbox(isLoading)}" />
 
                         </FrameLayout>
 
@@ -209,34 +191,24 @@
                                 android:paddingLeft="10dp"
                                 android:paddingRight="10dp"
                                 android:paddingTop="5dp"
-                                app:visibleGone="@{!isLoading}"/>
+                                app:visibleGone="@{!safeUnbox(isLoading)}"/>
 
-                            <com.facebook.shimmer.ShimmerFrameLayout
-                                android:id="@+id/sl_shimmer_star"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="10dp"
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:layout_gravity="center"
+                                android:scaleType="fitCenter"
                                 android:paddingBottom="10dp"
                                 android:paddingLeft="10dp"
                                 android:paddingRight="10dp"
                                 android:paddingTop="5dp"
-                                app:visibleGone="@{isLoading}">
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:orientation="horizontal">
-
-                                    <include layout="@layout/recycler_stars_filter_shimmer" />
-
-                                    <include layout="@layout/recycler_stars_filter_shimmer" />
-
-                                    <include layout="@layout/recycler_stars_filter_shimmer" />
-
-                                </LinearLayout>
-
-                            </com.facebook.shimmer.ShimmerFrameLayout>
+                                android:layout_marginBottom="10dp"
+                                app:lottie_autoPlay="true"
+                                app:lottie_colorFilter="@color/colorPrimaryDark"
+                                app:lottie_enableMergePathsForKitKatAndAbove="true"
+                                app:lottie_fileName="lottie/circle_loader.json"
+                                app:lottie_loop="true"
+                                app:visibleGone="@{safeUnbox(isLoading)}" />
 
                         </FrameLayout>
 

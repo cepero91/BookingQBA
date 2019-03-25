@@ -6,6 +6,7 @@ import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
+import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.Poi;
@@ -148,5 +149,10 @@ public class RentRepoImpl implements RentRepository {
     @Override
     public DataSource.Factory<Integer,RentAndGalery> getRentPaged() {
         return qbaDao.rentAllNewRentPaged();
+    }
+
+    @Override
+    public Flowable<Resource<RentDetail>> getRentDetailById(String uuid) {
+        return qbaDao.getRentDetailById(uuid).map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
     }
 }

@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel;
 import com.infinitum.bookingqba.viewmodel.HomeViewModel;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.SyncViewModel;
+import com.infinitum.bookingqba.viewmodel.UserViewModel;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -68,6 +69,11 @@ public interface ViewModelModule {
     @Binds
     @ViewModelKey(RentViewModel.class)
     ViewModel rentViewModel(RentViewModel rentViewModel);
+
+    @IntoMap
+    @Binds
+    @ViewModelKey(UserViewModel.class)
+    ViewModel userViewModel(UserViewModel userViewModel);
 
 
 }

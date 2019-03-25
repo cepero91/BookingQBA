@@ -5,6 +5,7 @@ import android.arch.paging.DataSource;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
+import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 
 import java.util.List;
 
@@ -28,4 +29,6 @@ public interface RentRepository {
     Flowable<Resource<List<RentAndGalery>>> fiveNewRent();
 
     DataSource.Factory<Integer,RentAndGalery> getRentPaged();
+
+    Flowable<Resource<RentDetail>> getRentDetailById(String uuid);
 }

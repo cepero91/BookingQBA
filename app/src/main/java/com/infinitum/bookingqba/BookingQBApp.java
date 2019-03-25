@@ -23,16 +23,16 @@ public class BookingQBApp extends DaggerApplication{
     @Override
     public void onCreate() {
         super.onCreate();
-        if(BuildConfig.DEBUG){
-            Timber.plant(new Timber.DebugTree());
-        }
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
             return;
         }
         LeakCanary.install(this);
-        // Normal app init code...
+
+        if(BuildConfig.DEBUG){
+            Timber.plant(new Timber.DebugTree());
+        }
     }
 
     @Override
