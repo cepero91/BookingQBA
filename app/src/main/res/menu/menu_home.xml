@@ -14,6 +14,10 @@
             android:id="@+id/nav_wish_list"
             android:icon="@drawable/ic_scroll"
             android:title="Lista de Deseo" />
+        <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/ic_map_marked"
+            android:title="Mapa" />
 
         <item
             android:id="@+id/nav_setting"

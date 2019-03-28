@@ -4,15 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
-            name="rentDetail"
-            type="com.infinitum.bookingqba.model.local.pojo.RentDetail"/>
+            name="rentDetailItem"
+            type="com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailItem" />
+
         <variable
-            name="adapter"
-            type="com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter"/>
+            name="isLoading"
+            type="Boolean" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <FrameLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,13 +22,11 @@
         tools:context="com.rhumbos.nac.ui.activities.ChapterDetail">
 
 
-        <android.support.v4.widget.NestedScrollView
+        <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
+            android:id="@+id/nested"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:overScrollMode="never"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:overScrollMode="never">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -48,7 +48,7 @@
                         android:layout_gravity="center"
                         android:fitsSystemWindows="true"
                         android:scaleType="centerCrop"
-                        app:setRentDetailImage="@{rentDetail.getGaleries()}" />
+                        app:setRentDetailImage="@{rentDetailItem.getFirstImage()}" />
 
                 </com.github.florent37.shapeofview.shapes.RoundRectView>
 
@@ -66,7 +66,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:layout_marginEnd="20dp"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        app:setGalerieVisibility="@{rentDetailItem.galerieSize()}" >
 
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="@dimen/rent_detail_icon_pic_dime"
@@ -82,9 +83,9 @@
                             android:layout_gravity="center"
                             android:fontFamily="@font/poppinsregular"
                             android:includeFontPadding="false"
-                            app:setMaxGaleriePictures="@{rentDetail.getGaleries()}"
                             android:textColor="@color/White_100"
-                            android:textSize="@dimen/rent_detail_icon_pic_text_size" />
+                            android:textSize="@dimen/rent_detail_icon_pic_text_size"
+                            app:setMaxGaleriePictures="@{rentDetailItem.galerieSize()}" />
 
 
                     </LinearLayout>
@@ -93,8 +94,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
                         android:layout_marginTop="5dp"
                         app:cardCornerRadius="8dp"
                         app:cardElevation="5dp">
@@ -102,8 +103,8 @@
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="15dp"
                             android:layout_marginEnd="15dp"
+                            android:layout_marginStart="15dp"
                             android:layout_marginTop="8dp"
                             android:orientation="vertical">
 
@@ -112,8 +113,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/poppinsbold"
-                                android:text="@{rentDetail.getName()}"
-                                android:textColor="@color/material_color_grey_600"
+                                android:text="@{rentDetailItem.getRentEntity().getName()}"
+                                android:textColor="@color/material_color_blue_grey_500"
                                 android:textSize="@dimen/rent_detail_rent_name_size" />
 
                             <com.willy.ratingbar.BaseRatingBar
@@ -121,6 +122,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@+id/tv_rent_name"
+                                app:setRating="@{rentDetailItem.getRentEntity().getRating()}"
                                 app:srb_clickable="false"
                                 app:srb_drawableEmpty="@drawable/ic_star_o"
                                 app:srb_drawableFilled="@drawable/ic_star"
@@ -128,8 +130,7 @@
                                 app:srb_starHeight="16dp"
                                 app:srb_starPadding="2dp"
                                 app:srb_starWidth="16dp"
-                                app:srb_stepSize="0.5"
-                                app:setRating="@{rentDetail.getRating()}"/>
+                                app:srb_stepSize="0.5" />
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -155,9 +156,9 @@
                                     android:layout_gravity="center_horizontal"
                                     android:ellipsize="end"
                                     android:fontFamily="@font/poppinsregular"
-                                    android:maxLines="2"
                                     android:includeFontPadding="false"
-                                    android:text="@{rentDetail.getAddress()}"
+                                    android:maxLines="2"
+                                    android:text="@{rentDetailItem.getRentEntity().getAddress()}"
                                     android:textColor="@color/material_color_grey_500"
                                     android:textSize="@dimen/rent_detail_address_size" />
 
@@ -176,15 +177,17 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/poppinsbold"
-                                    app:setPriceText="@{rentDetail.getPrice()}"
-                                    android:textSize="@dimen/rent_detail_price_size"/>
+                                    android:textColor="@color/material_color_blue_grey_500"
+                                    android:textSize="@dimen/rent_detail_price_size"
+                                    app:setPriceText="@{rentDetailItem.getRentEntity().getPrice()}" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/poppinsregular"
-                                    app:setRentModeString="@{rentDetail.getRentModeName()}"
-                                    android:textSize="@dimen/rent_detail_rent_mode_size"/>
+                                    android:textColor="@color/material_color_grey_500"
+                                    android:textSize="@dimen/rent_detail_rent_mode_size"
+                                    app:setRentModeString="@{rentDetailItem.getRentModeName()}" />
 
                             </LinearLayout>
 
@@ -217,9 +220,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="3dp"
-                                app:setMaxRooms="@{rentDetail.getMaxRooms()}"
                                 android:textAppearance="@style/SmallTextForIcon"
-                                />
+                                app:setMaxRooms="@{rentDetailItem.getRentEntity().getMaxRooms()}" />
 
                         </LinearLayout>
 
@@ -248,8 +250,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="3dp"
-                                app:setMaxBeds="@{rentDetail.getMaxBeds()}"
-                                android:textAppearance="@style/SmallTextForIcon" />
+                                android:textAppearance="@style/SmallTextForIcon"
+                                app:setMaxBeds="@{rentDetailItem.getRentEntity().getMaxBeds()}" />
 
                         </LinearLayout>
 
@@ -278,8 +280,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="3dp"
-                                app:setMaxBath="@{rentDetail.getMaxBath()}"
-                                android:textAppearance="@style/SmallTextForIcon" />
+                                android:textAppearance="@style/SmallTextForIcon"
+                                app:setMaxBath="@{rentDetailItem.getRentEntity().getMaxBath()}" />
 
                         </LinearLayout>
 
@@ -308,89 +310,201 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="3dp"
-                                app:setCapability="@{rentDetail.getCapability()}"
-                                android:textAppearance="@style/SmallTextForIcon" />
+                                android:textAppearance="@style/SmallTextForIcon"
+                                app:setCapability="@{rentDetailItem.getRentEntity().getCapability()}" />
 
                         </LinearLayout>
 
 
                     </LinearLayout>
 
-                    <LinearLayout
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="Facilidades"
-                            android:fontFamily="@font/poppinsbold"
-                            android:textSize="16sp"/>
-
-
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/rv_amenities"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="10dp"
-                            android:adapter="@{adapter}"
-                            />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="20dp"
-                        android:orientation="vertical"
-                        android:background="@color/material_color_grey_100"
                         >
 
-                        <android.support.design.widget.TabLayout
-                            android:id="@+id/tl_tab"
+                        <LinearLayout
                             android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="20dp"
+                            android:orientation="vertical"
+                            app:visibleGone="@{!safeUnbox(isLoading)}">
+
+                            <com.ogaclejapan.smarttablayout.SmartTabLayout
+                                android:id="@+id/tl_tab"
+                                android:layout_width="match_parent"
+                                android:layout_height="48dp"
+                                app:stl_customTabTextLayoutId="@layout/custom_tab"
+                                app:stl_customTabTextViewId="@id/custom_text"
+                                app:stl_dividerColor="@android:color/transparent"
+                                app:stl_indicatorColor="@color/colorPrimaryDark"
+                                app:stl_indicatorCornerRadius="1.5dp"
+                                app:stl_indicatorInterpolation="smart"
+                                app:stl_indicatorThickness="3dp"
+                                app:stl_underlineColor="@android:color/transparent" />
+
+                            <viewpagerwc.ui.dom.wrapping.WrappingViewPager
+                                android:id="@+id/vp_pages"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                        <ProgressBar
+                            android:layout_width="80dp"
                             android:layout_height="wrap_content"
-                            app:tabIndicatorColor="@color/colorPrimaryDark"
-                            app:tabTextAppearance="@style/TabTextStyle"
-                            app:tabSelectedTextColor="@color/colorPrimaryDark"
-                            app:tabRippleColor="@color/material_color_teal_200"
-                            app:tabBackground="@color/White_100"
-                            />
+                            android:layout_marginTop="80dp"
+                            android:layout_marginBottom="40dp"
+                            android:indeterminate="true"
+                            android:layout_gravity="center"
+                            android:indeterminateDuration="100"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            app:visibleGone="@{safeUnbox(isLoading)}" />
 
-                        <android.support.v4.view.ViewPager
-                            android:id="@+id/vp_pages"
-                            android:layout_width="match_parent"
-                            android:layout_height="350dp"
-                            />
-
-                    </LinearLayout>
+                    </FrameLayout>
 
 
                 </LinearLayout>
 
             </RelativeLayout>
 
-        </android.support.v4.widget.NestedScrollView>
+        </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@android:color/transparent"
-            app:contentInsetLeft="0dp"
             app:contentInsetStart="0dp"
-            app:contentInsetStartWithNavigation="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:titleTextColor="@color/White_100" />
+            app:contentInsetStartWithNavigation="0dp" />
 
 
-    </android.support.constraint.ConstraintLayout>
+        <iammert.com.view.scalinglib.ScalingLayout
+            android:id="@+id/scalingLayout"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:elevation="6dp"
+            android:stateListAnimator="@animator/sl_state_animator"
+            app:radiusFactor="1">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/fabIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_centerInParent="true"
+                    android:tint="@color/White_100"
+                    app:srcCompat="@drawable/ic_address_book" />
+
+                <LinearLayout
+                    android:id="@+id/filterLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="invisible"
+                    android:weightSum="5">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <android.support.v7.widget.AppCompatImageView
+                            android:id="@+id/iv_phone_call"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_centerVertical="true"
+                            android:tint="@color/White_100"
+                            app:srcCompat="@drawable/ic_phone" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@color/Black_15" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <android.support.v7.widget.AppCompatImageView
+                            android:id="@+id/iv_sms_send"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_centerVertical="true"
+                            android:tint="@color/White_100"
+                            app:srcCompat="@drawable/ic_sms" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@color/Black_15" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <android.support.v7.widget.AppCompatImageView
+                            android:id="@+id/iv_email_send"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_centerVertical="true"
+                            android:tint="@color/White_100"
+                            app:srcCompat="@drawable/ic_envelope" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@color/Black_15" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center">
+
+                        <android.support.v7.widget.AppCompatImageView
+                            android:id="@+id/iv_close"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_centerVertical="true"
+                            android:tint="@color/material_color_orange_200"
+                            app:srcCompat="@drawable/ic_times" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </iammert.com.view.scalinglib.ScalingLayout>
+
+
+    </FrameLayout>
 
 </layout>

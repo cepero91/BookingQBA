@@ -1,5 +1,7 @@
 package com.infinitum.bookingqba.model.repository.poitype;
 
+import android.util.Base64;
+
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -45,7 +47,7 @@ public class PoiTypeRepoImpl implements PoiTypeRepository {
         ArrayList<PoiTypeEntity> listEntity = new ArrayList<>();
         PoiTypeEntity entity;
         for (PoiType item : gsonList) {
-            entity = new PoiTypeEntity(item.getId(), item.getNombre());
+            entity = new PoiTypeEntity(item.getId(), item.getNombre(), Base64.decode(item.getImagen(),Base64.DEFAULT));
             listEntity.add(entity);
         }
         return listEntity;

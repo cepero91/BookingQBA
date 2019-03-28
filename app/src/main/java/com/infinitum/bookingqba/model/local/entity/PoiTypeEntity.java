@@ -18,9 +18,13 @@ public class PoiTypeEntity {
     @NonNull
     private String name;
 
-    public PoiTypeEntity(@NonNull String id, @NonNull String name) {
+    @NonNull
+    private byte[] image;
+
+    public PoiTypeEntity(@NonNull String id, @NonNull String name, @NonNull byte[] image) {
         this.id = id;
         this.name = name;
+        this.image = image;
     }
 
     @NonNull
@@ -39,5 +43,14 @@ public class PoiTypeEntity {
 
     public void setName(@NonNull String name) {
         this.name = name;
+    }
+
+    @NonNull
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(@NonNull byte[] image) {
+        this.image = image;
     }
 }

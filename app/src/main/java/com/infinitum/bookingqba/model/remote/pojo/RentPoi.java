@@ -10,7 +10,7 @@ public class RentPoi {
     @SerializedName("id")
     @Expose
     private String id;
-    @SerializedName("lugar_interes")
+    @SerializedName("lugares_interes")
     @Expose
     private List<Poi> lugar_interes;
 

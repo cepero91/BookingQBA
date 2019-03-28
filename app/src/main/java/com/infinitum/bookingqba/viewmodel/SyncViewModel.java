@@ -15,6 +15,7 @@ import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
+import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.drawtype.DrawTypeRepository;
@@ -27,6 +28,7 @@ import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepo
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.model.repository.rentamenities.RentAmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.rentmode.RentModeRepository;
+import com.infinitum.bookingqba.model.repository.rentpoi.RentPoiRepository;
 
 import java.util.List;
 
@@ -48,10 +50,10 @@ public class SyncViewModel extends ViewModel {
     private DrawTypeRepository drawTypeRepository;
     private GalerieRepository galerieRepository;
     private RentAmenitiesRepository rentAmenitiesRepository;
-
+    private RentPoiRepository rentPoiRepository;
 
     @Inject
-    public SyncViewModel(ProvinceRepository provinceRepository, MunicipalityRepository municipalityRepository, AmenitiesRepository amenitiesRepository, PoiTypeRepository poiTypeRepository, PoiRepository poiRepository, RentRepository rentRepository, RentModeRepository rentModeRepository, ReferenceZoneRepository referenceZoneRepository, DrawTypeRepository drawTypeRepository, GalerieRepository galerieRepository, RentAmenitiesRepository rentAmenitiesRepository) {
+    public SyncViewModel(ProvinceRepository provinceRepository, MunicipalityRepository municipalityRepository, AmenitiesRepository amenitiesRepository, PoiTypeRepository poiTypeRepository, PoiRepository poiRepository, RentRepository rentRepository, RentModeRepository rentModeRepository, ReferenceZoneRepository referenceZoneRepository, DrawTypeRepository drawTypeRepository, GalerieRepository galerieRepository, RentAmenitiesRepository rentAmenitiesRepository, RentPoiRepository rentPoiRepository) {
         this.provinceRepository = provinceRepository;
         this.municipalityRepository = municipalityRepository;
         this.amenitiesRepository = amenitiesRepository;
@@ -63,6 +65,7 @@ public class SyncViewModel extends ViewModel {
         this.drawTypeRepository = drawTypeRepository;
         this.galerieRepository = galerieRepository;
         this.rentAmenitiesRepository = rentAmenitiesRepository;
+        this.rentPoiRepository = rentPoiRepository;
     }
 
     public Single<List<ProvinceEntity>> provinceList() {
@@ -151,5 +154,13 @@ public class SyncViewModel extends ViewModel {
 
     public Completable insertRentAmenities(List<RentAmenitiesEntity>entities){
         return rentAmenitiesRepository.insert(entities);
+    }
+
+    public Single<List<RentPoiEntity>> rentPoiList() {
+        return rentPoiRepository.fetchRemoteAndTransform();
+    }
+
+    public Completable insertRentPois(List<RentPoiEntity>entities){
+        return rentPoiRepository.insert(entities);
     }
 }

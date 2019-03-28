@@ -74,6 +74,21 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
 
+    //VTM-MAP
+    //Core
+    implementation "org.mapsforge:vtm:$vtm_map"
+    implementation "org.mapsforge:vtm-themes:$vtm_map"
+    implementation "org.slf4j:slf4j-api:1.7.25"
+    //Android
+    implementation "org.mapsforge:vtm-android:$vtm_map"
+    implementation "org.mapsforge:vtm-android:$vtm_map:natives-armeabi-v7a"
+    implementation "org.mapsforge:vtm-android:$vtm_map:natives-arm64-v8a"
+    implementation "org.mapsforge:vtm-android:$vtm_map:natives-x86"
+    implementation "org.mapsforge:vtm-android:$vtm_map:natives-x86_64"
+    implementation "com.caverock:androidsvg:1.3"
+
+    implementation "com.wshunli.android:android-copy-assets:2.2.0"
+
     //Timber
     implementation "com.jakewharton.timber:timber:${timber}"
 
@@ -132,6 +147,13 @@ dependencies {
     implementation 'com.github.PierfrancescoSoffritti:SlidingDrawer:0.11'
 
     implementation 'com.github.ome450901:SimpleRatingBar:1.4.2'
+
+    //observable scroll view y wrap view pager
+    implementation 'com.github.ksoichiro:android-observablescrollview:1.6.0'
+    implementation 'com.github.dominicg666:WrappingViewPager:1.2'
+    implementation 'com.ogaclejapan.smarttablayout:library:1.7.0@aar'
+    //Optional: see how to use the utility.
+    implementation 'com.ogaclejapan.smarttablayout:utils-v4:1.7.0@aar'
 
 
 }

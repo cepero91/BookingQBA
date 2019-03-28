@@ -2,7 +2,7 @@ package com.infinitum.bookingqba.view.interaction;
 
 import android.view.View;
 
-import com.infinitum.bookingqba.view.adapters.rendered.baseitem.BaseItem;
+import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 
 public interface FragmentNavInteraction {
 

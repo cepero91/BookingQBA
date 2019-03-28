@@ -12,6 +12,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
@@ -44,28 +46,36 @@ public class RentPoiRepoImpl implements RentPoiRepository {
      */
     private List<RentPoiEntity> parseGsonToEntity(List<RentPoi> gsonList) {
         ArrayList<RentPoiEntity> listEntity = new ArrayList<>();
-        RentPoiEntity entity;
         for (RentPoi item : gsonList) {
-            entity = new RentPoiEntity(item.getId());
             for(Poi poi: item.getLugar_interes()){
-                entity.setPoiId(poi.getId());
-                listEntity.add(entity);
+                listEntity.add(new RentPoiEntity(item.getId(),poi.getId()));
             }
         }
         return listEntity;
     }
 
-    @Override
-    public Single<List<RentPoiEntity>> fetchRemoteAndTransform() {
-        return fetchRentPoi()
-                .flatMap((Function<List<RentPoi>, SingleSource<? extends List<RentPoiEntity>>>) rentPoiList -> {
-                    ArrayList<RentPoiEntity> listEntity = new ArrayList<>(parseGsonToEntity(rentPoiList));
-                    return Single.just(listEntity);
-                }).subscribeOn(Schedulers.io());
+    /**
+     * Transforma entidad JSON a entidad de Base de Datos trabajando con observables
+     * @param gsonList
+     * @return
+     */
+    private Single<List<RentPoiEntity>> singleParseGsonToEntity(List<RentPoi> gsonList, ArrayList<RentPoiEntity> resultList) {
+        return Observable.fromIterable(gsonList)
+                .flatMap((Function<RentPoi, ObservableSource<RentPoiEntity>>) rentPoi -> Observable.fromIterable(rentPoi.getLugar_interes())
+                        .map(poi -> new RentPoiEntity(poi.getId(),rentPoi.getId()))
+                        .doOnNext(resultList::add)
+                        .subscribeOn(Schedulers.io()))
+                .toList();
     }
 
     @Override
-    public Completable insertRentPoi(List<RentPoiEntity> rentPoiEntityList) {
+    public Single<List<RentPoiEntity>> fetchRemoteAndTransform() {
+        return fetchRentPoi()
+                .flatMap(resourse->singleParseGsonToEntity(resourse, new ArrayList<>())).subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Completable insert(List<RentPoiEntity> rentPoiEntityList) {
         return Completable.fromAction(() -> qbaDao.upsertRentsPoi(rentPoiEntityList))
                 .subscribeOn(Schedulers.io());
     }

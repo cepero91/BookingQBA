@@ -9,14 +9,12 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.repository.province.ProvinceRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
-import com.infinitum.bookingqba.view.adapters.rendered.baseitem.RecyclerViewItem;
-import com.infinitum.bookingqba.view.adapters.rendered.home.HeaderItem;
-import com.infinitum.bookingqba.view.adapters.rendered.home.RentNewItem;
-import com.infinitum.bookingqba.view.adapters.rendered.home.RentPopItem;
-import com.infinitum.bookingqba.view.adapters.rendered.home.RZoneItem;
-import com.infinitum.bookingqba.view.adapters.spinneritem.SpinnerProvinceItem;
-
-import org.reactivestreams.Publisher;
+import com.infinitum.bookingqba.view.adapters.items.baseitem.RecyclerViewItem;
+import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
+import com.infinitum.bookingqba.view.adapters.items.home.RentNewItem;
+import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
+import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
+import com.infinitum.bookingqba.view.adapters.items.spinneritem.SpinnerProvinceItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +23,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_NEW;

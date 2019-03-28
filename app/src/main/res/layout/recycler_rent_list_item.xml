@@ -6,7 +6,7 @@
     <data>
         <variable
             name="item"
-            type="com.infinitum.bookingqba.view.adapters.rent.RentListItem"/>
+            type="com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem"/>
     </data>
 
     <android.support.constraint.ConstraintLayout

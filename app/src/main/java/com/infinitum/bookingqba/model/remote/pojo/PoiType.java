@@ -10,6 +10,9 @@ public class PoiType {
     @SerializedName("nombre")
     @Expose
     private String nombre;
+    @SerializedName("imagen")
+    @Expose
+    private String imagen;
 
     public String getId() {
         return id;
@@ -27,4 +30,11 @@ public class PoiType {
         this.nombre = nombre;
     }
 
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
 }

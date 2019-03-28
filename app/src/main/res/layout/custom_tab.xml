@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/custom_text"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:fontFamily="@font/poppinsbold"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center"
+    android:paddingStart="32dp"
+    android:paddingEnd="32dp"
+    android:textColor="@drawable/selector_tab_item"
+    android:textSize="16sp"
+    >
+
+</TextView>

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.TextView;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.util.GlideApp;
@@ -56,31 +57,19 @@ public class BindingAdapters {
     }
 
     @BindingAdapter("setRentModeString")
-    public static void setRentModeString(TextView view, Set<String> rentModeSet) {
-        String rentModeString = "";
-        if (rentModeSet != null)
-            rentModeString = (String) rentModeSet.toArray()[0];
-        view.setText(rentModeString);
+    public static void setRentModeString(TextView view, String rentMode) {
+        view.setText(rentMode);
     }
 
     @BindingAdapter("setMaxGaleriePictures")
-    public static void setMaxGaleriePictures(TextView view, List<GalerieEntity> galerieEntities) {
-        String galSize = "";
-        int size = 0;
-        if (galerieEntities != null && galerieEntities.size()>0) {
-            size = galerieEntities.size();
-            galSize = String.valueOf(size);
-        }
-        view.setText(String.format("%s Foto%s",galSize,size>1?"s":""));
+    public static void setMaxGaleriePictures(TextView view, int size) {
+        view.setText(String.format("%s Foto%s",size,size>1?"s":""));
         view.setGravity(Gravity.CENTER);
     }
 
     @BindingAdapter("setRentDetailImage")
-    public static void setRentDetailImage(AppCompatImageView view, List<GalerieEntity> galerieEntities) {
-        byte[] imageByte = new byte[0];
-        if(galerieEntities!=null && galerieEntities.size()>0)
-            imageByte = galerieEntities.get(0).getImageByte();
-        GlideApp.with(view).load(imageByte).placeholder(R.drawable.placeholder).into(view);
+    public static void setRentDetailImage(AppCompatImageView view, byte[] imageByte) {
+        GlideApp.with(view).load(imageByte).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(view);
     }
 
     @BindingAdapter("setMaxRooms")
@@ -110,6 +99,20 @@ public class BindingAdapters {
     @BindingAdapter("setRentListImage")
     public static void setRentListImage(AppCompatImageView view, byte[] imageByte) {
         GlideApp.with(view).load(imageByte).placeholder(R.drawable.placeholder).into(view);
+    }
+
+    @BindingAdapter("setFlexBoxItem")
+    public static void setFlexBoxItem(FlexboxLayout view, List<View> items) {
+        if(items!=null && items.size()>0){
+            for(View item: items){
+                view.addView(item);
+            }
+        }
+    }
+
+    @BindingAdapter("setGalerieVisibility")
+    public static void setGalerieVisibility(View view, int size) {
+        view.setVisibility(size > 1 ? View.VISIBLE : View.GONE);
     }
 
 

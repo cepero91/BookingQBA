@@ -10,17 +10,27 @@ import android.arch.paging.PagedList;
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
+import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
+import com.infinitum.bookingqba.model.local.entity.PoiEntity;
+import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
+import com.infinitum.bookingqba.model.local.pojo.PoiAndRelations;
+import com.infinitum.bookingqba.model.local.pojo.RentAmenitieAndRelation;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
+import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
-import com.infinitum.bookingqba.view.adapters.rendered.filter.CheckableItem;
-import com.infinitum.bookingqba.view.adapters.rendered.filter.ReferenceZoneViewItem;
-import com.infinitum.bookingqba.view.adapters.rendered.filter.AmenitieViewItem;
-import com.infinitum.bookingqba.view.adapters.rendered.filter.StarViewItem;
-import com.infinitum.bookingqba.view.adapters.rent.RentListItem;
+import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
+import com.infinitum.bookingqba.view.adapters.items.filter.ReferenceZoneViewItem;
+import com.infinitum.bookingqba.view.adapters.items.filter.AmenitieViewItem;
+import com.infinitum.bookingqba.view.adapters.items.filter.StarViewItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailAmenitieItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailGalerieItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailPoiItem;
+import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +62,11 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         filterMap = new HashMap<>();
     }
 
-    public LiveData<PagedList<RentListItem>> getLdRentsList(){
+    /**
+     * Lista paginada de rentas
+     * @return
+     */
+    public LiveData<PagedList<RentListItem>> getLiveDataRentList(){
         DataSource.Factory<Integer,RentListItem> dataSource = rentRepository.getRentPaged().mapByPage(new Function<List<RentAndGalery>, List<RentListItem>>() {
             @Override
             public List<RentListItem> apply(List<RentAndGalery> input) {
@@ -67,6 +81,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         ldRentsList = pagedListBuilder.build();
         return ldRentsList;
     }
+
 
     public Flowable<Map<String, List<ViewModel>>> getMapFilterItems() {
         if(filterMap!=null && filterMap.size()>0){
@@ -163,8 +178,48 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return Observable.fromIterable(viewModels);
     }
 
-    public Flowable<Resource<RentDetail>> getRentDetailById(String uuid){
-        return rentRepository.getRentDetailById(uuid).subscribeOn(Schedulers.io());
+    public Flowable<Resource<RentDetailItem>> getRentDetailById(String uuid){
+        return rentRepository
+                .getRentDetailById(uuid)
+                .map(this::parseRentDetailPojoToItem)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+    private RentDetailItem parseRentDetailPojoToItem(Resource<RentDetail> rentDetail){
+        RentDetailItem item = new RentDetailItem(rentDetail.data.getRentEntity());
+        item.setAmenitieItems(convertAmenitiesPojoToParcel(rentDetail.data.getAmenitieNames()));
+        item.setRentModeName(rentDetail.data.getRentModeNameObject());
+        item.setGalerieItems(convertGaleriePojoToParcel(rentDetail.data.getGaleries()));
+        item.setPoiItems(convertPoisPojoToParcel(rentDetail.data.getRentPoiAndRelations()));
+        return item;
+    }
+
+    private ArrayList<RentDetailGalerieItem> convertGaleriePojoToParcel(List<GalerieEntity> galerieEntities) {
+        ArrayList<RentDetailGalerieItem> detailGalerieItems = new ArrayList<>();
+        for (GalerieEntity item : galerieEntities) {
+            detailGalerieItems.add(new RentDetailGalerieItem(item.getImageByte()));
+        }
+        return detailGalerieItems;
+    }
+
+    private ArrayList<RentDetailPoiItem> convertPoisPojoToParcel(List<RentPoiAndRelation> rentPoiAndRelations) {
+        ArrayList<RentDetailPoiItem> detailPoiItems = new ArrayList<>();
+        for (RentPoiAndRelation item : rentPoiAndRelations) {
+            PoiEntity poiEntity = item.getPoiAndRelationsObject().getPoiEntity();
+            PoiTypeEntity poiTypeEntity = item.getPoiAndRelationsObject().getPoiTypeEntitySetObject();
+            detailPoiItems.add(new RentDetailPoiItem(poiEntity.getName(), poiTypeEntity.getImage()));
+        }
+        return detailPoiItems;
+    }
+
+    private ArrayList<RentDetailAmenitieItem> convertAmenitiesPojoToParcel(List<RentAmenitieAndRelation> amenitieNameArrayList) {
+        ArrayList<RentDetailAmenitieItem> detailAmenitieItems = new ArrayList<>();
+        for (RentAmenitieAndRelation item : amenitieNameArrayList) {
+            detailAmenitieItems.add(new RentDetailAmenitieItem(item.getAmenitieNameobject()));
+        }
+        return detailAmenitieItems;
     }
 
 

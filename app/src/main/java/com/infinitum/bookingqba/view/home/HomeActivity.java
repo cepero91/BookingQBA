@@ -21,16 +21,17 @@ import android.widget.Toast;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
 import com.infinitum.bookingqba.model.remote.pojo.User;
-import com.infinitum.bookingqba.view.adapters.rendered.baseitem.BaseItem;
-import com.infinitum.bookingqba.view.adapters.rendered.home.HeaderItem;
-import com.infinitum.bookingqba.view.adapters.rendered.home.RentNewItem;
-import com.infinitum.bookingqba.view.adapters.rendered.home.RentPopItem;
-import com.infinitum.bookingqba.view.adapters.rendered.home.RZoneItem;
-import com.infinitum.bookingqba.view.adapters.rent.RentListItem;
+import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
+import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
+import com.infinitum.bookingqba.view.adapters.items.home.RentNewItem;
+import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
+import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
+import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.view.filter.FilterFragment;
 import com.infinitum.bookingqba.view.interaction.LoginInteraction;
+import com.infinitum.bookingqba.view.map.MapFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
@@ -198,6 +199,8 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             mFragment = RentListFragment.newInstance("", "", ' ');
         } else if (id == R.id.nav_profile) {
             mFragment = LoginFragment.newInstance();
+        }else if (id == R.id.nav_map) {
+            mFragment = MapFragment.newInstance();
         }
         if (mFragment != null) {
             // Highlight the selected item has been done by NavigationView

@@ -15,30 +15,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentRentListBinding;
-import com.infinitum.bookingqba.model.Resource;
-import com.infinitum.bookingqba.util.GlideApp;
-import com.infinitum.bookingqba.view.adapters.rent.RentListItem;
-import com.infinitum.bookingqba.view.adapters.rent.RentPagerAdapter;
+import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
+import com.infinitum.bookingqba.view.adapters.rentlist.RentListAdapter;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
-import com.willy.ratingbar.BaseRatingBar;
-
-import java.util.List;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.ResourceSubscriber;
 
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 
@@ -61,7 +45,7 @@ public class RentListFragment extends BaseNavigationFragment {
 
     private RentViewModel rentViewModel;
 
-    private RentPagerAdapter pagerAdapter;
+    private RentListAdapter pagerAdapter;
 
 
     public RentListFragment() {
@@ -106,12 +90,8 @@ public class RentListFragment extends BaseNavigationFragment {
 
         rentListBinding.setIsLoading(true);
 
+        loadPaginatedData();
 
-//        loadData();
-
-        loadDataPag();
-
-//        initRecycleView();
     }
 
     @Override
@@ -121,98 +101,26 @@ public class RentListFragment extends BaseNavigationFragment {
         super.onPrepareOptionsMenu(menu);
     }
 
-    private void loadDataPag() {
+    private void loadPaginatedData() {
 
-        pagerAdapter = new RentPagerAdapter(getActivity().getLayoutInflater(),mListener);
+        pagerAdapter = new RentListAdapter(getActivity().getLayoutInflater(),mListener);
 
-        rentViewModel.getLdRentsList().observe(this, new Observer<PagedList<RentListItem>>() {
-            @Override
-            public void onChanged(@Nullable PagedList<RentListItem> rentListItems) {
-                pagerAdapter.submitList(rentListItems);
-                rentListBinding.recyclerView.setAdapter(pagerAdapter);
-                rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
-                rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(0, 5));
-                rentListBinding.setIsLoading(false);
-            }
+        rentViewModel.getLiveDataRentList().observe(this, rentListItems -> {
+            pagerAdapter.submitList(rentListItems);
+            rentListBinding.recyclerView.setAdapter(pagerAdapter);
+            rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
+            rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(0, 5));
+            rentListBinding.setIsLoading(false);
         });
 
     }
 
-
-    private void loadData() {
-        Disposable disposable = rentViewModel.getRents(mOrderType)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new ResourceSubscriber<Resource<List<RentListItem>>>() {
-                    @Override
-                    public void onNext(Resource<List<RentListItem>> listResource) {
-                        if (listResource.data != null) {
-                            setItemsAdapter(listResource.data);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-        compositeDisposable.add(disposable);
-    }
-
-//    public void initRecycleView(){
-//        RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
-//        recyclerViewAdapter.registerRenderer(getRentListItem(R.layout.recycler_rent_list_item));
-//        recyclerViewAdapter.setItems(dataGenerator.getRentListItems());
-//
-//        rentListBinding.recyclerView.setAdapter(recyclerViewAdapter);
-//        rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
-//        rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
-//
-//    }
-
-    public void setItemsAdapter(List<RentListItem> rentList) {
-        RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
-        recyclerViewAdapter.registerRenderer(getRentListItem(R.layout.recycler_rent_list_item));
-        recyclerViewAdapter.setItems(rentList);
-        rentListBinding.setIsLoading(false);
-        rentListBinding.recyclerView.setAdapter(recyclerViewAdapter);
-        rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
-        rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(0, 5));
-    }
 
     public RecyclerView.LayoutManager setupLayoutManager() {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         return mLayoutManager;
     }
 
-    private ViewBinder<?> getRentListItem(int layout) {
-        return new ViewBinder<>(
-                layout,
-                RentListItem.class,
-                (model, finder, payloads) -> finder
-                        .find(R.id.tv_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-                        .find(R.id.tv_address, (ViewProvider<TextView>) view -> view.setText(model.getmAddress()))
-                        .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> {
-                            view.setRating(model.getRating());
-                            view.setEnabled(false);
-                            view.setClickable(false);
-                            view.setClearRatingEnabled(false);
-                        })
-                        .find(R.id.iv_rent, (ViewProvider<ImageView>) view ->
-                                GlideApp.with(getView()).load(model.getImageByte()).placeholder(R.drawable.placeholder).into(view))
-                        .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.valueOf(String.valueOf(model.getmPrice()))))
-                        .setOnClickListener(R.id.cv_content_rent_item, (v ->
-                        {
-                            Toast.makeText(getActivity(), "Click", Toast.LENGTH_SHORT).show();
-                            mListener.onItemClick(v, model);
-                        }))
-        );
-    }
 
     @Override
     public void onDestroyView() {

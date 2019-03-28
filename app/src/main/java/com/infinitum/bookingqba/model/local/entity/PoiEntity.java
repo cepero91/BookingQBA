@@ -10,10 +10,10 @@ import android.support.annotation.NonNull;
 import static android.arch.persistence.room.ForeignKey.RESTRICT;
 import static com.infinitum.bookingqba.util.Constants.POI_TABLE_NAME;
 
-@Entity(tableName = POI_TABLE_NAME, indices = {@Index("poi_type")},foreignKeys = {@ForeignKey(
+@Entity(tableName = POI_TABLE_NAME, indices = {@Index("poiType")},foreignKeys = {@ForeignKey(
         entity = PoiTypeEntity.class,
         parentColumns = "id",
-        childColumns = "poi_type",
+        childColumns = "poiType",
         onDelete = RESTRICT
 )})
 public class PoiEntity {
@@ -26,7 +26,7 @@ public class PoiEntity {
     @NonNull
     private String name;
 
-    @ColumnInfo(name = "poi_type")
+    @ColumnInfo(name = "poiType")
     @NonNull
     private String poiType;
 

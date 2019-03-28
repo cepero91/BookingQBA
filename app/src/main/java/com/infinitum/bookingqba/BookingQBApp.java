@@ -3,6 +3,7 @@ package com.infinitum.bookingqba;
 
 import android.content.Context;
 import android.support.multidex.MultiDex;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.infinitum.bookingqba.di.AppComponent;
 import com.infinitum.bookingqba.di.DaggerAppComponent;
@@ -33,6 +34,7 @@ public class BookingQBApp extends DaggerApplication{
         if(BuildConfig.DEBUG){
             Timber.plant(new Timber.DebugTree());
         }
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
     @Override

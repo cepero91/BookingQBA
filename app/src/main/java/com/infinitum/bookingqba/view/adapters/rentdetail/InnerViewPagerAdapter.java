@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,7 +17,11 @@ import com.infinitum.bookingqba.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InnerViewPagerAdapter extends FragmentPagerAdapter {
+import viewpagerwc.ui.dom.wrapping.WrappingFragmentPagerAdapter;
+import viewpagerwc.ui.dom.wrapping.WrappingFragmentStatePagerAdapter;
+import viewpagerwc.ui.dom.wrapping.WrappingViewPager;
+
+public class InnerViewPagerAdapter extends WrappingFragmentPagerAdapter {
 
     private List<Fragment> fragmentList = new ArrayList<>();
     private List<String> titleList = new ArrayList<>();
@@ -25,12 +30,13 @@ public class InnerViewPagerAdapter extends FragmentPagerAdapter {
         super(fm);
     }
 
+
     @Override
     public Fragment getItem(int i) {
         return fragmentList.get(i);
     }
 
-    public void addFragment(Fragment fragment, String title){
+    public void addFragment(Fragment fragment, String title) {
         fragmentList.add(fragment);
         titleList.add(title);
     }

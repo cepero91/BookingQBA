@@ -31,6 +31,7 @@ import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
+import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.view.base.BasePageFragment;
 import com.infinitum.bookingqba.viewmodel.SyncViewModel;
@@ -146,6 +147,9 @@ public class PageFourFragment extends BasePageFragment {
                 syncRentAmenities();
                 break;
             case 10:
+                syncRentPois();
+                break;
+            case 11:
                 syncGaleries();
                 break;
         }
@@ -546,9 +550,9 @@ public class PageFourFragment extends BasePageFragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<List<RentAmenitiesEntity>>() {
                     @Override
-                    public void onSuccess(List<RentAmenitiesEntity> drawTypeEntities) {
+                    public void onSuccess(List<RentAmenitiesEntity> rentAmenitiesEntityList) {
                         fourBinding.progressViewCircle.setProgress(57);
-                        saveRentAmenities(drawTypeEntities);
+                        saveRentAmenities(rentAmenitiesEntityList);
                     }
 
                     @Override
@@ -570,6 +574,48 @@ public class PageFourFragment extends BasePageFragment {
                     public void onComplete() {
                         fourBinding.progressViewCircle.setProgress(60);
                         saveDownloadLevel(10);
+                        syncRentPois();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        isSync = false;
+                        mListener.onDownloadError(e.getMessage());
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    private void syncRentPois() {
+        disposable = syncViewModel.rentPoiList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<List<RentPoiEntity>>() {
+                    @Override
+                    public void onSuccess(List<RentPoiEntity> rentPoiEntityList) {
+                        fourBinding.progressViewCircle.setProgress(63);
+                        saveRentPois(rentPoiEntityList);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        isSync = false;
+                        mListener.onDownloadError(e.getMessage());
+                    }
+                });
+        compositeDisposable.add(disposable);
+
+    }
+
+    private void saveRentPois(List<RentPoiEntity> rentPoiEntityList) {
+        disposable = syncViewModel.insertRentPois(rentPoiEntityList)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        fourBinding.progressViewCircle.setProgress(66);
+                        saveDownloadLevel(11);
                         syncGaleries();
                     }
 
@@ -611,7 +657,7 @@ public class PageFourFragment extends BasePageFragment {
                     public void onComplete() {
                         isSync = false;
                         fourBinding.progressViewCircle.setProgress(100);
-                        saveDownloadLevel(11);
+                        saveDownloadLevel(12);
                         mListener.onDownloadSuccess();
                     }
 
