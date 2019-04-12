@@ -4,21 +4,21 @@ import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 
 public class RentNewItem extends BaseItem {
 
-    private byte[] mImage;
+    private String imagePath;
     private float rating;
 
-    public RentNewItem(String id, String mName, byte[] mImage, float rating) {
+    public RentNewItem(String id, String mName, String imagePath, float rating) {
         super(id, mName);
-        this.mImage = mImage;
+        this.imagePath = imagePath;
         this.rating = rating;
     }
 
-    public byte[] getmImage() {
-        return mImage;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setmImage(byte[] mImage) {
-        this.mImage = mImage;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public float getRating() {

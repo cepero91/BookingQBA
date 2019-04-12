@@ -22,8 +22,8 @@
 
         <com.github.siyamed.shapeimageview.RoundedImageView
             android:id="@+id/iv_rent"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="@dimen/rent_new_iv_size"
+            android:layout_height="@dimen/rent_new_iv_size"
             app:siBorderAlpha="0"
             app:siRadius="20dp" />
 
@@ -40,8 +40,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srb_rating="4"
         app:srb_stepSize="0.5"
-        app:srb_starWidth="16dp"
-        app:srb_starHeight="16dp"
+        app:srb_starWidth="@dimen/rent_new_star_size"
+        app:srb_starHeight="@dimen/rent_new_star_size"
         app:srb_starPadding="2dp"
         app:srb_clickable="false"
         app:srb_scrollable="false"

@@ -23,6 +23,7 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.ResponseBody;
@@ -144,8 +145,15 @@ public interface ApiInterface {
      * Obtener imagen
      * @return responseBody
      */
-    @GET()
-    Single<ResponseBody> getSingleImages(@Url String url);
+    @GET
+    Single<ResponseBody> getSingleImage(@Url String url);
+
+    /**
+     * Obtener imagen
+     * @return responseBody
+     */
+    @GET
+    Observable<ResponseBody> getObservableImage(@Url String url);
 
     //------------------- OFERTA ---------------------//
 

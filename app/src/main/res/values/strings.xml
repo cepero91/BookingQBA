@@ -8,8 +8,9 @@
     <string name="lorem_ipsum">Lorem ipsum dolor ipsum dolor, ipsum dolor ipsum dolor ipsum dolor ipsum dolor.</string>
     <string name="llega_a_tu_destino">Llega a tu destino</string>
     <string name="hora_de_actualizar">Hora de Actualizar</string>
-    <string name="para_el_correcto"> Antes dinos que tipo de renta buscas.</string>
-    <string name="para_turistas_extranjeros">Para turistas extranjeros</string>
+    <string name="actualizando">Actualizando</string>
+    <string name="para_el_correcto"> Si deseas usar la aplicacion sin internet, marca actualizacion con imagenes.</string>
+    <string name="actualizar_con_imagenes">Actualizacion con imagenes</string>
     <string name="para_cubanos">Para cubanos</string>
     <string name="navigation_drawer_open">open</string>
     <string name="navigation_drawer_close">close</string>

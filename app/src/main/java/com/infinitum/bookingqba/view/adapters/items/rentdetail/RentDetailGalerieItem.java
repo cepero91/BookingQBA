@@ -7,17 +7,17 @@ import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 
 public class RentDetailGalerieItem implements ViewModel, Parcelable {
 
-    private byte[] image;
+    private String image;
 
-    public RentDetailGalerieItem(byte[] image) {
+    public RentDetailGalerieItem(String image) {
         this.image = image;
     }
 
-    public byte[] getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(String image) {
         this.image = image;
     }
 
@@ -28,14 +28,14 @@ public class RentDetailGalerieItem implements ViewModel, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByteArray(this.image);
+        dest.writeString(this.image);
     }
 
     protected RentDetailGalerieItem(Parcel in) {
-        this.image = in.createByteArray();
+        this.image = in.readString();
     }
 
-    public static final Creator<RentDetailGalerieItem> CREATOR = new Creator<RentDetailGalerieItem>() {
+    public static final Parcelable.Creator<RentDetailGalerieItem> CREATOR = new Parcelable.Creator<RentDetailGalerieItem>() {
         @Override
         public RentDetailGalerieItem createFromParcel(Parcel source) {
             return new RentDetailGalerieItem(source);

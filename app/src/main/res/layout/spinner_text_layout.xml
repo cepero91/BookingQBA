@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Item Spinner"
+    android:fontFamily="@font/poppinsmedium"
+    android:textSize="14sp"
+    android:includeFontPadding="false"
+    android:textColor="@color/material_color_grey_700"/>
+

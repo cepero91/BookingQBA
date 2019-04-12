@@ -30,44 +30,24 @@ public class Resource<T> {
     }
 
     public static <T> Resource<T> success(@Nullable T data) {
-        return new Resource<>(SUCCESS_LOCAL, data, "");
+        return new Resource<>(SUCCESS, data, "SUCCESS");
     }
 
-    public static <T> Resource<T> success_local(@Nullable T data) {
-        return new Resource<>(SUCCESS_LOCAL, data, "Error remote");
-    }
-
-    public static <T> Resource<T> success_remote(@Nullable T data) {
-        return new Resource<>(SUCCESS_REMOTE, data, null);
+    public static <T> Resource<T> downloaded(@Nullable T data) {
+        return new Resource<>(DOWNLOADED, data, "DOWNLOADED");
     }
 
     public static <T> Resource<T> error(Throwable throwable) {
-        return new Resource<>(ERROR_LOCAL, null, throwable.getLocalizedMessage());
-    }
-
-    public static <T> Resource<T> error_local(Throwable throwable) {
-        return new Resource<>(ERROR_LOCAL, null, throwable.getLocalizedMessage());
-    }
-
-    public static <T> Resource<T> error_remote(Throwable throwable) {
-        return new Resource<>(ERROR_REMOTE, null, throwable.getLocalizedMessage());
+        return new Resource<>(ERROR, null, throwable.getLocalizedMessage());
     }
 
     public static <T> Resource<T> error(String message) {
         return new Resource<>(ERROR, null, message);
     }
 
-    public static <T> Resource<T> loading(@Nullable T data) {
-        return new Resource<>(LOADING, data, null);
-    }
-
     public enum Status {
         SUCCESS,
-        SUCCESS_LOCAL,
-        SUCCESS_REMOTE,
         ERROR,
-        ERROR_LOCAL,
-        ERROR_REMOTE,
-        LOADING
+        DOWNLOADED
     }
 }

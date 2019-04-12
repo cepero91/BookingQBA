@@ -4,5 +4,5 @@ public interface PageFourInteraction {
 
     void onDownloadSuccess();
 
-    void onDownloadError(String msg);
+    void onDownloadError(Throwable throwable);
 }

@@ -67,15 +67,13 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
      * @return
      */
     public LiveData<PagedList<RentListItem>> getLiveDataRentList(){
-        DataSource.Factory<Integer,RentListItem> dataSource = rentRepository.getRentPaged().mapByPage(new Function<List<RentAndGalery>, List<RentListItem>>() {
-            @Override
-            public List<RentListItem> apply(List<RentAndGalery> input) {
-                List<RentListItem> itemsUi = new ArrayList<>();
-                for(RentAndGalery entity: input){
-                    itemsUi.add(new RentListItem(entity.getId(),entity.getName(),entity.getPrice(),entity.getAddress(),entity.getGaleries().get(0).getImageByte(),entity.getRating()));
-                }
-                return itemsUi;
+        DataSource.Factory<Integer,RentListItem> dataSource = rentRepository.getRentPaged().mapByPage(input -> {
+            List<RentListItem> itemsUi = new ArrayList<>();
+            for(RentAndGalery entity: input){
+                String imagePath = entity.getGalerieAtPos(0).getImageLocalPath()!=null?entity.getGalerieAtPos(0).getImageLocalPath():entity.getGalerieAtPos(0).getImageUrl();
+                itemsUi.add(new RentListItem(entity.getId(),entity.getName(),entity.getPrice(),entity.getAddress(),imagePath,entity.getRating()));
             }
+            return itemsUi;
         });
         LivePagedListBuilder<Integer, RentListItem> pagedListBuilder= new LivePagedListBuilder<>(dataSource, 10);
         ldRentsList = pagedListBuilder.build();
@@ -138,7 +136,8 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         List<RentListItem> items = new ArrayList<>();
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndGalery entity : listResource.data) {
-                items.add(new RentListItem(entity.getId(), entity.getName(), entity.getPrice(), entity.getAddress(), entity.getGaleries().get(0).getImageByte(),entity.getRating()));
+                String imagePath = entity.getGalerieAtPos(0).getImageLocalPath()!=null?entity.getGalerieAtPos(0).getImageLocalPath():entity.getGalerieAtPos(0).getImageUrl();
+                items.add(new RentListItem(entity.getId(), entity.getName(), entity.getPrice(), entity.getAddress(), imagePath,entity.getRating()));
             }
         }
         return Flowable.just(items)
@@ -199,7 +198,8 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private ArrayList<RentDetailGalerieItem> convertGaleriePojoToParcel(List<GalerieEntity> galerieEntities) {
         ArrayList<RentDetailGalerieItem> detailGalerieItems = new ArrayList<>();
         for (GalerieEntity item : galerieEntities) {
-            detailGalerieItems.add(new RentDetailGalerieItem(item.getImageByte()));
+            String imagePath = item.getImageLocalPath()!=null?item.getImageLocalPath():item.getImageUrl();
+            detailGalerieItems.add(new RentDetailGalerieItem(imagePath));
         }
         return detailGalerieItems;
     }

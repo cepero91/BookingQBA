@@ -7,7 +7,15 @@ import android.support.v7.app.AppCompatDelegate;
 
 import com.infinitum.bookingqba.di.AppComponent;
 import com.infinitum.bookingqba.di.DaggerAppComponent;
+import com.liulishuo.filedownloader.FileDownloader;
+import com.liulishuo.filedownloader.connection.FileDownloadUrlConnection;
+import com.liulishuo.filedownloader.util.FileDownloadLog;
 import com.squareup.leakcanary.LeakCanary;
+import com.tonyodev.fetch2.Fetch;
+import com.tonyodev.fetch2.FetchConfiguration;
+import com.tonyodev.fetch2rx.RxFetch;
+
+import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DaggerApplication;
@@ -24,6 +32,7 @@ public class BookingQBApp extends DaggerApplication{
     @Override
     public void onCreate() {
         super.onCreate();
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
@@ -34,7 +43,14 @@ public class BookingQBApp extends DaggerApplication{
         if(BuildConfig.DEBUG){
             Timber.plant(new Timber.DebugTree());
         }
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+
+        FileDownloader.setupOnApplicationOnCreate(this)
+                .connectionCreator(new FileDownloadUrlConnection
+                        .Creator(new FileDownloadUrlConnection.Configuration()
+                        .connectTimeout(15_000) // set connection timeout.
+                        .readTimeout(15_000) // set read timeout.
+                ))
+                .commit();
     }
 
     @Override

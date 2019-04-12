@@ -13,6 +13,7 @@ import com.google.android.flexbox.FlexboxLayout;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.util.GlideApp;
+import com.moos.library.HorizontalProgressView;
 import com.willy.ratingbar.BaseRatingBar;
 
 import java.util.List;
@@ -68,8 +69,8 @@ public class BindingAdapters {
     }
 
     @BindingAdapter("setRentDetailImage")
-    public static void setRentDetailImage(AppCompatImageView view, byte[] imageByte) {
-        GlideApp.with(view).load(imageByte).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(view);
+    public static void setRentDetailImage(AppCompatImageView view, String imagePath) {
+        GlideApp.with(view).load(imagePath).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(view);
     }
 
     @BindingAdapter("setMaxRooms")
@@ -97,8 +98,8 @@ public class BindingAdapters {
     }
 
     @BindingAdapter("setRentListImage")
-    public static void setRentListImage(AppCompatImageView view, byte[] imageByte) {
-        GlideApp.with(view).load(imageByte).placeholder(R.drawable.placeholder).into(view);
+    public static void setRentListImage(AppCompatImageView view, String imagePath) {
+        GlideApp.with(view).load(imagePath).placeholder(R.drawable.placeholder).into(view);
     }
 
     @BindingAdapter("setFlexBoxItem")
@@ -113,6 +114,23 @@ public class BindingAdapters {
     @BindingAdapter("setGalerieVisibility")
     public static void setGalerieVisibility(View view, int size) {
         view.setVisibility(size > 1 ? View.VISIBLE : View.GONE);
+    }
+
+    @BindingAdapter("setMbSize")
+    public static void setMbSize(TextView view, long size) {
+        float fileSizeKb = ((float)size/1024);
+        float fileSizeMb = ((float)fileSizeKb/1024);
+        view.setText(String.format("%.2f Mb",fileSizeMb));
+    }
+
+    @BindingAdapter("setPercent")
+    public static void setPercent(TextView view, float percent) {
+        view.setText(String.format("%.1f %s",percent,"%"));
+    }
+
+    @BindingAdapter("setProgress")
+    public static void setProgress(HorizontalProgressView view, float percent) {
+        view.setProgress(percent);
     }
 
 

@@ -10,7 +10,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.infinitum.bookingqba.view.tutorial.PageFourFragment;
+
 import com.infinitum.bookingqba.view.tutorial.PageOneFragment;
 import com.infinitum.bookingqba.view.tutorial.PageThreeFragment;
 import com.infinitum.bookingqba.view.tutorial.PageTwoFragment;
@@ -21,8 +21,6 @@ import java.util.List;
 import timber.log.Timber;
 
 public class TutorialPagerAdapter extends FragmentStatePagerAdapter {
-    private WeakReference<Fragment> weakReference;
-    private SparseArray<WeakReference<Fragment>>registerdFragments = new SparseArray<>();
 
     public TutorialPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -37,8 +35,6 @@ public class TutorialPagerAdapter extends FragmentStatePagerAdapter {
                 return PageTwoFragment.newInstance();
             case 2:
                 return PageThreeFragment.newInstance();
-            case 3:
-                return PageFourFragment.newInstance();
             default:
                 return null;
         }
@@ -46,24 +42,7 @@ public class TutorialPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 4;
+        return 3;
     }
 
-    @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-        weakReference = new WeakReference<>((Fragment) super.instantiateItem(container, position));
-        registerdFragments.put(position,weakReference);
-        return registerdFragments.get(position).get();
-    }
-
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        registerdFragments.remove(position);
-        super.destroyItem(container, position, object);
-    }
-
-
-    public Fragment getRegisteredFragment(int position){
-        return registerdFragments.get(position).get();
-    }
 }

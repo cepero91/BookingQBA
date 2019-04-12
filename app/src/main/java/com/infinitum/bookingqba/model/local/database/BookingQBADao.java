@@ -24,6 +24,7 @@ import com.infinitum.bookingqba.model.local.entity.RentDrawTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
+import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
@@ -285,11 +286,11 @@ public abstract class BookingQBADao {
      * @return
      */
     @Transaction
-    @Query("SELECT id,name,address,price,rating FROM Rent ORDER BY rating DESC LIMIT 5")
+    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.rating DESC LIMIT 5")
     public abstract Flowable<List<RentAndGalery>>getFivePopRents();
 
     @Transaction
-    @Query("SELECT id,name,address,price,rating FROM Rent ORDER BY created DESC LIMIT 5")
+    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.created DESC LIMIT 5")
     public abstract Flowable<List<RentAndGalery>>getFiveNewRents();
 
     @Transaction
@@ -442,7 +443,6 @@ public abstract class BookingQBADao {
     public abstract void updateGaleries(List<GalerieEntity> list);
 
 
-    @Transaction
     public void upsertGaleries(List<GalerieEntity> list){
         for(GalerieEntity entity: list){
             if(addGalerie(entity) == -1){
@@ -451,6 +451,17 @@ public abstract class BookingQBADao {
             }else{
                 Timber.d("%s Inserted", entity.getImageUrl());
             }
+        }
+    }
+
+    @Transaction
+    @Query("UPDATE Galerie SET imageLocalPath=:imageLocalPath WHERE id=:uuid")
+    public abstract void updateImageLocalPathGalerie(String uuid,String imageLocalPath);
+
+    @Transaction
+    public void updateListGaleryUpdateUtil(List<GaleryUpdateUtil> list){
+        for(GaleryUpdateUtil galeryUpdate: list){
+            updateImageLocalPathGalerie(galeryUpdate.getUuid(),galeryUpdate.getImageLocalPath());
         }
     }
 

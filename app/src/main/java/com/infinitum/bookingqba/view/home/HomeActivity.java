@@ -55,7 +55,7 @@ import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
 public class HomeActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector,
         FragmentNavInteraction, NavigationView.OnNavigationItemSelectedListener,
-        FilterInteraction, LoginInteraction {
+        FilterInteraction, LoginInteraction, MapFragment.OnFragmentMapInteraction {
 
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
     private ActivityHomeBinding homeBinding;
@@ -152,7 +152,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             Toast.makeText(this, baseItem.getmName(), Toast.LENGTH_SHORT).show();
         } else if (baseItem instanceof RentListItem) {
             Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
-            intent.putExtra("uuid",baseItem.getId());
+            intent.putExtra("uuid", baseItem.getId());
             startActivity(intent);
         }
     }
@@ -199,7 +199,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             mFragment = RentListFragment.newInstance("", "", ' ');
         } else if (id == R.id.nav_profile) {
             mFragment = LoginFragment.newInstance();
-        }else if (id == R.id.nav_map) {
+        } else if (id == R.id.nav_map) {
             mFragment = MapFragment.newInstance();
         }
         if (mFragment != null) {
@@ -228,14 +228,13 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             homeBinding.drawerLayout.closeDrawer(GravityCompat.END);
             return;
         }
-        if (mFragment instanceof RentListFragment) {
-            MenuItem menuItem = homeBinding.navView.getMenu().findItem(R.id.nav_home);
-            onNavigationItemSelected(menuItem);
-            return;
-        }
         if (mFragment instanceof HomeFragment) {
             super.onBackPressed();
+        } else {
+            MenuItem menuItem = homeBinding.navView.getMenu().findItem(R.id.nav_home);
+            onNavigationItemSelected(menuItem);
         }
+
     }
 
 
@@ -253,17 +252,22 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     @Override
     public void onLogin(User user) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(USER_IS_AUTH,true);
-        editor.putString(USER_ID,user.getUserId());
-        editor.putString(USER_NAME,user.getUserName());
-        editor.putString(USER_TOKEN,user.getToken());
-        editor.putInt(USER_RENTS,user.getMaxRents());
+        editor.putBoolean(USER_IS_AUTH, true);
+        editor.putString(USER_ID, user.getUserId());
+        editor.putString(USER_NAME, user.getUserName());
+        editor.putString(USER_TOKEN, user.getToken());
+        editor.putInt(USER_RENTS, user.getMaxRents());
         editor.apply();
         invalidateOptionsMenu();
     }
 
     @Override
     public void onLogout() {
+
+    }
+
+    @Override
+    public void onMapInteraction() {
 
     }
 }

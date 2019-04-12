@@ -6,7 +6,7 @@ import com.infinitum.bookingqba.view.base.BasePageFragment;
 import com.infinitum.bookingqba.view.map.MapFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
-import com.infinitum.bookingqba.view.tutorial.PageFourFragment;
+
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -18,12 +18,7 @@ public interface FragmentModule {
     BasePageFragment bindBasePageFragment();
 
     @ContributesAndroidInjector
-    PageFourFragment bindPageFourFragment();
-
-
-    @ContributesAndroidInjector
     HomeFragment bindHomeFragment();
-
 
     @ContributesAndroidInjector
     RentListFragment bindRentListFragment();

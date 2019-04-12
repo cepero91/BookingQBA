@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.view.tutorial;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -12,9 +13,11 @@ import android.view.animation.AccelerateInterpolator;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityTutorialBinding;
+import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.view.adapters.TutorialPagerAdapter;
 import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.interaction.PageFourInteraction;
+import com.infinitum.bookingqba.view.sync.SyncActivity;
 
 import java.lang.ref.WeakReference;
 
@@ -27,17 +30,20 @@ import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
 import de.mateware.snacky.Snacky;
 
+import static com.infinitum.bookingqba.util.Constants.PREF_FIRST_OPEN;
+
 public class TutorialActivity extends DaggerAppCompatActivity implements ViewPager.OnPageChangeListener
-        , View.OnClickListener, PageFourInteraction, HasSupportFragmentInjector {
+        , View.OnClickListener {
 
-    private WeakReference<Fragment> wFragment;
     private TutorialPagerAdapter adapterViewPager;
-
 
     private ActivityTutorialBinding tutorialBinding;
 
     @Inject
-    DispatchingAndroidInjector<Fragment> fragmentDispatchingAndroidInjector;
+    NetworkHelper networkHelper;
+
+    @Inject
+    SharedPreferences sharedPreferences;
 
 
     @Override
@@ -46,7 +52,7 @@ public class TutorialActivity extends DaggerAppCompatActivity implements ViewPag
         AndroidInjection.inject(this);
         tutorialBinding = DataBindingUtil.setContentView(this, R.layout.activity_tutorial);
 
-        tutorialBinding.btnUpdate.setOnClickListener(this);
+        tutorialBinding.btnBegin.setOnClickListener(this);
         tutorialBinding.btnNext.setOnClickListener(this);
         tutorialBinding.btnBack.setOnClickListener(this);
 
@@ -56,11 +62,6 @@ public class TutorialActivity extends DaggerAppCompatActivity implements ViewPag
         tutorialBinding.onboardingViewpager.addOnPageChangeListener(this);
         tutorialBinding.dotsIndicator.setViewPager(tutorialBinding.onboardingViewpager);
 
-    }
-
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return fragmentDispatchingAndroidInjector;
     }
 
     @Override
@@ -74,17 +75,17 @@ public class TutorialActivity extends DaggerAppCompatActivity implements ViewPag
 
 
     public void updateBtnAndAnimate(int position) {
-        if (position > 0 && position < 3) {
+        if (position > 0 && position < 2) {
             showAnimateView(tutorialBinding.btnBack);
-            tutorialBinding.btnUpdate.setVisibility(View.GONE);
+            tutorialBinding.btnBegin.setVisibility(View.GONE);
             tutorialBinding.btnNext.setVisibility(View.VISIBLE);
         } else if (position == 0) {
             hideEnableView(tutorialBinding.btnBack);
             tutorialBinding.btnNext.setVisibility(View.VISIBLE);
-            tutorialBinding.btnUpdate.setVisibility(View.GONE);
-        } else if (position == 3) {
+            tutorialBinding.btnBegin.setVisibility(View.GONE);
+        } else if (position == 2) {
             tutorialBinding.btnNext.setVisibility(View.GONE);
-            tutorialBinding.btnUpdate.setVisibility(View.VISIBLE);
+            tutorialBinding.btnBegin.setVisibility(View.VISIBLE);
         }
 
     }
@@ -97,9 +98,10 @@ public class TutorialActivity extends DaggerAppCompatActivity implements ViewPag
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_update: {
-                wFragment = new WeakReference<>(adapterViewPager.getRegisteredFragment(3));
-                ((PageFourFragment) wFragment.get()).startDownload();
+            case R.id.btn_begin: {
+                saveFirstOpenToSharePref();
+                startActivity(new Intent(TutorialActivity.this, SyncActivity.class));
+                this.finish();
             }
             break;
             case R.id.btn_next: {
@@ -116,32 +118,10 @@ public class TutorialActivity extends DaggerAppCompatActivity implements ViewPag
         }
     }
 
-
-    @Override
-    public void onDownloadSuccess() {
-        Snacky.builder()
-                .setActivity(TutorialActivity.this)
-                .setText("Actualizacion exitosa")
-                .setDuration(1500)
-                .success()
-                .show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(TutorialActivity.this, HomeActivity.class));
-                TutorialActivity.this.finish();
-            }
-        },1500);
-    }
-
-    @Override
-    public void onDownloadError(String msg) {
-        Snacky.builder()
-                .setActivity(TutorialActivity.this)
-                .setText(msg)
-                .setDuration(Snacky.LENGTH_SHORT)
-                .error()
-                .show();
+    private void saveFirstOpenToSharePref() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(PREF_FIRST_OPEN,false);
+        editor.apply();
     }
 
     private void showAnimateView(View view) {

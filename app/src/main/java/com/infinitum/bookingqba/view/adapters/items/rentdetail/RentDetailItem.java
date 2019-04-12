@@ -61,7 +61,7 @@ public class RentDetailItem {
         this.rentModeName = rentModeName;
     }
 
-    public byte[] getFirstImage(){
+    public String getFirstImage(){
         return galerieItems.get(0).getImage();
     }
 

@@ -3,37 +3,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="isDownloading"
+            type="Boolean" />
+
+        <variable
+            name="downloadImages"
+            type="Boolean" />
+
+    </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:gravity="center"
+        android:gravity="top"
         android:orientation="vertical"
         android:paddingLeft="@dimen/pages_content_p_left"
         android:paddingRight="@dimen/pages_content_p_right"
+        android:paddingTop="@dimen/pages_content_m_top"
         tools:context=".view.tutorial.PageFourFragment">
 
-        <com.moos.library.CircleProgressView
-            android:id="@+id/progressView_circle"
-            android:layout_width="@dimen/pages_progress_dimen_w"
-            android:layout_height="@dimen/pages_progress_dimen_h"
-            android:layout_marginTop="@dimen/pages_progress_m_top"
-            app:animateType="AccelerateDecelerateInterpolator"
-            app:end_color="#00796B"
-            app:isFilled="false"
-            app:isTracked="true"
-            app:progressTextColor="#FF5722"
-            app:progressTextSize="36sp"
-            app:start_color="#64FFDA"
-            app:start_progress="0"
-            app:trackColor="#B2DFDB"
-            app:track_width="22dp" />
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/iv_use_case"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/pages_imageview"
+            android:scaleType="fitCenter" />
 
         <LinearLayout
             android:id="@+id/ll_content_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            app:visibleGone="@{!safeUnbox(isDownloading)}">
 
             <TextView
                 android:id="@+id/tv_title"
@@ -56,36 +60,121 @@
                 android:textAlignment="center"
                 android:textSize="@dimen/pages_desc_dimen" />
 
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/cb_images"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:buttonTint="#FF5722"
+                android:fontFamily="@font/poppinsregular"
+                android:gravity="center"
+                android:text="@string/actualizar_con_imagenes"
+                android:textAlignment="center"
+                android:textSize="@dimen/pages_check_text_size" />
+
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_checkbox_content"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/pages_checkbox_m_top"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            app:visibleGone="@{safeUnbox(isDownloading)}">
 
-            <android.support.v7.widget.AppCompatCheckBox
-                android:id="@+id/cb_tourist"
+            <TextView
+                android:id="@+id/tv_title_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:buttonTint="#FF5722"
-                android:fontFamily="@font/poppinsregular"
-                android:gravity="center"
-                android:text="@string/para_turistas_extranjeros"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/pages_title_margin_bottom"
+                android:fontFamily="@font/poppinsbold"
+                android:text="@string/actualizando"
                 android:textAlignment="center"
-                android:textSize="@dimen/pages_check_text_size" />
+                android:textSize="@dimen/pages_title_dimen" />
 
-            <android.support.v7.widget.AppCompatCheckBox
-                android:id="@+id/cb_cuban"
-                android:layout_width="wrap_content"
+            <com.moos.library.HorizontalProgressView
+                android:id="@+id/pb_entities"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                app:end_color="@color/colorPrimary"
+                app:isTracked="true"
+                app:progressDuration="1800"
+                app:progressTextColor="#696969"
+                app:progressTextVisibility="true"
+                app:start_color="@color/blue_start"
+                app:trackColor="#f4f4f4"
+                app:track_width="15dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:buttonTint="#FF5722"
-                android:fontFamily="@font/poppinsregular"
-                android:gravity="center"
-                android:text="@string/para_cubanos"
-                android:textAlignment="center"
-                android:textSize="@dimen/pages_check_text_size" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_entities"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="@dimen/pages_title_margin_bottom"
+                    android:fontFamily="@font/poppinsregular"
+                    android:text="Llenando Base de datos"
+                    android:textAlignment="center"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_content_galerie_pb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:visibleGone="@{safeUnbox(downloadImages)}">
+
+                <com.moos.library.HorizontalProgressView
+                    android:id="@+id/pb_galery"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    app:end_color="@color/colorPrimary"
+                    app:isTracked="true"
+                    app:progressDuration="1800"
+                    app:progressTextColor="#696969"
+                    app:progressTextVisibility="true"
+                    app:start_color="@color/blue_start"
+                    app:trackColor="#f4f4f4"
+                    app:track_width="15dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_galerie"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginBottom="@dimen/pages_title_margin_bottom"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="Descargando galeria:"
+                        android:textAlignment="center"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tv_galerie_size"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginBottom="@dimen/pages_title_margin_bottom"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="@font/poppinsbold"
+                        android:textAlignment="center"
+                        android:textSize="12sp"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 

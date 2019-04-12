@@ -22,12 +22,12 @@ public class DatabaseModule {
     @Singleton
     @Provides
     BookingQBADatabase bookingQBADatabase(Context context) {
-        return get(context);
-//        return Room
-//                .databaseBuilder(context, BookingQBADatabase.class, DATABASE_NAME)
-//                .fallbackToDestructiveMigration()
-////                .openHelperFactory(new AssetSQLiteOpenHelperFactory())
-//                .build();
+//        return get(context);
+        return Room
+                .databaseBuilder(context, BookingQBADatabase.class, DATABASE_NAME)
+                .fallbackToDestructiveMigration()
+//                .openHelperFactory(new AssetSQLiteOpenHelperFactory())
+                .build();
     }
 
     synchronized static BookingQBADatabase get(Context ctxt) {

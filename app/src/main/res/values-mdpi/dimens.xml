@@ -39,4 +39,7 @@
     <dimen name="rent_detail_price_size">22sp</dimen>
     <dimen name="rent_detail_rent_mode_size">12sp</dimen>
     <dimen name="recycler_rent_new_name_size">16sp</dimen>
+    <dimen name="province_bar_height">45dp</dimen>
+    <dimen name="rent_new_iv_size">150dp</dimen>
+    <dimen name="rent_new_star_size">16dp</dimen>
 </resources>

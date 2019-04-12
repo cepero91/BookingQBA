@@ -7,6 +7,10 @@
         <variable
             name="isLoading"
             type="Boolean" />
+
+        <variable
+            name="entries"
+            type="android.widget.ArrayAdapter" />
     </data>
 
     <FrameLayout
@@ -29,31 +33,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginRight="25dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
                     android:layout_marginTop="5dp"
                     app:cardCornerRadius="15dp"
-                    app:cardElevation="8dp"
+                    app:cardElevation="5dp"
                     app:cardPreventCornerOverlap="true">
 
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp">
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp">
 
-                        <com.jaredrummler.materialspinner.MaterialSpinner
+                        <com.toptoche.searchablespinnerlibrary.SearchableSpinner
                             android:id="@+id/spinner"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:background="@drawable/shape_oval_spinner"
-                            android:textAppearance="@style/MySpinnerTextStyle"
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp"
-                            app:ms_hint="A que Provincia viaja"
-                            app:ms_dropdown_max_height="@dimen/mat_spinner_drop_height"
-                            app:ms_text_color="@color/material_color_grey_500"
-                            app:ms_hint_color="@color/material_color_grey_300"
+                            android:layout_height="42dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:adapter="@{entries}"
                             />
 
                     </FrameLayout>

@@ -18,6 +18,8 @@ import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import timber.log.Timber;
 
@@ -55,6 +57,7 @@ public class ProvinceRepoImpl implements ProvinceRepository {
         }
         return listEntity;
     }
+
 
     /**
      * Ejecuta la peticion y tranforma los datos

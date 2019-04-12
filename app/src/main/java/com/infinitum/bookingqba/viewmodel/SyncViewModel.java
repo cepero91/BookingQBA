@@ -16,6 +16,7 @@ import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
+import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.drawtype.DrawTypeRepository;
@@ -30,12 +31,16 @@ import com.infinitum.bookingqba.model.repository.rentamenities.RentAmenitiesRepo
 import com.infinitum.bookingqba.model.repository.rentmode.RentModeRepository;
 import com.infinitum.bookingqba.model.repository.rentpoi.RentPoiRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
+import okhttp3.ResponseBody;
+import timber.log.Timber;
 
 public class SyncViewModel extends ViewModel {
 
@@ -52,6 +57,8 @@ public class SyncViewModel extends ViewModel {
     private RentAmenitiesRepository rentAmenitiesRepository;
     private RentPoiRepository rentPoiRepository;
 
+    private List<GaleryUpdateUtil> galeryUpdateUtilList;
+
     @Inject
     public SyncViewModel(ProvinceRepository provinceRepository, MunicipalityRepository municipalityRepository, AmenitiesRepository amenitiesRepository, PoiTypeRepository poiTypeRepository, PoiRepository poiRepository, RentRepository rentRepository, RentModeRepository rentModeRepository, ReferenceZoneRepository referenceZoneRepository, DrawTypeRepository drawTypeRepository, GalerieRepository galerieRepository, RentAmenitiesRepository rentAmenitiesRepository, RentPoiRepository rentPoiRepository) {
         this.provinceRepository = provinceRepository;
@@ -66,6 +73,7 @@ public class SyncViewModel extends ViewModel {
         this.galerieRepository = galerieRepository;
         this.rentAmenitiesRepository = rentAmenitiesRepository;
         this.rentPoiRepository = rentPoiRepository;
+        galeryUpdateUtilList = new ArrayList<>();
     }
 
     public Single<List<ProvinceEntity>> provinceList() {
@@ -138,6 +146,26 @@ public class SyncViewModel extends ViewModel {
 
     public Completable insertGalerie(List<GalerieEntity>entities){
         return galerieRepository.insertGalerie(entities);
+    }
+
+    public Flowable<List<GalerieEntity>> galerieEntityList() {
+        return galerieRepository.allGalerieEntities();
+    }
+
+    public Completable updateGalerie(GalerieEntity galerieEntity){
+        return galerieRepository.updateGalery(galerieEntity);
+    }
+
+    public Completable updateGaleryUpdateUtilList(){
+        return galerieRepository.updateListGaleryUtil(galeryUpdateUtilList);
+    }
+
+    public void addGaleryUpdateUtil(String uuid, String path){
+        galeryUpdateUtilList.add(new GaleryUpdateUtil(uuid,path));
+    }
+
+    public Single<ResponseBody> fetchImage(String url){
+        return galerieRepository.fetchImage(url);
     }
 
     public Single<List<RentEntity>> rentList() {

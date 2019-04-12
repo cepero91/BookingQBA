@@ -7,14 +7,14 @@ public class RentListItem extends BaseItem {
 
     private double mPrice;
     private String mAddress;
-    private byte[] imageByte;
+    private String imagePath;
     private float rating;
 
-    public RentListItem(String id, String mName, double mPrice, String mAddress, byte[] imageByte, float rating) {
+    public RentListItem(String id, String mName, double mPrice, String mAddress, String imagePath, float rating) {
         super(id, mName);
         this.mPrice = mPrice;
         this.mAddress = mAddress;
-        this.imageByte = imageByte;
+        this.imagePath = imagePath;
         this.rating = rating;
     }
 
@@ -34,12 +34,12 @@ public class RentListItem extends BaseItem {
         this.mAddress = mAddress;
     }
 
-    public byte[] getImageByte() {
-        return imageByte;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setImageByte(byte[] imageByte) {
-        this.imageByte = imageByte;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public float getRating() {

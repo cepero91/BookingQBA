@@ -6,7 +6,13 @@ public final class Constants {
     public static final String BASIC_URL_API = "http://192.168.137.1:8000";
 
     //SHARED PREFERENCES KEY
-    public static final String PREF_DOWNLOAD_LEVEL = "DownloadLevel";
+    public static final String PREF_ENTITY_DOWNLOAD_INDEX = "dbDownloadLevel";
+    public static final String PREF_DOWNLOAD_LEVEL = "downloadLevel";
+    public static final String PREF_DOWNLOAD_SUCCESS = "downloadSuccess";
+    public static final String PREF_FIRST_OPEN = "firstOpen";
+
+    //FILES
+    public static final String ROOT_GALERY_FOLDER_NAME = "galery";
 
     //DATABASE
     public static final String DATABASE_NAME = "bookingQBA.db";
@@ -25,6 +31,7 @@ public final class Constants {
     public static final String RENT_AMENITIES_TABLE_NAME = "RentAmenities";
     public static final String RENT_DRAW_TYPE_TABLE_NAME = "RentDrawType";
     public static final String RENT_POI_TABLE_NAME = "RentPoi";
+    public static final String USER_TRACKING_TABLE_NAME = "UserTracking";
 
     public static final char ORDER_TYPE_POPULAR = 'r'; // Represent attrib rating
     public static final char ORDER_TYPE_NEW = 'c'; // Represent attrib created
@@ -35,5 +42,7 @@ public final class Constants {
     public static final String USER_NAME = "userName";
     public static final String USER_TOKEN = "userToken";
     public static final String USER_RENTS = "userRents";
+
+    public static final String MAP_PATH = "mapDir";
 
 }

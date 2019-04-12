@@ -7,6 +7,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 import static com.infinitum.bookingqba.util.Constants.GALERIE_TABLE_NAME;
@@ -27,28 +28,18 @@ public class GalerieEntity {
     @NonNull
     private String imageUrl;
 
-    @ColumnInfo(name = "imageByte",typeAffinity = ColumnInfo.BLOB)
-    private byte[] imageByte;
+    @Nullable
+    private String imageLocalPath;
 
     @NonNull
     private String rent;
 
-
-    public GalerieEntity(@NonNull String id, @NonNull String imageUrl,byte[] imageByte, @NonNull String rent) {
+    public GalerieEntity(@NonNull String id, @NonNull String imageUrl, @Nullable String imageLocalPath, @NonNull String rent) {
         this.id = id;
         this.imageUrl = imageUrl;
-        this.imageByte = imageByte;
+        this.imageLocalPath = imageLocalPath;
         this.rent = rent;
     }
-
-    @Ignore
-    public GalerieEntity(@NonNull String id, @NonNull String imageUrl,@NonNull String rent) {
-        this.id = id;
-        this.imageUrl = imageUrl;
-        this.rent = rent;
-    }
-
-
 
     @NonNull
     public String getId() {
@@ -68,13 +59,13 @@ public class GalerieEntity {
         this.imageUrl = imageUrl;
     }
 
-    @NonNull
-    public byte[] getImageByte() {
-        return imageByte;
+    @Nullable
+    public String getImageLocalPath() {
+        return imageLocalPath;
     }
 
-    public void setImageByte(@NonNull byte[] imageByte) {
-        this.imageByte = imageByte;
+    public void setImageLocalPath(@Nullable String imageLocalPath) {
+        this.imageLocalPath = imageLocalPath;
     }
 
     @NonNull

@@ -80,4 +80,8 @@ public class RentAndGalery {
     public void setRating(float rating) {
         this.rating = rating;
     }
+
+    public GalerieEntity getGalerieAtPos(int pos){
+        return galeries.get(pos);
+    }
 }

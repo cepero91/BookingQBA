@@ -5,9 +5,11 @@ import android.graphics.BitmapFactory;
 
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
+import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.Galerie;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -16,6 +18,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableSource;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
@@ -30,6 +33,8 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import timber.log.Timber;
+
+import static com.infinitum.bookingqba.util.Constants.BASIC_URL_API;
 
 public class GalerieRepoImpl implements GalerieRepository {
 
@@ -51,6 +56,14 @@ public class GalerieRepoImpl implements GalerieRepository {
         return retrofit.create(ApiInterface.class).getGaleries();
     }
 
+    @Override
+    public Single<ResponseBody> fetchImage(String url) {
+        return retrofit
+                .create(ApiInterface.class)
+                .getSingleImage(url)
+                .subscribeOn(Schedulers.io());
+    }
+
     /**
      * Transforma entidad JSON a entidad de Base de Datos
      *
@@ -61,7 +74,7 @@ public class GalerieRepoImpl implements GalerieRepository {
         ArrayList<GalerieEntity> listEntity = new ArrayList<>();
         GalerieEntity entity;
         for (Galerie item : gsonList) {
-            entity = new GalerieEntity(item.getId(), item.getImagen(), item.getHospedaje());
+            entity = new GalerieEntity(item.getId(), BASIC_URL_API + "/" + item.getImagen(), null, item.getHospedaje());
             listEntity.add(entity);
         }
         return listEntity;
@@ -74,26 +87,57 @@ public class GalerieRepoImpl implements GalerieRepository {
                     ArrayList<GalerieEntity> listEntity = new ArrayList<>(parseGsonToEntity(galeries));
                     return Single.just(listEntity);
                 })
-                .flatMap(v -> downloadImages(v).andThen(Single.just(v)))
                 .subscribeOn(Schedulers.io());
     }
 
 
-    private Completable downloadImages(List<GalerieEntity>entities){
-        ArrayList<Completable>completables = new ArrayList<>();
-        for(GalerieEntity item: entities){
-            Single<ResponseBody> singleImage = retrofit.create(ApiInterface.class)
-                    .getSingleImages(item.getImageUrl())
-                    .subscribeOn(Schedulers.io())
-                    .doOnSuccess(responseBody -> {
-                        byte[] bytes = responseBody.bytes();
-                        item.setImageByte(bytes);
-                    });
-            completables.add(Completable.fromSingle(singleImage));
-        }
-        return Completable.concat(completables);
+//    private Completable downloadImages(List<GalerieEntity>entities){
+//        ArrayList<Completable>completables = new ArrayList<>();
+//        for(GalerieEntity item: entities){
+//            Single<ResponseBody> singleImage = retrofit.create(ApiInterface.class)
+//                    .getSingleImages(item.getImageUrl())
+//                    .subscribeOn(Schedulers.io())
+//                    .doOnSuccess(responseBody -> {
+//                        byte[] bytes = responseBody.bytes();
+//                        item.setImageByte(bytes);
+//                    });
+//            completables.add(Completable.fromSingle(singleImage));
+//        }
+//        return Completable.concat(completables);
+//    }
+//
+
+
+//    @Override
+//    public Single<List<GalerieEntity>> fetchRemoteAndTransform2() {
+//        return fetchGaleries()
+//                .flatMap((Function<List<Galerie>, SingleSource<? extends List<GalerieEntity>>>) galeries -> {
+//                    ArrayList<GalerieEntity> listEntity = new ArrayList<>(parseGsonToEntity(galeries));
+//                    return Single.just(listEntity);
+//                })
+//                .subscribeOn(Schedulers.io());
+//
+////        .flatMap(v -> downloadImages(v).andThen(Single.just(v)))
+//    }
+
+    @Override
+    public Flowable<List<GalerieEntity>> allGalerieEntities() {
+        return qbaDao.getAllGaleries().subscribeOn(Schedulers.io());
     }
 
+    @Override
+    public Completable updateGalery(GalerieEntity galerieEntity) {
+        return Completable
+                .fromAction(() -> qbaDao.updateGalerie(galerieEntity))
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Completable updateListGaleryUtil(List<GaleryUpdateUtil> list) {
+        return Completable
+                .fromAction(() -> qbaDao.updateListGaleryUpdateUtil(list))
+                .subscribeOn(Schedulers.io());
+    }
 
 
     @Override

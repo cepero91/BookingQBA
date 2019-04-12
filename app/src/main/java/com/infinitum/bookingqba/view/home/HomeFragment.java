@@ -15,6 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +40,7 @@ import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RentNewItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
+import com.infinitum.bookingqba.view.adapters.items.spinneritem.ProvinceSpinnerList;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.SpinnerProvinceItem;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
@@ -69,6 +73,8 @@ public class HomeFragment extends BaseNavigationFragment {
     private FragmentHomeBinding fragmentHomeBinding;
     private HomeViewModel homeViewModel;
     private Disposable disposable;
+
+    private ProvinceSpinnerList spinnerList;
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -114,6 +120,9 @@ public class HomeFragment extends BaseNavigationFragment {
 
         testingRecycleView();
 
+        fragmentHomeBinding.spinner.setTitle("Seleccione una provincia");
+        fragmentHomeBinding.spinner.setPositiveButton("Cerrar");
+
 
     }
 
@@ -121,11 +130,20 @@ public class HomeFragment extends BaseNavigationFragment {
         Timber.e(throwable);
     }
 
-    private void onProvinceLoad(Resource<List<SpinnerProvinceItem>> listResource) {
-        fragmentHomeBinding.spinner.setItems(listResource.data);
-        fragmentHomeBinding.spinner.setDropdownMaxHeight(getResources().getDimensionPixelSize(R.dimen.mat_spinner_drop_height));
-        fragmentHomeBinding.spinner.setOnItemSelectedListener((MaterialSpinner.OnItemSelectedListener<SpinnerProvinceItem>) (view, position, id, item) -> {
-            Toast.makeText(getActivity(), item.getName() + " " + item.getUuid(), Toast.LENGTH_SHORT).show();
+    private void onProvinceLoad(Resource<ProvinceSpinnerList> listResource) {
+        this.spinnerList = listResource.data;
+        ArrayAdapter adapter = new ArrayAdapter<>(getView().getContext(),R.layout.spinner_text_layout,spinnerList.getArrayNames());
+        fragmentHomeBinding.setEntries(adapter);
+        fragmentHomeBinding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getActivity(), spinnerList.getUuidOnPos(position), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
         });
     }
 
@@ -223,7 +241,7 @@ public class HomeFragment extends BaseNavigationFragment {
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %s",String.valueOf(model.getPrice()))))
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
-                                GlideApp.with(getView()).load(model.getmImage()).placeholder(R.drawable.placeholder).into(view))
+                                GlideApp.with(getView()).load(model.getImagePath()).placeholder(R.drawable.placeholder).into(view))
                         .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
         );
     }
@@ -236,7 +254,7 @@ public class HomeFragment extends BaseNavigationFragment {
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
-                                GlideApp.with(getView()).load(model.getmImage()).placeholder(R.drawable.placeholder).into(view))
+                                GlideApp.with(getView()).load(model.getImagePath()).placeholder(R.drawable.placeholder).into(view))
                         .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
         );
     }

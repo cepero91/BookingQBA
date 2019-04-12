@@ -5,6 +5,7 @@ import com.infinitum.bookingqba.view.MainActivity;
 import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.splash.SplashActivity;
+import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.infinitum.bookingqba.view.tutorial.TutorialActivity;
 
 import dagger.Module;
@@ -20,8 +21,11 @@ public interface ActivityModule {
     @ContributesAndroidInjector
     MainActivity bindMainActivity();
 
-    @ContributesAndroidInjector(modules = FragmentModule.class)
+    @ContributesAndroidInjector
     TutorialActivity bindTutorialActivity();
+
+    @ContributesAndroidInjector
+    SyncActivity bindSyncActivity();
 
     @ContributesAndroidInjector(modules = FragmentModule.class)
     HomeActivity bindHomeActivity();

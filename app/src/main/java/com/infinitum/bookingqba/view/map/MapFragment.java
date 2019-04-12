@@ -37,24 +37,36 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MapFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- */
+
+import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
+
+
 public class MapFragment extends Fragment {
+
+    private CompositeDisposable compositeDisposable;
+    private Disposable disposable;
 
     @Inject
     SharedPreferences sharedPreferences;
 
-    private OnFragmentInteractionListener mListener;
+    private OnFragmentMapInteraction mListener;
 
     private FragmentMapBinding mapBinding;
 
     private MapScaleBar mapScaleBar;
+
+    private String mapFilePath;
 
     public MapFragment() {
         // Required empty public constructor
@@ -78,6 +90,22 @@ public class MapFragment extends Fragment {
         AndroidSupportInjection.inject(this);
         super.onActivityCreated(savedInstanceState);
 
+        mapBinding.setIsLoading(true);
+
+        mapFilePath = sharedPreferences.getString(MAP_PATH, "");
+
+        if (mapFilePath.equals("")) {
+            disposable = Completable.fromAction(this::copyAssetMap)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnComplete(this::setupMapView).subscribe();
+            compositeDisposable.add(disposable);
+        }else{
+            setupMapView();
+        }
+    }
+
+    private void copyAssetMap() {
         CopyAssets.with(getActivity())
                 .from("map")
                 .setListener(new CopyListener() {
@@ -88,12 +116,16 @@ public class MapFragment extends Fragment {
 
                     @Override
                     public void progress(CopyCreator copyCreator, File currentFile, int copyProgress) {
-
+                        Timber.e("progress copy files %s",copyProgress);
                     }
 
                     @Override
                     public void completed(CopyCreator copyCreator, Map<File, Boolean> results) {
                         Timber.i("File copy completed");
+                        SharedPreferences.Editor edit = sharedPreferences.edit();
+                        edit.putString(((File)results.keySet().toArray()[0]).getAbsolutePath(),"");
+                        edit.apply();
+                        mapFilePath = ((File)results.keySet().toArray()[0]).getAbsolutePath();
                     }
 
                     @Override
@@ -102,39 +134,43 @@ public class MapFragment extends Fragment {
                     }
                 })
                 .copy();
+    }
 
-//        MapFileTileSource tileSource = new MapFileTileSource();
-//        String mapPath = new File(Environment.getExternalStorageDirectory(), MAP_FILE).getAbsolutePath();
-//        if (tileSource.setMapFile(mapPath)) {
-//            // Vector layer
-//            VectorTileLayer tileLayer = mapBinding.mapview.map().setBaseMap(tileSource);
-//
-//            // Building layer
-//            mapBinding.mapview.map().layers().add(new BuildingLayer(mapBinding.mapview.map(), tileLayer));
-//
-//            // Label layer
-//            mapBinding.mapview.map().layers().add(new LabelLayer(mapBinding.mapview.map(), tileLayer));
-//
-//            // Render theme
-//            mapBinding.mapview.map().setTheme(VtmThemes.DEFAULT);
-//
-//            // Scale bar
-//            mapScaleBar = new DefaultMapScaleBar(mapBinding.mapview.map());
-//            MapScaleBarLayer mapScaleBarLayer = new MapScaleBarLayer(mapBinding.mapview.map(), mapScaleBar);
-//            mapScaleBarLayer.getRenderer().setPosition(GLViewport.Position.BOTTOM_LEFT);
-//            mapScaleBarLayer.getRenderer().setOffset(5 * CanvasAdapter.getScale(), 0);
-//            mapBinding.mapview.map().layers().add(mapScaleBarLayer);
-//
-//            // Note: this map position is specific to Berlin area
-//            mapBinding.mapview.map().setMapPosition(52.517037, 13.38886, 1 << 12);
-//        }
+    public void setupMapView(){
+        MapFileTileSource tileSource = new MapFileTileSource();
+        String mapPath = new File(mapFilePath).getAbsolutePath();
+        if (tileSource.setMapFile(mapPath)) {
+            // Vector layer
+            VectorTileLayer tileLayer = mapBinding.mapview.map().setBaseMap(tileSource);
+
+            // Building layer
+            mapBinding.mapview.map().layers().add(new BuildingLayer(mapBinding.mapview.map(), tileLayer));
+
+            // Label layer
+            mapBinding.mapview.map().layers().add(new LabelLayer(mapBinding.mapview.map(), tileLayer));
+
+            // Render theme
+            mapBinding.mapview.map().setTheme(VtmThemes.DEFAULT);
+
+            // Scale bar
+            mapScaleBar = new DefaultMapScaleBar(mapBinding.mapview.map());
+            MapScaleBarLayer mapScaleBarLayer = new MapScaleBarLayer(mapBinding.mapview.map(), mapScaleBar);
+            mapScaleBarLayer.getRenderer().setPosition(GLViewport.Position.BOTTOM_LEFT);
+            mapScaleBarLayer.getRenderer().setOffset(5 * CanvasAdapter.getScale(), 0);
+            mapBinding.mapview.map().layers().add(mapScaleBarLayer);
+
+            // Note: this map position is specific to Berlin area
+            mapBinding.mapview.map().setMapPosition(23.1165, -82.3882, 1 << 12);
+            mapBinding.mapview.postDelayed(() -> mapBinding.setIsLoading(false),300);
+        }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnFragmentMapInteraction) {
+            mListener = (OnFragmentMapInteraction) context;
+            compositeDisposable = new CompositeDisposable();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -145,9 +181,16 @@ public class MapFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        compositeDisposable.clear();
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+    public interface OnFragmentMapInteraction {
+        void onMapInteraction();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapBinding.mapview.onDestroy();
     }
 }
