@@ -31,7 +31,15 @@ public final class Constants {
     public static final String RENT_AMENITIES_TABLE_NAME = "RentAmenities";
     public static final String RENT_DRAW_TYPE_TABLE_NAME = "RentDrawType";
     public static final String RENT_POI_TABLE_NAME = "RentPoi";
-    public static final String USER_TRACKING_TABLE_NAME = "UserTracking";
+    public static final String RENT_VISIT_COUNT_TABLE_NAME = "RentVisitCount";
+
+    //PERMISSION
+    public static final String PERMISSION = "permission";
+    public static final String IMEI = "imei";
+    public static final int PERMISSION_GRANTED = 1;
+    public static final int PERMISSION_NOT_GRANTED = -1;
+
+
 
     public static final char ORDER_TYPE_POPULAR = 'r'; // Represent attrib rating
     public static final char ORDER_TYPE_NEW = 'c'; // Represent attrib created

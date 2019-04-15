@@ -1,7 +1,6 @@
 package com.infinitum.bookingqba.viewmodel;
 
 
-import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
@@ -14,7 +13,6 @@ import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
-import com.infinitum.bookingqba.model.local.pojo.PoiAndRelations;
 import com.infinitum.bookingqba.model.local.pojo.RentAmenitieAndRelation;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
@@ -40,6 +38,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -220,6 +219,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
             detailAmenitieItems.add(new RentDetailAmenitieItem(item.getAmenitieNameobject()));
         }
         return detailAmenitieItems;
+    }
+
+    public Completable addOrUpdateRentVisitCount(String id,String rentId){
+        return rentRepository.addOrUpdateRentVisitCount(id,rentId);
     }
 
 

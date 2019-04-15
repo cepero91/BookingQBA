@@ -16,6 +16,8 @@ import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentDrawType;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoi;
+import com.infinitum.bookingqba.model.remote.pojo.RentVisitCountGroup;
+import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 
 import java.util.Date;
@@ -28,6 +30,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -47,6 +50,12 @@ public interface ApiInterface {
 
     @GET("secret")
     Call<String> getSecret(@Header("Authorization") String token);
+
+
+    //------------------- CONTADOR DE VISITAS ---------------------------//
+
+    @POST("/update-visit-count/")
+    Single<ResponseResult> updateRentVisitCount(@Body RentVisitCountGroup rentVisitCountGroup);
 
 
     //------------------- PROVINCIAS ---------------------//

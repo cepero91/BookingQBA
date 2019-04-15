@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -98,10 +99,15 @@ public class MapFragment extends Fragment {
             disposable = Completable.fromAction(this::copyAssetMap)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnComplete(this::setupMapView).subscribe();
+                    .andThen(Completable.fromAction(this::setupMapView))
+                    .doOnComplete(this::showViews).subscribe();
             compositeDisposable.add(disposable);
         }else{
-            setupMapView();
+            disposable = Completable.fromAction(this::setupMapView)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnComplete(this::showViews).subscribe();
+            compositeDisposable.add(disposable);
         }
     }
 
@@ -161,8 +167,13 @@ public class MapFragment extends Fragment {
 
             // Note: this map position is specific to Berlin area
             mapBinding.mapview.map().setMapPosition(23.1165, -82.3882, 1 << 12);
-            mapBinding.mapview.postDelayed(() -> mapBinding.setIsLoading(false),300);
+
         }
+    }
+
+    private void showViews(){
+        mapBinding.setIsLoading(false);
+        new Handler().postDelayed(() -> mapBinding.setOverlay(false),500);
     }
 
     @Override
@@ -186,6 +197,12 @@ public class MapFragment extends Fragment {
 
     public interface OnFragmentMapInteraction {
         void onMapInteraction();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapBinding.mapview.onPause();
     }
 
     @Override

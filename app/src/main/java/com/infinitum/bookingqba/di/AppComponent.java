@@ -11,6 +11,8 @@ import com.infinitum.bookingqba.di.module.NetModule;
 import com.infinitum.bookingqba.di.module.RepositoryModule;
 import com.infinitum.bookingqba.di.module.SharedPreferencesModule;
 import com.infinitum.bookingqba.di.module.ViewModelModule;
+import com.infinitum.bookingqba.di.worker.DaggerWorkerFactory;
+import com.infinitum.bookingqba.di.worker.WorkerSubcomponent;
 
 import javax.inject.Singleton;
 
@@ -32,7 +34,11 @@ import dagger.android.support.AndroidSupportInjectionModule;
         RepositoryModule.class,
         ViewModelModule.class
 })
-public interface AppComponent extends AndroidInjector<DaggerApplication> {
+public interface AppComponent extends AndroidInjector<BookingQBApp> {
+
+    DaggerWorkerFactory daggerWorkerFactory();
+
+    WorkerSubcomponent.Builder workerSubcomponentBuilder();
 
     @Component.Builder
     interface Builder {

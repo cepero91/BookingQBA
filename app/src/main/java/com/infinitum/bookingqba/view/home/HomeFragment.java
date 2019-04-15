@@ -1,15 +1,19 @@
 package com.infinitum.bookingqba.view.home;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +34,8 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.CompositeViewBinder
 import com.github.vivchar.rendererrecyclerviewadapter.binder.CompositeViewStateProvider;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentHomeBinding;
 import com.infinitum.bookingqba.model.Resource;
@@ -41,11 +46,9 @@ import com.infinitum.bookingqba.view.adapters.items.home.RentNewItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.ProvinceSpinnerList;
-import com.infinitum.bookingqba.view.adapters.items.spinneritem.SpinnerProvinceItem;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.HomeViewModel;
-import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.willy.ratingbar.BaseRatingBar;
 
 import java.lang.reflect.Type;
@@ -60,6 +63,10 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.ResourceSubscriber;
 import timber.log.Timber;
 
+import static com.infinitum.bookingqba.util.Constants.IMEI;
+import static com.infinitum.bookingqba.util.Constants.PERMISSION;
+import static com.infinitum.bookingqba.util.Constants.PERMISSION_GRANTED;
+import static com.infinitum.bookingqba.util.Constants.PERMISSION_NOT_GRANTED;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 
 
@@ -78,6 +85,9 @@ public class HomeFragment extends BaseNavigationFragment {
 
     @Inject
     SharedPreferences sharedPreferences;
+
+    @Inject
+    TelephonyManager telephonyManager;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -108,22 +118,86 @@ public class HomeFragment extends BaseNavigationFragment {
 
         setHasOptionsMenu(true);
 
+        checkPermissions();
+
+        loadProvinces();
+
+        fragmentHomeBinding.setIsLoading(true);
+
+        setupRecyclerView();
+
+        fragmentHomeBinding.spinner.setTitle(getResources().getString(R.string.dialog_provinces_title));
+        fragmentHomeBinding.spinner.setPositiveButton(getResources().getString(R.string.positive_buttom));
+
+
+    }
+
+    private void checkPermissions() {
+        int permGranted = getPermissionPreferenceValue();
+        if (permGranted == 0 || permGranted == PERMISSION_NOT_GRANTED) {
+            final PermissionListener permissionlistener = new PermissionListener() {
+                @Override
+                public void onPermissionGranted() {
+                    savePermissionToPreference(PERMISSION_GRANTED);
+                    String deviceUniqueID = getDeviceUniversalID();
+                    saveImeiToPreference(deviceUniqueID);
+                    Timber.e("Device ID %s",deviceUniqueID);
+                }
+
+                @Override
+                public void onPermissionDenied(List<String> deniedPermissions) {
+                    savePermissionToPreference(PERMISSION_NOT_GRANTED);
+                }
+            };
+
+            TedPermission.with(getActivity())
+                    .setPermissionListener(permissionlistener)
+                    .setRationaleTitle(R.string.permission_dialog_title)
+                    .setRationaleMessage(R.string.permission_dialog_message)
+                    .setDeniedTitle(R.string.permission_denied_title)
+                    .setDeniedMessage(R.string.permission_denied_message)
+                    .setGotoSettingButtonText(R.string.permission_go_setting)
+                    .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CALL_PHONE, Manifest.permission.SEND_SMS)
+                    .check();
+        }
+
+    }
+
+    private void savePermissionToPreference(int value){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(PERMISSION,value);
+        editor.apply();
+    }
+
+    private int getPermissionPreferenceValue(){
+        return sharedPreferences.getInt(PERMISSION,0);
+    }
+
+    private void saveImeiToPreference(String deviceUniqueID){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(IMEI,deviceUniqueID);
+        editor.apply();
+    }
+
+    @SuppressLint("MissingPermission")
+    private String getDeviceUniversalID(){
+        String deviceUniqueID = null;
+        if(telephonyManager != null){
+            deviceUniqueID = telephonyManager.getDeviceId();
+        }
+        if(deviceUniqueID == null){
+            deviceUniqueID = Settings.Secure.getString(getActivity().getContentResolver(),Settings.Secure.ANDROID_ID);
+        }
+        return deviceUniqueID;
+    }
+
+    private void loadProvinces() {
         homeViewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
         disposable = homeViewModel.getProvinces()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onProvinceLoad, this::onFailedLoad);
         compositeDisposable.add(disposable);
-
-
-        fragmentHomeBinding.setIsLoading(true);
-
-        testingRecycleView();
-
-        fragmentHomeBinding.spinner.setTitle("Seleccione una provincia");
-        fragmentHomeBinding.spinner.setPositiveButton("Cerrar");
-
-
     }
 
     private void onFailedLoad(Throwable throwable) {
@@ -132,12 +206,12 @@ public class HomeFragment extends BaseNavigationFragment {
 
     private void onProvinceLoad(Resource<ProvinceSpinnerList> listResource) {
         this.spinnerList = listResource.data;
-        ArrayAdapter adapter = new ArrayAdapter<>(getView().getContext(),R.layout.spinner_text_layout,spinnerList.getArrayNames());
+        ArrayAdapter adapter = new ArrayAdapter<>(getView().getContext(), R.layout.spinner_text_layout, spinnerList.getArrayNames());
         fragmentHomeBinding.setEntries(adapter);
         fragmentHomeBinding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), spinnerList.getUuidOnPos(position), Toast.LENGTH_SHORT).show();
+                loadData(spinnerList.getUuidOnPos(position));
             }
 
             @Override
@@ -154,15 +228,15 @@ public class HomeFragment extends BaseNavigationFragment {
     }
 
 
-    public void checkMenuItemsVisibility(Menu menu){
+    public void checkMenuItemsVisibility(Menu menu) {
         MenuItem menuItem = menu.findItem(R.id.action_filter_panel);
         menuItem.setVisible(false);
-        if(sharedPreferences.getBoolean(USER_IS_AUTH,false)) {
+        if (sharedPreferences.getBoolean(USER_IS_AUTH, false)) {
             MenuItem login = menu.findItem(R.id.action_login);
             login.setVisible(false);
             MenuItem logout = menu.findItem(R.id.action_logout);
             logout.setVisible(true);
-        }else{
+        } else {
             MenuItem login = menu.findItem(R.id.action_login);
             login.setVisible(true);
             MenuItem logout = menu.findItem(R.id.action_logout);
@@ -239,7 +313,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
-                        .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %s",String.valueOf(model.getPrice()))))
+                        .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %s", String.valueOf(model.getPrice()))))
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
                                 GlideApp.with(getView()).load(model.getImagePath()).placeholder(R.drawable.placeholder).into(view))
                         .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
@@ -275,14 +349,13 @@ public class HomeFragment extends BaseNavigationFragment {
     //TESTING
 
 
-    public void testingRecycleView() {
+    public void setupRecyclerView() {
         ViewCompat.setNestedScrollingEnabled(fragmentHomeBinding.recyclerView, false);
         fragmentHomeBinding.recyclerView.setLayoutManager(setupLayoutManager());
         fragmentHomeBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(2, 0));
-        loadData();
     }
 
-    public void loadData() {
+    public void loadData(String province) {
         disposable = homeViewModel.getAllItems()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

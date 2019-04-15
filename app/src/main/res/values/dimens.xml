@@ -30,7 +30,7 @@
     <dimen name="home_header_m_right">25dp</dimen>
     <dimen name="dialog_login_width">280dp</dimen>
     <dimen name="mat_spinner_drop_height">350dp</dimen>
-    <dimen name="rent_detail_img_dimen">280dp</dimen>
+    <dimen name="rent_detail_img_dimen">240dp</dimen>
     <dimen name="rent_detail_rent_name_size">22sp</dimen>
     <dimen name="rent_detail_icon_pic_dime">18dp</dimen>
     <dimen name="rent_detail_icon_pic_text_size">14sp</dimen>

@@ -2,7 +2,6 @@ package com.infinitum.bookingqba.view.rents;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
@@ -17,23 +16,12 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityRentDetailBinding;
 import com.infinitum.bookingqba.model.Resource;
-import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
-import com.infinitum.bookingqba.model.local.entity.PoiEntity;
-import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
-import com.infinitum.bookingqba.model.local.pojo.PoiAndRelations;
-import com.infinitum.bookingqba.model.local.pojo.RentAmenitieAndRelation;
-import com.infinitum.bookingqba.model.local.pojo.RentDetail;
-import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailAmenitieItem;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailGalerieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailItem;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailPoiItem;
 import com.infinitum.bookingqba.view.adapters.rentdetail.InnerViewPagerAdapter;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -43,6 +31,7 @@ import iammert.com.view.scalinglib.State;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -82,13 +71,39 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
         setupScalingLayout();
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
+
+        loadRentDetail();
+
+        if (rentUuid.length() > 1)
+            addOrUpdateRentVisitCount();
+
+    }
+
+    private void addOrUpdateRentVisitCount() {
+        disposable = viewModel.addOrUpdateRentVisitCount(UUID.randomUUID().toString(), rentUuid).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver() {
+                    @Override
+                    public void onComplete() {
+                        Timber.e("Operacion exitosa");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e);
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    private void loadRentDetail() {
         disposable = viewModel.getRentDetailById(rentUuid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onSuccess, Timber::e);
         compositeDisposable.add(disposable);
-
     }
+
 
     private void setupScalingLayout() {
         rentDetailBinding.scalingLayout.setListener(new ScalingLayoutListener() {
@@ -180,16 +195,15 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
 
     private void setupViewPager(RentDetailItem rentDetailItem) {
         InnerViewPagerAdapter innerViewPagerAdapter = new InnerViewPagerAdapter(getSupportFragmentManager());
-        Fragment innerDetail = InnerDetailFragment.newInstance(rentDetailItem.getRentEntity().getDescription(), rentDetailItem.getPoiItems(), rentDetailItem.getAmenitieItems(),rentDetailItem.getGalerieItems());
+        Fragment innerDetail = InnerDetailFragment.newInstance(rentDetailItem.getRentEntity().getDescription(), rentDetailItem.getPoiItems(), rentDetailItem.getAmenitieItems(), rentDetailItem.getGalerieItems());
         Fragment innerRules = InnerRulesFragment.newInstance(rentDetailItem.getRentEntity().getRules());
         innerViewPagerAdapter.addFragment(innerDetail, "Detalles");
         innerViewPagerAdapter.addFragment(innerRules, "Reglas");
         rentDetailBinding.vpPages.setAdapter(innerViewPagerAdapter);
         rentDetailBinding.tlTab.setViewPager(rentDetailBinding.vpPages);
         rentDetailBinding.executePendingBindings();
-        rentDetailBinding.vpPages.postDelayed(() -> rentDetailBinding.setIsLoading(false),100);
+        rentDetailBinding.vpPages.postDelayed(() -> rentDetailBinding.setIsLoading(false), 100);
     }
-
 
 
     @Override
@@ -212,7 +226,7 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-        if(scrollState!=null) {
+        if (scrollState != null) {
             if (scrollState.name().equals("UP")) {
                 hideFabOrBar();
             } else if (scrollState.name().equals("DOWN")) {
@@ -222,12 +236,12 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
     }
 
     private void hideFabOrBar() {
-        if(rentDetailBinding.scalingLayout.getState() == State.COLLAPSED) {
+        if (rentDetailBinding.scalingLayout.getState() == State.COLLAPSED) {
             ViewCompat.animate(rentDetailBinding.scalingLayout)
                     .scaleX(0f).scaleY(0f)
                     .alpha(0f).setDuration(100)
                     .start();
-        }else if(rentDetailBinding.scalingLayout.getState() == State.EXPANDED){
+        } else if (rentDetailBinding.scalingLayout.getState() == State.EXPANDED) {
             ViewCompat.animate(rentDetailBinding.scalingLayout)
                     .translationY(150)
                     .setDuration(100)
@@ -237,12 +251,12 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
     }
 
     private void showFabOrBar() {
-        if(rentDetailBinding.scalingLayout.getState() == State.COLLAPSED) {
+        if (rentDetailBinding.scalingLayout.getState() == State.COLLAPSED) {
             ViewCompat.animate(rentDetailBinding.scalingLayout)
                     .scaleX(1f).scaleY(1f)
                     .alpha(1f).setDuration(200)
                     .start();
-        }else if(rentDetailBinding.scalingLayout.getState() == State.EXPANDED){
+        } else if (rentDetailBinding.scalingLayout.getState() == State.EXPANDED) {
             ViewCompat.animate(rentDetailBinding.scalingLayout)
                     .translationY(0)
                     .setDuration(200)

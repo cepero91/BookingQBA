@@ -14,4 +14,17 @@
     <string name="para_cubanos">Para cubanos</string>
     <string name="navigation_drawer_open">open</string>
     <string name="navigation_drawer_close">close</string>
+
+    <string name="dialog_provinces_title">Seleccione una provincia</string>
+    <string name="positive_buttom">Cerrar</string>
+
+    <string name="permission_dialog_title">Aviso!!</string>
+    <string name="permission_dialog_message">Esta aplicación requiere de multiples permisos para su
+    correcto funcionamiento</string>
+
+    <string name="permission_denied_title">Permisos denegados!!</string>
+    <string name="permission_denied_message">Al parecer no se han otorgado los permisos.
+        Diríjase a [Setting] > [Permission] y otórgelos</string>
+    <string name="permission_go_setting">Ir</string>
+
 </resources>

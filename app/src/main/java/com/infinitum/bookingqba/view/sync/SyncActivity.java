@@ -80,9 +80,6 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     @Inject
     NetworkHelper networkHelper;
 
-    @Inject
-    FileDownloader fileDownloader;
-
     private FileDownloadListener fileDownloadListener;
     private FileDownloadQueueSet queueSet;
 
@@ -100,6 +97,8 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         AndroidInjection.inject(this);
         syncBinding = DataBindingUtil.setContentView(this, R.layout.activity_sync);
+
+        FileDownloader.setup(this);
 
         compositeDisposable = new CompositeDisposable();
 
@@ -675,7 +674,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         for (GalerieEntity entity : galerieEntities) {
             String url = entity.getImageUrl();
             String imageName = fileRootName + File.separator + getFileNameFromUrl(url);
-            tasks.add(fileDownloader.create(url).setPath(imageName).setTag(entity.getId()));
+            tasks.add(FileDownloader.getImpl().create(url).setPath(imageName).setTag(entity.getId()));
             addGaleryUpdateUtil(entity.getId(), imageName);
         }
         return tasks;
@@ -696,7 +695,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         } else {
             queueSet = new FileDownloadQueueSet(getDownloaderListener());
             queueSet.disableCallbackProgressTimes();
-            queueSet.downloadSequentially(taskList);
+            queueSet.downloadTogether(taskList);
             queueSet.start();
         }
 
@@ -794,11 +793,9 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         if (entityDisposable != null && !entityDisposable.isDisposed()) {
             entityDisposable.dispose();
         }
-        if (galeryDisposable.isDisposed() && entityDisposable.isDisposed()) {
+        if (syncBinding.cbImages.isChecked() && galeryDisposable.isDisposed() && entityDisposable.isDisposed()) {
             return true;
-        } else {
-            return false;
-        }
+        } else return !syncBinding.cbImages.isChecked() && entityDisposable.isDisposed();
     }
 
     //-------------  File Downloader ------------------- //
@@ -837,7 +834,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
             @Override
             protected void error(BaseDownloadTask task, Throwable e) {
-                fileDownloader.pause(getDownloaderListener());
+                FileDownloader.getImpl().pause(getDownloaderListener());
                 syncBinding.fbDownload.setTag(LEVEL_GALERY_PAUSED);
                 syncBinding.fbDownload.setEnabled(true);
                 showErrorToast();
@@ -857,11 +854,11 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
             if (syncBinding.fbDownload.getTag().equals(LEVEL_ENTITY)) {
                 int downLevel = sharedPreferences.getInt(PREF_ENTITY_DOWNLOAD_INDEX, 0);
                 syncBinding.fbDownload.setEnabled(false);
-                if(isFirstDownload) {
+                if (isFirstDownload) {
                     isFirstDownload = false;
                     preDownloadAnimation();
                     new Handler().postDelayed(() -> startSyncOnLevel(downLevel), 500);
-                }else{
+                } else {
                     startSyncOnLevel(downLevel);
                 }
             } else if (syncBinding.fbDownload.getTag().equals(LEVEL_GALERY)) {
@@ -881,6 +878,6 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         super.onDestroy();
         compositeDisposable.clear();
         disposeAllDisposable();
-        fileDownloader.clearAllTaskData();
+        FileDownloader.getImpl().clearAllTaskData();
     }
 }

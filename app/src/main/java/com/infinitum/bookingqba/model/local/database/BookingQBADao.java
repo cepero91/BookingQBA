@@ -1,11 +1,12 @@
 package com.infinitum.bookingqba.model.local.database;
 
 import android.arch.paging.DataSource;
-import android.arch.paging.LivePagedListProvider;
+import android.arch.persistence.db.SupportSQLiteQuery;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.RawQuery;
 import android.arch.persistence.room.Transaction;
 import android.arch.persistence.room.TypeConverters;
 import android.arch.persistence.room.Update;
@@ -24,6 +25,7 @@ import com.infinitum.bookingqba.model.local.entity.RentDrawTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
+import com.infinitum.bookingqba.model.local.entity.RentVisitCountEntity;
 import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
@@ -32,6 +34,7 @@ import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 import timber.log.Timber;
 
 @Dao
@@ -244,6 +247,16 @@ public abstract class BookingQBADao {
     @Query("SELECT * FROM Poi")
     public abstract Flowable<List<PoiEntity>>getAllPois();
 
+    //------------------------- USERTRACKING ---------------------//
+
+    @Transaction
+    @Query("SELECT * FROM RentVisitCount")
+    public abstract Single<List<RentVisitCountEntity>> getAllRentVisitCount();
+
+    @Transaction
+    @RawQuery(observedEntities = RentVisitCountEntity.class)
+    public abstract long addOrUpdateRentVisit(SupportSQLiteQuery query);
+
     //------------------------- RENTAS ---------------------------//
 
     @Transaction
@@ -286,7 +299,11 @@ public abstract class BookingQBADao {
      * @return
      */
     @Transaction
-    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.rating DESC LIMIT 5")
+    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent " +
+            "LEFT JOIN Galerie ON Galerie.rent = Rent.id " +
+            "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
+            "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
+            "Province.name = 'La Habana' ORDER BY Rent.rating DESC LIMIT 5")
     public abstract Flowable<List<RentAndGalery>>getFivePopRents();
 
     @Transaction

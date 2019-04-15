@@ -27,6 +27,8 @@ import com.infinitum.bookingqba.model.repository.rentmode.RentModeRepoImpl;
 import com.infinitum.bookingqba.model.repository.rentmode.RentModeRepository;
 import com.infinitum.bookingqba.model.repository.rentpoi.RentPoiRepoImpl;
 import com.infinitum.bookingqba.model.repository.rentpoi.RentPoiRepository;
+import com.infinitum.bookingqba.model.repository.rentvisitcount.RentVisitCountImpl;
+import com.infinitum.bookingqba.model.repository.rentvisitcount.RentVisitCountRepository;
 import com.infinitum.bookingqba.model.repository.user.UserRepoImp;
 import com.infinitum.bookingqba.model.repository.user.UserRepository;
 
@@ -77,5 +79,8 @@ public interface RepositoryModule {
 
     @Binds
     RentAmenitiesRepository rentAmenitiesRepository(RentAmenitiesRepoImpl rentAmenitiesRepo);
+
+    @Binds
+    RentVisitCountRepository rentVisitCountRepository(RentVisitCountImpl rentVisitCountRepo);
 
 }

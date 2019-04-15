@@ -80,19 +80,14 @@
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 
-
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/lottie_loading"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:padding="10dp"
-            android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            app:lottie_autoPlay="true"
-            app:lottie_colorFilter="@color/colorPrimaryDark"
-            app:lottie_enableMergePathsForKitKatAndAbove="true"
-            app:lottie_fileName="lottie/circle_loader.json"
-            app:lottie_loop="true"
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="16dp"
+            android:layout_marginTop="-8dp"
+            android:indeterminate="true"
+            android:layout_gravity="top"
+            style="?android:attr/progressBarStyleHorizontal"
             app:visibleGone="@{safeUnbox(isLoading)}" />
 
     </FrameLayout>

@@ -1,15 +1,15 @@
 package com.infinitum.bookingqba.model.repository.rent;
 
 import android.arch.paging.DataSource;
+import android.arch.persistence.db.SimpleSQLiteQuery;
+import android.arch.persistence.db.SupportSQLiteQuery;
 
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
-import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
-import com.infinitum.bookingqba.model.remote.pojo.Poi;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.util.DateUtils;
 
@@ -27,7 +27,6 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
-import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_NEW;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 
 public class RentRepoImpl implements RentRepository {
@@ -154,5 +153,12 @@ public class RentRepoImpl implements RentRepository {
     @Override
     public Flowable<Resource<RentDetail>> getRentDetailById(String uuid) {
         return qbaDao.getRentDetailById(uuid).map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Completable addOrUpdateRentVisitCount(String id, String rent) {
+        SupportSQLiteQuery query = new SimpleSQLiteQuery("INSERT OR REPLACE INTO RentVisitCount VALUES ('"+rent+"', COALESCE(" +
+                "(SELECT visitCount FROM RentVisitCount WHERE rentId = '"+rent+"'),0)+1)");
+        return Completable.fromAction(()-> qbaDao.addOrUpdateRentVisit(query)).subscribeOn(Schedulers.io());
     }
 }

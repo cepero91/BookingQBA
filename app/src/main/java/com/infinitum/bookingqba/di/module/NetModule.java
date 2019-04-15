@@ -71,12 +71,4 @@ public class NetModule {
     }
 
 
-    //--------- CONFIGURACIONES DE FILE DOWNLOADER -----------//
-
-    @Provides
-    FileDownloader provideFileDownloader() {
-        return FileDownloader.getImpl();
-    }
-
-
 }

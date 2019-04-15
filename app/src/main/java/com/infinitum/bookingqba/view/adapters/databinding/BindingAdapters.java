@@ -133,5 +133,10 @@ public class BindingAdapters {
         view.setProgress(percent);
     }
 
+    @BindingAdapter("setOverlayGone")
+    public static void setOverlayGone(View view, boolean show) {
+        view.setVisibility(show?View.VISIBLE:View.INVISIBLE);
+    }
+
 
 }

@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.di.module;
 
 import android.app.Application;
 import android.content.Context;
+import android.telephony.TelephonyManager;
 
 import com.infinitum.bookingqba.BookingQBApp;
 
@@ -18,4 +19,9 @@ public class AppModule {
 
     @Provides
     Application provideAplication(BookingQBApp application) { return application; }
+
+    @Provides
+    TelephonyManager provideTelephonyManager(Context context){
+        return (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+    }
 }

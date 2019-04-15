@@ -1,9 +1,11 @@
 package com.infinitum.bookingqba.view.home;
 
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
 import com.infinitum.bookingqba.model.remote.pojo.User;
+import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RentNewItem;
@@ -38,14 +41,22 @@ import com.infinitum.bookingqba.view.rents.RentListFragment;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
+import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
@@ -62,10 +73,12 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     private FragmentManager fragmentManager;
     private Fragment mFragment;
     private FilterFragment filterFragment;
+    private PeriodicWorkRequest periodicWorkRequest;
 
 
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentDispatchingAndroidInjector;
+
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -83,8 +96,26 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
         initDrawerLayout();
 
+        initWorkRequest();
 
     }
+
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return fragmentDispatchingAndroidInjector;
+    }
+
+    private void initWorkRequest() {
+        Constraints myConstraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+        PeriodicWorkRequest periodicWorkRequest =
+                new PeriodicWorkRequest.Builder(SendDataWorker.class, 20, TimeUnit.MINUTES)
+                        .setConstraints(myConstraints)
+                        .build();
+        WorkManager.getInstance().enqueueUniquePeriodicWork("MyPeriodicalWork", ExistingPeriodicWorkPolicy.KEEP,periodicWorkRequest);
+    }
+
 
     private void initDrawerLayout() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -109,11 +140,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     private void setupToolbar() {
         setSupportActionBar(homeBinding.toolbar);
-    }
-
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return fragmentDispatchingAndroidInjector;
     }
 
     @Override
@@ -270,4 +296,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     public void onMapInteraction() {
 
     }
+
+
 }

@@ -31,4 +31,7 @@ public interface RentRepository {
     DataSource.Factory<Integer,RentAndGalery> getRentPaged();
 
     Flowable<Resource<RentDetail>> getRentDetailById(String uuid);
+
+    Completable addOrUpdateRentVisitCount(String id, String rent);
+
 }
