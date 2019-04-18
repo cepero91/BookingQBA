@@ -211,7 +211,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        checkMenuItemsVisibility(menu);
+//        checkMenuItemsVisibility(menu);
         return super.onPrepareOptionsMenu(menu);
     }
 
