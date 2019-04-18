@@ -705,9 +705,8 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         final int progress = getDownloadProgress();
         syncBinding.pbGalery.setProgress(progress);
         if (sizeGalerieList == progressGalery) {
-            if (disposeAllDisposable()) {
-                updateAllGaleryDownloaded();
-            }
+            disposeAllDisposable();
+            updateAllGaleryDownloaded();
         }
     }
 
@@ -786,16 +785,13 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         editor.apply();
     }
 
-    private boolean disposeAllDisposable() {
+    private void disposeAllDisposable() {
         if (galeryDisposable != null && !galeryDisposable.isDisposed()) {
             galeryDisposable.dispose();
         }
         if (entityDisposable != null && !entityDisposable.isDisposed()) {
             entityDisposable.dispose();
         }
-        if (syncBinding.cbImages.isChecked() && galeryDisposable.isDisposed() && entityDisposable.isDisposed()) {
-            return true;
-        } else return !syncBinding.cbImages.isChecked() && entityDisposable.isDisposed();
     }
 
     //-------------  File Downloader ------------------- //

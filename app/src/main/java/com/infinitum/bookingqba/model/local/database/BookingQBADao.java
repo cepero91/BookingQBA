@@ -260,6 +260,22 @@ public abstract class BookingQBADao {
     //------------------------- RENTAS ---------------------------//
 
     @Transaction
+    @Query("SELECT EXISTS (SELECT 1 FROM Rent WHERE id = :uuid)")
+    public abstract boolean existRent(String uuid);
+
+
+    public boolean existRents(List<String> uuids){
+        boolean existAll = true;
+        for(String uuid: uuids){
+            if(!existRent(uuid)){
+                existAll = false;
+                break;
+            }
+        }
+        return existAll;
+    }
+
+    @Transaction
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract long addRent(RentEntity entity);
 

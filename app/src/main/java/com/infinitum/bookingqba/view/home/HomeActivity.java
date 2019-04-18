@@ -1,18 +1,28 @@
 package com.infinitum.bookingqba.view.home;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.arch.lifecycle.Observer;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
+import android.util.ArraySet;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
@@ -36,11 +46,19 @@ import com.infinitum.bookingqba.view.filter.FilterFragment;
 import com.infinitum.bookingqba.view.interaction.LoginInteraction;
 import com.infinitum.bookingqba.view.map.MapFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
+import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
+import com.infinitum.bookingqba.view.sync.SyncActivity;
 
+import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -58,7 +76,6 @@ import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
 import timber.log.Timber;
 
-import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
@@ -69,11 +86,12 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         FilterInteraction, LoginInteraction, MapFragment.OnFragmentMapInteraction {
 
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
+    private static final String NOTIFICATION_DEFAULT = "default";
+    private static final int NOTIFICATION_ID = 1;
     private ActivityHomeBinding homeBinding;
     private FragmentManager fragmentManager;
     private Fragment mFragment;
     private FilterFragment filterFragment;
-    private PeriodicWorkRequest periodicWorkRequest;
 
 
     @Inject
@@ -113,7 +131,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 new PeriodicWorkRequest.Builder(SendDataWorker.class, 20, TimeUnit.MINUTES)
                         .setConstraints(myConstraints)
                         .build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork("MyPeriodicalWork", ExistingPeriodicWorkPolicy.KEEP,periodicWorkRequest);
+        WorkManager.getInstance().enqueueUniquePeriodicWork("MyPeriodicalWork", ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest);
     }
 
 
@@ -192,6 +210,24 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        checkMenuItemsVisibility(menu);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    public void checkMenuItemsVisibility(Menu menu) {
+        MenuItem menuItem = menu.findItem(R.id.action_filter_panel);
+        menuItem.setVisible(false);
+        boolean loginVisibility = sharedPreferences.getBoolean(USER_IS_AUTH, false);
+        MenuItem login = menu.findItem(R.id.action_login);
+        login.setVisible(!loginVisibility);
+        MenuItem logout = menu.findItem(R.id.action_logout);
+        logout.setVisible(loginVisibility);
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_filter_panel:
@@ -211,8 +247,20 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 LoginFragment lf = LoginFragment.newInstance();
                 lf.show(fragmentManager, "LoginFragment");
                 return true;
+            case R.id.action_logout:
+                logoutPetition();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    private void logoutPetition() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(USER_IS_AUTH, false);
+        editor.apply();
+        invalidateOptionsMenu();
+        homeBinding.navView.getMenu().setGroupVisible(R.id.group_2, false);
     }
 
 
@@ -224,7 +272,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         } else if (id == R.id.nav_list) {
             mFragment = RentListFragment.newInstance("", "", ' ');
         } else if (id == R.id.nav_profile) {
-            mFragment = LoginFragment.newInstance();
+            mFragment = ProfileFragment.newInstance();
         } else if (id == R.id.nav_map) {
             mFragment = MapFragment.newInstance();
         }
@@ -237,6 +285,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 // Inflate the new Fragment with the new RecyclerView and a new Adapter
                 fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_container, mFragment).commit();
+
             }, 300);
 
             return true;
@@ -279,18 +328,45 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     public void onLogin(User user) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(USER_IS_AUTH, true);
-        editor.putString(USER_ID, user.getUserId());
-        editor.putString(USER_NAME, user.getUserName());
         editor.putString(USER_TOKEN, user.getToken());
-        editor.putInt(USER_RENTS, user.getMaxRents());
+        editor.putString(USER_NAME, user.getUserName());
+        editor.putStringSet(USER_RENTS, new HashSet<>(user.getRentsId()));
         editor.apply();
         invalidateOptionsMenu();
     }
 
     @Override
-    public void onLogout() {
+    public void showNotificationToUpdate(String msg) {
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
+        notificationManager.cancel(NOTIFICATION_ID);
 
+        //If on Oreo then notification required a notification channel.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_DEFAULT, "Default", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        Intent notificationIntent = new Intent(this, SyncActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext(), NOTIFICATION_DEFAULT)
+                .setContentTitle("BookingQBA")
+                .setContentText(msg)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setContentIntent(contentIntent)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setAutoCancel(true);
+
+        notificationManager.notify(NOTIFICATION_ID, notification.build());
     }
+
+    @Override
+    public void showGroupMenuProfile(boolean show) {
+        homeBinding.navView.getMenu().setGroupVisible(R.id.group_2, show);
+    }
+
 
     @Override
     public void onMapInteraction() {

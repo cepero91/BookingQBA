@@ -6,5 +6,8 @@ public interface LoginInteraction {
 
     void onLogin(User user);
 
-    void onLogout();
+    void showNotificationToUpdate(String msg);
+
+    void showGroupMenuProfile(boolean show);
+
 }

@@ -33,6 +33,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppinsregular"
                     android:hint="Usuario"
+                    android:textColor="@color/colorAccent"
                     android:paddingEnd="15dp"
                     android:paddingStart="15dp" />
 
@@ -51,11 +52,21 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppinsregular"
                     android:hint="Password"
+                    android:textColor="@color/colorAccent"
                     android:inputType="textPassword"
                     android:paddingEnd="15dp"
                     android:paddingStart="15dp" />
 
             </android.support.design.widget.TextInputLayout>
+
+            <ProgressBar
+                android:id="@+id/pb_login"
+                android:layout_width="100dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
 
             <mehdi.sakout.fancybuttons.FancyButton

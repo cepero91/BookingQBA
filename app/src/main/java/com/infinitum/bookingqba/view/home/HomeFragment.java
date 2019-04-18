@@ -141,7 +141,7 @@ public class HomeFragment extends BaseNavigationFragment {
                     savePermissionToPreference(PERMISSION_GRANTED);
                     String deviceUniqueID = getDeviceUniversalID();
                     saveImeiToPreference(deviceUniqueID);
-                    Timber.e("Device ID %s",deviceUniqueID);
+                    Timber.e("Device ID %s", deviceUniqueID);
                 }
 
                 @Override
@@ -163,30 +163,32 @@ public class HomeFragment extends BaseNavigationFragment {
 
     }
 
-    private void savePermissionToPreference(int value){
+    private void savePermissionToPreference(int value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(PERMISSION,value);
+        editor.putInt(PERMISSION, value);
         editor.apply();
     }
 
-    private int getPermissionPreferenceValue(){
-        return sharedPreferences.getInt(PERMISSION,0);
+
+    private int getPermissionPreferenceValue() {
+        return sharedPreferences.getInt(PERMISSION, 0);
     }
 
-    private void saveImeiToPreference(String deviceUniqueID){
+
+    private void saveImeiToPreference(String deviceUniqueID) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(IMEI,deviceUniqueID);
+        editor.putString(IMEI, deviceUniqueID);
         editor.apply();
     }
 
     @SuppressLint("MissingPermission")
-    private String getDeviceUniversalID(){
+    private String getDeviceUniversalID() {
         String deviceUniqueID = null;
-        if(telephonyManager != null){
+        if (telephonyManager != null) {
             deviceUniqueID = telephonyManager.getDeviceId();
         }
-        if(deviceUniqueID == null){
-            deviceUniqueID = Settings.Secure.getString(getActivity().getContentResolver(),Settings.Secure.ANDROID_ID);
+        if (deviceUniqueID == null) {
+            deviceUniqueID = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
         }
         return deviceUniqueID;
     }
@@ -196,13 +198,10 @@ public class HomeFragment extends BaseNavigationFragment {
         disposable = homeViewModel.getProvinces()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onProvinceLoad, this::onFailedLoad);
+                .subscribe(this::onProvinceLoad, Timber::e);
         compositeDisposable.add(disposable);
     }
 
-    private void onFailedLoad(Throwable throwable) {
-        Timber.e(throwable);
-    }
 
     private void onProvinceLoad(Resource<ProvinceSpinnerList> listResource) {
         this.spinnerList = listResource.data;
@@ -223,25 +222,7 @@ public class HomeFragment extends BaseNavigationFragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        checkMenuItemsVisibility(menu);
         super.onPrepareOptionsMenu(menu);
-    }
-
-
-    public void checkMenuItemsVisibility(Menu menu) {
-        MenuItem menuItem = menu.findItem(R.id.action_filter_panel);
-        menuItem.setVisible(false);
-        if (sharedPreferences.getBoolean(USER_IS_AUTH, false)) {
-            MenuItem login = menu.findItem(R.id.action_login);
-            login.setVisible(false);
-            MenuItem logout = menu.findItem(R.id.action_logout);
-            logout.setVisible(true);
-        } else {
-            MenuItem login = menu.findItem(R.id.action_login);
-            login.setVisible(true);
-            MenuItem logout = menu.findItem(R.id.action_logout);
-            logout.setVisible(false);
-        }
     }
 
 
@@ -344,9 +325,6 @@ public class HomeFragment extends BaseNavigationFragment {
     public void onDestroy() {
         super.onDestroy();
     }
-
-
-    //TESTING
 
 
     public void setupRecyclerView() {

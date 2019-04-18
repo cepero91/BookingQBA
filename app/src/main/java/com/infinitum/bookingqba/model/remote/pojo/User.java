@@ -3,29 +3,31 @@ package com.infinitum.bookingqba.model.remote.pojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class User {
 
     @SerializedName("token")
     @Expose
     private String token;
 
-    @SerializedName("user_name")
+    @SerializedName("userName")
     @Expose
     private String userName;
 
-    @SerializedName("user_id")
+    @SerializedName("userAvatar")
     @Expose
-    private String userId;
+    private String userAvatar;
 
-    @SerializedName("max_rents")
+    @SerializedName("rents")
     @Expose
-    private int maxRents;
+    private List<String> rentsId;
 
-    public User(String token, String userName, String userId, int maxRents) {
+    public User(String token, String userName, String userAvatar, List<String> rentsId) {
         this.token = token;
         this.userName = userName;
-        this.userId = userId;
-        this.maxRents = maxRents;
+        this.userAvatar = userAvatar;
+        this.rentsId = rentsId;
     }
 
     public String getToken() {
@@ -44,19 +46,19 @@ public class User {
         this.userName = userName;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUserAvatar() {
+        return userAvatar;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserAvatar(String userAvatar) {
+        this.userAvatar = userAvatar;
     }
 
-    public int getMaxRents() {
-        return maxRents;
+    public List<String> getRentsId() {
+        return rentsId;
     }
 
-    public void setMaxRents(int maxRents) {
-        this.maxRents = maxRents;
+    public void setRentsId(List<String> rentsId) {
+        this.rentsId = rentsId;
     }
 }

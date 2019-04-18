@@ -30,12 +30,24 @@ import com.infinitum.bookingqba.view.interaction.LoginInteraction;
 import com.infinitum.bookingqba.viewmodel.UserViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Function;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 
 public class LoginFragment extends DialogFragment implements View.OnClickListener {
@@ -48,6 +60,9 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
     private LoginInteraction interaction;
 
     private UserViewModel userViewModel;
+
+    private Disposable disposable;
+    private CompositeDisposable compositeDisposable;
 
 
     public LoginFragment() {
@@ -101,39 +116,61 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
 
         if (context instanceof LoginInteraction) {
             interaction = (LoginInteraction) context;
+            compositeDisposable = new CompositeDisposable();
         }
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+
+        interaction = null;
+        compositeDisposable.clear();
+    }
+
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        interaction = null;
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_login) {
+            loginBinding.pbLogin.setIndeterminate(true);
+            loginBinding.pbLogin.setVisibility(View.VISIBLE);
             if (validateInputs()) {
-                userViewModel.userLogin(loginBinding.etUsername.getText().toString(), loginBinding.etPassword.getText().toString())
-                        .enqueue(new Callback<User>() {
-                            @Override
-                            public void onResponse(Call<User> call, Response<User> response) {
-                                if(response.isSuccessful()){
-                                    interaction.onLogin(response.body());
-                                }else{
-                                    Toast.makeText(getActivity(), response.message(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<User> call, Throwable t) {
-                                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                String params1 = loginBinding.etUsername.getText().toString();
+                String params2 = loginBinding.etPassword.getText().toString();
+                disposable = userViewModel.fakeLogin(params1,params2)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .map(user -> {
+                            interaction.onLogin(user);
+                            return user.getRentsId();
+                        })
+                        .flatMapCompletable(this::checkExist)
+                        .doOnComplete(() -> dismiss())
+                        .subscribe();
+                compositeDisposable.add(disposable);
             }
         }
     }
 
+    private Completable checkExist(List<String> uuids){
+        Single<Boolean> booleanSingle = userViewModel.checkIfRentExists(uuids)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess(exist -> {
+                    loginBinding.pbLogin.setVisibility(View.INVISIBLE);
+                    if(!exist){
+                        interaction.showNotificationToUpdate("Para visualizar el perfil de propietario debes actualizar la base de datos");
+                    }else{
+                        interaction.showGroupMenuProfile(true);
+                    }
+                });
+        return Completable.fromSingle(booleanSingle);
+    }
 
     /**
      * Hay que mejorar esta validacion

@@ -26,7 +26,6 @@ import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
-import com.infinitum.bookingqba.model.remote.CombinedRequest;
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
 import com.infinitum.bookingqba.model.remote.pojo.Galerie;
 import com.infinitum.bookingqba.model.remote.pojo.Municipality;
