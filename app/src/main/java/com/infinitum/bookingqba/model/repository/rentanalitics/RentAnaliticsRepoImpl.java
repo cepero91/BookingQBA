@@ -25,7 +25,7 @@ public class RentAnaliticsRepoImpl implements RentAnaliticsRepository{
     }
 
     @Override
-    public Single<RentAnalitics> getRentAnalitics(List<String> uuids) {
+    public Single<List<RentAnalitics>> getRentAnalitics(List<String> uuids) {
         return Single.just(DataGenerator.getRentAnalitic()).subscribeOn(Schedulers.io()).delay(2000, TimeUnit.MILLISECONDS);
     }
 

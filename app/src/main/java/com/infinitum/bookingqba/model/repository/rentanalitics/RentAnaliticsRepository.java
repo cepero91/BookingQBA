@@ -8,6 +8,6 @@ import io.reactivex.Single;
 
 public interface RentAnaliticsRepository {
 
-    Single<RentAnalitics> getRentAnalitics(List<String> uuids);
+    Single<List<RentAnalitics>> getRentAnalitics(List<String> uuids);
 
 }

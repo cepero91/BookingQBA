@@ -7,6 +7,12 @@
         <variable
             name="isLoading"
             type="Boolean"/>
+        <variable
+            name="showSelect"
+            type="Boolean"/>
+        <variable
+            name="items"
+            type="String[]"/>
     </data>
 
 
@@ -58,12 +64,21 @@
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 />
 
+            <Spinner
+                android:id="@+id/spinner_rents"
+                style="@style/MySpinnerStyle"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_username"
+                android:layout_centerHorizontal="true"
+                android:spinnerMode="dropdown"
+                app:visibleGone="@{safeUnbox(showSelect)}" />
 
             <android.support.v7.widget.CardView
                 android:id="@+id/cv_content_params"
+                android:layout_below="@id/spinner_rents"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/pb_loading"
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="10dp"
@@ -82,8 +97,8 @@
                         android:id="@+id/ll_rent_title_content"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"
                         android:gravity="center"
                         android:orientation="horizontal">
 
@@ -112,19 +127,20 @@
 
                         </LinearLayout>
 
-                        <com.app.progresviews.ProgressWheel
+                        <com.moos.library.CircleProgressView
                             android:id="@+id/pb_detail_percent"
                             android:layout_width="65dp"
                             android:layout_height="65dp"
-                            android:layout_marginStart="10dp"
-                            app:barWidth="8dp"
-                            app:countText="90 %"
-                            app:countTextColor="@android:color/black"
-                            app:countTextSize="12sp"
-                            app:defTextColor="@android:color/black"
-                            app:defTextSize="10sp"
-                            app:percentage="90"
-                            app:progressColor="#64b324" />
+                            android:layout_marginStart="5dp"
+                            app:animateType="AccelerateDecelerateInterpolator"
+                            app:end_color="#00796B"
+                            app:isFilled="false"
+                            app:isTracked="true"
+                            app:progressTextColor="@color/material_color_blue_grey_500"
+                            app:progressTextSize="14sp"
+                            app:start_color="#64FFDA"
+                            app:trackColor="#EEEEEE"
+                            app:track_width="8dp" />
 
                     </LinearLayout>
 
@@ -242,7 +258,6 @@
 
             </android.support.v7.widget.CardView>
 
-
             <android.support.v7.widget.CardView
                 android:id="@+id/cv_content_star"
                 android:layout_width="match_parent"
@@ -260,45 +275,45 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:layout_marginBottom="5dp"
                     android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp">
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingStart="5dp"
-                            android:paddingEnd="5dp"
-                            android:includeFontPadding="false"
-                            android:text="5"
                             android:fontFamily="@font/poppinsbold"
-                            android:textSize="18sp"/>
+                            android:includeFontPadding="false"
+                            android:paddingEnd="5dp"
+                            android:paddingStart="5dp"
+                            android:text="5"
+                            android:textSize="18sp" />
 
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:layout_marginEnd="5dp"
-                            app:srcCompat="@drawable/ic_star"
-                            android:tint="@color/material_color_blue_grey_200"/>
+                            android:tint="@color/material_color_blue_grey_200"
+                            app:srcCompat="@drawable/ic_star" />
 
                         <com.moos.library.HorizontalProgressView
                             android:id="@+id/pb_5_star"
                             android:layout_width="220dp"
                             android:layout_height="35dp"
-                            app:end_progress="100"
-                            app:end_color="@color/colorPrimary"
-                            app:isTracked="true"
                             app:corner_radius="8dp"
+                            app:end_color="#0097A7"
+                            app:end_progress="100"
+                            app:isTracked="true"
                             app:progressTextColor="#696969"
                             app:progressTextVisibility="true"
+                            app:start_color="#4DD0E1"
                             app:text_padding_bottom="5dp"
-                            app:start_color="#80CBC4"
                             app:trackColor="@color/material_color_grey_200"
                             app:track_width="10dp" />
 
@@ -307,38 +322,38 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingStart="5dp"
-                            android:paddingEnd="5dp"
-                            android:includeFontPadding="false"
-                            android:text="4"
                             android:fontFamily="@font/poppinsbold"
-                            android:textSize="18sp"/>
+                            android:includeFontPadding="false"
+                            android:paddingEnd="5dp"
+                            android:paddingStart="5dp"
+                            android:text="4"
+                            android:textSize="18sp" />
 
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:layout_marginEnd="5dp"
-                            app:srcCompat="@drawable/ic_star"
-                            android:tint="@color/material_color_blue_grey_200"/>
+                            android:tint="@color/material_color_blue_grey_200"
+                            app:srcCompat="@drawable/ic_star" />
 
                         <com.moos.library.HorizontalProgressView
                             android:id="@+id/pb_4_star"
                             android:layout_width="220dp"
                             android:layout_height="35dp"
-                            app:end_progress="100"
-                            app:end_color="@color/colorPrimary"
-                            app:isTracked="true"
                             app:corner_radius="8dp"
+                            app:end_color="#388E3C"
+                            app:end_progress="100"
+                            app:isTracked="true"
                             app:progressTextColor="#696969"
                             app:progressTextVisibility="true"
+                            app:start_color="#81C784"
                             app:text_padding_bottom="5dp"
-                            app:start_color="#80CBC4"
                             app:trackColor="@color/material_color_grey_200"
                             app:track_width="10dp" />
 
@@ -347,38 +362,38 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingStart="5dp"
-                            android:paddingEnd="5dp"
-                            android:includeFontPadding="false"
-                            android:text="3"
                             android:fontFamily="@font/poppinsbold"
-                            android:textSize="18sp"/>
+                            android:includeFontPadding="false"
+                            android:paddingEnd="5dp"
+                            android:paddingStart="5dp"
+                            android:text="3"
+                            android:textSize="18sp" />
 
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:layout_marginEnd="5dp"
-                            app:srcCompat="@drawable/ic_star"
-                            android:tint="@color/material_color_blue_grey_200"/>
+                            android:tint="@color/material_color_blue_grey_200"
+                            app:srcCompat="@drawable/ic_star" />
 
                         <com.moos.library.HorizontalProgressView
                             android:id="@+id/pb_3_star"
                             android:layout_width="220dp"
                             android:layout_height="35dp"
-                            app:end_progress="100"
-                            app:end_color="@color/colorPrimary"
-                            app:isTracked="true"
                             app:corner_radius="8dp"
+                            app:end_color="#FBC02D"
+                            app:end_progress="100"
+                            app:isTracked="true"
                             app:progressTextColor="#696969"
                             app:progressTextVisibility="true"
+                            app:start_color="#FFF176"
                             app:text_padding_bottom="5dp"
-                            app:start_color="#80CBC4"
                             app:trackColor="@color/material_color_grey_200"
                             app:track_width="10dp" />
 
@@ -387,38 +402,38 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingStart="5dp"
-                            android:paddingEnd="5dp"
-                            android:includeFontPadding="false"
-                            android:text="2"
                             android:fontFamily="@font/poppinsbold"
-                            android:textSize="18sp"/>
+                            android:includeFontPadding="false"
+                            android:paddingEnd="5dp"
+                            android:paddingStart="5dp"
+                            android:text="2"
+                            android:textSize="18sp" />
 
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:layout_marginEnd="5dp"
-                            app:srcCompat="@drawable/ic_star"
-                            android:tint="@color/material_color_blue_grey_200"/>
+                            android:tint="@color/material_color_blue_grey_200"
+                            app:srcCompat="@drawable/ic_star" />
 
                         <com.moos.library.HorizontalProgressView
                             android:id="@+id/pb_2_star"
                             android:layout_width="220dp"
                             android:layout_height="35dp"
-                            app:end_progress="100"
-                            app:end_color="@color/colorPrimary"
-                            app:isTracked="true"
                             app:corner_radius="8dp"
+                            app:end_color="#F57C00"
+                            app:end_progress="100"
+                            app:isTracked="true"
                             app:progressTextColor="#696969"
                             app:progressTextVisibility="true"
+                            app:start_color="#FFB74D"
                             app:text_padding_bottom="5dp"
-                            app:start_color="#80CBC4"
                             app:trackColor="@color/material_color_grey_200"
                             app:track_width="10dp" />
 
@@ -427,38 +442,38 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingStart="5dp"
-                            android:paddingEnd="5dp"
-                            android:includeFontPadding="false"
-                            android:text="1"
                             android:fontFamily="@font/poppinsbold"
-                            android:textSize="18sp"/>
+                            android:includeFontPadding="false"
+                            android:paddingEnd="5dp"
+                            android:paddingStart="5dp"
+                            android:text="1"
+                            android:textSize="18sp" />
 
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:layout_marginEnd="5dp"
-                            app:srcCompat="@drawable/ic_star"
-                            android:tint="@color/material_color_blue_grey_200"/>
+                            android:tint="@color/material_color_blue_grey_200"
+                            app:srcCompat="@drawable/ic_star" />
 
                         <com.moos.library.HorizontalProgressView
                             android:id="@+id/pb_1_star"
                             android:layout_width="220dp"
                             android:layout_height="35dp"
-                            app:end_progress="100"
-                            app:end_color="@color/colorPrimary"
-                            app:isTracked="true"
                             app:corner_radius="8dp"
+                            app:end_color="#E53935"
+                            app:end_progress="100"
+                            app:isTracked="true"
                             app:progressTextColor="#696969"
                             app:progressTextVisibility="true"
+                            app:start_color="#E57373"
                             app:text_padding_bottom="5dp"
-                            app:start_color="#80CBC4"
                             app:trackColor="@color/material_color_grey_200"
                             app:track_width="10dp" />
 
@@ -468,7 +483,6 @@
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
-
 
         </RelativeLayout>
 

@@ -54,7 +54,7 @@
         <item name="android:windowExitAnimation">@anim/slide_down</item>
     </style>
 
-    <style name="MySpinnerTextStyle" >
+    <style name="MySpinnerTextStyle" parent="Base.Widget.AppCompat.DropDownItem.Spinner">
         <item name="android:fontFamily">@font/poppinsmedium</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:textColor">@color/material_color_grey_500</item>
@@ -98,6 +98,15 @@
     <style name="myErrorToast" parent="myToast">
         <item name="stColorBackground">#F44336</item>
         <item name="stIconStart">@drawable/ic_exclamation_triangle</item>
+    </style>
+
+    <style name="MySpinnerStyle">
+        <item name="android:background">@drawable/selector_custom_spinner</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
     </style>
 
 
