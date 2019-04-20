@@ -315,7 +315,8 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    @Query("SELECT id,name,address,price, rating,latitude,longitude FROM Rent")
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude FROM Rent " +
+            "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) ")
     public abstract Flowable<List<RentAndGalery>> getAllRents();
 
     /**
@@ -328,7 +329,7 @@ public abstract class BookingQBADao {
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.name = :province ORDER BY Rent.rating DESC LIMIT 5")
+            "Province.id = :province ORDER BY Rent.rating DESC LIMIT 5")
     public abstract Flowable<List<RentAndGalery>> getFivePopRents(String province);
 
     @Transaction
@@ -336,7 +337,7 @@ public abstract class BookingQBADao {
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.name = :province ORDER BY Rent.created DESC LIMIT 5")
+            "Province.id = :province ORDER BY Rent.created DESC LIMIT 5")
     public abstract Flowable<List<RentAndGalery>> getFiveNewRents(String province);
 
     /**
@@ -348,7 +349,7 @@ public abstract class BookingQBADao {
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.name = :province ORDER BY Rent.rating DESC")
+            "Province.id = :province ORDER BY Rent.rating DESC")
     public abstract DataSource.Factory<Integer, RentAndGalery> getAllPopRent(String province);
 
     @Transaction
@@ -356,7 +357,7 @@ public abstract class BookingQBADao {
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.name = :province ORDER BY Rent.created DESC")
+            "Province.id = :province ORDER BY Rent.created DESC")
     public abstract DataSource.Factory<Integer, RentAndGalery> getAllNewRent(String province);
 
     @Transaction

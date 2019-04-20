@@ -40,7 +40,9 @@ public final class Constants {
     public static final int PERMISSION_NOT_GRANTED = -1;
 
 
-
+    //NAVIGATION
+    public static final String PROVINCE_UUID = "province";
+    public static final String PROVINCE_UUID_DEFAULT = "cfa7f0d7-2b67-4245-9157-48ba2117f63c";
     public static final char ORDER_TYPE_POPULAR = 'r'; // Represent attrib rating
     public static final char ORDER_TYPE_NEW = 'c'; // Represent attrib created
 

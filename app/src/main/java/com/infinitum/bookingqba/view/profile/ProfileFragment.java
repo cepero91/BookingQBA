@@ -36,7 +36,6 @@ import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.SpinnerAdapter;
 import com.infinitum.bookingqba.view.adapters.comments.CommentListAdapter;
 import com.infinitum.bookingqba.view.adapters.items.comment.CommentItem;
-import com.infinitum.bookingqba.view.adapters.items.profile.RentProfileItem;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentAnaliticsViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;

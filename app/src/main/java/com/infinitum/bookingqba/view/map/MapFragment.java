@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.view.map;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
@@ -16,6 +17,9 @@ import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentMapBinding;
+import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
+import com.infinitum.bookingqba.viewmodel.RentViewModel;
+import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.wshunli.assets.CopyAssets;
 import com.wshunli.assets.CopyCreator;
 import com.wshunli.assets.CopyListener;
@@ -69,6 +73,11 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     @Inject
     SharedPreferences sharedPreferences;
 
+    @Inject
+    ViewModelFactory viewModelFactory;
+
+    private RentViewModel rentViewModel;
+
     private OnFragmentMapInteraction mListener;
 
     private FragmentMapBinding mapBinding;
@@ -81,29 +90,28 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     private MarkerSymbol mFocusMarker;
     private ItemizedLayer<MarkerItem> mMarkerLayer;
 
-
-    private static double[] lat = new double[]{
-            23.1266d,
-            23.1175d,
-            23.1145d,
-            23.1105d
-    };
-
-    private static double[] lon = new double[]{
-            -82.2802d,
-            -82.1092d,
-            -82.2532d,
-            -82.1332d
-    };
+    private static final String GEORENTS_PARAM = "param1";
+    private ArrayList<GeoRent> geoRentArrayList;
 
 
     public MapFragment() {
         // Required empty public constructor
     }
 
-    public static MapFragment newInstance() {
+    public static MapFragment newInstance(@Nullable ArrayList<GeoRent> geoRentList) {
         MapFragment fragment = new MapFragment();
+        Bundle args = new Bundle();
+        args.putParcelableArrayList(GEORENTS_PARAM, geoRentList);
+        fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            geoRentArrayList = getArguments().getParcelableArrayList(GEORENTS_PARAM);
+        }
     }
 
 
@@ -114,12 +122,15 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         return mapBinding.getRoot();
     }
 
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         AndroidSupportInjection.inject(this);
         super.onActivityCreated(savedInstanceState);
 
         mapBinding.setIsLoading(true);
+
+        rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
 
         mapFilePath = sharedPreferences.getString(MAP_PATH, "");
 
@@ -134,7 +145,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
                     .andThen(Completable.fromAction(this::setupMapView))
                     .doOnComplete(this::showViews).subscribe();
             compositeDisposable.add(disposable);
-        }else{
+        } else {
             disposable = Completable.fromAction(this::setupMapView)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -154,16 +165,16 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
 
                     @Override
                     public void progress(CopyCreator copyCreator, File currentFile, int copyProgress) {
-                        Timber.e("progress copy files %s",copyProgress);
+                        Timber.e("progress copy files %s", copyProgress);
                     }
 
                     @Override
                     public void completed(CopyCreator copyCreator, java.util.Map<File, Boolean> results) {
                         Timber.i("File copy completed");
                         SharedPreferences.Editor edit = sharedPreferences.edit();
-                        edit.putString(((File)results.keySet().toArray()[0]).getAbsolutePath(),"");
+                        edit.putString(((File) results.keySet().toArray()[0]).getAbsolutePath(), "");
                         edit.apply();
-                        mapFilePath = ((File)results.keySet().toArray()[0]).getAbsolutePath();
+                        mapFilePath = ((File) results.keySet().toArray()[0]).getAbsolutePath();
                     }
 
                     @Override
@@ -174,12 +185,10 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
                 .copy();
     }
 
-    public void setupMapView(){
+    public void setupMapView() {
         MapFileTileSource tileSource = new MapFileTileSource();
         String mapPath = new File(mapFilePath).getAbsolutePath();
         if (tileSource.setMapFile(mapPath)) {
-
-            mapBinding.mapview.map().layers().add(new MapEventsReceiver(mapBinding.mapview.map()));
 
             // Vector layer
             VectorTileLayer tileLayer = mapBinding.mapview.map().setBaseMap(tileSource);
@@ -200,40 +209,47 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
             mapScaleBarLayer.getRenderer().setOffset(5 * CanvasAdapter.getScale(), 0);
             mapBinding.mapview.map().layers().add(mapScaleBarLayer);
 
-            //Marker
-            Bitmap bitmapPoi = drawableToBitmap(getResources().getDrawable(R.drawable.ic_map_pin));
-            MarkerSymbol symbol = new MarkerSymbol(bitmapPoi, MarkerSymbol.HotspotPlace.BOTTOM_CENTER);
-            mMarkerLayer = new ItemizedLayer<>(mapBinding.mapview.map(), new ArrayList<MarkerItem>(), symbol, this);
-            mapBinding.mapview.map().layers().add(mMarkerLayer);
-
-            List<MarkerItem> pts = new ArrayList<>();
-            Random random = new Random();
-            for (int i = 0;i < 4; i++){
-                int randomLat = random.nextInt(4);
-                int randomLon = random.nextInt(4);
-                double latitud = lat[randomLat];
-                double longitud = lon[randomLon];
-                pts.add(new MarkerItem("MyMarker "+i, "", new GeoPoint(latitud, longitud)));
+            if (geoRentArrayList != null) {
+                setupMarkers(geoRentArrayList);
+            } else {
+                initializeMarker();
             }
-            mMarkerLayer.addItems(pts);
-
 
             // Note: this map position is specific to Habana area
-            mapBinding.mapview.map().setMapPosition(23.1165, -82.3882, 3 << 12);
-
-
-
+            mapBinding.mapview.map().setMapPosition(23.1165, -82.3882, 2 << 12);
         }
     }
 
-    private void showViews(){
+    private void initializeMarker() {
+        disposable = rentViewModel.getGeoRent().subscribeOn(Schedulers.io())
+                .subscribe(listResource -> setupMarkers(listResource.data), Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void setupMarkers(List<GeoRent> geoRentList) {
+        //Marker
+        Bitmap bitmapPoi = drawableToBitmap(getResources().getDrawable(R.drawable.ic_map_pin));
+        MarkerSymbol symbol = new MarkerSymbol(bitmapPoi, MarkerSymbol.HotspotPlace.BOTTOM_CENTER);
+        mMarkerLayer = new ItemizedLayer<>(mapBinding.mapview.map(), new ArrayList<MarkerItem>(), symbol, this);
+        mapBinding.mapview.map().layers().add(mMarkerLayer);
+
+        List<MarkerItem> pts = new ArrayList<>();
+        if (geoRentList != null && geoRentList.size() > 0) {
+            for (GeoRent geoRent : geoRentList) {
+                pts.add(new MarkerItem(geoRent.getId(), geoRent.getName(), geoRent.getGeoPoint()));
+            }
+        }
+        mMarkerLayer.addItems(pts);
+    }
+
+    private void showViews() {
         mapBinding.vOverlap.bringToFront();
         mapBinding.setIsLoading(false);
         mapBinding.mapview.map().postDelayed(() -> mapBinding.vOverlap.animate()
                 .alpha(0)
                 .setInterpolator(new DecelerateInterpolator())
-                .setDuration(500)
-                .start(),100);
+                .setDuration(200)
+                .start(), 300);
     }
 
     @Override
@@ -277,28 +293,13 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     public void onDestroy() {
         super.onDestroy();
         mapBinding.mapview.onDestroy();
+        if(disposable!=null && !disposable.isDisposed()){
+            disposable.dispose();
+        }
     }
 
 
     public interface OnFragmentMapInteraction {
         void onMapInteraction();
-    }
-
-
-    class MapEventsReceiver extends Layer implements GestureListener {
-
-        MapEventsReceiver(Map map) {
-            super(map);
-        }
-
-        @Override
-        public boolean onGesture(Gesture g, MotionEvent e) {
-            if (g instanceof Gesture.Tap) {
-                GeoPoint p = mMap.viewport().fromScreenPoint(e.getX(), e.getY());
-                Timber.e("latitud %s, longitud %s",p.getLatitude(),p.getLongitude());
-                return true;
-            }
-            return false;
-        }
     }
 }

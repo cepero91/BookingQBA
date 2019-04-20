@@ -105,7 +105,7 @@ public class RentListFragment extends BaseNavigationFragment {
 
         pagerAdapter = new RentListAdapter(getActivity().getLayoutInflater(),mListener);
 
-        rentViewModel.getLiveDataRentList().observe(this, rentListItems -> {
+        rentViewModel.getLiveDataRentList(mOrderType,mProvinceParam).observe(this, rentListItems -> {
             pagerAdapter.submitList(rentListItems);
             rentListBinding.recyclerView.setAdapter(pagerAdapter);
             rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());

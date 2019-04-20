@@ -5,7 +5,6 @@ import android.animation.StateListAnimator;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,8 +13,6 @@ import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,7 +21,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
-import android.util.ArraySet;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
@@ -53,14 +49,9 @@ import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 
-import java.util.AbstractMap;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -69,15 +60,16 @@ import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
-import timber.log.Timber;
 
+import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
+import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
+import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID_DEFAULT;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
@@ -185,7 +177,8 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     @Override
     public void onItemClick(View view, BaseItem baseItem) {
         if (baseItem instanceof HeaderItem) {
-            mFragment = RentListFragment.newInstance("", "", ((HeaderItem) baseItem).getOrderType());
+            String provinceName = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
+            mFragment = RentListFragment.newInstance(provinceName, "", ((HeaderItem) baseItem).getOrderType());
             fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.frame_container,
                     mFragment).commit();
@@ -275,11 +268,12 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         if (id == R.id.nav_home) {
             mFragment = HomeFragment.newInstance();
         } else if (id == R.id.nav_list) {
-            mFragment = RentListFragment.newInstance("", "", ' ');
+            String provinceName = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
+            mFragment = RentListFragment.newInstance(provinceName, "", ORDER_TYPE_POPULAR);
         } else if (id == R.id.nav_profile) {
             mFragment = ProfileFragment.newInstance();
         } else if (id == R.id.nav_map) {
-            mFragment = MapFragment.newInstance();
+            mFragment = MapFragment.newInstance(null);
         }
         if (mFragment != null) {
             // Highlight the selected item has been done by NavigationView

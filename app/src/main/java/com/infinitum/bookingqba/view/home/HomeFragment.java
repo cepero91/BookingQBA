@@ -64,6 +64,7 @@ import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.PERMISSION;
 import static com.infinitum.bookingqba.util.Constants.PERMISSION_GRANTED;
 import static com.infinitum.bookingqba.util.Constants.PERMISSION_NOT_GRANTED;
+import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
 
 
 public class HomeFragment extends BaseNavigationFragment {
@@ -202,6 +203,7 @@ public class HomeFragment extends BaseNavigationFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 loadData(spinnerList.getUuidOnPos(position));
+                saveProvinceToPreference(spinnerList.getUuidOnPos(position));
             }
 
             @Override
@@ -209,6 +211,12 @@ public class HomeFragment extends BaseNavigationFragment {
 
             }
         });
+    }
+
+    private void saveProvinceToPreference(String uuidOnPos) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PROVINCE_UUID,uuidOnPos);
+        editor.apply();
     }
 
     @Override
@@ -263,8 +271,8 @@ public class HomeFragment extends BaseNavigationFragment {
     }
 
 
-    public void loadData(String province) {
-        disposable = homeViewModel.getAllItems(province)
+    public void loadData(String provinceUuid) {
+        disposable = homeViewModel.getAllItems(provinceUuid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listResource -> setItemsAdapter(listResource.data), Timber::e);

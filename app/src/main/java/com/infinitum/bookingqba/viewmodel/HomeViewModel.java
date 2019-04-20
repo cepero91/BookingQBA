@@ -79,7 +79,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
     public Flowable<Resource<List<ViewModel>>> getAllItems(String province) {
         return Flowable.combineLatest(getReferencesZone(), getPopRents(province), getNewRents(province), (listResource, listResource2, listResource3) -> {
             List<com.github.vivchar.rendererrecyclerviewadapter.ViewModel> allItems = new ArrayList<>();
-            if (listResource.data != null && listResource2.data != null) {
+            if (listResource.data != null && listResource2.data != null && listResource3.data != null) {
                 allItems.addAll(listResource.data);
                 allItems.add(new HeaderItem(UUID.randomUUID().toString(), "Lo más popular", ORDER_TYPE_POPULAR));
                 allItems.addAll(listResource2.data);

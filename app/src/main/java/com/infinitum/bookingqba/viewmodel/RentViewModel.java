@@ -24,11 +24,14 @@ import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.ReferenceZoneViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.AmenitieViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.StarViewItem;
+import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailAmenitieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailGalerieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailPoiItem;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
+
+import org.oscim.core.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +44,7 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 
 public class RentViewModel extends android.arch.lifecycle.ViewModel {
@@ -61,12 +65,14 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         filterMap = new HashMap<>();
     }
 
+    //----------------------------------- GET METHOD -----------------------------------------//
+
     /**
-     * Lista paginada de rentas
+     * Lista paginada de rentas segun tipo de orden y provincia
      * @return
      */
-    public LiveData<PagedList<RentListItem>> getLiveDataRentList(){
-        DataSource.Factory<Integer,RentListItem> dataSource = rentRepository.getRentPaged().mapByPage(input -> {
+    public LiveData<PagedList<RentListItem>> getLiveDataRentList(char orderType, String province){
+        DataSource.Factory<Integer,RentListItem> dataSource = rentRepository.allRentByOrderType(orderType,province).mapByPage(input -> {
             List<RentListItem> itemsUi = new ArrayList<>();
             for(RentAndGalery entity: input){
                 String imagePath = entity.getGalerieAtPos(0).getImageLocalPath()!=null?entity.getGalerieAtPos(0).getImageLocalPath():entity.getGalerieAtPos(0).getImageUrl();
@@ -79,6 +85,12 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return ldRentsList;
     }
 
+    public Flowable<Resource<List<GeoRent>>> getGeoRent(){
+        return rentRepository.allRent().map(this::transformToGeoRent);
+    }
+
+
+    // --------------------------- FILTER LIST --------------------------------------------- //
 
     public Flowable<Map<String, List<ViewModel>>> getMapFilterItems() {
         if(filterMap!=null && filterMap.size()>0){
@@ -91,10 +103,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private Flowable<Map<String, List<ViewModel>>> getMapFlowable() {
         Flowable<List<ViewModel>> amenitieFlow = amenitiesRepository.fetchLocal()
                 .subscribeOn(Schedulers.io())
-                .flatMap(this::transformAmenitieToMap);
+                .map(this::transformAmenitieToMap);
         Flowable<List<ViewModel>> zoneFlow = rzoneRepository.allReferencesZone()
                 .subscribeOn(Schedulers.io())
-                .flatMap(this::transformRZoneToMap);
+                .map(this::transformRZoneToMap);
         Flowable<List<ViewModel>> starFlow = Flowable.just(getStarItem()).subscribeOn(Schedulers.io());
         return Flowable.combineLatest(amenitieFlow, zoneFlow,starFlow, (viewModels, viewModels2, viewModels3) -> {
             filterMap.put("Amenities", viewModels);
@@ -104,46 +116,6 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         });
     }
 
-    private Flowable<List<ViewModel>> transformAmenitieToMap(Resource<List<AmenitiesEntity>> listResource) {
-        ArrayList<ViewModel> viewItemList = new ArrayList<>();
-        if (listResource.data != null) {
-            for (AmenitiesEntity entity : listResource.data) {
-                viewItemList.add(new AmenitieViewItem(entity.getId(), entity.getName(), false));
-            }
-        }
-        return Flowable.just(viewItemList);
-    }
-
-    private Flowable<List<ViewModel>> transformRZoneToMap(Resource<List<ReferenceZoneEntity>> listResource) {
-        ArrayList<ViewModel> viewItemList = new ArrayList<>();
-        if (listResource.data != null) {
-            for (ReferenceZoneEntity entity : listResource.data) {
-                viewItemList.add(new ReferenceZoneViewItem(entity.getId(), entity.getName(), false, entity.getImage()));
-            }
-        }
-        return Flowable.just(viewItemList);
-    }
-
-    public Flowable<Resource<List<RentListItem>>> getRents(char orderType) {
-        return rentRepository.allRentByOrderType(orderType)
-                .flatMap(this::transformRentEntity)
-                .subscribeOn(Schedulers.io());
-    }
-
-
-    private Flowable<Resource<List<RentListItem>>> transformRentEntity(Resource<List<RentAndGalery>> listResource) {
-        List<RentListItem> items = new ArrayList<>();
-        if (listResource.data != null && listResource.data.size() > 0) {
-            for (RentAndGalery entity : listResource.data) {
-                String imagePath = entity.getGalerieAtPos(0).getImageLocalPath()!=null?entity.getGalerieAtPos(0).getImageLocalPath():entity.getGalerieAtPos(0).getImageUrl();
-                items.add(new RentListItem(entity.getId(), entity.getName(), entity.getPrice(), entity.getAddress(), imagePath,entity.getRating()));
-            }
-        }
-        return Flowable.just(items)
-                .map(Resource::success)
-                .onErrorReturn(Resource::error)
-                .subscribeOn(Schedulers.io());
-    }
 
     private List<ViewModel> getStarItem(){
         List<ViewModel> starViewItemList = new ArrayList<>();
@@ -176,6 +148,8 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return Observable.fromIterable(viewModels);
     }
 
+    // ------------------------ RENT DETAIL --------------------------------------------- //
+
     public Flowable<Resource<RentDetailItem>> getRentDetailById(String uuid){
         return rentRepository
                 .getRentDetailById(uuid)
@@ -192,6 +166,34 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         item.setGalerieItems(convertGaleriePojoToParcel(rentDetail.data.getGaleries()));
         item.setPoiItems(convertPoisPojoToParcel(rentDetail.data.getRentPoiAndRelations()));
         return item;
+    }
+
+    //-------------------------- RENT VISIT COUNT ---------------------------------------- //
+
+    public Completable addOrUpdateRentVisitCount(String id,String rentId){
+        return rentRepository.addOrUpdateRentVisitCount(id,rentId);
+    }
+
+    // ------------------------- TRANSFORM METHOD ---------------------------------------- //
+
+    private List<ViewModel> transformAmenitieToMap(Resource<List<AmenitiesEntity>> listResource) {
+        ArrayList<ViewModel> viewItemList = new ArrayList<>();
+        if (listResource.data != null) {
+            for (AmenitiesEntity entity : listResource.data) {
+                viewItemList.add(new AmenitieViewItem(entity.getId(), entity.getName(), false));
+            }
+        }
+        return viewItemList;
+    }
+
+    private List<ViewModel> transformRZoneToMap(Resource<List<ReferenceZoneEntity>> listResource) {
+        ArrayList<ViewModel> viewItemList = new ArrayList<>();
+        if (listResource.data != null) {
+            for (ReferenceZoneEntity entity : listResource.data) {
+                viewItemList.add(new ReferenceZoneViewItem(entity.getId(), entity.getName(), false, entity.getImage()));
+            }
+        }
+        return viewItemList;
     }
 
     private ArrayList<RentDetailGalerieItem> convertGaleriePojoToParcel(List<GalerieEntity> galerieEntities) {
@@ -221,9 +223,23 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return detailAmenitieItems;
     }
 
-    public Completable addOrUpdateRentVisitCount(String id,String rentId){
-        return rentRepository.addOrUpdateRentVisitCount(id,rentId);
+    private Resource<List<GeoRent>> transformToGeoRent(Resource<List<RentAndGalery>> listResource) {
+        List<GeoRent> geoRentList = new ArrayList<>();
+        GeoRent geoRent;
+        if(listResource.data!=null && listResource.data.size()>0) {
+            for (RentAndGalery rentAndGalery : listResource.data) {
+                geoRent = new GeoRent(rentAndGalery.getId());
+                geoRent.setGeoPoint(new GeoPoint(rentAndGalery.getLatitude(), rentAndGalery.getLongitude()));
+                geoRent.setName(rentAndGalery.getName());
+                geoRent.setPrice(rentAndGalery.getPrice());
+                geoRent.setRating(rentAndGalery.getRating());
+                String imagePath = rentAndGalery.getGalerieAtPos(0).getImageLocalPath() != null ? rentAndGalery.getGalerieAtPos(0).getImageLocalPath() : rentAndGalery.getGalerieAtPos(0).getImageUrl();
+                geoRent.setImagePath(imagePath);
+                geoRentList.add(geoRent);
+            }
+            return Resource.success(geoRentList);
+        }else{
+            return Resource.error("Null or empty values");
+        }
     }
-
-
 }
