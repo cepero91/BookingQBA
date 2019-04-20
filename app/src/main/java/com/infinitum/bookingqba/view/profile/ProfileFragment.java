@@ -129,6 +129,7 @@ public class ProfileFragment extends Fragment {
 
     private void updateViews(List<RentAnalitics> rentAnaliticsList) {
         if(rentAnaliticsList.size() > 1){
+            profileBinding.tvRentName.setVisibility(View.GONE);
             String[] arrEntries = new String[rentAnaliticsList.size()];
             for (int i = 0; i < rentAnaliticsList.size(); i++) {
                 arrEntries[i] = rentAnaliticsList.get(i).getRentName();
@@ -152,6 +153,7 @@ public class ProfileFragment extends Fragment {
                 }
             });
         }else{
+            profileBinding.tvRentName.setVisibility(View.VISIBLE);
             updateParamsView(rentAnaliticsList.get(0));
         }
 
@@ -160,6 +162,7 @@ public class ProfileFragment extends Fragment {
 
     private void updateParamsView(RentAnalitics rentAnalitics) {
         profileBinding.setIsLoading(false);
+        profileBinding.srScaleRating.setRating(rentAnalitics.getRating());
         profileBinding.tvRentName.setText(rentAnalitics.getRentName());
         profileBinding.pbDetailPercent.setEndProgress(rentAnalitics.getRentDetailPercent());
 

@@ -9,9 +9,6 @@
             name="isLoading"
             type="Boolean" />
 
-        <variable
-            name="overlay"
-            type="Boolean" />
     </data>
 
     <RelativeLayout
@@ -19,9 +16,11 @@
         android:layout_height="match_parent"
         tools:context=".view.map.MapFragment">
 
-        <RelativeLayout
+        <FrameLayout
+            android:id="@+id/fl_content_map"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            >
 
             <org.oscim.android.MapView
                 android:id="@+id/mapview"
@@ -34,10 +33,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/White_100"
-                app:setOverlayGone="@{overlay}"
                 />
 
-        </RelativeLayout>
+        </FrameLayout>
 
         <ProgressBar
             android:id="@+id/progressBar"

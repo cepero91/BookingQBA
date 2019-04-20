@@ -125,7 +125,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     public Flowable<Resource<List<RentListItem>>> getRents(char orderType) {
-        return rentRepository.allRentWithFirstImage(orderType)
+        return rentRepository.allRentByOrderType(orderType)
                 .flatMap(this::transformRentEntity)
                 .subscribeOn(Schedulers.io());
     }

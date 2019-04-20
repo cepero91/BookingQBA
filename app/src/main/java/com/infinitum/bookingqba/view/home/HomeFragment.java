@@ -16,13 +16,11 @@ import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.github.vivchar.rendererrecyclerviewadapter.CompositeViewHolder;
@@ -60,14 +58,12 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.ResourceSubscriber;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.PERMISSION;
 import static com.infinitum.bookingqba.util.Constants.PERMISSION_GRANTED;
 import static com.infinitum.bookingqba.util.Constants.PERMISSION_NOT_GRANTED;
-import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 
 
 public class HomeFragment extends BaseNavigationFragment {
@@ -118,11 +114,11 @@ public class HomeFragment extends BaseNavigationFragment {
 
         setHasOptionsMenu(true);
 
+        fragmentHomeBinding.setIsLoading(true);
+
         checkPermissions();
 
         loadProvinces();
-
-        fragmentHomeBinding.setIsLoading(true);
 
         setupRecyclerView();
 
@@ -133,7 +129,7 @@ public class HomeFragment extends BaseNavigationFragment {
     }
 
     private void checkPermissions() {
-        int permGranted = getPermissionPreferenceValue();
+        int permGranted = sharedPreferences.getInt(PERMISSION, 0);
         if (permGranted == 0 || permGranted == PERMISSION_NOT_GRANTED) {
             final PermissionListener permissionlistener = new PermissionListener() {
                 @Override
@@ -167,11 +163,6 @@ public class HomeFragment extends BaseNavigationFragment {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(PERMISSION, value);
         editor.apply();
-    }
-
-
-    private int getPermissionPreferenceValue() {
-        return sharedPreferences.getInt(PERMISSION, 0);
     }
 
 
@@ -265,6 +256,53 @@ public class HomeFragment extends BaseNavigationFragment {
         return mLayoutManager;
     }
 
+    public void setupRecyclerView() {
+        ViewCompat.setNestedScrollingEnabled(fragmentHomeBinding.recyclerView, false);
+        fragmentHomeBinding.recyclerView.setLayoutManager(setupLayoutManager());
+        fragmentHomeBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(2, 0));
+    }
+
+
+    public void loadData(String province) {
+        disposable = homeViewModel.getAllItems(province)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listResource -> setItemsAdapter(listResource.data), Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    public void setItemsAdapter(List<ViewModel> rendererViewModelList) {
+        recyclerViewAdapter = new RendererRecyclerViewAdapter();
+        recyclerViewAdapter.registerRenderer(getHeader());
+        recyclerViewAdapter.registerRenderer(getCompositeBinder());
+        recyclerViewAdapter.setItems(rendererViewModelList);
+        fragmentHomeBinding.recyclerView.setAdapter(recyclerViewAdapter);
+        fragmentHomeBinding.setIsLoading(false);
+    }
+
+    @NonNull
+    private CompositeViewBinder<?> getCompositeBinder() {
+        return (CompositeViewBinder) new CompositeViewBinder<>(
+                R.layout.recycler_composite,
+                R.id.recycler_view,
+                RecyclerViewItem.class,
+                Collections.singletonList(new BetweenSpacesItemDecoration(2, 0)),
+                new CompositeViewStateProvider<RecyclerViewItem, CompositeViewHolder>() {
+                    @Override
+                    public ViewState createViewState(@NonNull final CompositeViewHolder holder) {
+                        return new CompositeViewState(holder);
+                    }
+
+                    @Override
+                    public int createViewStateID(@NonNull final RecyclerViewItem model) {
+                        return model.getID();
+                    }
+                }
+        ).registerRenderer(getReferenceZone())
+                .registerRenderer(getRentPopItem(R.layout.recycler_rent_pop_item))
+                .registerRenderer(getRentNewItem(R.layout.recycler_rent_new_item));
+
+    }
 
     private ViewBinder<?> getHeader() {
         return new ViewBinder<>(
@@ -314,7 +352,6 @@ public class HomeFragment extends BaseNavigationFragment {
         );
     }
 
-
     @Override
     public void onDestroyView() {
         fragmentHomeBinding.recyclerView.setAdapter(null);
@@ -324,70 +361,6 @@ public class HomeFragment extends BaseNavigationFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-    }
-
-
-    public void setupRecyclerView() {
-        ViewCompat.setNestedScrollingEnabled(fragmentHomeBinding.recyclerView, false);
-        fragmentHomeBinding.recyclerView.setLayoutManager(setupLayoutManager());
-        fragmentHomeBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(2, 0));
-    }
-
-    public void loadData(String province) {
-        disposable = homeViewModel.getAllItems()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new ResourceSubscriber<Resource<List<ViewModel>>>() {
-                    @Override
-                    public void onNext(Resource<List<ViewModel>> listResource) {
-                        setItemsAdapter(listResource.data);
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-        compositeDisposable.add(disposable);
-    }
-
-    public void setItemsAdapter(List<ViewModel> rZoneItems) {
-        recyclerViewAdapter = new RendererRecyclerViewAdapter();
-        recyclerViewAdapter.registerRenderer(getHeader());
-        recyclerViewAdapter.registerRenderer(testComposite());
-        recyclerViewAdapter.setItems(rZoneItems);
-        fragmentHomeBinding.recyclerView.setAdapter(recyclerViewAdapter);
-        fragmentHomeBinding.setIsLoading(false);
-
-    }
-
-    @NonNull
-    private CompositeViewBinder<?> testComposite() {
-        return (CompositeViewBinder) new CompositeViewBinder<>(
-                R.layout.recycler_composite,
-                R.id.recycler_view,
-                RecyclerViewItem.class,
-                Collections.singletonList(new BetweenSpacesItemDecoration(2, 0)),
-                new CompositeViewStateProvider<RecyclerViewItem, CompositeViewHolder>() {
-                    @Override
-                    public ViewState createViewState(@NonNull final CompositeViewHolder holder) {
-                        return new CompositeViewState(holder);
-                    }
-
-                    @Override
-                    public int createViewStateID(@NonNull final RecyclerViewItem model) {
-                        return model.getID();
-                    }
-                }
-        ).registerRenderer(getReferenceZone())
-                .registerRenderer(getRentPopItem(R.layout.recycler_rent_pop_item))
-                .registerRenderer(getRentNewItem(R.layout.recycler_rent_new_item));
-
     }
 
 

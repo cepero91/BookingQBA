@@ -15,6 +15,8 @@ public class RentAndGalery {
     private String address;
     private double price;
     private float rating;
+    private double latitude;
+    private double longitude;
 
     @Relation(parentColumn = "id", entityColumn = "rent")
     private List<GalerieEntity> galeries;
@@ -30,6 +32,17 @@ public class RentAndGalery {
         this.address = address;
         this.price = price;
         this.rating = rating;
+        this.galeries = galeries;
+    }
+
+    public RentAndGalery(String id, String name, String address, double price, float rating, double latitude, double longitude, List<GalerieEntity> galeries) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.price = price;
+        this.rating = rating;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.galeries = galeries;
     }
 
@@ -83,5 +96,21 @@ public class RentAndGalery {
 
     public GalerieEntity getGalerieAtPos(int pos){
         return galeries.get(pos);
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

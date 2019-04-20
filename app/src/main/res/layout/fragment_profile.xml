@@ -4,15 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="isLoading"
-            type="Boolean"/>
+            type="Boolean" />
+
         <variable
             name="showSelect"
-            type="Boolean"/>
+            type="Boolean" />
+
         <variable
             name="items"
-            type="String[]"/>
+            type="String[]" />
     </data>
 
 
@@ -55,30 +58,38 @@
 
             <ProgressBar
                 android:id="@+id/pb_loading"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="120dp"
                 android:layout_height="16dp"
+                android:layout_below="@+id/tv_username"
                 android:layout_centerHorizontal="true"
                 android:indeterminate="true"
-                android:layout_below="@+id/tv_username"
-                app:visibleGone="@{safeUnbox(isLoading)}"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                />
+                app:visibleGone="@{safeUnbox(isLoading)}" />
 
-            <Spinner
-                android:id="@+id/spinner_rents"
-                style="@style/MySpinnerStyle"
-                android:layout_width="160dp"
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_spinner"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_username"
                 android:layout_centerHorizontal="true"
-                android:spinnerMode="dropdown"
-                app:visibleGone="@{safeUnbox(showSelect)}" />
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp">
+
+                <Spinner
+                    android:id="@+id/spinner_rents"
+                    style="@style/MySpinnerStyle"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"
+                    app:visibleGone="@{safeUnbox(showSelect)}" />
+
+            </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
                 android:id="@+id/cv_content_params"
-                android:layout_below="@id/spinner_rents"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/cv_spinner"
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="10dp"
@@ -113,16 +124,35 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="end"
+                                android:textColor="@color/material_color_blue_grey_500"
                                 android:fontFamily="@font/poppinsmedium"
                                 android:text="Paraiso Cuba"
+                                android:paddingEnd="3dp"
                                 android:textSize="18sp" />
+
+                            <com.willy.ratingbar.BaseRatingBar
+                                android:id="@+id/sr_scale_rating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                app:srb_rating="4"
+                                app:srb_stepSize="0.5"
+                                app:srb_starWidth="16dp"
+                                app:srb_starHeight="16dp"
+                                app:srb_starPadding="3dp"
+                                app:srb_clickable="false"
+                                app:srb_scrollable="false"
+                                app:srb_drawableFilled="@drawable/ic_star"
+                                app:srb_drawableEmpty="@drawable/ic_star_o"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="end"
                                 android:fontFamily="@font/poppinsregular"
+                                android:textColor="@color/material_color_blue_grey_500"
                                 android:text="Nivel de detalle"
+                                android:paddingEnd="3dp"
                                 android:textSize="12sp" />
 
                         </LinearLayout>
@@ -133,12 +163,12 @@
                             android:layout_height="65dp"
                             android:layout_marginStart="5dp"
                             app:animateType="AccelerateDecelerateInterpolator"
-                            app:end_color="#00796B"
+                            app:end_color="@color/colorPrimaryDark"
+                            app:start_color="@color/colorPrimary"
                             app:isFilled="false"
                             app:isTracked="true"
                             app:progressTextColor="@color/material_color_blue_grey_500"
                             app:progressTextSize="14sp"
-                            app:start_color="#64FFDA"
                             app:trackColor="#EEEEEE"
                             app:track_width="8dp" />
 
@@ -165,6 +195,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center|top"
                                 android:fontFamily="@font/poppinsbold"
+                                android:textColor="@color/material_color_blue_grey_500"
                                 android:text="200"
                                 android:textSize="18sp" />
 
@@ -173,6 +204,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center|bottom"
                                 android:fontFamily="@font/poppinsregular"
+                                android:textColor="@color/material_color_blue_grey_500"
                                 android:paddingEnd="5dp"
                                 android:paddingStart="5dp"
                                 android:text="Visitas"
@@ -200,6 +232,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center|top"
                                 android:fontFamily="@font/poppinsbold"
+                                android:textColor="@color/material_color_blue_grey_500"
                                 android:text="38"
                                 android:textSize="18sp" />
 
@@ -208,6 +241,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center|bottom"
                                 android:fontFamily="@font/poppinsregular"
+                                android:textColor="@color/material_color_blue_grey_500"
                                 android:paddingEnd="5dp"
                                 android:paddingStart="5dp"
                                 android:text="Comentarios"
@@ -235,6 +269,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center|top"
                                 android:fontFamily="@font/poppinsbold"
+                                android:textColor="@color/material_color_blue_grey_500"
                                 android:text="10"
                                 android:textSize="18sp" />
 
@@ -243,6 +278,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center|bottom"
                                 android:fontFamily="@font/poppinsregular"
+                                android:textColor="@color/material_color_blue_grey_500"
                                 android:paddingEnd="5dp"
                                 android:paddingStart="5dp"
                                 android:text="En Deseo"
@@ -307,12 +343,12 @@
                             android:layout_width="220dp"
                             android:layout_height="35dp"
                             app:corner_radius="8dp"
-                            app:end_color="#0097A7"
+                            app:end_color="@color/colorPrimaryDark"
+                            app:start_color="@color/colorPrimary"
                             app:end_progress="100"
                             app:isTracked="true"
                             app:progressTextColor="#696969"
                             app:progressTextVisibility="true"
-                            app:start_color="#4DD0E1"
                             app:text_padding_bottom="5dp"
                             app:trackColor="@color/material_color_grey_200"
                             app:track_width="10dp" />
@@ -347,12 +383,12 @@
                             android:layout_width="220dp"
                             android:layout_height="35dp"
                             app:corner_radius="8dp"
-                            app:end_color="#388E3C"
+                            app:end_color="@color/colorPrimaryDark"
+                            app:start_color="@color/colorPrimary"
                             app:end_progress="100"
                             app:isTracked="true"
                             app:progressTextColor="#696969"
                             app:progressTextVisibility="true"
-                            app:start_color="#81C784"
                             app:text_padding_bottom="5dp"
                             app:trackColor="@color/material_color_grey_200"
                             app:track_width="10dp" />
@@ -387,12 +423,12 @@
                             android:layout_width="220dp"
                             android:layout_height="35dp"
                             app:corner_radius="8dp"
-                            app:end_color="#FBC02D"
+                            app:end_color="@color/colorPrimaryDark"
+                            app:start_color="@color/colorPrimary"
                             app:end_progress="100"
                             app:isTracked="true"
                             app:progressTextColor="#696969"
                             app:progressTextVisibility="true"
-                            app:start_color="#FFF176"
                             app:text_padding_bottom="5dp"
                             app:trackColor="@color/material_color_grey_200"
                             app:track_width="10dp" />
@@ -427,12 +463,12 @@
                             android:layout_width="220dp"
                             android:layout_height="35dp"
                             app:corner_radius="8dp"
-                            app:end_color="#F57C00"
+                            app:end_color="@color/colorPrimaryDark"
+                            app:start_color="@color/colorPrimary"
                             app:end_progress="100"
                             app:isTracked="true"
                             app:progressTextColor="#696969"
                             app:progressTextVisibility="true"
-                            app:start_color="#FFB74D"
                             app:text_padding_bottom="5dp"
                             app:trackColor="@color/material_color_grey_200"
                             app:track_width="10dp" />
@@ -467,12 +503,12 @@
                             android:layout_width="220dp"
                             android:layout_height="35dp"
                             app:corner_radius="8dp"
-                            app:end_color="#E53935"
+                            app:end_color="@color/colorPrimaryDark"
+                            app:start_color="@color/colorPrimary"
                             app:end_progress="100"
                             app:isTracked="true"
                             app:progressTextColor="#696969"
                             app:progressTextVisibility="true"
-                            app:start_color="#E57373"
                             app:text_padding_bottom="5dp"
                             app:trackColor="@color/material_color_grey_200"
                             app:track_width="10dp" />

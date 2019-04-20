@@ -23,7 +23,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="paddingPercent" value="50" />
+                                                <entry key="paddingPercent" value="20" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -34,9 +34,10 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="$PROJECT_DIR$/../FONT AWESOME/Font-Awesome-SVG-PNG-master/Font-Awesome-SVG-PNG-master/black/png/256/chevron-down.png" />
-                                      <entry key="outputName" value="ic_caret_down" />
-                                      <entry key="themeColor" value="ffc107" />
+                                      <entry key="imageAsset" value="$PROJECT_DIR$/../FONT AWESOME/Font-Awesome-SVG-PNG-master/Font-Awesome-SVG-PNG-master/black/png/256/home.png" />
+                                      <entry key="outputName" value="ic_rent" />
+                                      <entry key="theme" value="CUSTOM" />
+                                      <entry key="themeColor" value="607d8b" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -81,11 +82,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="height" value="20" />
-                            <entry key="outputName" value="ic_angle_down" />
-                            <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/fontawesome-free-5.7.2-desktop/svgs/solid/angle-down.svg" />
-                            <entry key="width" value="12" />
+                            <entry key="outputName" value="ic_map_pin" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/Font-Awesome-SVG-PNG-master/Font-Awesome-SVG-PNG-master/black/svg/map-pin.svg" />
                           </map>
                         </option>
                       </PersistentState>

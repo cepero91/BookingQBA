@@ -102,11 +102,6 @@
 
     <style name="MySpinnerStyle">
         <item name="android:background">@drawable/selector_custom_spinner</item>
-        <item name="android:layout_margin">5dp</item>
-        <item name="android:paddingStart">8dp</item>
-        <item name="android:paddingEnd">8dp</item>
-        <item name="android:paddingTop">5dp</item>
-        <item name="android:paddingBottom">5dp</item>
     </style>
 
 

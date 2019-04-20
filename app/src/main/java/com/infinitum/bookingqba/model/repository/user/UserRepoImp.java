@@ -43,7 +43,7 @@ public class UserRepoImp implements UserRepository {
         String[] rentsId = new String[]{
                 "9a526e5f-d289-4470-a521-23de426158f3",
                 "84ea7dfd-fd0a-4cfd-b022-38d3be1577be",
-                "edadb3fd-c27a-46de-83ec-bb24f8a0d510" //ultimo con c
+                "edadb3fd-c27a-46de-83ec-bb24f8a0d51c"
         };
         User user = new User(UUID.randomUUID().toString(), "Jose Manuel", "", Arrays.asList(rentsId));
         return Single.just(user).delay(2000, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io());

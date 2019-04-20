@@ -23,6 +23,7 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
@@ -105,49 +106,36 @@ public class RentRepoImpl implements RentRepository {
     public Flowable<Resource<List<RentAndGalery>>> allRent() {
         return qbaDao.getAllRents()
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
     }
 
     @Override
-    public Flowable<Resource<List<RentAndGalery>>> allRentWithFirstImage(char orderType) {
+    public DataSource.Factory<Integer,RentAndGalery> allRentByOrderType(char orderType, String province) {
         if (orderType == ORDER_TYPE_POPULAR) {
-            return qbaDao.getAllPopRent()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
-                    .map(Resource::success)
-                    .onErrorReturn(Resource::error);
+            return qbaDao.getAllPopRent(province);
         } else {
-            return qbaDao.getAllNewRent()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
-                    .map(Resource::success)
-                    .onErrorReturn(Resource::error);
+            return qbaDao.getAllNewRent(province);
         }
     }
 
     @Override
-    public Flowable<Resource<List<RentAndGalery>>> fivePopRent() {
-        return qbaDao.getFivePopRents()
+    public Flowable<Resource<List<RentAndGalery>>> fivePopRentByProvince(String province) {
+        return qbaDao.getFivePopRents(province)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
     }
 
     @Override
-    public Flowable<Resource<List<RentAndGalery>>> fiveNewRent() {
-        return qbaDao.getFiveNewRents()
+    public Flowable<Resource<List<RentAndGalery>>> fiveNewRentByProvince(String province) {
+        return qbaDao.getFiveNewRents(province)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
-    }
-
-    @Override
-    public DataSource.Factory<Integer,RentAndGalery> getRentPaged() {
-        return qbaDao.rentAllNewRentPaged();
     }
 
     @Override

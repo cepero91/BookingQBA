@@ -31,6 +31,8 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
 
+import org.oscim.core.GeoPoint;
+
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -44,6 +46,7 @@ public abstract class BookingQBADao {
 
     /**
      * Insercion individual
+     *
      * @param entity ProvinceEntity
      * @return
      */
@@ -53,6 +56,7 @@ public abstract class BookingQBADao {
 
     /**
      * Inserta una coleccion de Provicias
+     *
      * @param list ProvinceEntity
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -60,6 +64,7 @@ public abstract class BookingQBADao {
 
     /**
      * Actualizacion individual
+     *
      * @param entity ProvinceEntity
      */
     @Transaction
@@ -68,6 +73,7 @@ public abstract class BookingQBADao {
 
     /**
      * Actualiza coleccion de Provicias
+     *
      * @param list ProvinceEntity
      */
     @Update(onConflict = OnConflictStrategy.IGNORE)
@@ -77,15 +83,16 @@ public abstract class BookingQBADao {
      * Metodo de Insert or Update
      * para evitar conflictos entre entidades
      * relacionadas
+     *
      * @param list ProvinceEntity
      */
     @Transaction
-    public void upsertProvince(List<ProvinceEntity> list){
-        for(ProvinceEntity entity: list){
-            if(addProvince(entity) == -1){
+    public void upsertProvince(List<ProvinceEntity> list) {
+        for (ProvinceEntity entity : list) {
+            if (addProvince(entity) == -1) {
                 updateProvince(entity);
                 Timber.d("%s Updated", entity.getName());
-            }else{
+            } else {
                 Timber.d("%s Inserted", entity.getName());
             }
         }
@@ -93,10 +100,11 @@ public abstract class BookingQBADao {
 
     /**
      * Consulta devuelve lista provincias
+     *
      * @return lista de provincias
      */
     @Query("SELECT * FROM Province")
-    public abstract Flowable<List<ProvinceEntity>>getAllProvinces();
+    public abstract Flowable<List<ProvinceEntity>> getAllProvinces();
 
     //------------------------- MUNICIPIOS ---------------------------//
 
@@ -119,12 +127,12 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertMunicipalities(List<MunicipalityEntity> list){
-        for(MunicipalityEntity entity: list){
-            if(addMunicipality(entity) == -1){
+    public void upsertMunicipalities(List<MunicipalityEntity> list) {
+        for (MunicipalityEntity entity : list) {
+            if (addMunicipality(entity) == -1) {
                 updateMunicipality(entity);
                 Timber.d("%s Updated", entity.getName());
-            }else{
+            } else {
                 Timber.d("%s Inserted", entity.getName());
             }
         }
@@ -132,7 +140,7 @@ public abstract class BookingQBADao {
 
 
     @Query("SELECT * FROM Municipality")
-    public abstract Flowable<List<MunicipalityEntity>>getAllMunicipalities();
+    public abstract Flowable<List<MunicipalityEntity>> getAllMunicipalities();
 
 
     //------------------------- FACILIDADES ---------------------------//
@@ -157,12 +165,12 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertAmenities(List<AmenitiesEntity> list){
-        for(AmenitiesEntity entity: list){
-            if(addAmenity(entity) == -1){
+    public void upsertAmenities(List<AmenitiesEntity> list) {
+        for (AmenitiesEntity entity : list) {
+            if (addAmenity(entity) == -1) {
                 updateAmenity(entity);
                 Timber.d("%s Updated", entity.getName());
-            }else{
+            } else {
                 Timber.d("%s Inserted", entity.getName());
             }
         }
@@ -170,7 +178,7 @@ public abstract class BookingQBADao {
 
 
     @Query("SELECT * FROM Amenities")
-    public abstract Flowable<List<AmenitiesEntity>>getAllAmenities();
+    public abstract Flowable<List<AmenitiesEntity>> getAllAmenities();
 
 
     //------------------------- TIPO DE LUGAR DE INTERES ---------------------------//
@@ -195,12 +203,12 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertPoiTypes(List<PoiTypeEntity> list){
-        for(PoiTypeEntity entity: list){
-            if(addPoiType(entity) == -1){
+    public void upsertPoiTypes(List<PoiTypeEntity> list) {
+        for (PoiTypeEntity entity : list) {
+            if (addPoiType(entity) == -1) {
                 updatePoiType(entity);
                 Timber.d("%s Updated", entity.getName());
-            }else{
+            } else {
                 Timber.d("%s Inserted", entity.getName());
             }
         }
@@ -208,7 +216,7 @@ public abstract class BookingQBADao {
 
 
     @Query("SELECT * FROM PoiType")
-    public abstract Flowable<List<PoiTypeEntity>>getAllPoiTypes();
+    public abstract Flowable<List<PoiTypeEntity>> getAllPoiTypes();
 
     //------------------------- LUGAR DE INTERES ---------------------------//
 
@@ -232,12 +240,12 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertPoi(List<PoiEntity> list){
-        for(PoiEntity entity: list){
-            if(addPoi(entity) == -1){
+    public void upsertPoi(List<PoiEntity> list) {
+        for (PoiEntity entity : list) {
+            if (addPoi(entity) == -1) {
                 updatePoi(entity);
                 Timber.d("%s Updated", entity.getName());
-            }else{
+            } else {
                 Timber.d("%s Inserted", entity.getName());
             }
         }
@@ -245,7 +253,7 @@ public abstract class BookingQBADao {
 
 
     @Query("SELECT * FROM Poi")
-    public abstract Flowable<List<PoiEntity>>getAllPois();
+    public abstract Flowable<List<PoiEntity>> getAllPois();
 
     //------------------------- USERTRACKING ---------------------//
 
@@ -264,10 +272,10 @@ public abstract class BookingQBADao {
     public abstract boolean existRent(String uuid);
 
 
-    public boolean existRents(List<String> uuids){
+    public boolean existRents(List<String> uuids) {
         boolean existAll = true;
-        for(String uuid: uuids){
-            if(!existRent(uuid)){
+        for (String uuid : uuids) {
+            if (!existRent(uuid)) {
                 existAll = false;
                 break;
             }
@@ -294,12 +302,12 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertRents(List<RentEntity> list){
-        for(RentEntity entity: list){
-            if(addRent(entity) == -1){
+    public void upsertRents(List<RentEntity> list) {
+        for (RentEntity entity : list) {
+            if (addRent(entity) == -1) {
                 updateRent(entity);
                 Timber.d("%s Updated", entity.getName());
-            }else{
+            } else {
                 Timber.d("%s Inserted", entity.getName());
             }
         }
@@ -307,41 +315,54 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    @Query("SELECT id,name,address,price, rating FROM Rent")
-    public abstract Flowable<List<RentAndGalery>>getAllRents();
+    @Query("SELECT id,name,address,price, rating,latitude,longitude FROM Rent")
+    public abstract Flowable<List<RentAndGalery>> getAllRents();
 
     /**
-     * CAMBIAR ESTE METODO PARA QUE SOLO DEVUELVA LA PRIMERA IMAGEN
+     * Este metodo devuelve solo la primera imagen de una renta
+     *
      * @return
      */
     @Transaction
-    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent " +
-            "LEFT JOIN Galerie ON Galerie.rent = Rent.id " +
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude FROM Rent " +
+            "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.name = 'La Habana' ORDER BY Rent.rating DESC LIMIT 5")
-    public abstract Flowable<List<RentAndGalery>>getFivePopRents();
+            "Province.name = :province ORDER BY Rent.rating DESC LIMIT 5")
+    public abstract Flowable<List<RentAndGalery>> getFivePopRents(String province);
 
     @Transaction
-    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.created DESC LIMIT 5")
-    public abstract Flowable<List<RentAndGalery>>getFiveNewRents();
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude FROM Rent " +
+            "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
+            "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
+            "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
+            "Province.name = :province ORDER BY Rent.created DESC LIMIT 5")
+    public abstract Flowable<List<RentAndGalery>> getFiveNewRents(String province);
+
+    /**
+     * Metodo de listado con paginado
+     * @param province
+     * @return
+     */
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude FROM Rent " +
+            "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
+            "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
+            "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
+            "Province.name = :province ORDER BY Rent.rating DESC")
+    public abstract DataSource.Factory<Integer, RentAndGalery> getAllPopRent(String province);
 
     @Transaction
-    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.rating DESC")
-    public abstract Flowable<List<RentAndGalery>>getAllPopRent();
-
-    @Transaction
-    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.created DESC")
-    public abstract Flowable<List<RentAndGalery>>getAllNewRent();
-
-    @Transaction
-    @Query("SELECT DISTINCT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating FROM Rent LEFT JOIN Galerie WHERE Galerie.rent = Rent.id ORDER BY Rent.created DESC")
-    public abstract DataSource.Factory<Integer, RentAndGalery> rentAllNewRentPaged();
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude FROM Rent " +
+            "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
+            "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
+            "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
+            "Province.name = :province ORDER BY Rent.created DESC")
+    public abstract DataSource.Factory<Integer, RentAndGalery> getAllNewRent(String province);
 
     @Transaction
     @TypeConverters(DateTypeConverter.class)
     @Query("SELECT * FROM Rent WHERE id=:uuid")
-    public abstract Flowable<RentDetail>getRentDetailById(String uuid);
+    public abstract Flowable<RentDetail> getRentDetailById(String uuid);
 
     //------------------------- MODOS DE RENTA ---------------------------//
 
@@ -365,12 +386,12 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertRentsMode(List<RentModeEntity> list){
-        for(RentModeEntity entity: list){
-            if(addRentMode(entity) == -1){
+    public void upsertRentsMode(List<RentModeEntity> list) {
+        for (RentModeEntity entity : list) {
+            if (addRentMode(entity) == -1) {
                 updateRentMode(entity);
                 Timber.d("%s Updated", entity.getName());
-            }else{
+            } else {
                 Timber.d("%s Inserted", entity.getName());
             }
         }
@@ -378,7 +399,7 @@ public abstract class BookingQBADao {
 
 
     @Query("SELECT * FROM RentMode")
-    public abstract Flowable<List<RentModeEntity>>getAllRentsMode();
+    public abstract Flowable<List<RentModeEntity>> getAllRentsMode();
 
     //------------------------- ZONA DE REFERENCIA ---------------------------//
 
@@ -402,12 +423,12 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertReferencesZone(List<ReferenceZoneEntity> list){
-        for(ReferenceZoneEntity entity: list){
-            if(addReferenceZone(entity) == -1){
+    public void upsertReferencesZone(List<ReferenceZoneEntity> list) {
+        for (ReferenceZoneEntity entity : list) {
+            if (addReferenceZone(entity) == -1) {
                 updateReferenceZone(entity);
                 Timber.d("%s Updated", entity.getName());
-            }else{
+            } else {
                 Timber.d("%s Inserted", entity.getName());
             }
         }
@@ -415,7 +436,7 @@ public abstract class BookingQBADao {
 
 
     @Query("SELECT * FROM ReferenceZone")
-    public abstract Flowable<List<ReferenceZoneEntity>>getAllReferencesZone();
+    public abstract Flowable<List<ReferenceZoneEntity>> getAllReferencesZone();
 
 
     //------------------------- TIPO DE MONEDA ---------------------------//
@@ -440,12 +461,12 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertDrawsType(List<DrawTypeEntity> list){
-        for(DrawTypeEntity entity: list){
-            if(addDrawType(entity) == -1){
+    public void upsertDrawsType(List<DrawTypeEntity> list) {
+        for (DrawTypeEntity entity : list) {
+            if (addDrawType(entity) == -1) {
                 updateDrawType(entity);
                 Timber.d("%s Updated", entity.getName());
-            }else{
+            } else {
                 Timber.d("%s Inserted", entity.getName());
             }
         }
@@ -453,7 +474,7 @@ public abstract class BookingQBADao {
 
 
     @Query("SELECT * FROM DrawType")
-    public abstract Flowable<List<DrawTypeEntity>>getAllDrawsType();
+    public abstract Flowable<List<DrawTypeEntity>> getAllDrawsType();
 
     //------------------------- GALERIA ---------------------------//
 
@@ -476,12 +497,12 @@ public abstract class BookingQBADao {
     public abstract void updateGaleries(List<GalerieEntity> list);
 
 
-    public void upsertGaleries(List<GalerieEntity> list){
-        for(GalerieEntity entity: list){
-            if(addGalerie(entity) == -1){
+    public void upsertGaleries(List<GalerieEntity> list) {
+        for (GalerieEntity entity : list) {
+            if (addGalerie(entity) == -1) {
                 updateGalerie(entity);
                 Timber.d("%s Updated", entity.getImageUrl());
-            }else{
+            } else {
                 Timber.d("%s Inserted", entity.getImageUrl());
             }
         }
@@ -489,18 +510,18 @@ public abstract class BookingQBADao {
 
     @Transaction
     @Query("UPDATE Galerie SET imageLocalPath=:imageLocalPath WHERE id=:uuid")
-    public abstract void updateImageLocalPathGalerie(String uuid,String imageLocalPath);
+    public abstract void updateImageLocalPathGalerie(String uuid, String imageLocalPath);
 
     @Transaction
-    public void updateListGaleryUpdateUtil(List<GaleryUpdateUtil> list){
-        for(GaleryUpdateUtil galeryUpdate: list){
-            updateImageLocalPathGalerie(galeryUpdate.getUuid(),galeryUpdate.getImageLocalPath());
+    public void updateListGaleryUpdateUtil(List<GaleryUpdateUtil> list) {
+        for (GaleryUpdateUtil galeryUpdate : list) {
+            updateImageLocalPathGalerie(galeryUpdate.getUuid(), galeryUpdate.getImageLocalPath());
         }
     }
 
 
     @Query("SELECT * FROM Galerie")
-    public abstract Flowable<List<GalerieEntity>>getAllGaleries();
+    public abstract Flowable<List<GalerieEntity>> getAllGaleries();
 
     //------------------------- OFERTA ---------------------------//
 
@@ -524,12 +545,12 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertOffers(List<OfferEntity> list){
-        for(OfferEntity entity: list){
-            if(addOffer(entity) == -1){
+    public void upsertOffers(List<OfferEntity> list) {
+        for (OfferEntity entity : list) {
+            if (addOffer(entity) == -1) {
                 updateOffer(entity);
                 Timber.d("%s Updated", entity.getName());
-            }else{
+            } else {
                 Timber.d("%s Inserted", entity.getName());
             }
         }
@@ -537,7 +558,7 @@ public abstract class BookingQBADao {
 
 
     @Query("SELECT * FROM Offer")
-    public abstract Flowable<List<OfferEntity>>getAllOffers();
+    public abstract Flowable<List<OfferEntity>> getAllOffers();
 
     //------------------------- RENTA_FACILIDADES ---------------------------//
 
@@ -561,20 +582,20 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertRentAmenities(List<RentAmenitiesEntity> list){
-        for(RentAmenitiesEntity entity: list){
-            if(addRentAmenities(entity) == -1){
+    public void upsertRentAmenities(List<RentAmenitiesEntity> list) {
+        for (RentAmenitiesEntity entity : list) {
+            if (addRentAmenities(entity) == -1) {
                 updateRentAmenities(entity);
-                Timber.d("%s Updated", entity.getRentId()+" "+entity.getAmenityId());
-            }else{
-                Timber.d("%s Inserted", entity.getRentId()+" "+entity.getAmenityId());
+                Timber.d("%s Updated", entity.getRentId() + " " + entity.getAmenityId());
+            } else {
+                Timber.d("%s Inserted", entity.getRentId() + " " + entity.getAmenityId());
             }
         }
     }
 
 
     @Query("SELECT * FROM RentAmenities")
-    public abstract Flowable<List<RentAmenitiesEntity>>getAllRentsAmenities();
+    public abstract Flowable<List<RentAmenitiesEntity>> getAllRentsAmenities();
 
     //------------------------- RENTA_TIPO_MONEDA ---------------------------//
 
@@ -598,20 +619,20 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertRentsDrawType(List<RentDrawTypeEntity> list){
-        for(RentDrawTypeEntity entity: list){
-            if(addRentDrawType(entity) == -1){
+    public void upsertRentsDrawType(List<RentDrawTypeEntity> list) {
+        for (RentDrawTypeEntity entity : list) {
+            if (addRentDrawType(entity) == -1) {
                 updateRentDrawType(entity);
-                Timber.d("%s Updated", entity.getRentId()+" "+entity.getDrawTypeId());
-            }else{
-                Timber.d("%s Inserted", entity.getRentId()+" "+entity.getDrawTypeId());
+                Timber.d("%s Updated", entity.getRentId() + " " + entity.getDrawTypeId());
+            } else {
+                Timber.d("%s Inserted", entity.getRentId() + " " + entity.getDrawTypeId());
             }
         }
     }
 
 
     @Query("SELECT * FROM RentDrawType")
-    public abstract Flowable<List<RentDrawTypeEntity>>getAllRentsDrawType();
+    public abstract Flowable<List<RentDrawTypeEntity>> getAllRentsDrawType();
 
     //------------------------- RENTA_PUNTO_DE_INTERES ---------------------------//
 
@@ -635,21 +656,19 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    public void upsertRentsPoi(List<RentPoiEntity> list){
-        for(RentPoiEntity entity: list){
-            if(addRentPoi(entity) == -1){
+    public void upsertRentsPoi(List<RentPoiEntity> list) {
+        for (RentPoiEntity entity : list) {
+            if (addRentPoi(entity) == -1) {
                 updateRentPoi(entity);
-                Timber.d("%s Updated", entity.getRentId()+" "+entity.getPoiId());
-            }else{
-                Timber.d("%s Inserted", entity.getRentId()+" "+entity.getPoiId());
+                Timber.d("%s Updated", entity.getRentId() + " " + entity.getPoiId());
+            } else {
+                Timber.d("%s Inserted", entity.getRentId() + " " + entity.getPoiId());
             }
         }
     }
 
     @Query("SELECT * FROM RentPoi")
-    public abstract Flowable<List<RentPoiEntity>>getAllRentsPoi();
-
-
+    public abstract Flowable<List<RentPoiEntity>> getAllRentsPoi();
 
 
 }

@@ -22,13 +22,11 @@ public interface RentRepository {
 
     Flowable<Resource<List<RentAndGalery>>> allRent();
 
-    Flowable<Resource<List<RentAndGalery>>> allRentWithFirstImage(char orderType);
+    DataSource.Factory<Integer,RentAndGalery> allRentByOrderType(char orderType, String province);
 
-    Flowable<Resource<List<RentAndGalery>>> fivePopRent();
+    Flowable<Resource<List<RentAndGalery>>> fivePopRentByProvince(String province);
 
-    Flowable<Resource<List<RentAndGalery>>> fiveNewRent();
-
-    DataSource.Factory<Integer,RentAndGalery> getRentPaged();
+    Flowable<Resource<List<RentAndGalery>>> fiveNewRentByProvince(String province);
 
     Flowable<Resource<RentDetail>> getRentDetailById(String uuid);
 

@@ -1,5 +1,7 @@
 package com.infinitum.bookingqba.view.home;
 
+import android.animation.ObjectAnimator;
+import android.animation.StateListAnimator;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -211,7 +213,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-//        checkMenuItemsVisibility(menu);
+        checkMenuItemsVisibility(menu);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -224,6 +226,11 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         login.setVisible(!loginVisibility);
         MenuItem logout = menu.findItem(R.id.action_logout);
         logout.setVisible(loginVisibility);
+        if(mFragment instanceof RentListFragment){
+            menu.findItem(R.id.action_filter_panel).setVisible(true);
+        }else {
+            menu.findItem(R.id.action_filter_panel).setVisible(false);
+        }
     }
 
 
@@ -236,18 +243,16 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                     filterFragment = FilterFragment.newInstance();
                 }
                 fragmentManager.beginTransaction().replace(R.id.filter_container, filterFragment).commit();
-                homeBinding.drawerLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        homeBinding.drawerLayout.openDrawer(Gravity.END);
-                    }
-                }, 200);
+                homeBinding.drawerLayout.postDelayed(() -> homeBinding.drawerLayout.openDrawer(Gravity.END), 200);
                 break;
             case R.id.action_login:
                 LoginFragment lf = LoginFragment.newInstance();
                 lf.show(fragmentManager, "LoginFragment");
                 return true;
             case R.id.action_logout:
+                if(mFragment instanceof ProfileFragment){
+                    onNavigationItemSelected(homeBinding.navView.getMenu().findItem(R.id.nav_home));
+                }
                 logoutPetition();
                 return true;
         }
@@ -286,11 +291,27 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_container, mFragment).commit();
 
+                removeAppBarShadow();
+
             }, 300);
 
             return true;
         }
         return false;
+    }
+
+    private void removeAppBarShadow() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (mFragment instanceof ProfileFragment) {
+                StateListAnimator stateListAnimator = new StateListAnimator();
+                stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(homeBinding.appBar,"elevation",0f));
+                homeBinding.appBar.setStateListAnimator(stateListAnimator);
+            } else {
+                StateListAnimator stateListAnimator = new StateListAnimator();
+                stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(homeBinding.appBar,"elevation",3f));
+                homeBinding.appBar.setStateListAnimator(stateListAnimator);
+            }
+        }
     }
 
     @Override
