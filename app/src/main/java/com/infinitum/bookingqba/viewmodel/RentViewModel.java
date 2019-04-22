@@ -24,6 +24,7 @@ import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.ReferenceZoneViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.AmenitieViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.StarViewItem;
+import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailAmenitieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailGalerieItem;
@@ -83,6 +84,11 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         LivePagedListBuilder<Integer, RentListItem> pagedListBuilder= new LivePagedListBuilder<>(dataSource, 10);
         ldRentsList = pagedListBuilder.build();
         return ldRentsList;
+    }
+
+
+    public Flowable<Resource<List<ListWishItem>>> getRentListWish(String province){
+        return rentRepository.allWishedRent(province).map(this::transformToWishList).subscribeOn(Schedulers.io());
     }
 
     public Flowable<Resource<List<GeoRent>>> getGeoRent(){
@@ -235,9 +241,29 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 geoRent.setRating(rentAndGalery.getRating());
                 String imagePath = rentAndGalery.getGalerieAtPos(0).getImageLocalPath() != null ? rentAndGalery.getGalerieAtPos(0).getImageLocalPath() : rentAndGalery.getGalerieAtPos(0).getImageUrl();
                 geoRent.setImagePath(imagePath);
+                geoRent.setRentMode(rentAndGalery.getRentMode());
                 geoRentList.add(geoRent);
             }
             return Resource.success(geoRentList);
+        }else{
+            return Resource.error("Null or empty values");
+        }
+    }
+
+    private Resource<List<ListWishItem>> transformToWishList(Resource<List<RentAndGalery>> listResource) {
+        List<ListWishItem> listWishItems = new ArrayList<>();
+        ListWishItem item;
+        if(listResource.data!=null && listResource.data.size()>0) {
+            for (RentAndGalery rentAndGalery : listResource.data) {
+                item = new ListWishItem(rentAndGalery.getId(),rentAndGalery.getName());
+                item.setAddress(rentAndGalery.getAddress());
+                item.setPrice(rentAndGalery.getPrice());
+                item.setRating(rentAndGalery.getRating());
+                item.setRentMode(rentAndGalery.getRentMode());
+                String imagePath = rentAndGalery.getGalerieAtPos(0).getImageLocalPath() != null ? rentAndGalery.getGalerieAtPos(0).getImageLocalPath() : rentAndGalery.getGalerieAtPos(0).getImageUrl();
+                item.setImagePath(imagePath);
+            }
+            return Resource.success(listWishItems);
         }else{
             return Resource.error("Null or empty values");
         }

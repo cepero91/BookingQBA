@@ -30,6 +30,7 @@ import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
+import com.infinitum.bookingqba.model.remote.pojo.Rent;
 
 import org.oscim.core.GeoPoint;
 
@@ -255,7 +256,7 @@ public abstract class BookingQBADao {
     @Query("SELECT * FROM Poi")
     public abstract Flowable<List<PoiEntity>> getAllPois();
 
-    //------------------------- USERTRACKING ---------------------//
+    //------------------------- RENTVISITCOUNT ---------------------//
 
     @Transaction
     @Query("SELECT * FROM RentVisitCount")
@@ -315,7 +316,7 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude FROM Rent " +
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) ")
     public abstract Flowable<List<RentAndGalery>> getAllRents();
 
@@ -325,7 +326,7 @@ public abstract class BookingQBADao {
      * @return
      */
     @Transaction
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude FROM Rent " +
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
@@ -333,7 +334,7 @@ public abstract class BookingQBADao {
     public abstract Flowable<List<RentAndGalery>> getFivePopRents(String province);
 
     @Transaction
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude FROM Rent " +
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
@@ -345,7 +346,8 @@ public abstract class BookingQBADao {
      * @param province
      * @return
      */
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude FROM Rent " +
+    @Transaction
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
@@ -353,7 +355,7 @@ public abstract class BookingQBADao {
     public abstract DataSource.Factory<Integer, RentAndGalery> getAllPopRent(String province);
 
     @Transaction
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude FROM Rent " +
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
@@ -364,6 +366,18 @@ public abstract class BookingQBADao {
     @TypeConverters(DateTypeConverter.class)
     @Query("SELECT * FROM Rent WHERE id=:uuid")
     public abstract Flowable<RentDetail> getRentDetailById(String uuid);
+
+    @Transaction
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
+            "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
+            "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
+            "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
+            "Province.id = :province AND Rent.isWished = 1")
+    public abstract Flowable<List<RentAndGalery>> getAllWishedRents(String province);
+
+    @Transaction
+    @RawQuery(observedEntities = RentEntity.class)
+    public abstract long updateRentIsWished(SupportSQLiteQuery query);
 
     //------------------------- MODOS DE RENTA ---------------------------//
 

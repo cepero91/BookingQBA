@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.view.rents;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
@@ -16,11 +17,18 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityRentDetailBinding;
 import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.model.local.entity.RentEntity;
+import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailItem;
 import com.infinitum.bookingqba.view.adapters.rentdetail.InnerViewPagerAdapter;
+import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
+import org.oscim.core.GeoPoint;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -35,7 +43,8 @@ import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class RentDetailActivity extends AppCompatActivity implements ObservableScrollViewCallbacks {
+public class RentDetailActivity extends AppCompatActivity implements ObservableScrollViewCallbacks,
+        View.OnClickListener {
 
     private ActivityRentDetailBinding rentDetailBinding;
     private int imageViewHeight;
@@ -54,6 +63,7 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
         super.onCreate(savedInstanceState);
         AndroidInjection.inject(this);
         rentDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_rent_detail);
+        rentDetailBinding.llContentAddress.setOnClickListener(this);
 
         compositeDisposable = new CompositeDisposable();
 
@@ -265,4 +275,28 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
         }
     }
 
+
+    public void showMapBack(ArrayList<GeoRent> geoRentList) {
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.putParcelableArrayListExtra("geoRents", geoRentList);
+        setResult(6, intent);
+        this.finish();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.ll_content_address){
+            RentEntity entity = rentDetailBinding.getRentDetailItem().getRentEntity();
+            GeoRent geoRent = new GeoRent(entity.getId());
+            geoRent.setName(entity.getName());
+            geoRent.setRentMode(rentDetailBinding.getRentDetailItem().getRentModeName());
+            geoRent.setRating(entity.getRating());
+            geoRent.setGeoPoint(new GeoPoint(entity.getLatitude(),entity.getLongitude()));
+            geoRent.setImagePath(rentDetailBinding.getRentDetailItem().getFirstImage());
+            geoRent.setPrice(entity.getPrice());
+            ArrayList<GeoRent> rents = new ArrayList<>();
+            rents.add(geoRent);
+            showMapBack(rents);
+        }
+    }
 }

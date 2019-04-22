@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.TextView;
 
+import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.google.android.flexbox.FlexboxLayout;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
@@ -136,6 +137,11 @@ public class BindingAdapters {
     @BindingAdapter("setOverlayGone")
     public static void setOverlayGone(View view, boolean show) {
         view.setVisibility(show?View.VISIBLE:View.INVISIBLE);
+    }
+
+    @BindingAdapter("setRoundedImage")
+    public static void setRoundedImage(RoundedImageView view, String imagePath) {
+        GlideApp.with(view).load(imagePath).placeholder(R.drawable.placeholder).into(view);
     }
 
 

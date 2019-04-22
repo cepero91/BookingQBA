@@ -3,10 +3,12 @@ package com.infinitum.bookingqba.model.local.pojo;
 import android.arch.persistence.room.Relation;
 
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
+import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.remote.pojo.Galerie;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class RentAndGalery {
 
@@ -17,6 +19,12 @@ public class RentAndGalery {
     private float rating;
     private double latitude;
     private double longitude;
+    private String rentMode;
+    private int isWished;
+
+
+    @Relation(parentColumn = "rentMode", entityColumn = "id",entity = RentModeEntity.class,projection = {"name"})
+    private Set<String> rentModeSet;
 
     @Relation(parentColumn = "id", entityColumn = "rent")
     private List<GalerieEntity> galeries;
@@ -26,16 +34,8 @@ public class RentAndGalery {
         this.name = name;
     }
 
-    public RentAndGalery(String id, String name, String address, double price, float rating, List<GalerieEntity> galeries) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.price = price;
-        this.rating = rating;
-        this.galeries = galeries;
-    }
 
-    public RentAndGalery(String id, String name, String address, double price, float rating, double latitude, double longitude, List<GalerieEntity> galeries) {
+    public RentAndGalery(String id, String name, String address, double price, float rating, double latitude, double longitude, String rentMode, int isWished, Set<String> rentModeSet, List<GalerieEntity> galeries) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -43,6 +43,9 @@ public class RentAndGalery {
         this.rating = rating;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.rentMode = rentMode;
+        this.isWished = isWished;
+        this.rentModeSet = rentModeSet;
         this.galeries = galeries;
     }
 
@@ -60,14 +63,6 @@ public class RentAndGalery {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<GalerieEntity> getGaleries() {
-        return galeries;
-    }
-
-    public void setGaleries(List<GalerieEntity> galeries) {
-        this.galeries = galeries;
     }
 
     public String getAddress() {
@@ -94,10 +89,6 @@ public class RentAndGalery {
         this.rating = rating;
     }
 
-    public GalerieEntity getGalerieAtPos(int pos){
-        return galeries.get(pos);
-    }
-
     public double getLatitude() {
         return latitude;
     }
@@ -112,5 +103,41 @@ public class RentAndGalery {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getRentMode() {
+        return rentModeSet.toArray()[0].toString();
+    }
+
+    public void setRentMode(String rentMode) {
+        this.rentMode = rentMode;
+    }
+
+    public Set<String> getRentModeSet() {
+        return rentModeSet;
+    }
+
+    public void setRentModeSet(Set<String> rentModeSet) {
+        this.rentModeSet = rentModeSet;
+    }
+
+    public List<GalerieEntity> getGaleries() {
+        return galeries;
+    }
+
+    public void setGaleries(List<GalerieEntity> galeries) {
+        this.galeries = galeries;
+    }
+
+    public GalerieEntity getGalerieAtPos(int pos){
+        return galeries.get(pos);
+    }
+
+    public int getIsWished() {
+        return isWished;
+    }
+
+    public void setIsWished(int isWished) {
+        this.isWished = isWished;
     }
 }

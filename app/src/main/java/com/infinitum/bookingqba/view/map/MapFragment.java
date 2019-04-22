@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -15,7 +16,9 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
+import com.danimahardhika.cafebar.CafeBar;
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.databinding.CafeBarMapMarkerBinding;
 import com.infinitum.bookingqba.databinding.FragmentMapBinding;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
@@ -27,6 +30,7 @@ import com.wshunli.assets.CopyListener;
 import org.oscim.backend.CanvasAdapter;
 import org.oscim.backend.canvas.Bitmap;
 import org.oscim.core.GeoPoint;
+import org.oscim.core.MapPosition;
 import org.oscim.event.Gesture;
 import org.oscim.event.GestureListener;
 import org.oscim.event.MotionEvent;
@@ -44,6 +48,7 @@ import org.oscim.scalebar.MapScaleBar;
 import org.oscim.scalebar.MapScaleBarLayer;
 import org.oscim.theme.VtmThemes;
 import org.oscim.tiling.source.mapfile.MapFileTileSource;
+import org.oscim.utils.animation.Easing;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -67,41 +72,50 @@ import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
 
 public class MapFragment extends Fragment implements ItemizedLayer.OnItemGestureListener<MarkerItem> {
 
+    // Rxjava
     private CompositeDisposable compositeDisposable;
     private Disposable disposable;
 
     @Inject
     SharedPreferences sharedPreferences;
 
+    // View model
     @Inject
     ViewModelFactory viewModelFactory;
-
     private RentViewModel rentViewModel;
 
     private OnFragmentMapInteraction mListener;
 
+    //Databinding
     private FragmentMapBinding mapBinding;
+    private CafeBarMapMarkerBinding cafeBarMapMarkerBinding;
 
-    private MapScaleBar mapScaleBar;
+    //Map custom views
+    private CafeBar cafebar;
 
     private String mapFilePath;
 
     //Marker
     private MarkerSymbol mFocusMarker;
     private ItemizedLayer<MarkerItem> mMarkerLayer;
+    private int lastMarkerFocus = -1;
+    private int currentMarkerIndex = -1;
 
     private static final String GEORENTS_PARAM = "param1";
+    private static final String IS_FROM_DETAIL_PARAM = "param2";
     private ArrayList<GeoRent> geoRentArrayList;
+    private boolean isFromDetail;
 
 
     public MapFragment() {
         // Required empty public constructor
     }
 
-    public static MapFragment newInstance(@Nullable ArrayList<GeoRent> geoRentList) {
+    public static MapFragment newInstance(@Nullable ArrayList<GeoRent> geoRentList, boolean isFromDetail) {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(GEORENTS_PARAM, geoRentList);
+        args.putBoolean(IS_FROM_DETAIL_PARAM, isFromDetail);
         fragment.setArguments(args);
         return fragment;
     }
@@ -111,6 +125,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             geoRentArrayList = getArguments().getParcelableArrayList(GEORENTS_PARAM);
+            isFromDetail = getArguments().getBoolean(IS_FROM_DETAIL_PARAM,false);
         }
     }
 
@@ -119,6 +134,24 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mapBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false);
+
+        cafeBarMapMarkerBinding = DataBindingUtil.inflate(inflater, R.layout.cafe_bar_map_marker, container, false);
+        cafeBarMapMarkerBinding.contentCafebar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    if (currentMarkerIndex != -1 && geoRentArrayList != null && geoRentArrayList.size() > 0)
+                        mListener.onMapInteraction(geoRentArrayList.get(currentMarkerIndex));
+                }
+            }
+        });
+        cafebar = CafeBar.builder(getActivity())
+                .to(mapBinding.flContentMap)
+                .floating(true)
+                .customView(cafeBarMapMarkerBinding.getRoot())
+                .autoDismiss(false)
+                .build();
+
         return mapBinding.getRoot();
     }
 
@@ -203,7 +236,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
             mapBinding.mapview.map().setTheme(VtmThemes.OSMAGRAY);
 
             // Scale bar
-            mapScaleBar = new DefaultMapScaleBar(mapBinding.mapview.map());
+            MapScaleBar mapScaleBar = new DefaultMapScaleBar(mapBinding.mapview.map());
             MapScaleBarLayer mapScaleBarLayer = new MapScaleBarLayer(mapBinding.mapview.map(), mapScaleBar);
             mapScaleBarLayer.getRenderer().setPosition(GLViewport.Position.BOTTOM_LEFT);
             mapScaleBarLayer.getRenderer().setOffset(5 * CanvasAdapter.getScale(), 0);
@@ -215,8 +248,18 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
                 initializeMarker();
             }
 
-            // Note: this map position is specific to Habana area
-            mapBinding.mapview.map().setMapPosition(23.1165, -82.3882, 2 << 12);
+            if(isFromDetail && geoRentArrayList!=null){
+                MapPosition mapPosition = new MapPosition();
+                mapPosition.setPosition(geoRentArrayList.get(0).getGeoPoint());
+                mapPosition.setZoomLevel(16);
+                mapBinding.mapview.map().setMapPosition(mapPosition);
+                mMarkerLayer.getItemList().get(0).setMarker(mFocusMarker);
+                showCafeBar(0);
+            }else{
+                // Position Habana
+                mapBinding.mapview.map().setMapPosition(23.1165, -82.3882, 2 << 12);
+            }
+
         }
     }
 
@@ -227,9 +270,16 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     }
 
     private void setupMarkers(List<GeoRent> geoRentList) {
+        if(geoRentArrayList == null){
+            geoRentArrayList = (ArrayList<GeoRent>) geoRentList;
+        }
         //Marker
         Bitmap bitmapPoi = drawableToBitmap(getResources().getDrawable(R.drawable.ic_map_pin));
         MarkerSymbol symbol = new MarkerSymbol(bitmapPoi, MarkerSymbol.HotspotPlace.BOTTOM_CENTER);
+
+        Bitmap bitmapFocus = drawableToBitmap(getResources().getDrawable(R.drawable.ic_map_pin_focus));
+        mFocusMarker = new MarkerSymbol(bitmapFocus, MarkerSymbol.HotspotPlace.BOTTOM_CENTER);
+
         mMarkerLayer = new ItemizedLayer<>(mapBinding.mapview.map(), new ArrayList<MarkerItem>(), symbol, this);
         mapBinding.mapview.map().layers().add(mMarkerLayer);
 
@@ -273,7 +323,26 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
 
     @Override
     public boolean onItemSingleTapUp(int index, MarkerItem item) {
-        Toast.makeText(getActivity(), "Marker tap\n" + item.getTitle(), Toast.LENGTH_SHORT).show();
+        if (item.getMarker() == null) {
+            if (lastMarkerFocus != -1) {
+                mMarkerLayer.getItemList().get(lastMarkerFocus).setMarker(null);
+            }
+            lastMarkerFocus = index;
+            item.setMarker(mFocusMarker);
+            MapPosition mapPosition = new MapPosition();
+            mapPosition.setPosition(item.getPoint());
+            mapPosition.setZoomLevel(16);
+            mapBinding.mapview.map().animator().animateTo(1000, mapPosition, Easing.Type.SINE_IN);
+            showCafeBar(index);
+        } else {
+            item.setMarker(null);
+            lastMarkerFocus = -1;
+            MapPosition mapPosition = new MapPosition();
+            mapPosition.setPosition(item.getPoint());
+            mapPosition.setZoomLevel(14);
+            mapBinding.mapview.map().animator().animateTo(500, mapPosition, Easing.Type.SINE_IN);
+            hideCafeBar();
+        }
         return true;
     }
 
@@ -281,6 +350,12 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     public boolean onItemLongPress(int index, MarkerItem item) {
         Toast.makeText(getActivity(), "Marker long press\n" + item.getTitle(), Toast.LENGTH_SHORT).show();
         return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapBinding.mapview.onResume();
     }
 
     @Override
@@ -293,13 +368,35 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     public void onDestroy() {
         super.onDestroy();
         mapBinding.mapview.onDestroy();
-        if(disposable!=null && !disposable.isDisposed()){
+        if(cafebar!=null){
+            cafebar = null;
+        }
+        if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
         }
     }
 
 
     public interface OnFragmentMapInteraction {
-        void onMapInteraction();
+        void onMapInteraction(GeoRent geoRent);
+    }
+
+    private void showCafeBar(int markerIndex) {
+        if (geoRentArrayList != null && geoRentArrayList.size() > 0) {
+            GeoRent geoRent = geoRentArrayList.get(markerIndex);
+            cafeBarMapMarkerBinding.setItem(geoRent);
+            currentMarkerIndex = markerIndex;
+            if (cafebar != null) {
+                cafebar.show();
+            }
+        }
+    }
+
+    private void hideCafeBar() {
+        currentMarkerIndex = -1;
+        cafeBarMapMarkerBinding.setItem(null);
+        if (cafebar != null) {
+            cafebar.dismiss();
+        }
     }
 }

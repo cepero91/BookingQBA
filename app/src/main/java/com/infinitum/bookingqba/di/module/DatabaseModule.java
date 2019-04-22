@@ -40,6 +40,15 @@ public class DatabaseModule {
         return (INSTANCE);
     }
 
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            // MODIFICAR LA CONSULTA
+//            database.execSQL("ALTER TABLE Rent "
+//                    + " ADD COLUMN author TEXT ");
+        }
+    };
+
     static BookingQBADatabase create(Context ctxt) {
         RoomDatabase.Builder<BookingQBADatabase> b =
                 Room.databaseBuilder(ctxt.getApplicationContext(), BookingQBADatabase.class,

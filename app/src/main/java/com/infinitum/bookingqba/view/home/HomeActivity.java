@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.view.home;
 
 import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -37,6 +39,7 @@ import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RentNewItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
+import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
@@ -49,6 +52,7 @@ import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +70,9 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
+import timber.log.Timber;
 
+import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID_DEFAULT;
@@ -82,6 +88,8 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
     private static final String NOTIFICATION_DEFAULT = "default";
     private static final int NOTIFICATION_ID = 1;
+    private static final int MY_REQUEST_CODE = 4;
+    private static final int FROM_DETAIL_ACTIVITY_RESULT = 6;
     private ActivityHomeBinding homeBinding;
     private FragmentManager fragmentManager;
     private Fragment mFragment;
@@ -110,6 +118,28 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
         initWorkRequest();
 
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MY_REQUEST_CODE && resultCode == FROM_DETAIL_ACTIVITY_RESULT) {
+            if (data.getExtras() != null) {
+                ArrayList<GeoRent> geoRentList = data.getParcelableArrayListExtra("geoRents");
+                if (geoRentList != null && geoRentList.size() > 0) {
+                    mFragment = MapFragment.newInstance(geoRentList, true);
+                    fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.frame_container, mFragment).commit();
+                    homeBinding.navView.getMenu().findItem(R.id.nav_map).setChecked(true);
+                }
+            }
+        }
     }
 
     @Override
@@ -186,14 +216,19 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         } else if (baseItem instanceof RZoneItem) {
             Toast.makeText(this, baseItem.getmName(), Toast.LENGTH_SHORT).show();
         } else if (baseItem instanceof RentPopItem) {
-            Toast.makeText(this, baseItem.getmName(), Toast.LENGTH_SHORT).show();
+            navigateToDetailActivity(baseItem);
         } else if (baseItem instanceof RentNewItem) {
-            Toast.makeText(this, baseItem.getmName(), Toast.LENGTH_SHORT).show();
+            navigateToDetailActivity(baseItem);
         } else if (baseItem instanceof RentListItem) {
-            Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
-            intent.putExtra("uuid", baseItem.getId());
-            startActivity(intent);
+            navigateToDetailActivity(baseItem);
         }
+    }
+
+
+    private void navigateToDetailActivity(BaseItem baseItem) {
+        Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
+        intent.putExtra("uuid", baseItem.getId());
+        startActivityForResult(intent,MY_REQUEST_CODE);
     }
 
 
@@ -215,15 +250,17 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         MenuItem menuItem = menu.findItem(R.id.action_filter_panel);
         menuItem.setVisible(false);
         boolean loginVisibility = sharedPreferences.getBoolean(USER_IS_AUTH, false);
+        boolean isProfileActive = sharedPreferences.getBoolean(IS_PROFILE_ACTIVE, false);
         MenuItem login = menu.findItem(R.id.action_login);
         login.setVisible(!loginVisibility);
         MenuItem logout = menu.findItem(R.id.action_logout);
         logout.setVisible(loginVisibility);
-        if(mFragment instanceof RentListFragment){
+        if (mFragment instanceof RentListFragment) {
             menu.findItem(R.id.action_filter_panel).setVisible(true);
-        }else {
+        } else {
             menu.findItem(R.id.action_filter_panel).setVisible(false);
         }
+        homeBinding.navView.getMenu().setGroupVisible(R.id.group_2, isProfileActive);
     }
 
 
@@ -243,7 +280,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 lf.show(fragmentManager, "LoginFragment");
                 return true;
             case R.id.action_logout:
-                if(mFragment instanceof ProfileFragment){
+                if (mFragment instanceof ProfileFragment) {
                     onNavigationItemSelected(homeBinding.navView.getMenu().findItem(R.id.nav_home));
                 }
                 logoutPetition();
@@ -258,7 +295,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         editor.putBoolean(USER_IS_AUTH, false);
         editor.apply();
         invalidateOptionsMenu();
-        homeBinding.navView.getMenu().setGroupVisible(R.id.group_2, false);
+        showGroupMenuProfile(false);
     }
 
 
@@ -273,7 +310,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         } else if (id == R.id.nav_profile) {
             mFragment = ProfileFragment.newInstance();
         } else if (id == R.id.nav_map) {
-            mFragment = MapFragment.newInstance(null);
+            mFragment = MapFragment.newInstance(null, false);
         }
         if (mFragment != null) {
             // Highlight the selected item has been done by NavigationView
@@ -298,11 +335,11 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (mFragment instanceof ProfileFragment) {
                 StateListAnimator stateListAnimator = new StateListAnimator();
-                stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(homeBinding.appBar,"elevation",0f));
+                stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(homeBinding.appBar, "elevation", 0f));
                 homeBinding.appBar.setStateListAnimator(stateListAnimator);
             } else {
                 StateListAnimator stateListAnimator = new StateListAnimator();
-                stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(homeBinding.appBar,"elevation",3f));
+                stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(homeBinding.appBar, "elevation", 3f));
                 homeBinding.appBar.setStateListAnimator(stateListAnimator);
             }
         }
@@ -380,12 +417,17 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     @Override
     public void showGroupMenuProfile(boolean show) {
         homeBinding.navView.getMenu().setGroupVisible(R.id.group_2, show);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(IS_PROFILE_ACTIVE, show);
+        editor.apply();
     }
 
 
     @Override
-    public void onMapInteraction() {
-
+    public void onMapInteraction(GeoRent geoRent) {
+        Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
+        intent.putExtra("uuid", geoRent.getId());
+        startActivityForResult(intent,MY_REQUEST_CODE);
     }
 
 

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="isLoading"
+            type="Boolean" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.listwish.ListWishFragment">
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layoutAnimation="@anim/layout_anim_fall_down"
+            app:visibleGone="@{!safeUnbox(isLoading)}"
+            />
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="16dp"
+            android:layout_marginTop="-8dp"
+            android:indeterminate="true"
+            android:layout_gravity="top"
+            style="?android:attr/progressBarStyleHorizontal"
+            app:visibleGone="@{safeUnbox(isLoading)}" />
+
+
+    </FrameLayout>
+
+
+</layout>

@@ -95,12 +95,14 @@ public class RentEntity {
     @NonNull
     private String referenceZone;
 
+    private boolean isWished;
+
     @Ignore
     public RentEntity(@NonNull String id) {
         this.id = id;
     }
 
-    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, String slogan, @NonNull String description, @NonNull String email, @NonNull String phoneNumber, @NonNull String phoneHomeNumber, double latitude, double longitude, @NonNull float rating, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull Date updated, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone) {
+    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, String slogan, @NonNull String description, @NonNull String email, @NonNull String phoneNumber, @NonNull String phoneHomeNumber, double latitude, double longitude, @NonNull float rating, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull Date updated, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, boolean isWished) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -123,6 +125,7 @@ public class RentEntity {
         this.rules = rules;
         this.municipality = municipality;
         this.referenceZone = referenceZone;
+        this.isWished = isWished;
     }
 
     public String getId() {
@@ -312,5 +315,13 @@ public class RentEntity {
 
     public void setRating(@NonNull float rating) {
         this.rating = rating;
+    }
+
+    public boolean isWished() {
+        return isWished;
+    }
+
+    public void setWished(boolean wished) {
+        isWished = wished;
     }
 }

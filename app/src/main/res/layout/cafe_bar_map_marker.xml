@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.infinitum.bookingqba.view.adapters.items.map.GeoRent" />
+    </data>
+
+
+    <LinearLayout
+        android:id="@+id/content_cafebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/White_100">
+
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:id="@+id/siv_rent_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            app:setRoundedImage="@{item.getImagePath()}"
+            app:siBorderAlpha="0"
+            app:siShape="@drawable/shape_imageview_rounded_left" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="30dp"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_rent_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/poppinsbold"
+                android:text="@{item.name}"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="14sp" />
+
+            <com.willy.ratingbar.BaseRatingBar
+                android:id="@+id/sr_scale_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:setRating="@{item.rating}"
+                app:srb_clickable="false"
+                app:srb_drawableEmpty="@drawable/ic_star_o"
+                app:srb_drawableFilled="@drawable/ic_star"
+                app:srb_rating="4"
+                app:srb_scrollable="false"
+                app:srb_starHeight="16dp"
+                app:srb_starPadding="2dp"
+                app:srb_starWidth="16dp"
+                app:srb_stepSize="0.5" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsregular"
+                    android:textSize="14sp"
+                    app:setPriceText="@{item.price}"
+                    android:textColor="@color/material_color_blue_grey_500"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:fontFamily="@font/poppinsitalic"
+                    android:text="@{item.rentMode}"
+                    android:textSize="12sp"
+                    android:textColor="@color/material_color_blue_grey_300"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</layout>

@@ -13,6 +13,7 @@ public class GeoRent implements Parcelable {
     private double price;
     private GeoPoint geoPoint;
     private String imagePath;
+    private String rentMode;
 
     public GeoRent(String id, String name, float rating, double price, GeoPoint geoPoint) {
         this.id = id;
@@ -20,6 +21,16 @@ public class GeoRent implements Parcelable {
         this.rating = rating;
         this.price = price;
         this.geoPoint = geoPoint;
+    }
+
+    public GeoRent(String id, String name, float rating, double price, GeoPoint geoPoint, String imagePath, String rentMode) {
+        this.id = id;
+        this.name = name;
+        this.rating = rating;
+        this.price = price;
+        this.geoPoint = geoPoint;
+        this.imagePath = imagePath;
+        this.rentMode = rentMode;
     }
 
     public GeoRent(String id) {
@@ -74,6 +85,14 @@ public class GeoRent implements Parcelable {
         this.imagePath = imagePath;
     }
 
+    public String getRentMode() {
+        return rentMode;
+    }
+
+    public void setRentMode(String rentMode) {
+        this.rentMode = rentMode;
+    }
+
 
     @Override
     public int describeContents() {
@@ -88,6 +107,7 @@ public class GeoRent implements Parcelable {
         dest.writeDouble(this.price);
         dest.writeSerializable(this.geoPoint);
         dest.writeString(this.imagePath);
+        dest.writeString(this.rentMode);
     }
 
     protected GeoRent(Parcel in) {
@@ -97,6 +117,7 @@ public class GeoRent implements Parcelable {
         this.price = in.readDouble();
         this.geoPoint = (GeoPoint) in.readSerializable();
         this.imagePath = in.readString();
+        this.rentMode = in.readString();
     }
 
     public static final Parcelable.Creator<GeoRent> CREATOR = new Parcelable.Creator<GeoRent>() {

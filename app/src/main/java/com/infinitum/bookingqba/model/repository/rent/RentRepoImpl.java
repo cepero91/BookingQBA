@@ -149,4 +149,15 @@ public class RentRepoImpl implements RentRepository {
                 "(SELECT visitCount FROM RentVisitCount WHERE rentId = '"+rent+"'),0)+1)");
         return Completable.fromAction(()-> qbaDao.addOrUpdateRentVisit(query)).subscribeOn(Schedulers.io());
     }
+
+    @Override
+    public Flowable<Resource<List<RentAndGalery>>> allWishedRent(String province) {
+        return qbaDao.getAllWishedRents(province).map(Resource::success).onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Completable updateIsWishedRent(String uuid, int isWished) {
+        SupportSQLiteQuery query = new SimpleSQLiteQuery("UPDATE Rent SET isWished ='"+isWished+"' WHERE id='"+uuid+"'");
+        return Completable.fromAction(()-> qbaDao.updateRentIsWished(query)).subscribeOn(Schedulers.io());
+    }
 }

@@ -32,4 +32,8 @@ public interface RentRepository {
 
     Completable addOrUpdateRentVisitCount(String id, String rent);
 
+    Flowable<Resource<List<RentAndGalery>>> allWishedRent(String province);
+
+    Completable updateIsWishedRent(String uuid, int isWished);
+
 }
