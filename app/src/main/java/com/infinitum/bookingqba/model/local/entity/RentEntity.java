@@ -95,14 +95,14 @@ public class RentEntity {
     @NonNull
     private String referenceZone;
 
-    private boolean isWished;
+    private int isWished;
 
     @Ignore
     public RentEntity(@NonNull String id) {
         this.id = id;
     }
 
-    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, String slogan, @NonNull String description, @NonNull String email, @NonNull String phoneNumber, @NonNull String phoneHomeNumber, double latitude, double longitude, @NonNull float rating, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull Date updated, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, boolean isWished) {
+    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, String slogan, @NonNull String description, @NonNull String email, @NonNull String phoneNumber, @NonNull String phoneHomeNumber, double latitude, double longitude, @NonNull float rating, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull Date updated, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, int isWished) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -317,11 +317,11 @@ public class RentEntity {
         this.rating = rating;
     }
 
-    public boolean isWished() {
+    public int isWished() {
         return isWished;
     }
 
-    public void setWished(boolean wished) {
+    public void setWished(int wished) {
         isWished = wished;
     }
 }

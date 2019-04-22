@@ -13,6 +13,7 @@ import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
+import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAmenitieAndRelation;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
@@ -95,6 +96,15 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return rentRepository.allRent().map(this::transformToGeoRent);
     }
 
+    // --------------------------- RENT WISHED ---------------------------------------------//
+
+    public Completable updateRentIsWished(String uuid, int isWished){
+        return rentRepository.updateIsWishedRent(uuid,isWished);
+    }
+
+    public Completable updateRent(RentEntity entity){
+        return rentRepository.updateRent(entity);
+    }
 
     // --------------------------- FILTER LIST --------------------------------------------- //
 
@@ -262,6 +272,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 item.setRentMode(rentAndGalery.getRentMode());
                 String imagePath = rentAndGalery.getGalerieAtPos(0).getImageLocalPath() != null ? rentAndGalery.getGalerieAtPos(0).getImageLocalPath() : rentAndGalery.getGalerieAtPos(0).getImageUrl();
                 item.setImagePath(imagePath);
+                listWishItems.add(item);
             }
             return Resource.success(listWishItems);
         }else{

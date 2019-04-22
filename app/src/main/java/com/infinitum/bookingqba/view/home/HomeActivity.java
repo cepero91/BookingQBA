@@ -45,6 +45,7 @@ import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.view.filter.FilterFragment;
 import com.infinitum.bookingqba.view.interaction.LoginInteraction;
+import com.infinitum.bookingqba.view.listwish.ListWishFragment;
 import com.infinitum.bookingqba.view.map.MapFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
@@ -311,6 +312,8 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             mFragment = ProfileFragment.newInstance();
         } else if (id == R.id.nav_map) {
             mFragment = MapFragment.newInstance(null, false);
+        } else if (id == R.id.nav_wish_list) {
+            mFragment = ListWishFragment.newInstance();
         }
         if (mFragment != null) {
             // Highlight the selected item has been done by NavigationView

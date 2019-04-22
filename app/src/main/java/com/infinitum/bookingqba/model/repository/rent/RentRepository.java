@@ -36,4 +36,6 @@ public interface RentRepository {
 
     Completable updateIsWishedRent(String uuid, int isWished);
 
+    Completable updateRent(RentEntity entity);
+
 }

@@ -122,7 +122,7 @@ public class ListWishFragment extends BaseNavigationFragment {
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %s", String.valueOf(model.getPrice()))))
                         .find(R.id.siv_rent_image, (ViewProvider<RoundedImageView>) view ->
                                 GlideApp.with(getView()).load(model.getImagePath()).placeholder(R.drawable.placeholder).into(view))
-                        .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
+                        .setOnClickListener(R.id.cv_rent_content, (v -> mListener.onItemClick(v, model)))
         );
     }
 

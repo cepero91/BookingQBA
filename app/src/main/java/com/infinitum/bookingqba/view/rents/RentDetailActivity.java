@@ -8,6 +8,8 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 
@@ -36,6 +38,7 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjection;
 import iammert.com.view.scalinglib.ScalingLayoutListener;
 import iammert.com.view.scalinglib.State;
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -285,18 +288,72 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.ll_content_address){
+        if (v.getId() == R.id.ll_content_address) {
             RentEntity entity = rentDetailBinding.getRentDetailItem().getRentEntity();
             GeoRent geoRent = new GeoRent(entity.getId());
             geoRent.setName(entity.getName());
             geoRent.setRentMode(rentDetailBinding.getRentDetailItem().getRentModeName());
             geoRent.setRating(entity.getRating());
-            geoRent.setGeoPoint(new GeoPoint(entity.getLatitude(),entity.getLongitude()));
+            geoRent.setGeoPoint(new GeoPoint(entity.getLatitude(), entity.getLongitude()));
             geoRent.setImagePath(rentDetailBinding.getRentDetailItem().getFirstImage());
             geoRent.setPrice(entity.getPrice());
             ArrayList<GeoRent> rents = new ArrayList<>();
             rents.add(geoRent);
             showMapBack(rents);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_rent_detail, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        checkIsWished(menu);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void checkIsWished(Menu menu) {
+        if (rentDetailBinding.getRentDetailItem().getRentEntity().isWished() == 1) {
+            menu.findItem(R.id.action_list_wish).setIcon(R.drawable.ic_bookmark_orange);
+        } else {
+            menu.findItem(R.id.action_list_wish).setIcon(R.drawable.ic_bookmark_white);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_list_wish:
+                setIsWished();
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setIsWished() {
+        if (rentDetailBinding.getRentDetailItem().getRentEntity().isWished() == 1) {
+            rentDetailBinding.getRentDetailItem().getRentEntity().setWished(0);
+            updateEntity(rentDetailBinding.getRentDetailItem().getRentEntity());
+        } else if(rentDetailBinding.getRentDetailItem().getRentEntity().isWished() == 0) {
+            rentDetailBinding.getRentDetailItem().getRentEntity().setWished(1);
+            updateEntity(rentDetailBinding.getRentDetailItem().getRentEntity());
+        }
+    }
+
+    private void updateEntity(RentEntity entity){
+        disposable = viewModel.updateRent(entity).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(()->showshow(),Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void showshow(){
+        Timber.e("Si GUARDO CON EXITO");
+        invalidateOptionsMenu();
     }
 }
