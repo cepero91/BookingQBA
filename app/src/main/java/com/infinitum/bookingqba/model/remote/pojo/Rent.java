@@ -3,77 +3,92 @@ package com.infinitum.bookingqba.model.remote.pojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 public class Rent {
 
-    @SerializedName("id")
+    @SerializedName("uui")
     @Expose
     private String id;
-    @SerializedName("nombre")
+
+    @SerializedName("name")
     @Expose
-    private String nombre;
-    @SerializedName("direccion")
+    private String name;
+
+    @SerializedName("address")
     @Expose
-    private String direccion;
-    @SerializedName("eslogan")
+    private String address;
+
+    @SerializedName("slogan")
     @Expose
-    private String eslogan;
-    @SerializedName("descripcion")
+    private String slogan;
+
+    @SerializedName("description")
     @Expose
-    private String descripcion;
-    @SerializedName("correo")
+    private String description;
+
+    @SerializedName("email")
     @Expose
-    private String correo;
-    @SerializedName("telcasa")
+    private String email;
+
+    @SerializedName("phoneHomeNumber")
     @Expose
-    private String telcasa;
-    @SerializedName("telmovil")
+    private String phoneHomeNumber;
+
+    @SerializedName("phoneNumber")
     @Expose
-    private String telmovil;
-    @SerializedName("latitud")
+    private String phoneNumber;
+
+    @SerializedName("latitude")
     @Expose
-    private String latitud;
-    @SerializedName("longitud")
+    private String latitude;
+
+    @SerializedName("longitude")
     @Expose
-    private String longitud;
+    private String longitude;
+
     @SerializedName("rating")
     @Expose
     private Float rating;
-    @SerializedName("cant_habitaciones")
+
+    @SerializedName("maxRooms")
     @Expose
-    private Integer cantHabitaciones;
-    @SerializedName("capacidad")
+    private Integer maxRooms;
+
+    @SerializedName("capability")
     @Expose
-    private Integer capacidad;
-    @SerializedName("cant_camas")
+    private Integer capability;
+
+    @SerializedName("maxBeds")
     @Expose
-    private Integer cantCamas;
-    @SerializedName("cant_bannos")
+    private Integer maxBeds;
+
+    @SerializedName("maxBath")
     @Expose
-    private Integer cantBannos;
-    @SerializedName("precio")
+    private Integer maxBath;
+
+    @SerializedName("price")
     @Expose
-    private Double precio;
-    @SerializedName("modalidad_renta")
+    private Double price;
+
+    @SerializedName("rentMode")
     @Expose
-    private String modalidadRenta;
-    @SerializedName("normas")
+    private String rentMode;
+
+    @SerializedName("rules")
     @Expose
-    private String normas;
-    @SerializedName("municipio")
+    private String rules;
+
+    @SerializedName("municipality")
     @Expose
-    private String municipio;
-    @SerializedName("zona_referencia")
+    private String municipality;
+
+    @SerializedName("referenceZone")
     @Expose
-    private String zonaReferencia;
-    @SerializedName("fecha_creado")
+    private String referenceZone;
+
+    @SerializedName("created")
     @Expose
-    private String fechaCreado;
-    @SerializedName("fecha_modificado")
-    @Expose
-    private String fechaModificado;
-    @SerializedName("facilidades")
+    private String created;
+
 
 
     public String getId() {
@@ -84,164 +99,156 @@ public class Rent {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDireccion() {
-        return direccion;
+    public String getAddress() {
+        return address;
     }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public String getEslogan() {
-        return eslogan;
+    public String getSlogan() {
+        return slogan;
     }
 
-    public void setEslogan(String eslogan) {
-        this.eslogan = eslogan;
+    public void setSlogan(String slogan) {
+        this.slogan = slogan;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getCorreo() {
-        return correo;
+    public String getEmail() {
+        return email;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getTelcasa() {
-        return telcasa;
+    public String getPhoneHomeNumber() {
+        return phoneHomeNumber;
     }
 
-    public void setTelcasa(String telcasa) {
-        this.telcasa = telcasa;
+    public void setPhoneHomeNumber(String phoneHomeNumber) {
+        this.phoneHomeNumber = phoneHomeNumber;
     }
 
-    public String getTelmovil() {
-        return telmovil;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setTelmovil(String telmovil) {
-        this.telmovil = telmovil;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public String getLatitud() {
-        return latitud;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setLatitud(String latitud) {
-        this.latitud = latitud;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
-    public String getLongitud() {
-        return longitud;
+    public String getLongitude() {
+        return longitude;
     }
 
-    public void setLongitud(String longitud) {
-        this.longitud = longitud;
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
-    public Integer getCantHabitaciones() {
-        return cantHabitaciones;
+    public Integer getMaxRooms() {
+        return maxRooms;
     }
 
-    public void setCantHabitaciones(Integer cantHabitaciones) {
-        this.cantHabitaciones = cantHabitaciones;
+    public void setMaxRooms(Integer maxRooms) {
+        this.maxRooms = maxRooms;
     }
 
-    public Integer getCapacidad() {
-        return capacidad;
+    public Integer getCapability() {
+        return capability;
     }
 
-    public void setCapacidad(Integer capacidad) {
-        this.capacidad = capacidad;
+    public void setCapability(Integer capability) {
+        this.capability = capability;
     }
 
-    public Integer getCantCamas() {
-        return cantCamas;
+    public Integer getMaxBeds() {
+        return maxBeds;
     }
 
-    public void setCantCamas(Integer cantCamas) {
-        this.cantCamas = cantCamas;
+    public void setMaxBeds(Integer maxBeds) {
+        this.maxBeds = maxBeds;
     }
 
-    public Integer getCantBannos() {
-        return cantBannos;
+    public Integer getMaxBath() {
+        return maxBath;
     }
 
-    public void setCantBannos(Integer cantBannos) {
-        this.cantBannos = cantBannos;
+    public void setMaxBath(Integer maxBath) {
+        this.maxBath = maxBath;
     }
 
-    public Double getPrecio() {
-        return precio;
+    public Double getPrice() {
+        return price;
     }
 
-    public void setPrecio(Double precio) {
-        this.precio = precio;
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
-    public String getModalidadRenta() {
-        return modalidadRenta;
+    public String getRentMode() {
+        return rentMode;
     }
 
-    public void setModalidadRenta(String modalidadRenta) {
-        this.modalidadRenta = modalidadRenta;
+    public void setRentMode(String rentMode) {
+        this.rentMode = rentMode;
     }
 
-    public String getNormas() {
-        return normas;
+    public String getRules() {
+        return rules;
     }
 
-    public void setNormas(String normas) {
-        this.normas = normas;
+    public void setRules(String rules) {
+        this.rules = rules;
     }
 
-    public String getMunicipio() {
-        return municipio;
+    public String getMunicipality() {
+        return municipality;
     }
 
-    public void setMunicipio(String municipio) {
-        this.municipio = municipio;
+    public void setMunicipality(String municipality) {
+        this.municipality = municipality;
     }
 
-    public String getZonaReferencia() {
-        return zonaReferencia;
+    public String getReferenceZone() {
+        return referenceZone;
     }
 
-    public void setZonaReferencia(String zonaReferencia) {
-        this.zonaReferencia = zonaReferencia;
+    public void setReferenceZone(String referenceZone) {
+        this.referenceZone = referenceZone;
     }
 
-    public String getFechaCreado() {
-        return fechaCreado;
+    public String getCreated() {
+        return created;
     }
 
-    public void setFechaCreado(String fechaCreado) {
-        this.fechaCreado = fechaCreado;
-    }
-
-    public String getFechaModificado() {
-        return fechaModificado;
-    }
-
-    public void setFechaModificado(String fechaModificado) {
-        this.fechaModificado = fechaModificado;
+    public void setCreated(String created) {
+        this.created = created;
     }
 
     public Float getRating() {

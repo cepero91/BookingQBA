@@ -5,21 +5,25 @@ import com.google.gson.annotations.SerializedName;
 
 public class Offer {
 
-    @SerializedName("id")
+    @SerializedName("uui")
     @Expose
     private String id;
-    @SerializedName("nombre")
+
+    @SerializedName("name")
     @Expose
-    private String nombre;
-    @SerializedName("descripcion")
+    private String name;
+
+    @SerializedName("description")
     @Expose
-    private String descripcion;
-    @SerializedName("precio")
+    private String description;
+
+    @SerializedName("price")
     @Expose
-    private Double precio;
-    @SerializedName("hospedaje")
+    private Double price;
+
+    @SerializedName("rent")
     @Expose
-    private String hospedaje;
+    private String rent;
 
 
     public String getId() {
@@ -30,35 +34,35 @@ public class Offer {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public Double getPrecio() {
-        return precio;
+    public Double getPrice() {
+        return price;
     }
 
-    public void setPrecio(Double precio) {
-        this.precio = precio;
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
-    public String getHospedaje() {
-        return hospedaje;
+    public String getRent() {
+        return rent;
     }
 
-    public void setHospedaje(String hospedaje) {
-        this.hospedaje = hospedaje;
+    public void setRent(String rent) {
+        this.rent = rent;
     }
 }

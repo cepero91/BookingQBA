@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.view.adapters.items.rentlist;
 
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
@@ -18,6 +19,9 @@ public class RentListViewHolder extends RecyclerView.ViewHolder {
     public void bind(RentListItem item) {
         itemBinding.setItem(item);
         itemBinding.executePendingBindings();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            itemBinding.cvContentRentItem.setTransitionName(item.getId());
+        }
     }
 
     public void clear() {

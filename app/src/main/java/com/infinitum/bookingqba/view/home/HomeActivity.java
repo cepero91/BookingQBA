@@ -16,20 +16,25 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
 import com.infinitum.bookingqba.model.remote.pojo.User;
@@ -217,18 +222,20 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         } else if (baseItem instanceof RZoneItem) {
             Toast.makeText(this, baseItem.getmName(), Toast.LENGTH_SHORT).show();
         } else if (baseItem instanceof RentPopItem) {
-            navigateToDetailActivity(baseItem);
+            navigateToDetailActivity(baseItem, view);
         } else if (baseItem instanceof RentNewItem) {
-            navigateToDetailActivity(baseItem);
+            navigateToDetailActivity(baseItem, view);
         } else if (baseItem instanceof RentListItem) {
-            navigateToDetailActivity(baseItem);
+            navigateToDetailActivity(baseItem, view);
         }
     }
 
 
-    private void navigateToDetailActivity(BaseItem baseItem) {
+    private void navigateToDetailActivity(BaseItem baseItem, View view) {
         Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
         intent.putExtra("uuid", baseItem.getId());
+        intent.putExtra("url", ((RentListItem)baseItem).getImagePath());
+        intent.putExtra("wished", ((RentListItem)baseItem).getIsWished());
         startActivityForResult(intent,MY_REQUEST_CODE);
     }
 

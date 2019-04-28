@@ -45,7 +45,7 @@ public class OfferRepoImpl implements OfferRepository {
         ArrayList<OfferEntity> listEntity = new ArrayList<>();
         OfferEntity entity;
         for (Offer item : gsonList) {
-            entity = new OfferEntity(item.getId(), item.getNombre(), item.getDescripcion(), item.getPrecio(),item.getHospedaje());
+            entity = new OfferEntity(item.getId(), item.getName(), item.getDescription(), item.getPrice(),item.getRent());
             listEntity.add(entity);
         }
         return listEntity;

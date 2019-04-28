@@ -46,7 +46,6 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 
 public class RentViewModel extends android.arch.lifecycle.ViewModel {
@@ -78,7 +77,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
             List<RentListItem> itemsUi = new ArrayList<>();
             for(RentAndGalery entity: input){
                 String imagePath = entity.getGalerieAtPos(0).getImageLocalPath()!=null?entity.getGalerieAtPos(0).getImageLocalPath():entity.getGalerieAtPos(0).getImageUrl();
-                itemsUi.add(new RentListItem(entity.getId(),entity.getName(),entity.getPrice(),entity.getAddress(),imagePath,entity.getRating()));
+                itemsUi.add(new RentListItem(entity.getId(),entity.getName(),entity.getPrice(),entity.getRentMode(),entity.getAddress(),imagePath,entity.getRating(),entity.getIsWished()));
             }
             return itemsUi;
         });
@@ -117,7 +116,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     private Flowable<Map<String, List<ViewModel>>> getMapFlowable() {
-        Flowable<List<ViewModel>> amenitieFlow = amenitiesRepository.fetchLocal()
+        Flowable<List<ViewModel>> amenitieFlow = amenitiesRepository.allAmenities()
                 .subscribeOn(Schedulers.io())
                 .map(this::transformAmenitieToMap);
         Flowable<List<ViewModel>> zoneFlow = rzoneRepository.allReferencesZone()

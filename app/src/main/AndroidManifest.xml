@@ -18,7 +18,6 @@
         android:roundIcon="@drawable/ic_launcher_official"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.MainActivity" />
         <activity
             android:name=".view.splash.SplashActivity"
             android:screenOrientation="portrait"

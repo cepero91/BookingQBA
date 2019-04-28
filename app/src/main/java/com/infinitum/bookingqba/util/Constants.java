@@ -32,6 +32,7 @@ public final class Constants {
     public static final String RENT_DRAW_TYPE_TABLE_NAME = "RentDrawType";
     public static final String RENT_POI_TABLE_NAME = "RentPoi";
     public static final String RENT_VISIT_COUNT_TABLE_NAME = "RentVisitCount";
+    public static final String DATABASE_UPDATE_TABLE_NAME = "DatabaseUpdate";
 
     //PERMISSION
     public static final String PERMISSION = "permission";

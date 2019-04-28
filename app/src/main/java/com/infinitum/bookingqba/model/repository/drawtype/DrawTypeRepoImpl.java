@@ -45,7 +45,7 @@ public class DrawTypeRepoImpl implements DrawTypeRepository {
         ArrayList<DrawTypeEntity> listEntity = new ArrayList<>();
         DrawTypeEntity entity;
         for (DrawType item : gsonList) {
-            entity = new DrawTypeEntity(item.getId(), item.getNombre());
+            entity = new DrawTypeEntity(item.getId(), item.getName());
             listEntity.add(entity);
         }
         return listEntity;

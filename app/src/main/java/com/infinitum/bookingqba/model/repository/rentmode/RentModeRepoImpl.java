@@ -45,7 +45,7 @@ public class RentModeRepoImpl implements RentModeRepository {
         ArrayList<RentModeEntity> listEntity = new ArrayList<>();
         RentModeEntity entity;
         for (RentMode item : gsonList) {
-            entity = new RentModeEntity(item.getId(), item.getNombre());
+            entity = new RentModeEntity(item.getId(), item.getName());
             listEntity.add(entity);
         }
         return listEntity;

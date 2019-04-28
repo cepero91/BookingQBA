@@ -7,12 +7,13 @@ import java.util.List;
 
 public class RentDrawType {
 
-    @SerializedName("id")
+    @SerializedName("uui")
     @Expose
     private String id;
-    @SerializedName("tipo_moneda")
+
+    @SerializedName("drawType")
     @Expose
-    private List<DrawType> tipo_monedas;
+    private List<DrawType> drawTypes;
 
     public String getId() {
         return id;
@@ -22,11 +23,11 @@ public class RentDrawType {
         this.id = id;
     }
 
-    public List<DrawType> getTipo_monedas() {
-        return tipo_monedas;
+    public List<DrawType> getDrawTypes() {
+        return drawTypes;
     }
 
-    public void setTipo_monedas(List<DrawType> tipo_monedas) {
-        this.tipo_monedas = tipo_monedas;
+    public void setDrawTypes(List<DrawType> drawTypes) {
+        this.drawTypes = drawTypes;
     }
 }

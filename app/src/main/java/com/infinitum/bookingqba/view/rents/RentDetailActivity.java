@@ -3,6 +3,9 @@ package com.infinitum.bookingqba.view.rents;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
@@ -13,6 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
@@ -20,6 +27,7 @@ import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityRentDetailBinding;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
+import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailItem;
 import com.infinitum.bookingqba.view.adapters.rentdetail.InnerViewPagerAdapter;
@@ -42,6 +50,7 @@ import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -57,6 +66,8 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
 
     private RentViewModel viewModel;
     private String rentUuid = "";
+    private String imageUrlPath = "";
+    private int isWished = 0;
 
     private Disposable disposable;
     private CompositeDisposable compositeDisposable;
@@ -66,46 +77,32 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
         super.onCreate(savedInstanceState);
         AndroidInjection.inject(this);
         rentDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_rent_detail);
-        rentDetailBinding.llContentAddress.setOnClickListener(this);
-
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
+        rentDetailBinding.setIsLoading(true);
         compositeDisposable = new CompositeDisposable();
 
-        if (getIntent().getExtras() != null)
+        if (getIntent().getExtras() != null) {
             rentUuid = getIntent().getExtras().getString("uuid");
+            imageUrlPath = getIntent().getExtras().getString("url");
+            isWished = getIntent().getExtras().getInt("wished");
+            GlideApp.with(this).load(imageUrlPath).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(rentDetailBinding.ivPortraitDetail);
+        }
 
+        if (rentUuid.length() > 1) {
+            loadRentDetail();
+        }
+
+        //Configurations
+        rentDetailBinding.llContentAddress.setOnClickListener(this);
         imageViewHeight = getResources().getDimensionPixelSize(R.dimen.rent_detail_img_dimen);
-
         rentDetailBinding.nested.setScrollViewCallbacks(this);
-
-        rentDetailBinding.setIsLoading(true);
-
         setupToolbar();
-
-        setupScalingLayout();
-
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
-
-        loadRentDetail();
-
-        if (rentUuid.length() > 1)
-            addOrUpdateRentVisitCount();
-
     }
 
-    private void addOrUpdateRentVisitCount() {
-        disposable = viewModel.addOrUpdateRentVisitCount(UUID.randomUUID().toString(), rentUuid).subscribeOn(Schedulers.io())
+    private void addOrUpdateRentVisitCount(String uuid) {
+        disposable = viewModel.addOrUpdateRentVisitCount(UUID.randomUUID().toString(), uuid).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        Timber.e("Operacion exitosa");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Timber.e(e);
-                    }
-                });
+                .subscribe(()->Timber.e("Exito contador de visitas"), Timber::e);
         compositeDisposable.add(disposable);
     }
 
@@ -113,80 +110,16 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
         disposable = viewModel.getRentDetailById(rentUuid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onSuccess, Timber::e);
+                .doOnNext(this::onSuccess)
+                .doAfterNext(rentDetailItemResource -> {
+                    if(rentDetailItemResource.data!=null) {
+                        addOrUpdateRentVisitCount(rentDetailItemResource.data.getRentEntity().getId());
+                    }
+                })
+                .subscribe();
         compositeDisposable.add(disposable);
     }
 
-
-    private void setupScalingLayout() {
-        rentDetailBinding.scalingLayout.setListener(new ScalingLayoutListener() {
-            @Override
-            public void onCollapsed() {
-                ViewCompat.animate(rentDetailBinding.fabIcon).alpha(1).setDuration(150).start();
-                ViewCompat.animate(rentDetailBinding.filterLayout).alpha(0).setDuration(150).setListener(new ViewPropertyAnimatorListener() {
-                    @Override
-                    public void onAnimationStart(View view) {
-                        rentDetailBinding.fabIcon.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(View view) {
-                        rentDetailBinding.filterLayout.setVisibility(View.INVISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationCancel(View view) {
-
-                    }
-                }).start();
-            }
-
-            @Override
-            public void onExpanded() {
-                ViewCompat.animate(rentDetailBinding.fabIcon).alpha(0).setDuration(200).start();
-                ViewCompat.animate(rentDetailBinding.filterLayout).alpha(1).setDuration(200).setListener(new ViewPropertyAnimatorListener() {
-                    @Override
-                    public void onAnimationStart(View view) {
-                        rentDetailBinding.filterLayout.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(View view) {
-                        rentDetailBinding.fabIcon.setVisibility(View.INVISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationCancel(View view) {
-
-                    }
-                }).start();
-            }
-
-            @Override
-            public void onProgress(float progress) {
-                if (progress > 0) {
-                    rentDetailBinding.fabIcon.setVisibility(View.INVISIBLE);
-                }
-
-                if (progress < 1) {
-                    rentDetailBinding.filterLayout.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-
-        rentDetailBinding.scalingLayout.setOnClickListener(view -> {
-            if (rentDetailBinding.scalingLayout.getState() == State.COLLAPSED) {
-                rentDetailBinding.scalingLayout.expand();
-            }
-        });
-
-
-        rentDetailBinding.ivClose.setOnClickListener(view -> {
-            if (rentDetailBinding.scalingLayout.getState() == State.EXPANDED) {
-                rentDetailBinding.scalingLayout.collapse();
-            }
-        });
-    }
 
     private void onSuccess(Resource<RentDetailItem> rentDetailResource) {
         rentDetailBinding.setRentDetailItem(rentDetailResource.data);
@@ -239,43 +172,6 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-        if (scrollState != null) {
-            if (scrollState.name().equals("UP")) {
-                hideFabOrBar();
-            } else if (scrollState.name().equals("DOWN")) {
-                showFabOrBar();
-            }
-        }
-    }
-
-    private void hideFabOrBar() {
-        if (rentDetailBinding.scalingLayout.getState() == State.COLLAPSED) {
-            ViewCompat.animate(rentDetailBinding.scalingLayout)
-                    .scaleX(0f).scaleY(0f)
-                    .alpha(0f).setDuration(100)
-                    .start();
-        } else if (rentDetailBinding.scalingLayout.getState() == State.EXPANDED) {
-            ViewCompat.animate(rentDetailBinding.scalingLayout)
-                    .translationY(150)
-                    .setDuration(100)
-                    .setInterpolator(new AccelerateInterpolator())
-                    .start();
-        }
-    }
-
-    private void showFabOrBar() {
-        if (rentDetailBinding.scalingLayout.getState() == State.COLLAPSED) {
-            ViewCompat.animate(rentDetailBinding.scalingLayout)
-                    .scaleX(1f).scaleY(1f)
-                    .alpha(1f).setDuration(200)
-                    .start();
-        } else if (rentDetailBinding.scalingLayout.getState() == State.EXPANDED) {
-            ViewCompat.animate(rentDetailBinding.scalingLayout)
-                    .translationY(0)
-                    .setDuration(200)
-                    .setInterpolator(new AccelerateInterpolator())
-                    .start();
-        }
     }
 
 
@@ -317,7 +213,7 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
     }
 
     private void checkIsWished(Menu menu) {
-        if (rentDetailBinding.getRentDetailItem().getRentEntity().isWished() == 1) {
+        if (isWished == 1) {
             menu.findItem(R.id.action_list_wish).setIcon(R.drawable.ic_bookmark_orange);
         } else {
             menu.findItem(R.id.action_list_wish).setIcon(R.drawable.ic_bookmark_white);
@@ -356,4 +252,5 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
         Timber.e("Si GUARDO CON EXITO");
         invalidateOptionsMenu();
     }
+
 }

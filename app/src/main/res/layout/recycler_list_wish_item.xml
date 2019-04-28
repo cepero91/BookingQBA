@@ -5,7 +5,10 @@
     android:id="@+id/cv_rent_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
     app:cardCornerRadius="10dp"
     app:cardElevation="8dp">
 
@@ -25,22 +28,14 @@
                 android:src="@drawable/bedroom"
                 app:siShape="@drawable/shape_imageview_rounded_top" />
 
-            <android.support.v7.widget.AppCompatImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="-3dp"
-                android:tint="@color/colorAccent"
-                app:srcCompat="@drawable/ic_bookmark"/>
 
             <LinearLayout
                 android:id="@+id/ll_content_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/shape_list_wish_item_price_square"
                 android:orientation="horizontal"
-                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true">
 
                 <TextView
@@ -48,13 +43,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppinsbold"
+                    android:textColor="@color/White_100"
                     android:text="Precio" />
 
                 <TextView
                     android:id="@+id/tv_rent_mode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsbold"
+                    android:fontFamily="@font/poppinsregular"
+                    android:textColor="@color/White_100"
                     android:text="Modo" />
 
             </LinearLayout>
@@ -66,6 +63,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:orientation="vertical">
 
             <TextView
@@ -73,14 +72,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppinsbold"
+                android:textColor="@color/material_color_blue_grey_500"
                 android:text="Titulo" />
 
             <TextView
                 android:id="@+id/tv_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:paddingEnd="10dp"
+                android:maxLines="2"
                 android:fontFamily="@font/poppinsregular"
-                android:text="direccion" />
+                android:drawablePadding="3dp"
+                android:drawableLeft="@drawable/ic_map_marker"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:text="address" />
 
             <com.willy.ratingbar.BaseRatingBar
                 android:id="@+id/sr_scale_rating"

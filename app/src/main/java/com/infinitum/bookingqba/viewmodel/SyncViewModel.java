@@ -1,24 +1,22 @@
 package com.infinitum.bookingqba.viewmodel;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.LiveDataReactiveStreams;
 import android.arch.lifecycle.ViewModel;
 
+import com.infinitum.bookingqba.model.OperationResult;
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
+import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
 import com.infinitum.bookingqba.model.local.entity.DrawTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
-import com.infinitum.bookingqba.model.local.entity.MunicipalityEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
-import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
-import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
-import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
+import com.infinitum.bookingqba.model.repository.databaseupdate.DatabaseUpdateRepository;
 import com.infinitum.bookingqba.model.repository.drawtype.DrawTypeRepository;
 import com.infinitum.bookingqba.model.repository.galerie.GalerieRepository;
 import com.infinitum.bookingqba.model.repository.municipality.MunicipalityRepository;
@@ -40,7 +38,6 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import okhttp3.ResponseBody;
-import timber.log.Timber;
 
 public class SyncViewModel extends ViewModel {
 
@@ -56,11 +53,12 @@ public class SyncViewModel extends ViewModel {
     private GalerieRepository galerieRepository;
     private RentAmenitiesRepository rentAmenitiesRepository;
     private RentPoiRepository rentPoiRepository;
+    private DatabaseUpdateRepository databaseUpdateRepository;
 
     private List<GaleryUpdateUtil> galeryUpdateUtilList;
 
     @Inject
-    public SyncViewModel(ProvinceRepository provinceRepository, MunicipalityRepository municipalityRepository, AmenitiesRepository amenitiesRepository, PoiTypeRepository poiTypeRepository, PoiRepository poiRepository, RentRepository rentRepository, RentModeRepository rentModeRepository, ReferenceZoneRepository referenceZoneRepository, DrawTypeRepository drawTypeRepository, GalerieRepository galerieRepository, RentAmenitiesRepository rentAmenitiesRepository, RentPoiRepository rentPoiRepository) {
+    public SyncViewModel(ProvinceRepository provinceRepository, MunicipalityRepository municipalityRepository, AmenitiesRepository amenitiesRepository, PoiTypeRepository poiTypeRepository, PoiRepository poiRepository, RentRepository rentRepository, RentModeRepository rentModeRepository, ReferenceZoneRepository referenceZoneRepository, DrawTypeRepository drawTypeRepository, GalerieRepository galerieRepository, RentAmenitiesRepository rentAmenitiesRepository, RentPoiRepository rentPoiRepository, DatabaseUpdateRepository databaseUpdateRepository) {
         this.provinceRepository = provinceRepository;
         this.municipalityRepository = municipalityRepository;
         this.amenitiesRepository = amenitiesRepository;
@@ -73,31 +71,8 @@ public class SyncViewModel extends ViewModel {
         this.galerieRepository = galerieRepository;
         this.rentAmenitiesRepository = rentAmenitiesRepository;
         this.rentPoiRepository = rentPoiRepository;
+        this.databaseUpdateRepository = databaseUpdateRepository;
         galeryUpdateUtilList = new ArrayList<>();
-    }
-
-    public Single<List<ProvinceEntity>> provinceList() {
-        return provinceRepository.fetchRemoteAndTransform();
-    }
-
-    public Completable insertProvinces(List<ProvinceEntity>entities){
-        return provinceRepository.insertProvinces(entities);
-    }
-
-    public Single<List<MunicipalityEntity>> municipalityList() {
-        return municipalityRepository.fetchRemoteAndTransform();
-    }
-
-    public Completable insertMunicipality(List<MunicipalityEntity>entities){
-        return municipalityRepository.insertMunicipalities(entities);
-    }
-
-    public Single<List<AmenitiesEntity>> amenitiesList() {
-        return amenitiesRepository.fetchRemoteAndTransform();
-    }
-
-    public Completable insertAmenities(List<AmenitiesEntity>entities){
-        return amenitiesRepository.insertAmenities(entities);
     }
 
     public Single<List<PoiTypeEntity>> poiTypeList() {
@@ -122,14 +97,6 @@ public class SyncViewModel extends ViewModel {
 
     public Completable insertRentMode(List<RentModeEntity>entities){
         return rentModeRepository.insertRentsMode(entities);
-    }
-
-    public Single<List<ReferenceZoneEntity>> referenceZoneList() {
-        return referenceZoneRepository.fetchRemoteAndTransform();
-    }
-
-    public Completable insertReferenceZone(List<ReferenceZoneEntity>entities){
-        return referenceZoneRepository.insertReferencesMode(entities);
     }
 
     public Single<List<DrawTypeEntity>> drawTypeList() {
@@ -190,5 +157,39 @@ public class SyncViewModel extends ViewModel {
 
     public Completable insertRentPois(List<RentPoiEntity>entities){
         return rentPoiRepository.insert(entities);
+    }
+
+    public Flowable<DatabaseUpdateEntity> remoteDatabaseUpdate(){
+        return databaseUpdateRepository.fetchRemoteAndTransform();
+    }
+
+    public Completable insertDatabaseUpdate(DatabaseUpdateEntity entity){
+        return databaseUpdateRepository.insert(entity);
+    }
+
+    // -------------------- SYNC ------------------- //
+
+    public Flowable<Resource<DatabaseUpdateEntity>> getLastDatabaseUpdate(){
+        return databaseUpdateRepository.getLastDatabaseUpdate();
+    }
+
+    public Flowable<Resource<DatabaseUpdateEntity>> getDatabaseUpdateRemote(){
+        return databaseUpdateRepository.lastDatabaseUpdateRemote();
+    }
+
+    public Single<OperationResult> syncReferenceZone(String value){
+        return referenceZoneRepository.syncronizeReferenceZone(value);
+    }
+
+    public Single<OperationResult> syncProvinces(String value){
+        return provinceRepository.syncronizeProvinces(value);
+    }
+
+    public Single<OperationResult> syncMunicipalities(String value){
+        return municipalityRepository.syncronizeMunicipalities(value);
+    }
+
+    public Single<OperationResult> syncAmenities(String value){
+        return amenitiesRepository.syncronizeAmenities(value);
     }
 }

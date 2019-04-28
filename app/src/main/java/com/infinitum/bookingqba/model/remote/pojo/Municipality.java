@@ -5,15 +5,17 @@ import com.google.gson.annotations.SerializedName;
 
 public class Municipality {
 
-    @SerializedName("id")
+    @SerializedName("uui")
     @Expose
     private String id;
-    @SerializedName("nombre")
+
+    @SerializedName("name")
     @Expose
-    private String nombre;
-    @SerializedName("provincia")
+    private String name;
+
+    @SerializedName("province__uui")
     @Expose
-    private String provincia;
+    private String province;
 
     public String getId() {
         return id;
@@ -23,19 +25,19 @@ public class Municipality {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getProvincia() {
-        return provincia;
+    public String getProvince() {
+        return province;
     }
 
-    public void setProvincia(String provincia) {
-        this.provincia = provincia;
+    public void setProvince(String province) {
+        this.province = province;
     }
 }

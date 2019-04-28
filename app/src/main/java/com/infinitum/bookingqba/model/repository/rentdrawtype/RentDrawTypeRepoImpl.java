@@ -2,12 +2,9 @@ package com.infinitum.bookingqba.model.repository.rentdrawtype;
 
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentDrawTypeEntity;
-import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.DrawType;
-import com.infinitum.bookingqba.model.remote.pojo.Poi;
 import com.infinitum.bookingqba.model.remote.pojo.RentDrawType;
-import com.infinitum.bookingqba.model.remote.pojo.RentPoi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +49,7 @@ public class RentDrawTypeRepoImpl implements RentDrawTypeRepository {
         RentDrawTypeEntity entity;
         for (RentDrawType item : gsonList) {
             entity = new RentDrawTypeEntity(item.getId());
-            for (DrawType drawType : item.getTipo_monedas()) {
+            for (DrawType drawType : item.getDrawTypes()) {
                 entity.setDrawTypeId(drawType.getId());
                 listEntity.add(entity);
             }

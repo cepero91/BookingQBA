@@ -1,11 +1,10 @@
 package com.infinitum.bookingqba.model.repository.municipality;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.MunicipalityEntity;
-import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.Municipality;
-import com.infinitum.bookingqba.model.remote.pojo.Province;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,17 +12,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
-import io.reactivex.CompletableSource;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
-import timber.log.Timber;
 
 public class MunicipalityRepoImpl implements MunicipalityRepository {
 
@@ -40,8 +33,8 @@ public class MunicipalityRepoImpl implements MunicipalityRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<Municipality>> fetchMunicipalities() {
-        return retrofit.create(ApiInterface.class).getMunicipality();
+    private Single<List<Municipality>> fetchMunicipalities(String dateValue) {
+        return retrofit.create(ApiInterface.class).getMunicipality(dateValue);
     }
 
     /**
@@ -53,7 +46,7 @@ public class MunicipalityRepoImpl implements MunicipalityRepository {
         ArrayList<MunicipalityEntity> listEntity = new ArrayList<>();
         MunicipalityEntity entity;
         for (Municipality item : gsonList) {
-            entity = new MunicipalityEntity(item.getId(), item.getNombre(), item.getProvincia());
+            entity = new MunicipalityEntity(item.getId(), item.getName(), item.getProvince());
             listEntity.add(entity);
         }
         return listEntity;
@@ -64,8 +57,8 @@ public class MunicipalityRepoImpl implements MunicipalityRepository {
      * @return
      */
     @Override
-    public Single<List<MunicipalityEntity>> fetchRemoteAndTransform() {
-        return fetchMunicipalities().flatMap((Function<List<Municipality>, SingleSource<? extends List<MunicipalityEntity>>>) municipalities -> {
+    public Single<List<MunicipalityEntity>> fetchRemoteAndTransform(String dateValue) {
+        return fetchMunicipalities(dateValue).flatMap((Function<List<Municipality>, SingleSource<? extends List<MunicipalityEntity>>>) municipalities -> {
             ArrayList<MunicipalityEntity> listEntity = new ArrayList<>(parseGsonToEntity(municipalities));
             return Single.just(listEntity);
         }).subscribeOn(Schedulers.io());
@@ -73,13 +66,22 @@ public class MunicipalityRepoImpl implements MunicipalityRepository {
 
     /**
      * Insera coleccion de Municipios
-     * @param municipalityEntityList
+     * @param entities
      * @return
      */
     @Override
-    public Completable insertMunicipalities(List<MunicipalityEntity> municipalityEntityList) {
-        return Completable.fromAction(() -> qbaDao.upsertMunicipalities(municipalityEntityList))
+    public Completable insert(List<MunicipalityEntity> entities) {
+        return Completable.fromAction(() -> qbaDao.upsertMunicipalities(entities))
                 .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<OperationResult> syncronizeMunicipalities(String dateValue) {
+        return fetchRemoteAndTransform(dateValue)
+                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(this::insert)
+                .toSingle(OperationResult::success)
+                .onErrorReturn(OperationResult::error);
     }
 
 }

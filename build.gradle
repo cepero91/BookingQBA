@@ -16,6 +16,11 @@ ext {
     multidex = "1.0.3"
     lottieVersion = "2.7.0"
     tedpermission = "2.2.2"
+    viewpagerdotsindicator="2.0.3"
+    android_copy_assets = "2.2.0"
+    glide="4.8.0"
+    constraint_layout="1.1.2"
+    filedownloader = "1.7.4"
 
     firebaseAds = "16.0.1"
     firebaseCore = "16.0.6"

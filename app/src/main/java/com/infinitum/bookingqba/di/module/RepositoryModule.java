@@ -3,6 +3,8 @@ package com.infinitum.bookingqba.di.module;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepoImpl;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
+import com.infinitum.bookingqba.model.repository.databaseupdate.DatabaseUpdateRepoImpl;
+import com.infinitum.bookingqba.model.repository.databaseupdate.DatabaseUpdateRepository;
 import com.infinitum.bookingqba.model.repository.drawtype.DrawTypeRepoImpl;
 import com.infinitum.bookingqba.model.repository.drawtype.DrawTypeRepository;
 import com.infinitum.bookingqba.model.repository.galerie.GalerieRepoImpl;
@@ -87,5 +89,8 @@ public interface RepositoryModule {
 
     @Binds
     RentAnaliticsRepository rentAnaliticsRepository(RentAnaliticsRepoImpl rentAnaliticsRepo);
+
+    @Binds
+    DatabaseUpdateRepository databaseUpdateRepository(DatabaseUpdateRepoImpl databaseUpdateRepo);
 
 }

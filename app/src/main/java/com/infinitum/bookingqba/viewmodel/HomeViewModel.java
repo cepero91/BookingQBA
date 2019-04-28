@@ -48,7 +48,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
 
     public Flowable<Resource<ProvinceSpinnerList>> getProvinces() {
         return provinceRepository
-                .getAllProvinces()
+                .allProvinces()
                 .flatMap(resource -> transformProvinces(resource, new ArrayList<>()))
                 .subscribeOn(Schedulers.io());
     }

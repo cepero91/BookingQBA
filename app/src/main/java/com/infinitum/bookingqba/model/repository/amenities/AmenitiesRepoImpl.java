@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.amenities;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
@@ -34,8 +35,8 @@ public class AmenitiesRepoImpl implements AmenitiesRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<Amenities>> fetchAmenities() {
-        return retrofit.create(ApiInterface.class).getAmenities();
+    private Single<List<Amenities>> fetchAmenities(String dateValue) {
+        return retrofit.create(ApiInterface.class).getAmenities(dateValue);
     }
 
     /**
@@ -47,31 +48,40 @@ public class AmenitiesRepoImpl implements AmenitiesRepository {
         ArrayList<AmenitiesEntity> listEntity = new ArrayList<>();
         AmenitiesEntity entity;
         for (Amenities item : gsonList) {
-            entity = new AmenitiesEntity(item.getId(), item.getNombre());
+            entity = new AmenitiesEntity(item.getId(), item.getName());
             listEntity.add(entity);
         }
         return listEntity;
     }
 
     @Override
-    public Single<List<AmenitiesEntity>> fetchRemoteAndTransform() {
-        return fetchAmenities().flatMap((Function<List<Amenities>, SingleSource<? extends List<AmenitiesEntity>>>) amenities -> {
+    public Single<List<AmenitiesEntity>> fetchRemoteAndTransform(String dateValue) {
+        return fetchAmenities(dateValue).flatMap((Function<List<Amenities>, SingleSource<? extends List<AmenitiesEntity>>>) amenities -> {
             ArrayList<AmenitiesEntity> listEntity = new ArrayList<>(parseGsonToEntity(amenities));
             return Single.just(listEntity);
         }).subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Completable insertAmenities(List<AmenitiesEntity> amenitiesEntityList) {
-        return Completable.fromAction(() -> qbaDao.upsertAmenities(amenitiesEntityList))
+    public Completable insert(List<AmenitiesEntity> entities) {
+        return Completable.fromAction(() -> qbaDao.upsertAmenities(entities))
                 .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Flowable<Resource<List<AmenitiesEntity>>> fetchLocal() {
+    public Flowable<Resource<List<AmenitiesEntity>>> allAmenities() {
         return qbaDao.getAllAmenities()
                 .map(Resource::success)
                 .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<OperationResult> syncronizeAmenities(String dateValue) {
+        return fetchRemoteAndTransform(dateValue)
+                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(this::insert)
+                .toSingle(OperationResult::success)
+                .onErrorReturn(OperationResult::error);
     }
 }

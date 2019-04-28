@@ -15,7 +15,6 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Single;
-import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
@@ -47,7 +46,7 @@ public class RentPoiRepoImpl implements RentPoiRepository {
     private List<RentPoiEntity> parseGsonToEntity(List<RentPoi> gsonList) {
         ArrayList<RentPoiEntity> listEntity = new ArrayList<>();
         for (RentPoi item : gsonList) {
-            for(Poi poi: item.getLugar_interes()){
+            for(Poi poi: item.getPois()){
                 listEntity.add(new RentPoiEntity(item.getId(),poi.getId()));
             }
         }
@@ -61,7 +60,7 @@ public class RentPoiRepoImpl implements RentPoiRepository {
      */
     private Single<List<RentPoiEntity>> singleParseGsonToEntity(List<RentPoi> gsonList, ArrayList<RentPoiEntity> resultList) {
         return Observable.fromIterable(gsonList)
-                .flatMap((Function<RentPoi, ObservableSource<RentPoiEntity>>) rentPoi -> Observable.fromIterable(rentPoi.getLugar_interes())
+                .flatMap((Function<RentPoi, ObservableSource<RentPoiEntity>>) rentPoi -> Observable.fromIterable(rentPoi.getPois())
                         .map(poi -> new RentPoiEntity(poi.getId(),rentPoi.getId()))
                         .doOnNext(resultList::add)
                         .subscribeOn(Schedulers.io()))

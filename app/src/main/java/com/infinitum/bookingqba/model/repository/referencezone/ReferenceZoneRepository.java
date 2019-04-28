@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.referencezone;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 
@@ -11,10 +12,12 @@ import io.reactivex.Single;
 
 public interface ReferenceZoneRepository {
 
-    Single<List<ReferenceZoneEntity>> fetchRemoteAndTransform();
+    Single<List<ReferenceZoneEntity>> fetchRemoteAndTransform(String value);
 
-    Completable insertReferencesMode(List<ReferenceZoneEntity> referenceZoneEntities);
+    Completable insert(List<ReferenceZoneEntity> entities);
 
     Flowable<Resource<List<ReferenceZoneEntity>>> allReferencesZone();
+
+    Single<OperationResult> syncronizeReferenceZone(String dateValue);
 
 }

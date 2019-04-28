@@ -7,12 +7,13 @@ import java.util.List;
 
 public class RentAmenities {
 
-    @SerializedName("id")
+    @SerializedName("uui")
     @Expose
     private String id;
-    @SerializedName("facilidades")
+
+    @SerializedName("amenities")
     @Expose
-    private List<Amenities> facilidades;
+    private List<Amenities> amenities;
 
     public String getId() {
         return id;
@@ -22,11 +23,11 @@ public class RentAmenities {
         this.id = id;
     }
 
-    public List<Amenities> getFacilidades() {
-        return facilidades;
+    public List<Amenities> getAmenities() {
+        return amenities;
     }
 
-    public void setFacilidades(List<Amenities> facilidades) {
-        this.facilidades = facilidades;
+    public void setAmenities(List<Amenities> amenities) {
+        this.amenities = amenities;
     }
 }

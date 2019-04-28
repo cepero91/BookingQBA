@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.province;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
 
@@ -11,10 +12,12 @@ import io.reactivex.Single;
 
 public interface ProvinceRepository {
 
-    Single<List<ProvinceEntity>> fetchRemoteAndTransform();
+    Single<List<ProvinceEntity>> fetchRemoteAndTransform(String value);
 
-    Completable insertProvinces(List<ProvinceEntity> provinceEntityList);
+    Completable insert(List<ProvinceEntity> entities);
 
-    Flowable<Resource<List<ProvinceEntity>>> getAllProvinces();
+    Flowable<Resource<List<ProvinceEntity>>> allProvinces();
+
+    Single<OperationResult> syncronizeProvinces(String dateValue);
 
 }

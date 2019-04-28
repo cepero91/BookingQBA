@@ -1,5 +1,9 @@
 package com.infinitum.bookingqba.view.map;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,7 +16,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Toast;
 
@@ -134,24 +140,6 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mapBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false);
-
-        cafeBarMapMarkerBinding = DataBindingUtil.inflate(inflater, R.layout.cafe_bar_map_marker, container, false);
-        cafeBarMapMarkerBinding.contentCafebar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mListener != null) {
-                    if (currentMarkerIndex != -1 && geoRentArrayList != null && geoRentArrayList.size() > 0)
-                        mListener.onMapInteraction(geoRentArrayList.get(currentMarkerIndex));
-                }
-            }
-        });
-        cafebar = CafeBar.builder(getActivity())
-                .to(mapBinding.flContentMap)
-                .floating(true)
-                .customView(cafeBarMapMarkerBinding.getRoot())
-                .autoDismiss(false)
-                .build();
-
         return mapBinding.getRoot();
     }
 
@@ -167,7 +155,19 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
 
         mapFilePath = sharedPreferences.getString(MAP_PATH, "");
 
+        setupCafeBar();
+
         initializeMap();
+    }
+
+    private void setupCafeBar() {
+        cafeBarMapMarkerBinding = DataBindingUtil.inflate(getActivity().getLayoutInflater(), R.layout.cafe_bar_map_marker, mapBinding.flContentMap , false);
+        cafeBarMapMarkerBinding.contentCafebar.setOnClickListener(v -> {
+            if (mListener != null) {
+                if (currentMarkerIndex != -1 && geoRentArrayList != null && geoRentArrayList.size() > 0)
+                    mListener.onMapInteraction(geoRentArrayList.get(currentMarkerIndex));
+            }
+        });
     }
 
     private void initializeMap() {
@@ -317,6 +317,8 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     @Override
     public void onDetach() {
         super.onDetach();
+        this.cafebar = null;
+        cafeBarMapMarkerBinding = null;
         mListener = null;
         compositeDisposable.clear();
     }
@@ -368,9 +370,6 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     public void onDestroy() {
         super.onDestroy();
         mapBinding.mapview.onDestroy();
-        if(cafebar!=null){
-            cafebar = null;
-        }
         if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
         }
@@ -386,17 +385,28 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
             GeoRent geoRent = geoRentArrayList.get(markerIndex);
             cafeBarMapMarkerBinding.setItem(geoRent);
             currentMarkerIndex = markerIndex;
-            if (cafebar != null) {
-                cafebar.show();
-            }
+            mapBinding.flMarker.addView(cafeBarMapMarkerBinding.getRoot());
+            ObjectAnimator markerAnimator = ObjectAnimator.ofFloat( mapBinding.flMarker,"translationY",150f,0f);
+            markerAnimator.setDuration(500);
+            markerAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+            markerAnimator.start();
         }
     }
 
     private void hideCafeBar() {
         currentMarkerIndex = -1;
-        cafeBarMapMarkerBinding.setItem(null);
-        if (cafebar != null) {
-            cafebar.dismiss();
-        }
+        ObjectAnimator markerAnimator = ObjectAnimator.ofFloat( mapBinding.flMarker,"translationY",0f,150f);
+        markerAnimator.setDuration(500);
+        markerAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        markerAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                mapBinding.flMarker.removeAllViews();
+            }
+        });
+        markerAnimator.start();
     }
+
+
 }

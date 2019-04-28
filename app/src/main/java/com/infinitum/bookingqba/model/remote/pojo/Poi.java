@@ -4,15 +4,18 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Poi {
-    @SerializedName("id")
+
+    @SerializedName("uui")
     @Expose
     private String id;
-    @SerializedName("nombre")
+
+    @SerializedName("name")
     @Expose
-    private String nombre;
-    @SerializedName("tipo_lugar_interes")
+    private String name;
+
+    @SerializedName("poiType")
     @Expose
-    private String tipoLugarInteres;
+    private String poiType;
 
     public String getId() {
         return id;
@@ -22,19 +25,19 @@ public class Poi {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getTipoLugarInteres() {
-        return tipoLugarInteres;
+    public String getPoiType() {
+        return poiType;
     }
 
-    public void setTipoLugarInteres(String tipoLugarInteres) {
-        this.tipoLugarInteres = tipoLugarInteres;
+    public void setPoiType(String poiType) {
+        this.poiType = poiType;
     }
 }

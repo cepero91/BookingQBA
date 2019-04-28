@@ -10,10 +10,6 @@ import com.google.gson.GsonBuilder;
 import com.infinitum.bookingqba.util.NetworkHelper;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.liulishuo.filedownloader.connection.FileDownloadUrlConnection;
-import com.tonyodev.fetch2.FetchConfiguration;
-import com.tonyodev.fetch2core.Downloader;
-import com.tonyodev.fetch2okhttp.OkHttpDownloader;
-import com.tonyodev.fetch2rx.RxFetch;
 
 import javax.inject.Singleton;
 

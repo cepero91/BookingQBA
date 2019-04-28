@@ -81,9 +81,6 @@ public class RentEntity {
     private Date created;
 
     @NonNull
-    private Date updated;
-
-    @NonNull
     private String rentMode;
 
     @NonNull
@@ -102,7 +99,7 @@ public class RentEntity {
         this.id = id;
     }
 
-    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, String slogan, @NonNull String description, @NonNull String email, @NonNull String phoneNumber, @NonNull String phoneHomeNumber, double latitude, double longitude, @NonNull float rating, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull Date updated, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, int isWished) {
+    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, String slogan, @NonNull String description, @NonNull String email, @NonNull String phoneNumber, @NonNull String phoneHomeNumber, double latitude, double longitude, @NonNull float rating, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, int isWished) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -120,7 +117,6 @@ public class RentEntity {
         this.maxBath = maxBath;
         this.price = price;
         this.created = created;
-        this.updated = updated;
         this.rentMode = rentMode;
         this.rules = rules;
         this.municipality = municipality;
@@ -297,15 +293,6 @@ public class RentEntity {
 
     public void setCreated(@NonNull Date created) {
         this.created = created;
-    }
-
-    @NonNull
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(@NonNull Date updated) {
-        this.updated = updated;
     }
 
     @NonNull

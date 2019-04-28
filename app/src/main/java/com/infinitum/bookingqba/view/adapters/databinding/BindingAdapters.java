@@ -99,7 +99,7 @@ public class BindingAdapters {
     }
 
     @BindingAdapter("setRentListImage")
-    public static void setRentListImage(AppCompatImageView view, String imagePath) {
+    public static void setRentListImage(RoundedImageView view, String imagePath) {
         GlideApp.with(view).load(imagePath).placeholder(R.drawable.placeholder).into(view);
     }
 
@@ -142,6 +142,16 @@ public class BindingAdapters {
     @BindingAdapter("setRoundedImage")
     public static void setRoundedImage(RoundedImageView view, String imagePath) {
         GlideApp.with(view).load(imagePath).placeholder(R.drawable.placeholder).into(view);
+    }
+
+    @BindingAdapter("setWished")
+    public static void setWished(AppCompatImageView view, int wished) {
+        if(wished == 1){
+            view.setVisibility(View.VISIBLE);
+            view.setImageResource(R.drawable.ic_bookmark_orange);
+        }else if(wished == 0){
+            view.setVisibility(View.GONE);
+        }
     }
 
 

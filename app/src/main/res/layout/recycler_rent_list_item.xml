@@ -12,8 +12,7 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_rent_item_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.CardView
             android:id="@+id/cv_content_rent_item"
@@ -31,15 +30,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <android.support.v7.widget.AppCompatImageView
+                <com.github.siyamed.shapeimageview.RoundedImageView
                     android:id="@+id/iv_rent"
-                    android:layout_width="120dp"
-                    android:layout_height="140dp"
+                    android:layout_width="100dp"
+                    android:layout_height="120dp"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/shape_placeholder_rent_list"
+                    app:siShape="@drawable/shape_rent_list_rounded_left"
+                    app:siBorderAlpha="0"
                     app:setRentListImage="@{item.getImagePath()}"
                     />
 
@@ -61,47 +61,82 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppinsbold"
                         android:paddingStart="3dp"
+                        android:textColor="@color/material_color_blue_grey_500"
                         android:text="@{item.getmName()}"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/tv_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/ic_map_marker"
+                        android:drawablePadding="3dp"
                         android:ellipsize="end"
                         android:fontFamily="@font/poppinsregular"
-                        android:maxLines="2"
-                        android:paddingLeft="3dp"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:maxLines="1"
+                        android:textSize="12sp"
                         android:text="@{item.getmAddress()}" />
 
                     <com.willy.ratingbar.BaseRatingBar
                         android:id="@+id/sr_scale_rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
                         app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:srb_clickable="false"
                         app:srb_drawableEmpty="@drawable/ic_star_o"
                         app:srb_drawableFilled="@drawable/ic_star"
-                        app:setRating="@{item.getRating()}"
+                        app:setRating="@{item.rating}"
                         app:srb_scrollable="false"
+                        app:srb_clickable="false"
                         app:srb_starHeight="16dp"
                         app:srb_starPadding="2dp"
                         app:srb_starWidth="16dp"
                         app:srb_stepSize="0.5" />
 
-                    <TextView
-                        android:id="@+id/tv_price"
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:fontFamily="@font/poppinsbold"
+                        android:orientation="horizontal"
                         android:paddingLeft="3dp"
-                        app:setPriceText="@{item.getmPrice()}"
-                        android:textSize="20sp" />
+                        android:layout_marginTop="3dp">
+
+                        <TextView
+                            android:id="@+id/tv_price"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/material_color_blue_grey_500"
+                            android:fontFamily="@font/poppinsbold"
+                            app:setPriceText="@{item.getmPrice()}"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/tv_rent_mode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="3dp"
+                            android:textColor="@color/material_color_blue_grey_500"
+                            android:fontFamily="@font/poppinsregular"
+                            android:text="@{item.getRentMode()}"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+
 
 
                 </LinearLayout>
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="18dp"
+                    android:layout_marginTop="-5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:setWished="@{item.isWished}" />
 
             </android.support.constraint.ConstraintLayout>
 

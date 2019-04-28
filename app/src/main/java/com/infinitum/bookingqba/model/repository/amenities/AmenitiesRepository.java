@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.amenities;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
 
@@ -11,10 +12,12 @@ import io.reactivex.Single;
 
 public interface AmenitiesRepository {
 
-    Single<List<AmenitiesEntity>> fetchRemoteAndTransform();
+    Single<List<AmenitiesEntity>> fetchRemoteAndTransform(String dateValue);
 
-    Completable insertAmenities(List<AmenitiesEntity> amenitiesEntityList);
+    Completable insert(List<AmenitiesEntity> entities);
 
-    Flowable<Resource<List<AmenitiesEntity>>> fetchLocal();
+    Flowable<Resource<List<AmenitiesEntity>>> allAmenities();
+
+    Single<OperationResult> syncronizeAmenities(String dateValue);
 
 }

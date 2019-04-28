@@ -117,7 +117,7 @@ public class ListWishFragment extends BaseNavigationFragment {
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_rent_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
                         .find(R.id.tv_address, (ViewProvider<TextView>) view -> view.setText(model.getAddress()))
-                        .find(R.id.tv_rent_mode, (ViewProvider<TextView>) view -> view.setText(model.getRentMode()))
+                        .find(R.id.tv_rent_mode, (ViewProvider<TextView>) view -> view.setText(" /"+model.getRentMode()))
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %s", String.valueOf(model.getPrice()))))
                         .find(R.id.siv_rent_image, (ViewProvider<RoundedImageView>) view ->

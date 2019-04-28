@@ -5,15 +5,17 @@ import com.google.gson.annotations.SerializedName;
 
 public class ReferenceZone {
 
-    @SerializedName("id")
+    @SerializedName("uui")
     @Expose
     private String id;
-    @SerializedName("nombre")
+
+    @SerializedName("name")
     @Expose
-    private String nombre;
-    @SerializedName("imagen")
+    private String name;
+
+    @SerializedName("image")
     @Expose
-    private String imagen;
+    private String image;
 
 
     public String getId() {
@@ -24,19 +26,19 @@ public class ReferenceZone {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getImagen() {
-        return imagen;
+    public String getImage() {
+        return image;
     }
 
-    public void setImagen(String imagen) {
-        this.imagen = imagen;
+    public void setImage(String image) {
+        this.image = image;
     }
 }

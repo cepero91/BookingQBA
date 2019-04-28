@@ -37,6 +37,10 @@ public class Resource<T> {
         return new Resource<>(DOWNLOADED, data, "DOWNLOADED");
     }
 
+    public static <T> Resource<T> empty(@Nullable T data) {
+        return new Resource<>(EMPTY, data, "EMPTY");
+    }
+
     public static <T> Resource<T> error(Throwable throwable) {
         return new Resource<>(ERROR, null, throwable.getLocalizedMessage());
     }
@@ -48,6 +52,7 @@ public class Resource<T> {
     public enum Status {
         SUCCESS,
         ERROR,
-        DOWNLOADED
+        DOWNLOADED,
+        EMPTY
     }
 }

@@ -1,7 +1,6 @@
 package com.infinitum.bookingqba.di.module;
 
 
-import com.infinitum.bookingqba.view.MainActivity;
 import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.splash.SplashActivity;
@@ -17,9 +16,6 @@ public interface ActivityModule {
 
     @ContributesAndroidInjector
     SplashActivity bindSplashActivity();
-
-    @ContributesAndroidInjector
-    MainActivity bindMainActivity();
 
     @ContributesAndroidInjector
     TutorialActivity bindTutorialActivity();

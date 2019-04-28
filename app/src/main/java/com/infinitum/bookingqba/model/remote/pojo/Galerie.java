@@ -4,15 +4,18 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Galerie {
-    @SerializedName("id")
+
+    @SerializedName("uui")
     @Expose
     private String id;
-    @SerializedName("imagen")
+
+    @SerializedName("image")
     @Expose
-    private String imagen;
-    @SerializedName("hospedaje")
+    private String image;
+
+    @SerializedName("rent")
     @Expose
-    private String hospedaje;
+    private String rent;
 
     public String getId() {
         return id;
@@ -22,19 +25,19 @@ public class Galerie {
         this.id = id;
     }
 
-    public String getImagen() {
-        return imagen;
+    public String getImage() {
+        return image;
     }
 
-    public void setImagen(String imagen) {
-        this.imagen = imagen;
+    public void setImage(String image) {
+        this.image = image;
     }
 
-    public String getHospedaje() {
-        return hospedaje;
+    public String getRent() {
+        return rent;
     }
 
-    public void setHospedaje(String hospedaje) {
-        this.hospedaje = hospedaje;
+    public void setRent(String rent) {
+        this.rent = rent;
     }
 }

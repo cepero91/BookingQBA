@@ -19,4 +19,12 @@ public class DateUtils {
             return null;
         }
     }
+
+    public static boolean dateLocalIsLessThanRemote(Date dateLocal, Date dateRemote) {
+        boolean syncRequired = false;
+        if (dateLocal.after(dateRemote)) {
+            syncRequired = true;
+        }
+        return syncRequired;
+    }
 }

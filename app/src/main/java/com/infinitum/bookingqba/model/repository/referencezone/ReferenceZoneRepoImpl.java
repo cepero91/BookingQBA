@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.model.repository.referencezone;
 
 import android.util.Base64;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
@@ -10,6 +11,7 @@ import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
@@ -17,7 +19,9 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
@@ -36,8 +40,8 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
      * Prepara la peticion al API
      * @return
      */
-    private Single<List<ReferenceZone>> fetchReferencesZone() {
-        return retrofit.create(ApiInterface.class).getReferencesZone();
+    private Single<List<ReferenceZone>> fetchReferencesZone(String value) {
+        return retrofit.create(ApiInterface.class).getReferencesZone(value);
     }
 
     /**
@@ -49,23 +53,23 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
         ArrayList<ReferenceZoneEntity> listEntity = new ArrayList<>();
         ReferenceZoneEntity entity;
         for (ReferenceZone item : gsonList) {
-            entity = new ReferenceZoneEntity(item.getId(), item.getNombre(), Base64.decode(item.getImagen(),Base64.DEFAULT));
+            entity = new ReferenceZoneEntity(item.getId(), item.getName(), Base64.decode(item.getImage(),Base64.DEFAULT));
             listEntity.add(entity);
         }
         return listEntity;
     }
 
     @Override
-    public Single<List<ReferenceZoneEntity>> fetchRemoteAndTransform() {
-        return fetchReferencesZone().flatMap((Function<List<ReferenceZone>, SingleSource<? extends List<ReferenceZoneEntity>>>) referenceZones -> {
+    public Single<List<ReferenceZoneEntity>> fetchRemoteAndTransform(String value) {
+        return fetchReferencesZone(value).flatMap((Function<List<ReferenceZone>, SingleSource<? extends List<ReferenceZoneEntity>>>) referenceZones -> {
             ArrayList<ReferenceZoneEntity> listEntity = new ArrayList<>(parseGsonToEntity(referenceZones));
             return Single.just(listEntity);
         }).subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Completable insertReferencesMode(List<ReferenceZoneEntity> referenceZoneEntities) {
-        return Completable.fromAction(() -> qbaDao.upsertReferencesZone(referenceZoneEntities)).subscribeOn(Schedulers.io());
+    public Completable insert(List<ReferenceZoneEntity> entities) {
+        return Completable.fromAction(() -> qbaDao.upsertReferencesZone(entities)).subscribeOn(Schedulers.io());
     }
 
     @Override
@@ -75,5 +79,14 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
                 .observeOn(Schedulers.io())
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Single<OperationResult> syncronizeReferenceZone(String dateValue) {
+        return fetchRemoteAndTransform(dateValue)
+                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(this::insert)
+                .toSingle(OperationResult::success)
+                .onErrorReturn(OperationResult::error);
     }
 }

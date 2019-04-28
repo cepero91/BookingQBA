@@ -12,6 +12,7 @@ import android.arch.persistence.room.TypeConverters;
 import android.arch.persistence.room.Update;
 
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
+import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
 import com.infinitum.bookingqba.model.local.entity.DrawTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.entity.MunicipalityEntity;
@@ -42,6 +43,32 @@ import timber.log.Timber;
 
 @Dao
 public abstract class BookingQBADao {
+
+    //------------------------- DATABASE UPDATED ---------------------------//
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public abstract long addDatabaseUpdate(DatabaseUpdateEntity entity);
+
+
+    @Transaction
+    @Update(onConflict = OnConflictStrategy.IGNORE)
+    public abstract void updateDatabaseUpdate(DatabaseUpdateEntity entity);
+
+
+    @Transaction
+    public void upsertDatabaseUpdate(DatabaseUpdateEntity entity) {
+            if (addDatabaseUpdate(entity) == -1) {
+                updateDatabaseUpdate(entity);
+                Timber.d("%s Updated", entity.getId());
+            } else {
+                Timber.d("%s Inserted", entity.getId());
+            }
+    }
+
+
+    @Query("SELECT * FROM DatabaseUpdate ORDER BY lastDatabaseUpdate DESC LIMIT 1")
+    public abstract Flowable<List<DatabaseUpdateEntity>> getLastDatabaseUpdate();
 
     //------------------------- PROVINCIAS ---------------------------//
 

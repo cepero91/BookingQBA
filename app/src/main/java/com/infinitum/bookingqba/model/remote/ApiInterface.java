@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.model.remote;
 
 
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
+import com.infinitum.bookingqba.model.remote.pojo.DatabaseUpdate;
 import com.infinitum.bookingqba.model.remote.pojo.DrawType;
 import com.infinitum.bookingqba.model.remote.pojo.Galerie;
 import com.infinitum.bookingqba.model.remote.pojo.Municipality;
@@ -42,6 +43,11 @@ import retrofit2.http.Url;
 
 public interface ApiInterface {
 
+    //------------------- DATABASE UPDATE ---------------------------//
+
+    @GET("/api/date-count-update")
+    Flowable<DatabaseUpdate> getDatabaseUpdate();
+
     //------------------- USER ---------------------------//
 
     @FormUrlEncoded
@@ -64,8 +70,8 @@ public interface ApiInterface {
      * Obtener provincias
      * @return lista de provincias
      */
-    @GET("/api/provincias")
-    Single<List<Province>> getProvinces();
+    @GET("/api/provinces")
+    Single<List<Province>> getProvinces(@Query("value") String value);
 
     //------------------- MUNICIPIOS ---------------------//
 
@@ -73,8 +79,8 @@ public interface ApiInterface {
      * Obtener municipios
      * @return lista de municipios
      */
-    @GET("/api/municipios")
-    Single<List<Municipality>> getMunicipality();
+    @GET("/api/municipalities")
+    Single<List<Municipality>> getMunicipality(@Query("value") String value);
 
     //------------------- FACILIDADES ---------------------//
 
@@ -82,8 +88,8 @@ public interface ApiInterface {
      * Obtener facilidades
      * @return lista de facilidades
      */
-    @GET("/api/facilidades")
-    Single<List<Amenities>> getAmenities();
+    @GET("/api/amenities")
+    Single<List<Amenities>> getAmenities(@Query("value") String value);
 
     //------------------- TIPO DE LUGAR DE INTERES ---------------------//
 
@@ -127,8 +133,8 @@ public interface ApiInterface {
      * Obtener zonas de referencia
      * @return lista de zonas de referencia
      */
-    @GET("/api/zonareferencial")
-    Single<List<ReferenceZone>> getReferencesZone();
+    @GET("/api/referenceZones")
+    Single<List<ReferenceZone>> getReferencesZone(@Query("value") String value);
 
     //------------------- TIPO DE MONEDA ---------------------//
 

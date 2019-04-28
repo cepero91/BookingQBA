@@ -7,12 +7,13 @@ import java.util.List;
 
 public class RentPoi {
 
-    @SerializedName("id")
+    @SerializedName("uui")
     @Expose
     private String id;
-    @SerializedName("lugares_interes")
+
+    @SerializedName("pois")
     @Expose
-    private List<Poi> lugar_interes;
+    private List<Poi> pois;
 
     public String getId() {
         return id;
@@ -22,11 +23,11 @@ public class RentPoi {
         this.id = id;
     }
 
-    public List<Poi> getLugar_interes() {
-        return lugar_interes;
+    public List<Poi> getPois() {
+        return pois;
     }
 
-    public void setLugar_interes(List<Poi> lugar_interes) {
-        this.lugar_interes = lugar_interes;
+    public void setPois(List<Poi> pois) {
+        this.pois = pois;
     }
 }
