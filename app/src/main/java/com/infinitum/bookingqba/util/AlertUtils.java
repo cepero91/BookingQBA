@@ -1,7 +1,9 @@
 package com.infinitum.bookingqba.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.muddzdev.styleabletoast.StyleableToast;
 
@@ -47,6 +50,38 @@ public class AlertUtils {
                 .setTitleText("Buen trabajo!")
                 .setContentText(message)
                 .setConfirmText("Ok")
+                .show();
+    }
+
+    public static void showSuccessAlertAndGoHome(Context context) {
+        new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText("Buen trabajo!")
+                .setContentText("Tarea concluida con éxito!")
+                .setConfirmText("Comenzar")
+                .setConfirmClickListener(sweetAlertDialog -> {
+                    context.startActivity(new Intent(context, HomeActivity.class));
+                    ((Activity) context).finish();
+                })
+                .show();
+    }
+
+    public static void showInfoAlert(Context context, String message) {
+        new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE)
+                .setTitleText("Aviso!")
+                .setContentText(message)
+                .setConfirmText("Ok")
+                .show();
+    }
+
+    public static void showInfoAlertAndGoHome(Context context, String message) {
+        new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE)
+                .setTitleText("Aviso!")
+                .setContentText(message)
+                .setConfirmText("Ir a inicio")
+                .setConfirmClickListener(sweetAlertDialog -> {
+                    context.startActivity(new Intent(context, HomeActivity.class));
+                    ((Activity) context).finish();
+                })
                 .show();
     }
 

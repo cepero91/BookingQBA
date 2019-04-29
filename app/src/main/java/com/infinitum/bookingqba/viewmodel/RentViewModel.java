@@ -102,7 +102,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     public Completable updateRent(RentEntity entity){
-        return rentRepository.updateRent(entity);
+        return rentRepository.update(entity);
     }
 
     // --------------------------- FILTER LIST --------------------------------------------- //

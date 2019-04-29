@@ -1,16 +1,17 @@
 package com.infinitum.bookingqba.di.module;
 
-import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepoImpl;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
-import com.infinitum.bookingqba.model.repository.databaseupdate.DatabaseUpdateRepoImpl;
-import com.infinitum.bookingqba.model.repository.databaseupdate.DatabaseUpdateRepository;
+import com.infinitum.bookingqba.model.repository.dbcommonsop.DBCommonOperationRepoImpl;
+import com.infinitum.bookingqba.model.repository.dbcommonsop.DBCommonOperationRepository;
 import com.infinitum.bookingqba.model.repository.drawtype.DrawTypeRepoImpl;
 import com.infinitum.bookingqba.model.repository.drawtype.DrawTypeRepository;
 import com.infinitum.bookingqba.model.repository.galerie.GalerieRepoImpl;
 import com.infinitum.bookingqba.model.repository.galerie.GalerieRepository;
 import com.infinitum.bookingqba.model.repository.municipality.MunicipalityRepoImpl;
 import com.infinitum.bookingqba.model.repository.municipality.MunicipalityRepository;
+import com.infinitum.bookingqba.model.repository.offer.OfferRepoImpl;
+import com.infinitum.bookingqba.model.repository.offer.OfferRepository;
 import com.infinitum.bookingqba.model.repository.poi.PoiRepoImpl;
 import com.infinitum.bookingqba.model.repository.poi.PoiRepository;
 import com.infinitum.bookingqba.model.repository.poitype.PoiTypeRepoImpl;
@@ -91,6 +92,9 @@ public interface RepositoryModule {
     RentAnaliticsRepository rentAnaliticsRepository(RentAnaliticsRepoImpl rentAnaliticsRepo);
 
     @Binds
-    DatabaseUpdateRepository databaseUpdateRepository(DatabaseUpdateRepoImpl databaseUpdateRepo);
+    OfferRepository offerRepository(OfferRepoImpl offerRepo);
+
+    @Binds
+    DBCommonOperationRepository dbCommonOperationRepository(DBCommonOperationRepoImpl databaseUpdateRepo);
 
 }

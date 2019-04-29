@@ -62,10 +62,9 @@ public class ProvinceRepoImpl implements ProvinceRepository {
      */
     @Override
     public Single<List<ProvinceEntity>> fetchRemoteAndTransform(String value) {
-        return fetchProvinces(value).flatMap((Function<List<Province>, SingleSource<? extends List<ProvinceEntity>>>) provinces -> {
-            ArrayList<ProvinceEntity> listEntity = new ArrayList<>(parseGsonToEntity(provinces));
-            return Single.just(listEntity);
-        }).subscribeOn(Schedulers.io());
+        return fetchProvinces(value)
+                .map(this::parseGsonToEntity)
+                .subscribeOn(Schedulers.io());
     }
 
 

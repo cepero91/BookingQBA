@@ -1,4 +1,4 @@
-package com.infinitum.bookingqba.model.repository.databaseupdate;
+package com.infinitum.bookingqba.model.repository.dbcommonsop;
 
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
@@ -17,13 +17,13 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
-public class DatabaseUpdateRepoImpl implements DatabaseUpdateRepository {
+public class DBCommonOperationRepoImpl implements DBCommonOperationRepository {
 
     private Retrofit retrofit;
     private BookingQBADao qbaDao;
 
     @Inject
-    public DatabaseUpdateRepoImpl(Retrofit retrofit, BookingQBADao qbaDao) {
+    public DBCommonOperationRepoImpl(Retrofit retrofit, BookingQBADao qbaDao) {
         this.retrofit = retrofit;
         this.qbaDao = qbaDao;
     }
@@ -53,7 +53,7 @@ public class DatabaseUpdateRepoImpl implements DatabaseUpdateRepository {
     }
 
     @Override
-    public Flowable<Resource<DatabaseUpdateEntity>> getLastDatabaseUpdate() {
+    public Flowable<Resource<DatabaseUpdateEntity>> lastDatabaseUpdateLocal() {
         return qbaDao.getLastDatabaseUpdate()
                 .subscribeOn(Schedulers.io())
                 .map((Function<List<DatabaseUpdateEntity>, Resource<DatabaseUpdateEntity>>) entities -> {

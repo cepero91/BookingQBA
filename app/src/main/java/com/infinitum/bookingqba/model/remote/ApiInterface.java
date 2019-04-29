@@ -65,7 +65,6 @@ public interface ApiInterface {
 
 
     //------------------- PROVINCIAS ---------------------//
-
     /**
      * Obtener provincias
      * @return lista de provincias
@@ -75,169 +74,72 @@ public interface ApiInterface {
 
     //------------------- MUNICIPIOS ---------------------//
 
-    /**
-     * Obtener municipios
-     * @return lista de municipios
-     */
     @GET("/api/municipalities")
     Single<List<Municipality>> getMunicipality(@Query("value") String value);
 
     //------------------- FACILIDADES ---------------------//
 
-    /**
-     * Obtener facilidades
-     * @return lista de facilidades
-     */
     @GET("/api/amenities")
     Single<List<Amenities>> getAmenities(@Query("value") String value);
 
     //------------------- TIPO DE LUGAR DE INTERES ---------------------//
 
-    /**
-     * Obtener tipos de lugar de interes
-     * @return lista de tipos de lugar de interes
-     */
-    @GET("/api/tipolugarinteres")
-    Single<List<PoiType>> getPoiTypes();
+    @GET("/api/poiTypes")
+    Single<List<PoiType>> getPoiTypes(@Query("value") String value);
 
     //------------------- LUGAR DE INTERES ---------------------//
 
-    /**
-     * Obtener lugar de interes
-     * @return lista de lugar de interes
-     */
-    @GET("/api/lugarinteres")
-    Single<List<Poi>> getPois();
+    @GET("/api/pois")
+    Single<List<Poi>> getPois(@Query("value") String value);
 
     //------------------- RENTAS ---------------------//
 
-    /**
-     * Obtener lugar de interes
-     * @return lista de lugar de interes
-     */
-    @GET("/api/hospedajes")
-    Single<List<Rent>> getRents();
+    @GET("/api/rents")
+    Single<List<Rent>> getRents(@Query("value") String value);
 
     //------------------- MODO DE RENTA ---------------------//
 
-    /**
-     * Obtener modos de renta
-     * @return lista de modos de renta
-     */
-    @GET("/api/modalidadrenta")
-    Single<List<RentMode>> getRentsMode();
+    @GET("/api/rentsMode")
+    Single<List<RentMode>> getRentsMode(@Query("value") String value);
 
     //------------------- ZONA DE REFERENCIA ---------------------//
 
-    /**
-     * Obtener zonas de referencia
-     * @return lista de zonas de referencia
-     */
     @GET("/api/referenceZones")
     Single<List<ReferenceZone>> getReferencesZone(@Query("value") String value);
 
     //------------------- TIPO DE MONEDA ---------------------//
 
-    /**
-     * Obtener tipos de moneda
-     * @return lista de tipos de moneda
-     */
-    @GET("/api/tipomoneda")
-    Single<List<DrawType>> getDrawsType();
+    @GET("/api/drawTypes")
+    Single<List<DrawType>> getDrawsType(@Query("value") String value);
 
     //------------------- GALERIA ---------------------//
 
-    /**
-     * Obtener galeria
-     * @return lista galeria
-     */
     @GET("/api/galeria")
     Single<List<Galerie>> getGaleries();
 
     //------------------- IMAGEN ---------------------//
 
-    /**
-     * Obtener imagen
-     * @return responseBody
-     */
     @GET
     Single<ResponseBody> getSingleImage(@Url String url);
 
-    /**
-     * Obtener imagen
-     * @return responseBody
-     */
-    @GET
-    Observable<ResponseBody> getObservableImage(@Url String url);
-
     //------------------- OFERTA ---------------------//
 
-    /**
-     * Obtener ofertas
-     * @return lista ofertas
-     */
-    @GET("/api/ofertas")
-    Single<List<Offer>> getOffers();
+    @GET("/api/offers")
+    Single<List<Offer>> getOffers(@Query("value") String value);
 
     //------------------- RENTA_FACILIDAD ---------------------//
 
-    /**
-     * Obtener renta_facilidad
-     * @return lista renta_facilidad
-     */
-    @GET("/api/hospedajefacilidad")
-    Single<List<RentAmenities>> getRentsAmenities();
+    @GET("/api/rent/amenities")
+    Single<List<RentAmenities>> getRentsAmenities(@Query("value") String value);
 
     //------------------- RENTA_TIPO_MONEDA ---------------------//
 
-    /**
-     * Obtener renta_tipo_modena
-     * @return lista renta_tipo_moneda
-     */
-    @GET("/api/hospedajetipomoneda")
-    Single<List<RentDrawType>> getRentsDrawType();
+    @GET("/api/rent/drawTypes")
+    Single<List<RentDrawType>> getRentsDrawType(@Query("value") String value);
 
     //------------------- RENTA_LUGAR_INTERES ---------------------//
 
-    /**
-     * Obtener renta_lugar_interes
-     * @return lista renta_lugar_interes
-     */
-    @GET("/api/hospedajelugarinteres")
-    Single<List<RentPoi>> getRentsPoi();
-
-
-
-
-    @GET("/api/hospedajes")
-    Call<List<Rent>> getHospedajesCall();
-
-    @GET("/api/hospedajes")
-    Single<List<Rent>> getHospedajes();
-
-    @GET("/api/hospedajes")
-    Observable<List<Rent>> getHospedajesZip();
-
-    @GET("/api/hospedajes_fecha_gt")
-    Observable<List<Rent>> getHospedajesFechaGt(@Query("value") String value);
-
-    @GET("/api/removidos")
-    Observable<List<Removed>> getRemovidos(@Query("value") String value);
-
-    ///////////----IMAGENES--------/////////
-
-    @GET
-    Call<ResponseBody> getImage(@Url String url);
-
-    @GET
-    Observable<ResponseBody> getImageZip(@Url String url);
-
-    @GET
-    Observable<ResponseBody> getImageThread(@Url String url);
-
-
-
-
-
+    @GET("/api/rent/pois")
+    Single<List<RentPoi>> getRentsPoi(@Query("value") String value);
 
 }

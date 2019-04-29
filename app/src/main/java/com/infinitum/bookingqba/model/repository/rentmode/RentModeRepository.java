@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.rentmode;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 
 import java.util.List;
@@ -9,7 +10,9 @@ import io.reactivex.Single;
 
 public interface RentModeRepository {
 
-    Single<List<RentModeEntity>> fetchRemoteAndTransform();
+    Single<List<RentModeEntity>> fetchRemoteAndTransform(String dateValue);
 
-    Completable insertRentsMode(List<RentModeEntity> rentModeEntities);
+    Completable insert(List<RentModeEntity> entities);
+
+    Single<OperationResult> syncronizeRentMode(String dateValue);
 }

@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.rentmode;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -30,14 +31,16 @@ public class RentModeRepoImpl implements RentModeRepository {
 
     /**
      * Prepara la peticion al API
+     *
      * @return
      */
-    private Single<List<RentMode>> fetchRentsMode() {
-        return retrofit.create(ApiInterface.class).getRentsMode();
+    private Single<List<RentMode>> fetchRentsMode(String dateValue) {
+        return retrofit.create(ApiInterface.class).getRentsMode(dateValue);
     }
 
     /**
      * Tranforma entidad JSON en entidad de Base de Datos
+     *
      * @param gsonList
      * @return
      */
@@ -52,15 +55,23 @@ public class RentModeRepoImpl implements RentModeRepository {
     }
 
     @Override
-    public Single<List<RentModeEntity>> fetchRemoteAndTransform() {
-        return fetchRentsMode().flatMap((Function<List<RentMode>, SingleSource<? extends List<RentModeEntity>>>) rentModes -> {
-            ArrayList<RentModeEntity> listEntity = new ArrayList<>(parseGsonToEntity(rentModes));
-            return Single.just(listEntity);
-        }).subscribeOn(Schedulers.io());
+    public Single<List<RentModeEntity>> fetchRemoteAndTransform(String dateValue) {
+        return fetchRentsMode(dateValue)
+                .map(this::parseGsonToEntity)
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Completable insertRentsMode(List<RentModeEntity> rentModeEntities) {
-        return Completable.fromAction(() -> qbaDao.upsertRentsMode(rentModeEntities)).subscribeOn(Schedulers.io());
+    public Completable insert(List<RentModeEntity> entities) {
+        return Completable.fromAction(() -> qbaDao.upsertRentsMode(entities)).subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<OperationResult> syncronizeRentMode(String dateValue) {
+        return fetchRemoteAndTransform(dateValue)
+                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(this::insert)
+                .toSingle(OperationResult::success)
+                .onErrorReturn(OperationResult::error);
     }
 }

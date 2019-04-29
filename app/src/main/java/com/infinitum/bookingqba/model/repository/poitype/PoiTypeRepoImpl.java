@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.model.repository.poitype;
 
 import android.util.Base64;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -34,8 +35,8 @@ public class PoiTypeRepoImpl implements PoiTypeRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<PoiType>> fetchPoiTypes() {
-        return retrofit.create(ApiInterface.class).getPoiTypes();
+    private Single<List<PoiType>> fetchPoiTypes(String dateValue) {
+        return retrofit.create(ApiInterface.class).getPoiTypes(dateValue);
     }
 
     /**
@@ -54,16 +55,25 @@ public class PoiTypeRepoImpl implements PoiTypeRepository {
     }
 
     @Override
-    public Single<List<PoiTypeEntity>> fetchRemoteAndTransform() {
-        return fetchPoiTypes().flatMap((Function<List<PoiType>, SingleSource<? extends List<PoiTypeEntity>>>) poiTypes -> {
+    public Single<List<PoiTypeEntity>> fetchRemoteAndTransform(String dateValue) {
+        return fetchPoiTypes(dateValue).flatMap((Function<List<PoiType>, SingleSource<? extends List<PoiTypeEntity>>>) poiTypes -> {
             ArrayList<PoiTypeEntity> listEntity = new ArrayList<>(parseGsonToEntity(poiTypes));
             return Single.just(listEntity);
         }).subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Completable insertPoiTypes(List<PoiTypeEntity> poiTypeEntityList) {
-        return Completable.fromAction(() -> qbaDao.upsertPoiTypes(poiTypeEntityList))
+    public Completable insert(List<PoiTypeEntity> entities) {
+        return Completable.fromAction(() -> qbaDao.upsertPoiTypes(entities))
                 .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<OperationResult> syncronizePoiTypes(String dateValue) {
+        return fetchRemoteAndTransform(dateValue)
+                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(this::insert)
+                .toSingle(OperationResult::success)
+                .onErrorReturn(OperationResult::error);
     }
 }

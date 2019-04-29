@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.drawtype;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.DrawTypeEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -32,8 +33,8 @@ public class DrawTypeRepoImpl implements DrawTypeRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<DrawType>> fetchDrawsType() {
-        return retrofit.create(ApiInterface.class).getDrawsType();
+    private Single<List<DrawType>> fetchDrawsType(String dateValue) {
+        return retrofit.create(ApiInterface.class).getDrawsType(dateValue);
     }
 
     /**
@@ -52,16 +53,24 @@ public class DrawTypeRepoImpl implements DrawTypeRepository {
     }
 
     @Override
-    public Single<List<DrawTypeEntity>> fetchRemoteAndTransform() {
-        return fetchDrawsType().flatMap((Function<List<DrawType>, SingleSource<? extends List<DrawTypeEntity>>>) drawTypes -> {
-            ArrayList<DrawTypeEntity> listEntity = new ArrayList<>(parseGsonToEntity(drawTypes));
-            return Single.just(listEntity);
-        }).subscribeOn(Schedulers.io());
+    public Single<List<DrawTypeEntity>> fetchRemoteAndTransform(String dateValue) {
+        return fetchDrawsType(dateValue)
+                .map(this::parseGsonToEntity)
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Completable insertDrawType(List<DrawTypeEntity> drawTypeEntities) {
-        return Completable.fromAction(() -> qbaDao.upsertDrawsType(drawTypeEntities))
+    public Completable insert(List<DrawTypeEntity> entities) {
+        return Completable.fromAction(() -> qbaDao.upsertDrawsType(entities))
                 .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<OperationResult> syncronizeDrawType(String dateValue) {
+        return fetchRemoteAndTransform(dateValue)
+                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(this::insert)
+                .toSingle(OperationResult::success)
+                .onErrorReturn(OperationResult::error);
     }
 }

@@ -16,16 +16,11 @@ import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivitySyncBinding;
 import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
-import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
 import com.infinitum.bookingqba.model.local.entity.DrawTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
-import com.infinitum.bookingqba.model.local.entity.MunicipalityEntity;
-import com.infinitum.bookingqba.model.local.entity.PoiEntity;
-import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
-import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.DateUtils;
@@ -43,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -54,10 +48,6 @@ import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -145,30 +135,36 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
             case 2:
                 syncronizeMunicipalities(dateValue);
                 break;
-//            case 3:
-//                syncAmenities();
-//                break;
-//            case 4:
-//                syncPoiTypes();
-//                break;
-//            case 5:
-//                syncPois();
-//                break;
-//            case 6:
-//                syncRentsMode();
-//                break;
-//            case 7:
-//                syncDrawsType();
-//                break;
-//            case 8:
-//                syncRents();
-//                break;
-//            case 9:
-//                syncRentAmenities();
-//                break;
-//            case 10:
-//                syncRentPois();
-//                break;
+            case 3:
+                syncronizeAmenities(dateValue);
+                break;
+            case 4:
+                syncronizePoiTypes(dateValue);
+                break;
+            case 5:
+                syncronizePois(dateValue);
+                break;
+            case 6:
+                syncronizeRentsMode(dateValue);
+                break;
+            case 7:
+                syncronizeDrawTypes(dateValue);
+                break;
+            case 8:
+                syncronizeRents(dateValue);
+                break;
+            case 9:
+                syncronizeRentAmenities(dateValue);
+                break;
+            case 10:
+                syncronizeRentPois(dateValue);
+                break;
+            case 11:
+                syncronizeRentDrawTypes(dateValue);
+                break;
+            case 12:
+                syncronizeOffers(dateValue);
+                break;
 //            case 11:
 //                syncGaleries();
 //                break;
@@ -178,9 +174,16 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     private void startSyncronitation(int downloadIndex) {
         Flowable<Resource<DatabaseUpdateEntity>> flowLocal = syncViewModel.getLastDatabaseUpdate();
         Flowable<Resource<DatabaseUpdateEntity>> flowRemote = syncViewModel.getDatabaseUpdateRemote();
-        entityDisposable = Flowable.zip(flowLocal, flowRemote, this::checkIfUpdateNeeded).subscribeOn(Schedulers.io())
+        entityDisposable = Flowable.zip(flowLocal, flowRemote, this::checkIfUpdateNeeded)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(aBoolean -> startSyncOnLevel(downloadIndex)).subscribe();
+                .doOnNext(aBoolean -> {
+                    if (aBoolean) {
+                        startSyncOnLevel(downloadIndex);
+                    } else {
+                        AlertUtils.showInfoAlertAndGoHome(this,getResources().getString(R.string.no_need_update));
+                    }
+                }).subscribe();
         compositeDisposable.add(entityDisposable);
     }
 
@@ -199,14 +202,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         entityDisposable = syncViewModel.syncReferenceZone(dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(operationResult -> {
-                    if (operationResult.result == OperationResult.Result.SUCCESS) {
-                        updateEntityProgress();
-                        syncronizeProvinces(dateValue);
-                    } else if (operationResult.result == OperationResult.Result.ERROR) {
-                        onDownloadError(operationResult.message);
-                    }
-                }, Timber::e);
+                .subscribe(this::checkOperationResult, Timber::e);
         compositeDisposable.add(entityDisposable);
     }
 
@@ -214,14 +210,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         entityDisposable = syncViewModel.syncProvinces(dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(operationResult -> {
-                    if (operationResult.result == OperationResult.Result.SUCCESS) {
-                        updateEntityProgress();
-                        syncronizeMunicipalities(dateValue);
-                    } else if (operationResult.result == OperationResult.Result.ERROR) {
-                        onDownloadError(operationResult.message);
-                    }
-                }, Timber::e);
+                .subscribe(this::checkOperationResult, Timber::e);
         compositeDisposable.add(entityDisposable);
     }
 
@@ -229,341 +218,108 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         entityDisposable = syncViewModel.syncMunicipalities(dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(operationResult -> {
-                    if (operationResult.result == OperationResult.Result.SUCCESS) {
-                        updateEntityProgress();
-                        AlertUtils.showSuccessAlert(this);
-                    } else if (operationResult.result == OperationResult.Result.ERROR) {
-                        onDownloadError(operationResult.message);
-                    }
-                }, Timber::e);
+                .subscribe(this::checkOperationResult, Timber::e);
         compositeDisposable.add(entityDisposable);
     }
 
-    private void updateEntityProgress() {
+    private void syncronizeAmenities(String dateValue) {
+        entityDisposable = syncViewModel.syncAmenities(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
+    private void syncronizePoiTypes(String dateValue) {
+        entityDisposable = syncViewModel.syncPoiTypes(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
+    private void syncronizePois(String dateValue) {
+        entityDisposable = syncViewModel.syncPois(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
+    private void syncronizeRentsMode(String dateValue) {
+        entityDisposable = syncViewModel.syncRentsMode(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
+    private void syncronizeDrawTypes(String dateValue) {
+        entityDisposable = syncViewModel.syncDrawTypes(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
+    private void syncronizeRents(String dateValue) {
+        entityDisposable = syncViewModel.syncRents(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
+    private void syncronizeRentAmenities(String dateValue) {
+        entityDisposable = syncViewModel.syncRentAmenities(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
+    private void syncronizeRentPois(String dateValue) {
+        entityDisposable = syncViewModel.syncRentPois(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
+    private void syncronizeRentDrawTypes(String dateValue) {
+        entityDisposable = syncViewModel.syncRentDrawType(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
+    private void syncronizeOffers(String dateValue) {
+        entityDisposable = syncViewModel.syncOffers(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
+    private void checkOperationResult(OperationResult operationResult) {
+        if (operationResult.result == OperationResult.Result.SUCCESS) {
+            updateEntityProgressAndContinue();
+        } else if (operationResult.result == OperationResult.Result.ERROR) {
+            onDownloadError(operationResult.message);
+        }
+    }
+
+    private void updateEntityProgressAndContinue() {
         entityProgress++;
         float percent = ((float) entityProgress / 11) * 100;
         saveEntityDownloadIndex(entityProgress);
         syncBinding.setPercent(percent);
-    }
-
-    private void syncAmenities() {
-        entityDisposable = syncViewModel.amenitiesList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<AmenitiesEntity>>() {
-                    @Override
-                    public void onSuccess(List<AmenitiesEntity> amenitiesEntities) {
-                        syncBinding.setPercent(28f);
-                        saveAmenities(amenitiesEntities);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-
-    }
-
-    private void saveAmenities(List<AmenitiesEntity> amenitiesEntityList) {
-        entityDisposable = syncViewModel.insertAmenities(amenitiesEntityList)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        syncBinding.setPercent(32f);
-                        saveEntityDownloadIndex(4);
-                        syncPoiTypes();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-    }
-
-    private void syncPoiTypes() {
-        entityDisposable = syncViewModel.poiTypeList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<PoiTypeEntity>>() {
-                    @Override
-                    public void onSuccess(List<PoiTypeEntity> poiTypeEntities) {
-                        syncBinding.setPercent(36f);
-                        savePoiTypes(poiTypeEntities);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-
-    }
-
-    private void savePoiTypes(List<PoiTypeEntity> poiTypeEntityList) {
-        entityDisposable = syncViewModel.insertPoiType(poiTypeEntityList)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        syncBinding.setPercent(40f);
-                        saveEntityDownloadIndex(5);
-                        syncPois();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-    }
-
-    private void syncPois() {
-        entityDisposable = syncViewModel.poiList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<PoiEntity>>() {
-                    @Override
-                    public void onSuccess(List<PoiEntity> poiEntities) {
-                        syncBinding.setPercent(44f);
-                        savePois(poiEntities);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-
-    }
-
-    private void savePois(List<PoiEntity> poiEntityList) {
-        entityDisposable = syncViewModel.insertPoi(poiEntityList)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        syncBinding.setPercent(48f);
-                        saveEntityDownloadIndex(6);
-                        syncRentsMode();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-    }
-
-    private void syncRentsMode() {
-        entityDisposable = syncViewModel.rentModeList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<RentModeEntity>>() {
-                    @Override
-                    public void onSuccess(List<RentModeEntity> rentModeEntities) {
-                        syncBinding.setPercent(52f);
-                        saveRentsMode(rentModeEntities);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-
-    }
-
-    private void saveRentsMode(List<RentModeEntity> rentModeEntityList) {
-        entityDisposable = syncViewModel.insertRentMode(rentModeEntityList)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        syncBinding.setPercent(56f);
-                        saveEntityDownloadIndex(7);
-                        syncRents();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-    }
-
-    private void syncRents() {
-        entityDisposable = syncViewModel.rentList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<RentEntity>>() {
-                    @Override
-                    public void onSuccess(List<RentEntity> rentEntities) {
-                        syncBinding.setPercent(60f);
-                        saveRents(rentEntities);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-    }
-
-    private void saveRents(List<RentEntity> rentEntityList) {
-        entityDisposable = syncViewModel.insertRent(rentEntityList)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        syncBinding.setPercent(64f);
-                        saveEntityDownloadIndex(8);
-                        syncDrawsType();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-    }
-
-    private void syncDrawsType() {
-        entityDisposable = syncViewModel.drawTypeList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<DrawTypeEntity>>() {
-                    @Override
-                    public void onSuccess(List<DrawTypeEntity> drawTypeEntities) {
-                        syncBinding.setPercent(68f);
-                        saveDrawsType(drawTypeEntities);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-
-    }
-
-    private void saveDrawsType(List<DrawTypeEntity> drawTypeEntitiesList) {
-        entityDisposable = syncViewModel.insertDrawType(drawTypeEntitiesList)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        syncBinding.setPercent(72f);
-                        saveEntityDownloadIndex(9);
-                        syncRentAmenities();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-    }
-
-    private void syncRentAmenities() {
-        entityDisposable = syncViewModel.rentAmenitiesList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<RentAmenitiesEntity>>() {
-                    @Override
-                    public void onSuccess(List<RentAmenitiesEntity> rentAmenitiesEntityList) {
-                        syncBinding.setPercent(76f);
-                        saveRentAmenities(rentAmenitiesEntityList);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-
-    }
-
-    private void saveRentAmenities(List<RentAmenitiesEntity> rentAmenitiesEntityList) {
-        entityDisposable = syncViewModel.insertRentAmenities(rentAmenitiesEntityList)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        syncBinding.setPercent(80f);
-                        saveEntityDownloadIndex(10);
-                        syncRentPois();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-    }
-
-    private void syncRentPois() {
-        entityDisposable = syncViewModel.rentPoiList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<RentPoiEntity>>() {
-                    @Override
-                    public void onSuccess(List<RentPoiEntity> rentPoiEntityList) {
-                        syncBinding.setPercent(84f);
-                        saveRentPois(rentPoiEntityList);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-
-    }
-
-    private void saveRentPois(List<RentPoiEntity> rentPoiEntityList) {
-        entityDisposable = syncViewModel.insertRentPois(rentPoiEntityList)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        syncBinding.setPercent(88f);
-                        saveEntityDownloadIndex(11);
-                        syncGaleries();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
+        if (entityProgress < 11) {
+            startSyncronitation(entityProgress);
+        } else if (entityProgress == 11 && !syncBinding.cbImages.isChecked()) {
+            AlertUtils.showSuccessAlertAndGoHome(this);
+        }
     }
 
     private void syncGaleries() {
@@ -723,7 +479,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     public void onDownloadError(String message) {
-        Timber.e(message);
+        Timber.e("Error on index ===> %s, with message ===> %s", entityProgress, message);
         AlertUtils.showErrorAlert(this);
         syncBinding.fbDownload.setEnabled(true);
     }
@@ -820,15 +576,14 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     public void onClick(View v) {
         if (networkHelper.isNetworkAvailable()) {
             if (syncBinding.fbDownload.getTag().equals(LEVEL_ENTITY)) {
-                int downLevel = sharedPreferences.getInt(PREF_ENTITY_DOWNLOAD_INDEX, 0);
-                entityProgress = downLevel;
+                entityProgress = sharedPreferences.getInt(PREF_ENTITY_DOWNLOAD_INDEX, 0);
                 syncBinding.fbDownload.setEnabled(false);
                 if (isFirstDownload) {
                     isFirstDownload = false;
                     preDownloadAnimation();
-                    new Handler().postDelayed(() -> startSyncronitation(downLevel), 500);
+                    new Handler().postDelayed(() -> startSyncronitation(entityProgress), 500);
                 } else {
-                    startSyncOnLevel(downLevel);
+                    startSyncOnLevel(entityProgress);
                 }
             } else if (syncBinding.fbDownload.getTag().equals(LEVEL_GALERY)) {
                 prepareForDownload();

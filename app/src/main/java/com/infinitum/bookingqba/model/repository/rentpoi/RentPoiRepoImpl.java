@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.rentpoi;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -34,8 +35,8 @@ public class RentPoiRepoImpl implements RentPoiRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<RentPoi>> fetchRentPoi() {
-        return retrofit.create(ApiInterface.class).getRentsPoi();
+    private Single<List<RentPoi>> fetchRentPoi(String dateValue) {
+        return retrofit.create(ApiInterface.class).getRentsPoi(dateValue);
     }
 
     /**
@@ -44,38 +45,34 @@ public class RentPoiRepoImpl implements RentPoiRepository {
      * @return
      */
     private List<RentPoiEntity> parseGsonToEntity(List<RentPoi> gsonList) {
-        ArrayList<RentPoiEntity> listEntity = new ArrayList<>();
-        for (RentPoi item : gsonList) {
-            for(Poi poi: item.getPois()){
-                listEntity.add(new RentPoiEntity(item.getId(),poi.getId()));
+        List<RentPoiEntity> rentPoiEntityList = new ArrayList<>();
+        for(RentPoi rentPoi: gsonList){
+            for(Poi poi: rentPoi.getPois()){
+                rentPoiEntityList.add(new RentPoiEntity(poi.getId(),rentPoi.getId()));
             }
         }
-        return listEntity;
-    }
-
-    /**
-     * Transforma entidad JSON a entidad de Base de Datos trabajando con observables
-     * @param gsonList
-     * @return
-     */
-    private Single<List<RentPoiEntity>> singleParseGsonToEntity(List<RentPoi> gsonList, ArrayList<RentPoiEntity> resultList) {
-        return Observable.fromIterable(gsonList)
-                .flatMap((Function<RentPoi, ObservableSource<RentPoiEntity>>) rentPoi -> Observable.fromIterable(rentPoi.getPois())
-                        .map(poi -> new RentPoiEntity(poi.getId(),rentPoi.getId()))
-                        .doOnNext(resultList::add)
-                        .subscribeOn(Schedulers.io()))
-                .toList();
+        return rentPoiEntityList;
     }
 
     @Override
-    public Single<List<RentPoiEntity>> fetchRemoteAndTransform() {
-        return fetchRentPoi()
-                .flatMap(resourse->singleParseGsonToEntity(resourse, new ArrayList<>())).subscribeOn(Schedulers.io());
-    }
-
-    @Override
-    public Completable insert(List<RentPoiEntity> rentPoiEntityList) {
-        return Completable.fromAction(() -> qbaDao.upsertRentsPoi(rentPoiEntityList))
+    public Single<List<RentPoiEntity>> fetchRemoteAndTransform(String dateValue) {
+        return fetchRentPoi(dateValue)
+                .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Completable insert(List<RentPoiEntity> entities) {
+        return Completable.fromAction(() -> qbaDao.upsertRentsPoi(entities))
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<OperationResult> syncronizeRentPoi(String dateValue) {
+        return fetchRemoteAndTransform(dateValue)
+                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(this::insert)
+                .toSingle(OperationResult::success)
+                .onErrorReturn(OperationResult::error);
     }
 }

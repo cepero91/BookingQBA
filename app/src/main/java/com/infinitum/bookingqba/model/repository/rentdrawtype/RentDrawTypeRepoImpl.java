@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.rentdrawtype;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentDrawTypeEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -34,8 +35,8 @@ public class RentDrawTypeRepoImpl implements RentDrawTypeRepository {
      *
      * @return
      */
-    private Single<List<RentDrawType>> fetchRentDrawTypes() {
-        return retrofit.create(ApiInterface.class).getRentsDrawType();
+    private Single<List<RentDrawType>> fetchRentDrawTypes(String dateValue) {
+        return retrofit.create(ApiInterface.class).getRentsDrawType(dateValue);
     }
 
     /**
@@ -46,29 +47,33 @@ public class RentDrawTypeRepoImpl implements RentDrawTypeRepository {
      */
     private List<RentDrawTypeEntity> parseGsonToEntity(List<RentDrawType> gsonList) {
         ArrayList<RentDrawTypeEntity> listEntity = new ArrayList<>();
-        RentDrawTypeEntity entity;
-        for (RentDrawType item : gsonList) {
-            entity = new RentDrawTypeEntity(item.getId());
-            for (DrawType drawType : item.getDrawTypes()) {
-                entity.setDrawTypeId(drawType.getId());
-                listEntity.add(entity);
+        for (RentDrawType rentDrawType : gsonList) {
+            for (DrawType drawType : rentDrawType.getDrawTypes()) {
+                listEntity.add(new RentDrawTypeEntity(drawType.getId(), rentDrawType.getId()));
             }
         }
         return listEntity;
     }
 
     @Override
-    public Single<List<RentDrawTypeEntity>> fetchRemoteAndTransform() {
-        return fetchRentDrawTypes()
-                .flatMap((Function<List<RentDrawType>, SingleSource<? extends List<RentDrawTypeEntity>>>) rentDrawTypes -> {
-                    ArrayList<RentDrawTypeEntity> listEntity = new ArrayList<>(parseGsonToEntity(rentDrawTypes));
-                    return Single.just(listEntity);
-                }).subscribeOn(Schedulers.io());
+    public Single<List<RentDrawTypeEntity>> fetchRemoteAndTransform(String dateValue) {
+        return fetchRentDrawTypes(dateValue)
+                .map(this::parseGsonToEntity)
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Completable insertRentDrawType(List<RentDrawTypeEntity> rentDrawTypeEntityList) {
-        return Completable.fromAction(() -> qbaDao.upsertRentsDrawType(rentDrawTypeEntityList))
+    public Completable insert(List<RentDrawTypeEntity> entities) {
+        return Completable.fromAction(() -> qbaDao.upsertRentsDrawType(entities))
                 .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<OperationResult> syncronizeRentDrawType(String dateValue) {
+        return fetchRemoteAndTransform(dateValue)
+                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(this::insert)
+                .toSingle(OperationResult::success)
+                .onErrorReturn(OperationResult::error);
     }
 }

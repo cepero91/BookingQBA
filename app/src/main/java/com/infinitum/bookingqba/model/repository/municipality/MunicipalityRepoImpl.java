@@ -58,10 +58,9 @@ public class MunicipalityRepoImpl implements MunicipalityRepository {
      */
     @Override
     public Single<List<MunicipalityEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchMunicipalities(dateValue).flatMap((Function<List<Municipality>, SingleSource<? extends List<MunicipalityEntity>>>) municipalities -> {
-            ArrayList<MunicipalityEntity> listEntity = new ArrayList<>(parseGsonToEntity(municipalities));
-            return Single.just(listEntity);
-        }).subscribeOn(Schedulers.io());
+        return fetchMunicipalities(dateValue)
+                .map(this::parseGsonToEntity)
+                .subscribeOn(Schedulers.io());
     }
 
     /**

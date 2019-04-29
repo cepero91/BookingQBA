@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.rentdrawtype;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.entity.RentDrawTypeEntity;
 import com.infinitum.bookingqba.model.remote.pojo.RentDrawType;
 
@@ -10,8 +11,9 @@ import io.reactivex.Single;
 
 public interface RentDrawTypeRepository {
 
-    Single<List<RentDrawTypeEntity>> fetchRemoteAndTransform();
+    Single<List<RentDrawTypeEntity>> fetchRemoteAndTransform(String dateValue);
 
-    Completable insertRentDrawType(List<RentDrawTypeEntity> rentDrawTypeEntityList);
+    Completable insert(List<RentDrawTypeEntity> entities);
 
+    Single<OperationResult> syncronizeRentDrawType(String dateValue);
 }

@@ -56,10 +56,9 @@ public class AmenitiesRepoImpl implements AmenitiesRepository {
 
     @Override
     public Single<List<AmenitiesEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchAmenities(dateValue).flatMap((Function<List<Amenities>, SingleSource<? extends List<AmenitiesEntity>>>) amenities -> {
-            ArrayList<AmenitiesEntity> listEntity = new ArrayList<>(parseGsonToEntity(amenities));
-            return Single.just(listEntity);
-        }).subscribeOn(Schedulers.io());
+        return fetchAmenities(dateValue)
+                .map(this::parseGsonToEntity)
+                .subscribeOn(Schedulers.io());
     }
 
     @Override

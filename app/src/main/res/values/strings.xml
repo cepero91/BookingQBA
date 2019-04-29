@@ -29,5 +29,6 @@
 
 
     <string name="fecha_prueba">2018-01-01</string>
+    <string name="no_need_update">Base de Datos actualizada!!</string>
 
 </resources>

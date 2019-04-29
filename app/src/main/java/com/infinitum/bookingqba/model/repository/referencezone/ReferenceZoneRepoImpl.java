@@ -61,10 +61,9 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
 
     @Override
     public Single<List<ReferenceZoneEntity>> fetchRemoteAndTransform(String value) {
-        return fetchReferencesZone(value).flatMap((Function<List<ReferenceZone>, SingleSource<? extends List<ReferenceZoneEntity>>>) referenceZones -> {
-            ArrayList<ReferenceZoneEntity> listEntity = new ArrayList<>(parseGsonToEntity(referenceZones));
-            return Single.just(listEntity);
-        }).subscribeOn(Schedulers.io());
+        return fetchReferencesZone(value)
+                .map(this::parseGsonToEntity)
+                .subscribeOn(Schedulers.io());
     }
 
     @Override

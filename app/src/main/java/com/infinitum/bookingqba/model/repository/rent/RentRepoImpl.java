@@ -4,6 +4,7 @@ import android.arch.paging.DataSource;
 import android.arch.persistence.db.SimpleSQLiteQuery;
 import android.arch.persistence.db.SupportSQLiteQuery;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
@@ -46,8 +47,8 @@ public class RentRepoImpl implements RentRepository {
      *
      * @return
      */
-    private Single<List<Rent>> fetchRents() {
-        return retrofit.create(ApiInterface.class).getRents();
+    private Single<List<Rent>> fetchRents(String dateValue) {
+        return retrofit.create(ApiInterface.class).getRents(dateValue);
     }
 
     /**
@@ -88,16 +89,15 @@ public class RentRepoImpl implements RentRepository {
 
 
     @Override
-    public Single<List<RentEntity>> fetchRemoteAndTransform() {
-        return fetchRents().flatMap((Function<List<Rent>, SingleSource<? extends List<RentEntity>>>) rents -> {
-            ArrayList<RentEntity> listEntity = new ArrayList<>(parseGsonToEntity(rents));
-            return Single.just(listEntity);
-        }).subscribeOn(Schedulers.io());
+    public Single<List<RentEntity>> fetchRemoteAndTransform(String dateValue) {
+        return fetchRents(dateValue)
+                .map(this::parseGsonToEntity)
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Completable insertRents(List<RentEntity> rentEntityList) {
-        return Completable.fromAction(() -> qbaDao.upsertRents(rentEntityList))
+    public Completable insert(List<RentEntity> entities) {
+        return Completable.fromAction(() -> qbaDao.upsertRents(entities))
                 .subscribeOn(Schedulers.io());
     }
 
@@ -111,7 +111,7 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public DataSource.Factory<Integer,RentAndGalery> allRentByOrderType(char orderType, String province) {
+    public DataSource.Factory<Integer, RentAndGalery> allRentByOrderType(char orderType, String province) {
         if (orderType == ORDER_TYPE_POPULAR) {
             return qbaDao.getAllPopRent(province);
         } else {
@@ -139,14 +139,17 @@ public class RentRepoImpl implements RentRepository {
 
     @Override
     public Flowable<Resource<RentDetail>> getRentDetailById(String uuid) {
-        return qbaDao.getRentDetailById(uuid).map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
+        return qbaDao.getRentDetailById(uuid)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
     public Completable addOrUpdateRentVisitCount(String id, String rent) {
-        SupportSQLiteQuery query = new SimpleSQLiteQuery("INSERT OR REPLACE INTO RentVisitCount VALUES ('"+rent+"', COALESCE(" +
-                "(SELECT visitCount FROM RentVisitCount WHERE rentId = '"+rent+"'),0)+1)");
-        return Completable.fromAction(()-> qbaDao.addOrUpdateRentVisit(query)).subscribeOn(Schedulers.io());
+        SupportSQLiteQuery query = new SimpleSQLiteQuery("INSERT OR REPLACE INTO RentVisitCount VALUES ('" + rent + "', COALESCE(" +
+                "(SELECT visitCount FROM RentVisitCount WHERE rentId = '" + rent + "'),0)+1)");
+        return Completable.fromAction(() -> qbaDao.addOrUpdateRentVisit(query)).subscribeOn(Schedulers.io());
     }
 
     @Override
@@ -158,12 +161,21 @@ public class RentRepoImpl implements RentRepository {
 
     @Override
     public Completable updateIsWishedRent(String uuid, int isWished) {
-        SupportSQLiteQuery query = new SimpleSQLiteQuery("UPDATE Rent SET isWished ='"+isWished+"' WHERE id='"+uuid+"'");
-        return Completable.fromAction(()-> qbaDao.updateRentIsWished(query)).subscribeOn(Schedulers.io());
+        SupportSQLiteQuery query = new SimpleSQLiteQuery("UPDATE Rent SET isWished ='" + isWished + "' WHERE id='" + uuid + "'");
+        return Completable.fromAction(() -> qbaDao.updateRentIsWished(query)).subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Completable updateRent(RentEntity entity) {
-        return Completable.fromAction(()->qbaDao.updateRent(entity)).subscribeOn(Schedulers.io());
+    public Completable update(RentEntity entity) {
+        return Completable.fromAction(() -> qbaDao.updateRent(entity)).subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<OperationResult> syncronizeRents(String dateValue) {
+        return fetchRemoteAndTransform(dateValue)
+                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(this::insert)
+                .toSingle(OperationResult::success)
+                .onErrorReturn(OperationResult::error);
     }
 }

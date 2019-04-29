@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.offer;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.OfferEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -30,14 +31,16 @@ public class OfferRepoImpl implements OfferRepository {
 
     /**
      * Prepara la peticion del API
+     *
      * @return
      */
-    private Single<List<Offer>> fetchOffers() {
-        return retrofit.create(ApiInterface.class).getOffers();
+    private Single<List<Offer>> fetchOffers(String dateValue) {
+        return retrofit.create(ApiInterface.class).getOffers(dateValue);
     }
 
     /**
      * Transforma entidad JSON a entidad de Base de Datos
+     *
      * @param gsonList
      * @return
      */
@@ -45,23 +48,31 @@ public class OfferRepoImpl implements OfferRepository {
         ArrayList<OfferEntity> listEntity = new ArrayList<>();
         OfferEntity entity;
         for (Offer item : gsonList) {
-            entity = new OfferEntity(item.getId(), item.getName(), item.getDescription(), item.getPrice(),item.getRent());
+            entity = new OfferEntity(item.getId(), item.getName(), item.getDescription(), item.getPrice(), item.getRent());
             listEntity.add(entity);
         }
         return listEntity;
     }
 
     @Override
-    public Single<List<OfferEntity>> fetchRemoteAndTransform() {
-        return fetchOffers().flatMap((Function<List<Offer>, SingleSource<? extends List<OfferEntity>>>) offers -> {
-            ArrayList<OfferEntity> listEntity = new ArrayList<>(parseGsonToEntity(offers));
-            return Single.just(listEntity);
-        }).subscribeOn(Schedulers.io());
+    public Single<List<OfferEntity>> fetchRemoteAndTransform(String dateValue) {
+        return fetchOffers(dateValue)
+                .map(this::parseGsonToEntity)
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Completable insertOffers(List<OfferEntity> offerEntityList) {
-        return Completable.fromAction(() -> qbaDao.upsertOffers(offerEntityList))
+    public Completable insert(List<OfferEntity> entities) {
+        return Completable.fromAction(() -> qbaDao.upsertOffers(entities))
                 .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<OperationResult> syncronizeOffers(String dateValue) {
+        return fetchRemoteAndTransform(dateValue)
+                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(this::insert)
+                .toSingle(OperationResult::success)
+                .onErrorReturn(OperationResult::error);
     }
 }

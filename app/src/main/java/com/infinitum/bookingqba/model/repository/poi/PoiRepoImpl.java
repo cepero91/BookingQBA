@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.poi;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -32,8 +33,8 @@ public class PoiRepoImpl implements PoiRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<Poi>> fetchPois() {
-        return retrofit.create(ApiInterface.class).getPois();
+    private Single<List<Poi>> fetchPois(String dateValue) {
+        return retrofit.create(ApiInterface.class).getPois(dateValue);
     }
 
     /**
@@ -52,16 +53,24 @@ public class PoiRepoImpl implements PoiRepository {
     }
 
     @Override
-    public Single<List<PoiEntity>> fetchRemoteAndTransform() {
-        return fetchPois().flatMap((Function<List<Poi>, SingleSource<? extends List<PoiEntity>>>) pois -> {
-            ArrayList<PoiEntity> listEntity = new ArrayList<>(parseGsonToEntity(pois));
-            return Single.just(listEntity);
-        }).subscribeOn(Schedulers.io());
+    public Single<List<PoiEntity>> fetchRemoteAndTransform(String dateValue) {
+        return fetchPois(dateValue)
+                .map(this::parseGsonToEntity)
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Completable insertPois(List<PoiEntity> poiEntityList) {
-        return Completable.fromAction(() -> qbaDao.upsertPoi(poiEntityList))
+    public Completable insert(List<PoiEntity> entities) {
+        return Completable.fromAction(() -> qbaDao.upsertPoi(entities))
                 .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<OperationResult> syncronizePois(String dateValue) {
+        return fetchRemoteAndTransform(dateValue)
+                .subscribeOn(Schedulers.io())
+                .flatMapCompletable(this::insert)
+                .toSingle(OperationResult::success)
+                .onErrorReturn(OperationResult::error);
     }
 }

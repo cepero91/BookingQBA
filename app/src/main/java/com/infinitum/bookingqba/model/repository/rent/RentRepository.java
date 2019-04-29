@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.model.repository.rent;
 
 import android.arch.paging.DataSource;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
@@ -16,9 +17,9 @@ import io.reactivex.Single;
 
 public interface RentRepository {
 
-    Single<List<RentEntity>> fetchRemoteAndTransform();
+    Single<List<RentEntity>> fetchRemoteAndTransform(String dateValue);
 
-    Completable insertRents(List<RentEntity> rentEntityList);
+    Completable insert(List<RentEntity> entities);
 
     Flowable<Resource<List<RentAndGalery>>> allRent();
 
@@ -36,6 +37,8 @@ public interface RentRepository {
 
     Completable updateIsWishedRent(String uuid, int isWished);
 
-    Completable updateRent(RentEntity entity);
+    Completable update(RentEntity entity);
+
+    Single<OperationResult> syncronizeRents(String dateValue);
 
 }

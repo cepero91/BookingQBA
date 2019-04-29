@@ -1,15 +1,12 @@
-package com.infinitum.bookingqba.model.repository.databaseupdate;
+package com.infinitum.bookingqba.model.repository.dbcommonsop;
 
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
 
-import java.util.List;
-
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import io.reactivex.Single;
 
-public interface DatabaseUpdateRepository {
+public interface DBCommonOperationRepository {
 
     Flowable<DatabaseUpdateEntity> fetchRemoteAndTransform();
 
@@ -17,5 +14,5 @@ public interface DatabaseUpdateRepository {
 
     Completable insert(DatabaseUpdateEntity entitie);
 
-    Flowable<Resource<DatabaseUpdateEntity>> getLastDatabaseUpdate();
+    Flowable<Resource<DatabaseUpdateEntity>> lastDatabaseUpdateLocal();
 }
