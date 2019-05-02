@@ -47,8 +47,8 @@ public class RentPoiRepoImpl implements RentPoiRepository {
     private List<RentPoiEntity> parseGsonToEntity(List<RentPoi> gsonList) {
         List<RentPoiEntity> rentPoiEntityList = new ArrayList<>();
         for(RentPoi rentPoi: gsonList){
-            for(Poi poi: rentPoi.getPois()){
-                rentPoiEntityList.add(new RentPoiEntity(poi.getId(),rentPoi.getId()));
+            for(String poi: rentPoi.getPois()){
+                rentPoiEntityList.add(new RentPoiEntity(poi,rentPoi.getId()));
             }
         }
         return rentPoiEntityList;

@@ -13,7 +13,12 @@ public class RentDrawType {
 
     @SerializedName("drawType")
     @Expose
-    private List<DrawType> drawTypes;
+    private List<String> drawTypes;
+
+    public RentDrawType(String id, List<String> drawTypes) {
+        this.id = id;
+        this.drawTypes = drawTypes;
+    }
 
     public String getId() {
         return id;
@@ -23,11 +28,11 @@ public class RentDrawType {
         this.id = id;
     }
 
-    public List<DrawType> getDrawTypes() {
+    public List<String> getDrawTypes() {
         return drawTypes;
     }
 
-    public void setDrawTypes(List<DrawType> drawTypes) {
+    public void setDrawTypes(List<String> drawTypes) {
         this.drawTypes = drawTypes;
     }
 }

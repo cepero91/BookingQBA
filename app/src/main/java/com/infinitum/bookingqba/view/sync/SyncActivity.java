@@ -1,14 +1,20 @@
 package com.infinitum.bookingqba.view.sync;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewCompat;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.Toast;
 
@@ -33,6 +39,8 @@ import com.liulishuo.filedownloader.FileDownloadListener;
 import com.liulishuo.filedownloader.FileDownloadQueueSet;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.muddzdev.styleabletoast.StyleableToast;
+import com.nightonke.jellytogglebutton.JellyToggleButton;
+import com.nightonke.jellytogglebutton.State;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -53,17 +61,19 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static com.infinitum.bookingqba.util.Constants.LEVEL_ENTITY;
+import static com.infinitum.bookingqba.util.Constants.LEVEL_GALERY;
+import static com.infinitum.bookingqba.util.Constants.LEVEL_GALERY_PAUSED;
+import static com.infinitum.bookingqba.util.Constants.LEVEL_PROGRESS_ENTITY;
+import static com.infinitum.bookingqba.util.Constants.LEVEL_PROGRESS_GALERY;
 import static com.infinitum.bookingqba.util.Constants.PREF_ENTITY_DOWNLOAD_INDEX;
 import static com.infinitum.bookingqba.util.Constants.PREF_DOWNLOAD_LEVEL;
 import static com.infinitum.bookingqba.util.Constants.PREF_DOWNLOAD_SUCCESS;
+import static com.infinitum.bookingqba.util.Constants.PROGRESS_ERROR;
+import static com.infinitum.bookingqba.util.Constants.PROGRESS_SUCCESS;
 import static com.infinitum.bookingqba.util.Constants.ROOT_GALERY_FOLDER_NAME;
 
-public class SyncActivity extends DaggerAppCompatActivity implements View.OnClickListener {
-
-    private static final String LEVEL_ENTITY = "entity";
-    private static final String LEVEL_GALERY = "galery";
-    private static final String LEVEL_GALERY_PAUSED = "paused";
-
+public class SyncActivity extends DaggerAppCompatActivity implements View.OnClickListener, JellyToggleButton.OnStateChangeListener {
     private ActivitySyncBinding syncBinding;
 
     private SyncViewModel syncViewModel;
@@ -87,10 +97,11 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
 
     private int entityProgress = 0;
-    private boolean isFirstDownload = true;
+    private boolean uniqueDownloadErrorAlert = false;
     private int progressGalery = 0;
     private int sizeGalerieList = 0;
     private long galerySpaceInMb = 0;
+    private boolean isDownloadChecked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,23 +115,18 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
         String btnTag = sharedPreferences.getString(PREF_DOWNLOAD_LEVEL, LEVEL_ENTITY);
         syncBinding.fbDownload.setTag(btnTag);
+        if (btnTag.equals(LEVEL_GALERY)) {
+            syncBinding.jtbDownload.toggleImmediately();
+            syncBinding.jtbDownload.setEnabled(false);
+            changeVisibilityProgressGalery(true);
+            syncBinding.pbEntities.setEndProgress(100);
+            syncBinding.pbEntities.startProgressAnimation();
+        }
+        syncBinding.jtbDownload.setOnStateChangeListener(this);
 
         syncBinding.fbDownload.setOnClickListener(this);
 
         syncViewModel = ViewModelProviders.of(this, viewModelFactory).get(SyncViewModel.class);
-    }
-
-    private void preDownloadAnimation() {
-        syncBinding.setDownloadImages(syncBinding.cbImages.isChecked());
-        syncBinding.setIsDownloading(true);
-        syncBinding.llContentDownload.setAlpha(0);
-        syncBinding.llContentDownload.setTranslationY(30);
-        ViewCompat.animate(syncBinding.llContentDownload)
-                .setInterpolator(new AccelerateInterpolator())
-                .alpha(1f)
-                .translationY(0)
-                .setDuration(300)
-                .start();
     }
 
     private void startSyncOnLevel(int downloadLevel) {
@@ -165,9 +171,9 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
             case 12:
                 syncronizeOffers(dateValue);
                 break;
-//            case 11:
-//                syncGaleries();
-//                break;
+            case 13:
+                syncronizeGaleries(dateValue);
+                break;
         }
     }
 
@@ -181,7 +187,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
                     if (aBoolean) {
                         startSyncOnLevel(downloadIndex);
                     } else {
-                        AlertUtils.showInfoAlertAndGoHome(this,getResources().getString(R.string.no_need_update));
+                        AlertUtils.showInfoAlertAndGoHome(this, getResources().getString(R.string.no_need_update));
                     }
                 }).subscribe();
         compositeDisposable.add(entityDisposable);
@@ -302,6 +308,14 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         compositeDisposable.add(entityDisposable);
     }
 
+    private void syncronizeGaleries(String dateValue) {
+        entityDisposable = syncViewModel.syncGaleries(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
     private void checkOperationResult(OperationResult operationResult) {
         if (operationResult.result == OperationResult.Result.SUCCESS) {
             updateEntityProgressAndContinue();
@@ -312,62 +326,18 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private void updateEntityProgressAndContinue() {
         entityProgress++;
-        float percent = ((float) entityProgress / 11) * 100;
+        float percent = ((float) entityProgress / 14) * 100;
         saveEntityDownloadIndex(entityProgress);
-        syncBinding.setPercent(percent);
-        if (entityProgress < 11) {
+        syncBinding.pbEntities.setProgress(percent);
+        if (entityProgress < 14) {
             startSyncronitation(entityProgress);
-        } else if (entityProgress == 11 && !syncBinding.cbImages.isChecked()) {
+        } else if (entityProgress == 14 && !isDownloadChecked) {
+            saveSuccessDownload();
             AlertUtils.showSuccessAlertAndGoHome(this);
+        } else if (entityProgress == 14 && isDownloadChecked) {
+            prepareForDownload();
         }
     }
-
-    private void syncGaleries() {
-        entityDisposable = syncViewModel.galerieList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<List<GalerieEntity>>() {
-                    @Override
-                    public void onSuccess(List<GalerieEntity> galerieEntities) {
-                        syncBinding.setPercent(96f);
-                        saveGaleries(galerieEntities);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-    }
-
-    private void saveGaleries(List<GalerieEntity> galerieEntityList) {
-        entityDisposable = syncViewModel.insertGalerie(galerieEntityList)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        syncBinding.setPercent(100f);
-                        saveEntityDownloadIndex(12);
-                        if (syncBinding.cbImages.isChecked()) {
-                            sizeGalerieList = galerieEntityList.size();
-                            syncBinding.pbGalery.setEndProgress(sizeGalerieList);
-                            syncBinding.pbGalery.setProgressTextVisibility(true);
-                            prepareForDownload();
-                        } else {
-                            onDownloadSuccess();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        onDownloadError(e);
-                    }
-                });
-        compositeDisposable.add(entityDisposable);
-    }
-
 
     private void prepareForDownload() {
         galeryDisposable = syncViewModel
@@ -375,7 +345,10 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(this::prepareLinksForDownload)
-                .subscribe(this::startDownloadImages, throwable -> {
+                .subscribe(baseDownloadTasks -> {
+                    saveDownloadLevel(LEVEL_GALERY);
+                    startDownloadImages(baseDownloadTasks);
+                }, throwable -> {
                     saveDownloadLevel(LEVEL_GALERY);
                     syncBinding.fbDownload.setTag(LEVEL_GALERY);
                 });
@@ -383,7 +356,21 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
 
     private List<BaseDownloadTask> prepareLinksForDownload(List<GalerieEntity> galerieEntities) {
+        sizeGalerieList = galerieEntities.size();
+        syncBinding.pbGalery.setEndProgress(100);
         List<BaseDownloadTask> tasks = new ArrayList<>();
+        String fileRootName = getPathFilesRoot();
+        for (GalerieEntity entity : galerieEntities) {
+            String url = entity.getImageUrl();
+            String imageName = fileRootName + File.separator + getFileNameFromUrl(url);
+            tasks.add(FileDownloader.getImpl().create(url).setPath(imageName).setTag(entity.getId()));
+            addGaleryUpdateUtil(entity.getId(), imageName);
+        }
+        return tasks;
+    }
+
+    @NonNull
+    private String getPathFilesRoot() {
         String fileRootName = getFilesDir().getAbsolutePath() + File.separator + ROOT_GALERY_FOLDER_NAME;
         File fileRoot = new File(fileRootName);
         if (!fileRoot.exists()) {
@@ -393,13 +380,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
                 Timber.e(e);
             }
         }
-        for (GalerieEntity entity : galerieEntities) {
-            String url = entity.getImageUrl();
-            String imageName = fileRootName + File.separator + getFileNameFromUrl(url);
-            tasks.add(FileDownloader.getImpl().create(url).setPath(imageName).setTag(entity.getId()));
-            addGaleryUpdateUtil(entity.getId(), imageName);
-        }
-        return tasks;
+        return fileRootName;
     }
 
     private String getFileNameFromUrl(String url) {
@@ -417,7 +398,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         } else {
             queueSet = new FileDownloadQueueSet(getDownloaderListener());
             queueSet.disableCallbackProgressTimes();
-            queueSet.downloadTogether(taskList);
+            queueSet.downloadSequentially(taskList);
             queueSet.start();
         }
 
@@ -446,53 +427,58 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         entityDisposable = syncViewModel.updateGaleryUpdateUtilList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableCompletableObserver() {
-                    @Override
-                    public void onComplete() {
-                        onDownloadSuccess();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        showErrorToast();
-                        Timber.e(e);
-                    }
-                });
+                .subscribe(() -> {
+                    saveSuccessDownload();
+                    AlertUtils.showSuccessAlertAndGoHome(SyncActivity.this);
+                }, this::onDownloadError);
         compositeDisposable.add(entityDisposable);
     }
 
 
-    public void onDownloadSuccess() {
-        saveSuccessDownload();
-        showSuccessToast();
-        new Handler().postDelayed(() -> {
-            startActivity(new Intent(SyncActivity.this, HomeActivity.class));
-            SyncActivity.this.finish();
-        }, 1000);
-    }
-
-
     public void onDownloadError(Throwable throwable) {
-        Timber.e(throwable);
+        Timber.e("Error with message ===> %s", throwable.getMessage());
         AlertUtils.showErrorAlert(this);
         syncBinding.fbDownload.setEnabled(true);
+        if (syncBinding.fbDownload.getTag().equals(LEVEL_ENTITY)) {
+            syncBinding.jtbDownload.setEnabled(true);
+            changeProgressColor(LEVEL_PROGRESS_ENTITY, PROGRESS_ERROR);
+        } else if (syncBinding.fbDownload.getTag().equals(LEVEL_GALERY) || syncBinding.fbDownload.getTag().equals(LEVEL_GALERY_PAUSED)) {
+            changeProgressColor(LEVEL_PROGRESS_GALERY, PROGRESS_ERROR);
+        }
     }
 
     public void onDownloadError(String message) {
         Timber.e("Error on index ===> %s, with message ===> %s", entityProgress, message);
         AlertUtils.showErrorAlert(this);
         syncBinding.fbDownload.setEnabled(true);
+        if (syncBinding.fbDownload.getTag().equals(LEVEL_ENTITY)) {
+            syncBinding.jtbDownload.setEnabled(true);
+            changeProgressColor(LEVEL_PROGRESS_ENTITY, PROGRESS_ERROR);
+        } else if (syncBinding.fbDownload.getTag().equals(LEVEL_GALERY)) {
+            changeProgressColor(LEVEL_PROGRESS_GALERY, PROGRESS_ERROR);
+        }
     }
 
-
-    private void showErrorToast() {
-        StyleableToast.makeText(SyncActivity.this, "Un error a ocurrido", Toast.LENGTH_LONG, R.style.myErrorToast).show();
+    private void changeProgressColor(int progressLevel, int errorType) {
+        switch (progressLevel + errorType) {
+            case 3:
+                syncBinding.pbEntities.setEndColor(Color.RED);
+                syncBinding.pbEntities.setStartColor(Color.RED);
+                break;
+            case 4:
+                syncBinding.pbGalery.setEndColor(Color.RED);
+                syncBinding.pbGalery.setStartColor(Color.RED);
+                break;
+            case 5:
+                syncBinding.pbEntities.setEndColor(Color.parseColor("#009689"));
+                syncBinding.pbEntities.setStartColor(Color.parseColor("#64FFDA"));
+                break;
+            case 6:
+                syncBinding.pbGalery.setEndColor(Color.parseColor("#009689"));
+                syncBinding.pbGalery.setStartColor(Color.parseColor("#64FFDA"));
+                break;
+        }
     }
-
-    private void showSuccessToast() {
-        StyleableToast.makeText(SyncActivity.this, "Toda a ido bien", Toast.LENGTH_LONG, R.style.mySuccessToast).show();
-    }
-
 
     //SAVE TO SHARED PREFERENCE
     private void saveEntityDownloadIndex(int value) {
@@ -560,9 +546,10 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
             protected void error(BaseDownloadTask task, Throwable e) {
                 FileDownloader.getImpl().pause(getDownloaderListener());
                 syncBinding.fbDownload.setTag(LEVEL_GALERY_PAUSED);
-                syncBinding.fbDownload.setEnabled(true);
-                showErrorToast();
-                saveDownloadLevel(LEVEL_GALERY);
+                if (!uniqueDownloadErrorAlert) {
+                    uniqueDownloadErrorAlert = true;
+                    onDownloadError(e);
+                }
             }
 
             @Override
@@ -575,21 +562,20 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         if (networkHelper.isNetworkAvailable()) {
+            syncBinding.jtbDownload.setEnabled(false);
             if (syncBinding.fbDownload.getTag().equals(LEVEL_ENTITY)) {
                 entityProgress = sharedPreferences.getInt(PREF_ENTITY_DOWNLOAD_INDEX, 0);
                 syncBinding.fbDownload.setEnabled(false);
-                if (isFirstDownload) {
-                    isFirstDownload = false;
-                    preDownloadAnimation();
-                    new Handler().postDelayed(() -> startSyncronitation(entityProgress), 500);
-                } else {
-                    startSyncOnLevel(entityProgress);
-                }
+                changeProgressColor(LEVEL_PROGRESS_ENTITY, PROGRESS_SUCCESS);
+                startSyncOnLevel(entityProgress);
             } else if (syncBinding.fbDownload.getTag().equals(LEVEL_GALERY)) {
                 prepareForDownload();
+                changeProgressColor(LEVEL_PROGRESS_GALERY, PROGRESS_SUCCESS);
             } else if (syncBinding.fbDownload.getTag().equals(LEVEL_GALERY_PAUSED)) {
                 progressGalery = 0;
+                uniqueDownloadErrorAlert = false;
                 syncBinding.fbDownload.setEnabled(false);
+                changeProgressColor(LEVEL_PROGRESS_GALERY, PROGRESS_SUCCESS);
                 queueSet.reuseAndStart();
             }
         } else {
@@ -604,4 +590,24 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         disposeAllDisposable();
         FileDownloader.getImpl().clearAllTaskData();
     }
+
+    @Override
+    public void onStateChange(float process, State state, JellyToggleButton jtb) {
+        if (state.equals(State.LEFT)) {
+            isDownloadChecked = false;
+        }
+        if (state.equals(State.RIGHT)) {
+            isDownloadChecked = true;
+        }
+        changeVisibilityProgressGalery(isDownloadChecked);
+    }
+
+    private void changeVisibilityProgressGalery(boolean visible) {
+        if (visible) {
+            syncBinding.llContentGalery.setVisibility(View.VISIBLE);
+        } else {
+            syncBinding.llContentGalery.setVisibility(View.GONE);
+        }
+    }
+
 }

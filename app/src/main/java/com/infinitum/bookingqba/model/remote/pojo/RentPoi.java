@@ -11,9 +11,14 @@ public class RentPoi {
     @Expose
     private String id;
 
-    @SerializedName("pois")
+    @SerializedName("poi")
     @Expose
-    private List<Poi> pois;
+    private List<String> pois;
+
+    public RentPoi(String id, List<String> pois) {
+        this.id = id;
+        this.pois = pois;
+    }
 
     public String getId() {
         return id;
@@ -23,11 +28,11 @@ public class RentPoi {
         this.id = id;
     }
 
-    public List<Poi> getPois() {
+    public List<String> getPois() {
         return pois;
     }
 
-    public void setPois(List<Poi> pois) {
+    public void setPois(List<String> pois) {
         this.pois = pois;
     }
 }

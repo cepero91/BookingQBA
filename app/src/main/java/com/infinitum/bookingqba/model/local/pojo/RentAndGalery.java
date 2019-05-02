@@ -129,8 +129,12 @@ public class RentAndGalery {
         this.galeries = galeries;
     }
 
-    public GalerieEntity getGalerieAtPos(int pos){
-        return galeries.get(pos);
+    public String getImageAtPos(int pos){
+        String url = "";
+        if(galeries.size() > 0) {
+            url = galeries.get(pos).getImageLocalPath()!=null?galeries.get(pos).getImageLocalPath():galeries.get(pos).getImageUrl();
+        }
+        return url;
     }
 
     public int getIsWished() {

@@ -8,6 +8,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
+import static android.arch.persistence.room.ForeignKey.RESTRICT;
 import static com.infinitum.bookingqba.util.Constants.OFFER_TABLE_NAME;
 
 @Entity(tableName = OFFER_TABLE_NAME, indices = {@Index("rent")},

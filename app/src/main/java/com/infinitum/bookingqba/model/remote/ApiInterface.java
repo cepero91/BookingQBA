@@ -11,7 +11,6 @@ import com.infinitum.bookingqba.model.remote.pojo.Poi;
 import com.infinitum.bookingqba.model.remote.pojo.PoiType;
 import com.infinitum.bookingqba.model.remote.pojo.Province;
 import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
-import com.infinitum.bookingqba.model.remote.pojo.Removed;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentDrawType;
@@ -21,17 +20,12 @@ import com.infinitum.bookingqba.model.remote.pojo.RentVisitCountGroup;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 
-import java.util.Date;
 import java.util.List;
 
-import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -114,8 +108,8 @@ public interface ApiInterface {
 
     //------------------- GALERIA ---------------------//
 
-    @GET("/api/galeria")
-    Single<List<Galerie>> getGaleries();
+    @GET("/api/galeries")
+    Single<List<Galerie>> getGaleries(@Query("value") String value);
 
     //------------------- IMAGEN ---------------------//
 

@@ -14,7 +14,7 @@ import static com.infinitum.bookingqba.util.Constants.RENT_DRAW_TYPE_TABLE_NAME;
         indices = {@Index("drawTypeId"),@Index("rentId")},
         foreignKeys = {
         @ForeignKey(
-                entity = PoiEntity.class,
+                entity = DrawTypeEntity.class,
                 parentColumns = "id",
                 childColumns = "drawTypeId"),
         @ForeignKey(
@@ -32,11 +32,6 @@ public class RentDrawTypeEntity {
 
     public RentDrawTypeEntity(@NonNull String drawTypeId, @NonNull String rentId) {
         this.drawTypeId = drawTypeId;
-        this.rentId = rentId;
-    }
-
-    @Ignore
-    public RentDrawTypeEntity(@NonNull String rentId) {
         this.rentId = rentId;
     }
 

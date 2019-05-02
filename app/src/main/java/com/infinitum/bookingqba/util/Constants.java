@@ -57,4 +57,13 @@ public final class Constants {
 
     public static final String MAP_PATH = "mapDir";
 
+    //BASIC
+    public static final String LEVEL_ENTITY = "entity";
+    public static final String LEVEL_GALERY = "galery";
+    public static final String LEVEL_GALERY_PAUSED = "paused";
+    public static final int LEVEL_PROGRESS_ENTITY = 1;
+    public static final int LEVEL_PROGRESS_GALERY = 2;
+    public static final int PROGRESS_ERROR = 2;
+    public static final int PROGRESS_SUCCESS = 4;
+
 }

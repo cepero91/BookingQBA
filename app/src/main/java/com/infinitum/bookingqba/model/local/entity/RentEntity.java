@@ -46,25 +46,20 @@ public class RentEntity {
     @NonNull
     private String address;
 
-    private String slogan;
-
     @NonNull
     private String description;
 
     @NonNull
     private String email;
 
-    @NonNull
     private String phoneNumber;
 
-    @NonNull
     private String phoneHomeNumber;
 
     private double latitude;
 
     private double longitude;
 
-    @NonNull
     private float rating;
 
     private int maxRooms;
@@ -99,11 +94,10 @@ public class RentEntity {
         this.id = id;
     }
 
-    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, String slogan, @NonNull String description, @NonNull String email, @NonNull String phoneNumber, @NonNull String phoneHomeNumber, double latitude, double longitude, @NonNull float rating, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, int isWished) {
+    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, @NonNull String description, @NonNull String email, String phoneNumber, String phoneHomeNumber, double latitude, double longitude, float rating, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, int isWished) {
         this.id = id;
         this.name = name;
         this.address = address;
-        this.slogan = slogan;
         this.description = description;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -124,11 +118,12 @@ public class RentEntity {
         this.isWished = isWished;
     }
 
+    @NonNull
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 
@@ -150,14 +145,6 @@ public class RentEntity {
         this.address = address;
     }
 
-    public String getSlogan() {
-        return slogan;
-    }
-
-    public void setSlogan(String slogan) {
-        this.slogan = slogan;
-    }
-
     @NonNull
     public String getDescription() {
         return description;
@@ -176,21 +163,19 @@ public class RentEntity {
         this.email = email;
     }
 
-    @NonNull
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(@NonNull String phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    @NonNull
     public String getPhoneHomeNumber() {
         return phoneHomeNumber;
     }
 
-    public void setPhoneHomeNumber(@NonNull String phoneHomeNumber) {
+    public void setPhoneHomeNumber(String phoneHomeNumber) {
         this.phoneHomeNumber = phoneHomeNumber;
     }
 
@@ -208,6 +193,14 @@ public class RentEntity {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
     }
 
     public int getMaxRooms() {
@@ -251,6 +244,15 @@ public class RentEntity {
     }
 
     @NonNull
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(@NonNull Date created) {
+        this.created = created;
+    }
+
+    @NonNull
     public String getRentMode() {
         return rentMode;
     }
@@ -286,29 +288,11 @@ public class RentEntity {
         this.referenceZone = referenceZone;
     }
 
-    @NonNull
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(@NonNull Date created) {
-        this.created = created;
-    }
-
-    @NonNull
-    public float getRating() {
-        return rating;
-    }
-
-    public void setRating(@NonNull float rating) {
-        this.rating = rating;
-    }
-
-    public int isWished() {
+    public int getIsWished() {
         return isWished;
     }
 
-    public void setWished(int wished) {
-        isWished = wished;
+    public void setIsWished(int isWished) {
+        this.isWished = isWished;
     }
 }

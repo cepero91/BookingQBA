@@ -45,12 +45,9 @@ public class RentAmenitiesRepoImpl implements RentAmenitiesRepository {
      */
     private List<RentAmenitiesEntity> parseGsonToEntity(List<RentAmenities> gsonList) {
         ArrayList<RentAmenitiesEntity> listEntity = new ArrayList<>();
-        RentAmenitiesEntity entity;
-        for (RentAmenities item : gsonList) {
-            for(Amenities amenities: item.getAmenities()){
-                entity = new RentAmenitiesEntity(item.getId());
-                entity.setAmenityId(amenities.getId());
-                listEntity.add(entity);
+        for (RentAmenities rentAmenities : gsonList) {
+            for(String amenitiesId: rentAmenities.getAmenities()){
+                listEntity.add(new RentAmenitiesEntity(amenitiesId, rentAmenities.getId()));
             }
         }
         return listEntity;

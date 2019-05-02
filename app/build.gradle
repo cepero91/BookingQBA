@@ -112,12 +112,15 @@ dependencies {
     //File downloader
     implementation "com.liulishuo.filedownloader:library:${filedownloader}"
 
+    //SweetAlert
     implementation 'com.github.zhoujunwen:sweetalert:1.5.4'
 
     //Material Progress
     implementation 'com.moos:Material-ProgressView:1.0.6'
 
     implementation 'br.com.simplepass:loading-button-android:1.14.0'
+
+    implementation 'com.nightonke:jellytogglebutton:1.0.2'
 
     //Leak Canary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'

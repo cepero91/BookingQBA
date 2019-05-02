@@ -73,16 +73,8 @@ public class SyncViewModel extends ViewModel {
         this.galeryUpdateUtilList = new ArrayList<>();
     }
 
-    public Single<List<GalerieEntity>> galerieList() {
-        return galerieRepository.fetchRemoteAndTransform();
-    }
-
-    public Completable insertGalerie(List<GalerieEntity>entities){
-        return galerieRepository.insertGalerie(entities);
-    }
-
     public Flowable<List<GalerieEntity>> galerieEntityList() {
-        return galerieRepository.allGalerieEntities();
+        return galerieRepository.allGaleries();
     }
 
     public Completable updateGalerie(GalerieEntity galerieEntity){
@@ -100,6 +92,7 @@ public class SyncViewModel extends ViewModel {
     public Single<ResponseBody> fetchImage(String url){
         return galerieRepository.fetchImage(url);
     }
+
 
     public Flowable<DatabaseUpdateEntity> remoteDatabaseUpdate(){
         return DBCommonOperationRepository.fetchRemoteAndTransform();
@@ -169,5 +162,9 @@ public class SyncViewModel extends ViewModel {
 
     public Single<OperationResult> syncOffers(String value){
         return offerRepository.syncronizeOffers(value);
+    }
+
+    public Single<OperationResult> syncGaleries(String value){
+        return galerieRepository.syncronizeGaleries(value);
     }
 }

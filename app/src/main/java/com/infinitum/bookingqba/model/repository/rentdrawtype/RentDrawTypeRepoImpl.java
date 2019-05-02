@@ -48,8 +48,8 @@ public class RentDrawTypeRepoImpl implements RentDrawTypeRepository {
     private List<RentDrawTypeEntity> parseGsonToEntity(List<RentDrawType> gsonList) {
         ArrayList<RentDrawTypeEntity> listEntity = new ArrayList<>();
         for (RentDrawType rentDrawType : gsonList) {
-            for (DrawType drawType : rentDrawType.getDrawTypes()) {
-                listEntity.add(new RentDrawTypeEntity(drawType.getId(), rentDrawType.getId()));
+            for (String drawType : rentDrawType.getDrawTypes()) {
+                listEntity.add(new RentDrawTypeEntity(drawType, rentDrawType.getId()));
             }
         }
         return listEntity;

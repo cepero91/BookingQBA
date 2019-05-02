@@ -1,12 +1,18 @@
 package com.infinitum.bookingqba.model.repository.dbcommonsop;
 
+import android.arch.persistence.db.SimpleSQLiteQuery;
+import android.arch.persistence.db.SupportSQLiteQuery;
+import android.arch.persistence.db.SupportSQLiteStatement;
+
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.DatabaseUpdate;
+import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
 import com.infinitum.bookingqba.util.DateUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,7 +45,11 @@ public class DBCommonOperationRepoImpl implements DBCommonOperationRepository {
 
     @Override
     public Flowable<DatabaseUpdateEntity> fetchRemoteAndTransform() {
-        return fetchDatabaseUpdate().map(this::transformToEntity).subscribeOn(Schedulers.io());
+        return fetchDatabaseUpdate().map(this::parseJsonToEntity).subscribeOn(Schedulers.io());
+    }
+
+    private DatabaseUpdateEntity parseJsonToEntity(DatabaseUpdate databaseUpdate) {
+        return new DatabaseUpdateEntity(DateUtils.dateStringToDate(databaseUpdate.getLastDatabaseUpdate()), databaseUpdate.getTotalRents());
     }
 
     @Override
@@ -66,9 +76,17 @@ public class DBCommonOperationRepoImpl implements DBCommonOperationRepository {
                 .onErrorReturn(Resource::error);
     }
 
-    private DatabaseUpdateEntity transformToEntity(DatabaseUpdate databaseUpdate) {
-        return new DatabaseUpdateEntity(DateUtils.dateStringToDate(databaseUpdate.getLastDatabaseUpdate()), databaseUpdate.getTotalRents());
+    @Override
+    public Completable deleteAll(List<RemovedList> removedLists) {
+//        List<Comparable> deleteCompletable = new ArrayList<>();
+//        SupportSQLiteQuery sqLiteQuery;
+//        for(RemovedList removedList: removedLists){
+//            sqLiteQuery = new SimpleSQLiteQuery("DELETE FROM "+removedList.getEntity())
+//        }
+        return null;
     }
+
+
 
 
 

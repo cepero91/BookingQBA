@@ -44,6 +44,12 @@ import timber.log.Timber;
 @Dao
 public abstract class BookingQBADao {
 
+    //------------------------- DATABASE COMMON OPERATION ---------------------------//
+
+    @Transaction
+    @RawQuery
+    public abstract long deleteAll(SupportSQLiteQuery query);
+
     //------------------------- DATABASE UPDATED ---------------------------//
 
     @Transaction

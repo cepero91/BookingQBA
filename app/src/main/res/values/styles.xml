@@ -104,6 +104,13 @@
         <item name="android:background">@drawable/selector_custom_spinner</item>
     </style>
 
+    <style name="checkboxTextStyle" >
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/poppinsregular</item>
+        <item name="android:textColor">@color/material_color_blue_grey_300</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
 
 
 

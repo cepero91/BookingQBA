@@ -13,7 +13,7 @@ public class Municipality {
     @Expose
     private String name;
 
-    @SerializedName("province__uui")
+    @SerializedName("province")
     @Expose
     private String province;
 

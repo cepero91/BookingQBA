@@ -17,10 +17,6 @@ public class Rent {
     @Expose
     private String address;
 
-    @SerializedName("slogan")
-    @Expose
-    private String slogan;
-
     @SerializedName("description")
     @Expose
     private String description;
@@ -113,14 +109,6 @@ public class Rent {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getSlogan() {
-        return slogan;
-    }
-
-    public void setSlogan(String slogan) {
-        this.slogan = slogan;
     }
 
     public String getDescription() {

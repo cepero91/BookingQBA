@@ -64,7 +64,6 @@ public class RentRepoImpl implements RentRepository {
             entity = new RentEntity(item.getId());
             entity.setName(item.getName());
             entity.setAddress(item.getAddress());
-            entity.setSlogan(item.getSlogan());
             entity.setDescription(item.getDescription());
             entity.setEmail(item.getEmail());
             entity.setPhoneNumber(item.getPhoneNumber());

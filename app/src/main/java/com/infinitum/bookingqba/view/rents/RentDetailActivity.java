@@ -232,11 +232,11 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
     }
 
     private void setIsWished() {
-        if (rentDetailBinding.getRentDetailItem().getRentEntity().isWished() == 1) {
-            rentDetailBinding.getRentDetailItem().getRentEntity().setWished(0);
+        if (rentDetailBinding.getRentDetailItem().getRentEntity().getIsWished() == 1) {
+            rentDetailBinding.getRentDetailItem().getRentEntity().setIsWished(0);
             updateEntity(rentDetailBinding.getRentDetailItem().getRentEntity());
-        } else if(rentDetailBinding.getRentDetailItem().getRentEntity().isWished() == 0) {
-            rentDetailBinding.getRentDetailItem().getRentEntity().setWished(1);
+        } else if(rentDetailBinding.getRentDetailItem().getRentEntity().getIsWished() == 0) {
+            rentDetailBinding.getRentDetailItem().getRentEntity().setIsWished(1);
             updateEntity(rentDetailBinding.getRentDetailItem().getRentEntity());
         }
     }

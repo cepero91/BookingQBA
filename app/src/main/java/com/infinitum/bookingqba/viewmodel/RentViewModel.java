@@ -76,7 +76,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         DataSource.Factory<Integer,RentListItem> dataSource = rentRepository.allRentByOrderType(orderType,province).mapByPage(input -> {
             List<RentListItem> itemsUi = new ArrayList<>();
             for(RentAndGalery entity: input){
-                String imagePath = entity.getGalerieAtPos(0).getImageLocalPath()!=null?entity.getGalerieAtPos(0).getImageLocalPath():entity.getGalerieAtPos(0).getImageUrl();
+                String imagePath = entity.getImageAtPos(0);
                 itemsUi.add(new RentListItem(entity.getId(),entity.getName(),entity.getPrice(),entity.getRentMode(),entity.getAddress(),imagePath,entity.getRating(),entity.getIsWished()));
             }
             return itemsUi;
@@ -248,7 +248,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 geoRent.setName(rentAndGalery.getName());
                 geoRent.setPrice(rentAndGalery.getPrice());
                 geoRent.setRating(rentAndGalery.getRating());
-                String imagePath = rentAndGalery.getGalerieAtPos(0).getImageLocalPath() != null ? rentAndGalery.getGalerieAtPos(0).getImageLocalPath() : rentAndGalery.getGalerieAtPos(0).getImageUrl();
+                String imagePath = rentAndGalery.getImageAtPos(0);
                 geoRent.setImagePath(imagePath);
                 geoRent.setRentMode(rentAndGalery.getRentMode());
                 geoRentList.add(geoRent);
@@ -269,7 +269,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 item.setPrice(rentAndGalery.getPrice());
                 item.setRating(rentAndGalery.getRating());
                 item.setRentMode(rentAndGalery.getRentMode());
-                String imagePath = rentAndGalery.getGalerieAtPos(0).getImageLocalPath() != null ? rentAndGalery.getGalerieAtPos(0).getImageLocalPath() : rentAndGalery.getGalerieAtPos(0).getImageUrl();
+                String imagePath = rentAndGalery.getImageAtPos(0);
                 item.setImagePath(imagePath);
                 listWishItems.add(item);
             }

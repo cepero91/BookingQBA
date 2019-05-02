@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.galerie;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.remote.pojo.Galerie;
@@ -13,16 +14,18 @@ import okhttp3.ResponseBody;
 
 public interface GalerieRepository {
 
-    Single<List<GalerieEntity>> fetchRemoteAndTransform();
+    Single<List<GalerieEntity>> fetchRemoteAndTransform(String dateValue);
 
     Single<ResponseBody> fetchImage(String url);
 
-    Flowable<List<GalerieEntity>> allGalerieEntities();
+    Flowable<List<GalerieEntity>> allGaleries();
 
     Completable updateGalery(GalerieEntity galerieEntity);
 
     Completable updateListGaleryUtil(List<GaleryUpdateUtil> list);
 
-    Completable insertGalerie(List<GalerieEntity> galerieEntities);
+    Completable insert(List<GalerieEntity> entities);
+
+    Single<OperationResult> syncronizeGaleries(String dateValue);
 
 }

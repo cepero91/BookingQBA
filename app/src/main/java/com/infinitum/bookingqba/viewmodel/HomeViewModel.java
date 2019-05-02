@@ -98,7 +98,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         List<RentNewItem> items = new ArrayList<>();
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndGalery entity : listResource.data) {
-                String imagePath = entity.getGalerieAtPos(0).getImageLocalPath() != null ? entity.getGalerieAtPos(0).getImageLocalPath() : entity.getGalerieAtPos(0).getImageUrl();
+                String imagePath = entity.getImageAtPos(0);
                 items.add(new RentNewItem(entity.getId(), entity.getName(), imagePath, entity.getRating()));
             }
             compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(), items));
@@ -113,7 +113,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         List<RentPopItem> items = new ArrayList<>();
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndGalery entity : listResource.data) {
-                String imagePath = entity.getGalerieAtPos(0).getImageLocalPath() != null ? entity.getGalerieAtPos(0).getImageLocalPath() : entity.getGalerieAtPos(0).getImageUrl();
+                String imagePath = entity.getImageAtPos(0);
                 items.add(new RentPopItem(entity.getId(), entity.getName(), imagePath, entity.getRating(), entity.getPrice()));
             }
             compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(), items));

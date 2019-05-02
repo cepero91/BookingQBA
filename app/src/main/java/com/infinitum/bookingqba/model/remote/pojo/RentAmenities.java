@@ -13,7 +13,12 @@ public class RentAmenities {
 
     @SerializedName("amenities")
     @Expose
-    private List<Amenities> amenities;
+    private List<String> amenities;
+
+    public RentAmenities(String id, List<String> amenities) {
+        this.id = id;
+        this.amenities = amenities;
+    }
 
     public String getId() {
         return id;
@@ -23,11 +28,11 @@ public class RentAmenities {
         this.id = id;
     }
 
-    public List<Amenities> getAmenities() {
+    public List<String> getAmenities() {
         return amenities;
     }
 
-    public void setAmenities(List<Amenities> amenities) {
+    public void setAmenities(List<String> amenities) {
         this.amenities = amenities;
     }
 }
