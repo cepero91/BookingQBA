@@ -96,10 +96,15 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
     private Resource<List<ViewModel>> transformNewRentEntity(Resource<List<RentAndGalery>> listResource) {
         List<ViewModel> compositeList = new ArrayList<>();
         List<RentNewItem> items = new ArrayList<>();
+        RentNewItem tempItem;
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndGalery entity : listResource.data) {
                 String imagePath = entity.getImageAtPos(0);
-                items.add(new RentNewItem(entity.getId(), entity.getName(), imagePath, entity.getRating()));
+                tempItem = new RentNewItem(entity.getId(),entity.getName(),imagePath,entity.getIsWished());
+                tempItem.setRating(entity.getRating());
+                tempItem.setImagePath(imagePath);
+                tempItem.setWished(entity.getIsWished());
+                items.add(tempItem);
             }
             compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(), items));
             return Resource.success(compositeList);
@@ -111,10 +116,16 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
     private Resource<List<ViewModel>> transformPopRentEntity(Resource<List<RentAndGalery>> listResource) {
         List<ViewModel> compositeList = new ArrayList<>();
         List<RentPopItem> items = new ArrayList<>();
+        RentPopItem tempItem;
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndGalery entity : listResource.data) {
                 String imagePath = entity.getImageAtPos(0);
-                items.add(new RentPopItem(entity.getId(), entity.getName(), imagePath, entity.getRating(), entity.getPrice()));
+                tempItem = new RentPopItem(entity.getId(),entity.getName(),imagePath,entity.getIsWished());
+                tempItem.setPrice(entity.getPrice());
+                tempItem.setWished(entity.getIsWished());
+                tempItem.setImagePath(imagePath);
+                tempItem.setRating(entity.getRating());
+                items.add(tempItem);
             }
             compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(), items));
             return Resource.success(compositeList);

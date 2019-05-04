@@ -11,6 +11,7 @@ import com.infinitum.bookingqba.model.remote.pojo.Poi;
 import com.infinitum.bookingqba.model.remote.pojo.PoiType;
 import com.infinitum.bookingqba.model.remote.pojo.Province;
 import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
+import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentDrawType;
@@ -36,6 +37,11 @@ import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 public interface ApiInterface {
+
+    //------------------- REMOVED ---------------------------//
+
+    @GET("/api/removeds")
+    Flowable<List<RemovedList>> getRemoveds(@Query("value") String value);
 
     //------------------- DATABASE UPDATE ---------------------------//
 

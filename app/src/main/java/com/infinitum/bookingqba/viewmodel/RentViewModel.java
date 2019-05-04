@@ -75,9 +75,15 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     public LiveData<PagedList<RentListItem>> getLiveDataRentList(char orderType, String province){
         DataSource.Factory<Integer,RentListItem> dataSource = rentRepository.allRentByOrderType(orderType,province).mapByPage(input -> {
             List<RentListItem> itemsUi = new ArrayList<>();
+            RentListItem tempItem;
             for(RentAndGalery entity: input){
                 String imagePath = entity.getImageAtPos(0);
-                itemsUi.add(new RentListItem(entity.getId(),entity.getName(),entity.getPrice(),entity.getRentMode(),entity.getAddress(),imagePath,entity.getRating(),entity.getIsWished()));
+                tempItem = new RentListItem(entity.getId(),entity.getName(),imagePath,entity.getIsWished());
+                tempItem.setRating(entity.getRating());
+                tempItem.setAddress(entity.getAddress());
+                tempItem.setRentMode(entity.getRentMode());
+                tempItem.setPrice(entity.getPrice());
+                itemsUi.add(tempItem);
             }
             return itemsUi;
         });
@@ -243,13 +249,11 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         GeoRent geoRent;
         if(listResource.data!=null && listResource.data.size()>0) {
             for (RentAndGalery rentAndGalery : listResource.data) {
-                geoRent = new GeoRent(rentAndGalery.getId());
+                String imagePath = rentAndGalery.getImageAtPos(0);
+                geoRent = new GeoRent(rentAndGalery.getId(),rentAndGalery.getName(),imagePath,rentAndGalery.getIsWished());
                 geoRent.setGeoPoint(new GeoPoint(rentAndGalery.getLatitude(), rentAndGalery.getLongitude()));
-                geoRent.setName(rentAndGalery.getName());
                 geoRent.setPrice(rentAndGalery.getPrice());
                 geoRent.setRating(rentAndGalery.getRating());
-                String imagePath = rentAndGalery.getImageAtPos(0);
-                geoRent.setImagePath(imagePath);
                 geoRent.setRentMode(rentAndGalery.getRentMode());
                 geoRentList.add(geoRent);
             }
@@ -264,13 +268,12 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         ListWishItem item;
         if(listResource.data!=null && listResource.data.size()>0) {
             for (RentAndGalery rentAndGalery : listResource.data) {
-                item = new ListWishItem(rentAndGalery.getId(),rentAndGalery.getName());
+                String imagePath = rentAndGalery.getImageAtPos(0);
+                item = new ListWishItem(rentAndGalery.getId(),rentAndGalery.getName(),imagePath,rentAndGalery.getIsWished());
                 item.setAddress(rentAndGalery.getAddress());
                 item.setPrice(rentAndGalery.getPrice());
                 item.setRating(rentAndGalery.getRating());
                 item.setRentMode(rentAndGalery.getRentMode());
-                String imagePath = rentAndGalery.getImageAtPos(0);
-                item.setImagePath(imagePath);
                 listWishItems.add(item);
             }
             return Resource.success(listWishItems);

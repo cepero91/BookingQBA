@@ -19,6 +19,7 @@ import dagger.android.support.DaggerAppCompatActivity;
 
 import static com.infinitum.bookingqba.util.Constants.PREF_DOWNLOAD_SUCCESS;
 import static com.infinitum.bookingqba.util.Constants.PREF_FIRST_OPEN;
+import static com.infinitum.bookingqba.util.Constants.PREF_LAST_DOWNLOAD_DATE;
 
 
 public class SplashActivity extends DaggerAppCompatActivity {
@@ -34,20 +35,21 @@ public class SplashActivity extends DaggerAppCompatActivity {
         AndroidInjection.inject(this);
         splashBinding = DataBindingUtil.setContentView(this, R.layout.activity_splash);
 
-        boolean downloadSuccess = sharedPreferences.getBoolean(PREF_DOWNLOAD_SUCCESS, false);
         boolean firstOpen = sharedPreferences.getBoolean(PREF_FIRST_OPEN, true);
+        boolean downloadDateExist = !sharedPreferences.getString(PREF_LAST_DOWNLOAD_DATE, "").equals("");
 
         new Handler().postDelayed(() -> {
-            if(firstOpen){
+            if (firstOpen) {
                 Intent intent = new Intent(SplashActivity.this, TutorialActivity.class);
                 startActivity(intent);
                 SplashActivity.this.finish();
-            }else if(downloadSuccess){
-                Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
+            }else if(!firstOpen && !downloadDateExist) {
+                Intent intent = new Intent(SplashActivity.this, SyncActivity.class);
                 startActivity(intent);
                 SplashActivity.this.finish();
-            }else{
-                Intent intent = new Intent(SplashActivity.this, SyncActivity.class);
+            }
+            else {
+                Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
                 startActivity(intent);
                 SplashActivity.this.finish();
             }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,8 +60,11 @@ public class AlertUtils {
                 .setContentText("Tarea concluida con éxito!")
                 .setConfirmText("Comenzar")
                 .setConfirmClickListener(sweetAlertDialog -> {
-                    context.startActivity(new Intent(context, HomeActivity.class));
-                    ((Activity) context).finish();
+                    sweetAlertDialog.dismissWithAnimation();
+                    new Handler().postDelayed(() -> {
+                        context.startActivity(new Intent(context, HomeActivity.class));
+                        ((Activity) context).finish();
+                    }, 500);
                 })
                 .show();
     }
@@ -79,8 +83,12 @@ public class AlertUtils {
                 .setContentText(message)
                 .setConfirmText("Ir a inicio")
                 .setConfirmClickListener(sweetAlertDialog -> {
-                    context.startActivity(new Intent(context, HomeActivity.class));
-                    ((Activity) context).finish();
+                    sweetAlertDialog.dismissWithAnimation();
+                    new Handler().postDelayed(() -> {
+                        context.startActivity(new Intent(context, HomeActivity.class));
+                        ((Activity) context).finish();
+                    }, 500);
+
                 })
                 .show();
     }

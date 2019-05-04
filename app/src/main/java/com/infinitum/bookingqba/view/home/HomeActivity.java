@@ -2,7 +2,6 @@ package com.infinitum.bookingqba.view.home;
 
 import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
-import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,36 +15,29 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.github.siyamed.shapeimageview.RoundedImageView;
+import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
-import com.infinitum.bookingqba.view.adapters.items.home.RentNewItem;
-import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
-import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.view.filter.FilterFragment;
@@ -76,7 +68,6 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
-import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
@@ -211,7 +202,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
 
     @Override
-    public void onItemClick(View view, BaseItem baseItem) {
+    public void onItemClick(View view, ViewModel baseItem) {
         if (baseItem instanceof HeaderItem) {
             String provinceName = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
             mFragment = RentListFragment.newInstance(provinceName, "", ((HeaderItem) baseItem).getOrderType());
@@ -220,13 +211,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                     mFragment).commit();
             homeBinding.navView.getMenu().getItem(1).setChecked(true);
         } else if (baseItem instanceof RZoneItem) {
-            Toast.makeText(this, baseItem.getmName(), Toast.LENGTH_SHORT).show();
-        } else if (baseItem instanceof RentPopItem) {
-            navigateToDetailActivity(baseItem, view);
-        } else if (baseItem instanceof RentNewItem) {
-            navigateToDetailActivity(baseItem, view);
-        } else if (baseItem instanceof RentListItem) {
-            navigateToDetailActivity(baseItem, view);
+            Toast.makeText(this, ((RZoneItem) baseItem).getName(), Toast.LENGTH_SHORT).show();
+        } else if (baseItem instanceof BaseItem) {
+            navigateToDetailActivity((BaseItem) baseItem, view);
         }
     }
 
@@ -234,9 +221,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     private void navigateToDetailActivity(BaseItem baseItem, View view) {
         Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
         intent.putExtra("uuid", baseItem.getId());
-        intent.putExtra("url", ((RentListItem)baseItem).getImagePath());
-        intent.putExtra("wished", ((RentListItem)baseItem).getIsWished());
-        startActivityForResult(intent,MY_REQUEST_CODE);
+        intent.putExtra("url", baseItem.getImagePath());
+        intent.putExtra("wished", baseItem.getWished());
+        startActivityForResult(intent, MY_REQUEST_CODE);
     }
 
 
@@ -321,6 +308,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             mFragment = MapFragment.newInstance(null, false);
         } else if (id == R.id.nav_wish_list) {
             mFragment = ListWishFragment.newInstance();
+        } else if (id == R.id.nav_setting) {
+            startActivity(new Intent(HomeActivity.this,SyncActivity.class));
+            this.finish();
         }
         if (mFragment != null) {
             // Highlight the selected item has been done by NavigationView
@@ -437,7 +427,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     public void onMapInteraction(GeoRent geoRent) {
         Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
         intent.putExtra("uuid", geoRent.getId());
-        startActivityForResult(intent,MY_REQUEST_CODE);
+        intent.putExtra("url", geoRent.getImagePath());
+        intent.putExtra("wished", geoRent.getWished());
+        startActivityForResult(intent, MY_REQUEST_CODE);
     }
 
 

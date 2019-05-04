@@ -22,7 +22,7 @@ public class DateUtils {
 
     public static boolean dateLocalIsLessThanRemote(Date dateLocal, Date dateRemote) {
         boolean syncRequired = false;
-        if (dateLocal.after(dateRemote)) {
+        if (dateLocal.before(dateRemote)) {
             syncRequired = true;
         }
         return syncRequired;

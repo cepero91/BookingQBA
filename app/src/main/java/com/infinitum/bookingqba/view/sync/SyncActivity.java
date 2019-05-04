@@ -13,9 +13,12 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewCompat;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
@@ -28,6 +31,7 @@ import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
+import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.util.NetworkHelper;
@@ -46,6 +50,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -56,6 +61,9 @@ import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -69,11 +77,12 @@ import static com.infinitum.bookingqba.util.Constants.LEVEL_PROGRESS_GALERY;
 import static com.infinitum.bookingqba.util.Constants.PREF_ENTITY_DOWNLOAD_INDEX;
 import static com.infinitum.bookingqba.util.Constants.PREF_DOWNLOAD_LEVEL;
 import static com.infinitum.bookingqba.util.Constants.PREF_DOWNLOAD_SUCCESS;
+import static com.infinitum.bookingqba.util.Constants.PREF_LAST_DOWNLOAD_DATE;
 import static com.infinitum.bookingqba.util.Constants.PROGRESS_ERROR;
 import static com.infinitum.bookingqba.util.Constants.PROGRESS_SUCCESS;
 import static com.infinitum.bookingqba.util.Constants.ROOT_GALERY_FOLDER_NAME;
 
-public class SyncActivity extends DaggerAppCompatActivity implements View.OnClickListener, JellyToggleButton.OnStateChangeListener {
+public class SyncActivity extends DaggerAppCompatActivity implements View.OnClickListener, Switch.OnCheckedChangeListener {
     private ActivitySyncBinding syncBinding;
 
     private SyncViewModel syncViewModel;
@@ -101,7 +110,8 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     private int progressGalery = 0;
     private int sizeGalerieList = 0;
     private long galerySpaceInMb = 0;
-    private boolean isDownloadChecked = false;
+    private boolean isDownloadChecked = true;
+    private String currentDateToSync = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,78 +123,94 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
         compositeDisposable = new CompositeDisposable();
 
-        String btnTag = sharedPreferences.getString(PREF_DOWNLOAD_LEVEL, LEVEL_ENTITY);
-        syncBinding.fbDownload.setTag(btnTag);
-        if (btnTag.equals(LEVEL_GALERY)) {
-            syncBinding.jtbDownload.toggleImmediately();
-            syncBinding.jtbDownload.setEnabled(false);
-            changeVisibilityProgressGalery(true);
-            syncBinding.pbEntities.setEndProgress(100);
-            syncBinding.pbEntities.startProgressAnimation();
-        }
-        syncBinding.jtbDownload.setOnStateChangeListener(this);
+        initButtonComponent();
+
+        syncBinding.swDownload.setOnCheckedChangeListener(this);
 
         syncBinding.fbDownload.setOnClickListener(this);
 
         syncViewModel = ViewModelProviders.of(this, viewModelFactory).get(SyncViewModel.class);
     }
 
+    private void initButtonComponent() {
+        String btnTag = sharedPreferences.getString(PREF_DOWNLOAD_LEVEL, LEVEL_ENTITY);
+        syncBinding.fbDownload.setTag(btnTag);
+        if (btnTag.equals(LEVEL_GALERY)) {
+            syncBinding.swDownload.setChecked(true);
+            syncBinding.swDownload.setEnabled(false);
+            changeVisibilityProgressGalery(true);
+            syncBinding.pbEntities.setEndProgress(100);
+            syncBinding.pbEntities.startProgressAnimation();
+        }
+    }
+
     private void startSyncOnLevel(int downloadLevel) {
-        String dateValue = getResources().getString(R.string.fecha_prueba);
-        switch (downloadLevel) {
-            case 0:
-                syncronizeReferencesZone(dateValue);
-                break;
-            case 1:
-                syncronizeProvinces(dateValue);
-                break;
-            case 2:
-                syncronizeMunicipalities(dateValue);
-                break;
-            case 3:
-                syncronizeAmenities(dateValue);
-                break;
-            case 4:
-                syncronizePoiTypes(dateValue);
-                break;
-            case 5:
-                syncronizePois(dateValue);
-                break;
-            case 6:
-                syncronizeRentsMode(dateValue);
-                break;
-            case 7:
-                syncronizeDrawTypes(dateValue);
-                break;
-            case 8:
-                syncronizeRents(dateValue);
-                break;
-            case 9:
-                syncronizeRentAmenities(dateValue);
-                break;
-            case 10:
-                syncronizeRentPois(dateValue);
-                break;
-            case 11:
-                syncronizeRentDrawTypes(dateValue);
-                break;
-            case 12:
-                syncronizeOffers(dateValue);
-                break;
-            case 13:
-                syncronizeGaleries(dateValue);
-                break;
+        if (!currentDateToSync.equals("")) {
+            switch (downloadLevel) {
+                case 0:
+                    syncronizeReferencesZone(currentDateToSync);
+                    break;
+                case 1:
+                    syncronizeProvinces(currentDateToSync);
+                    break;
+                case 2:
+                    syncronizeMunicipalities(currentDateToSync);
+                    break;
+                case 3:
+                    syncronizeAmenities(currentDateToSync);
+                    break;
+                case 4:
+                    syncronizePoiTypes(currentDateToSync);
+                    break;
+                case 5:
+                    syncronizePois(currentDateToSync);
+                    break;
+                case 6:
+                    syncronizeRentsMode(currentDateToSync);
+                    break;
+                case 7:
+                    syncronizeDrawTypes(currentDateToSync);
+                    break;
+                case 8:
+                    syncronizeRents(currentDateToSync);
+                    break;
+                case 9:
+                    syncronizeRentAmenities(currentDateToSync);
+                    break;
+                case 10:
+                    syncronizeRentPois(currentDateToSync);
+                    break;
+                case 11:
+                    syncronizeRentDrawTypes(currentDateToSync);
+                    break;
+                case 12:
+                    syncronizeOffers(currentDateToSync);
+                    break;
+                case 13:
+                    syncronizeGaleries(currentDateToSync);
+                    break;
+                case 14:
+                    removedItems(currentDateToSync);
+                    break;
+                case 15:
+                    completeDownload();
+                    break;
+            }
         }
     }
 
     private void startSyncronitation(int downloadIndex) {
-        Flowable<Resource<DatabaseUpdateEntity>> flowLocal = syncViewModel.getLastDatabaseUpdate();
-        Flowable<Resource<DatabaseUpdateEntity>> flowRemote = syncViewModel.getDatabaseUpdateRemote();
-        entityDisposable = Flowable.zip(flowLocal, flowRemote, this::checkIfUpdateNeeded)
+        entityDisposable = Flowable.zip(syncViewModel.getDatabaseUpdateLocal(),
+                syncViewModel.getDatabaseUpdateRemote(), (localResource, remoteResource) -> {
+                    boolean updateNeeded = checkIfUpdateNeeded(localResource, remoteResource);
+                    String localDate = checkLocalDate(localResource);
+                    return new Pair<>(updateNeeded, localDate);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(aBoolean -> {
-                    if (aBoolean) {
+                .doOnNext(pair -> {
+                    if (pair.first) {
+                        currentDateToSync = pair.second;
                         startSyncOnLevel(downloadIndex);
                     } else {
                         AlertUtils.showInfoAlertAndGoHome(this, getResources().getString(R.string.no_need_update));
@@ -193,13 +219,21 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         compositeDisposable.add(entityDisposable);
     }
 
+    private String checkLocalDate(Resource<DatabaseUpdateEntity> localResource) {
+        if (localResource.status != Resource.Status.EMPTY) {
+            return localResource.data.getLastDateUpdateEntity().toString();
+        } else {
+            return getResources().getString(R.string.default_sync_date);
+        }
+    }
+
     @NonNull
     private Boolean checkIfUpdateNeeded(Resource<DatabaseUpdateEntity> resourceLocal, Resource<DatabaseUpdateEntity> resourceRemote) {
         boolean updateRequired = false;
         if (resourceLocal.status == Resource.Status.EMPTY) {
             updateRequired = true;
-        } else if (resourceLocal.status == Resource.Status.SUCCESS && resourceRemote.data != null) {
-            updateRequired = DateUtils.dateLocalIsLessThanRemote(resourceLocal.data.getLastDatabaseUpdate(), resourceRemote.data.getLastDatabaseUpdate());
+        } else if (resourceLocal.data != null && resourceRemote.data != null) {
+            updateRequired = DateUtils.dateLocalIsLessThanRemote(resourceLocal.data.getLastDateUpdateEntity(), resourceRemote.data.getLastDateUpdateEntity());
         }
         return updateRequired;
     }
@@ -316,6 +350,22 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         compositeDisposable.add(entityDisposable);
     }
 
+    private void removedItems(String dateValue) {
+        entityDisposable = syncViewModel.removedsItem(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
+    private void completeDownload() {
+        entityDisposable = syncViewModel.insertDatabaseUpdate()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
     private void checkOperationResult(OperationResult operationResult) {
         if (operationResult.result == OperationResult.Result.SUCCESS) {
             updateEntityProgressAndContinue();
@@ -326,15 +376,15 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private void updateEntityProgressAndContinue() {
         entityProgress++;
-        float percent = ((float) entityProgress / 14) * 100;
+        float percent = ((float) entityProgress / 16) * 100;
         saveEntityDownloadIndex(entityProgress);
         syncBinding.pbEntities.setProgress(percent);
-        if (entityProgress < 14) {
+        if (entityProgress < 16) {
             startSyncronitation(entityProgress);
-        } else if (entityProgress == 14 && !isDownloadChecked) {
+        } else if (entityProgress == 16 && !isDownloadChecked) {
             saveSuccessDownload();
             AlertUtils.showSuccessAlertAndGoHome(this);
-        } else if (entityProgress == 14 && isDownloadChecked) {
+        } else if (entityProgress == 16 && isDownloadChecked) {
             prepareForDownload();
         }
     }
@@ -440,7 +490,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         AlertUtils.showErrorAlert(this);
         syncBinding.fbDownload.setEnabled(true);
         if (syncBinding.fbDownload.getTag().equals(LEVEL_ENTITY)) {
-            syncBinding.jtbDownload.setEnabled(true);
+            syncBinding.swDownload.setEnabled(true);
             changeProgressColor(LEVEL_PROGRESS_ENTITY, PROGRESS_ERROR);
         } else if (syncBinding.fbDownload.getTag().equals(LEVEL_GALERY) || syncBinding.fbDownload.getTag().equals(LEVEL_GALERY_PAUSED)) {
             changeProgressColor(LEVEL_PROGRESS_GALERY, PROGRESS_ERROR);
@@ -452,7 +502,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         AlertUtils.showErrorAlert(this);
         syncBinding.fbDownload.setEnabled(true);
         if (syncBinding.fbDownload.getTag().equals(LEVEL_ENTITY)) {
-            syncBinding.jtbDownload.setEnabled(true);
+            syncBinding.swDownload.setEnabled(true);
             changeProgressColor(LEVEL_PROGRESS_ENTITY, PROGRESS_ERROR);
         } else if (syncBinding.fbDownload.getTag().equals(LEVEL_GALERY)) {
             changeProgressColor(LEVEL_PROGRESS_GALERY, PROGRESS_ERROR);
@@ -495,7 +545,9 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private void saveSuccessDownload() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(PREF_DOWNLOAD_SUCCESS, true);
+        editor.putString(PREF_DOWNLOAD_LEVEL, LEVEL_ENTITY);
+        editor.putInt(PREF_ENTITY_DOWNLOAD_INDEX, 0);
+        editor.putString(PREF_LAST_DOWNLOAD_DATE,currentDateToSync);
         editor.apply();
     }
 
@@ -562,12 +614,12 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         if (networkHelper.isNetworkAvailable()) {
-            syncBinding.jtbDownload.setEnabled(false);
+            syncBinding.swDownload.setEnabled(false);
             if (syncBinding.fbDownload.getTag().equals(LEVEL_ENTITY)) {
                 entityProgress = sharedPreferences.getInt(PREF_ENTITY_DOWNLOAD_INDEX, 0);
                 syncBinding.fbDownload.setEnabled(false);
                 changeProgressColor(LEVEL_PROGRESS_ENTITY, PROGRESS_SUCCESS);
-                startSyncOnLevel(entityProgress);
+                startSyncronitation(entityProgress);
             } else if (syncBinding.fbDownload.getTag().equals(LEVEL_GALERY)) {
                 prepareForDownload();
                 changeProgressColor(LEVEL_PROGRESS_GALERY, PROGRESS_SUCCESS);
@@ -591,17 +643,6 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         FileDownloader.getImpl().clearAllTaskData();
     }
 
-    @Override
-    public void onStateChange(float process, State state, JellyToggleButton jtb) {
-        if (state.equals(State.LEFT)) {
-            isDownloadChecked = false;
-        }
-        if (state.equals(State.RIGHT)) {
-            isDownloadChecked = true;
-        }
-        changeVisibilityProgressGalery(isDownloadChecked);
-    }
-
     private void changeVisibilityProgressGalery(boolean visible) {
         if (visible) {
             syncBinding.llContentGalery.setVisibility(View.VISIBLE);
@@ -610,4 +651,13 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         }
     }
 
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked) {
+            isDownloadChecked = true;
+        } else {
+            isDownloadChecked = false;
+        }
+        changeVisibilityProgressGalery(isDownloadChecked);
+    }
 }

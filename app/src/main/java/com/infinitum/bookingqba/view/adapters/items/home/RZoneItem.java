@@ -1,35 +1,41 @@
 package com.infinitum.bookingqba.view.adapters.items.home;
 
+import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 
-public class RZoneItem extends BaseItem{
+public class RZoneItem implements ViewModel{
 
-    private byte[] mImage;
-    private int idImage;
+    private String id;
+    private String name;
+    private byte[] imageByte;
 
-    public RZoneItem(String id, String mName, byte[] mImage) {
-        super(id, mName);
-        this.mImage = mImage;
+    public RZoneItem(String id, String name, byte[] imageByte) {
+        this.id = id;
+        this.name = name;
+        this.imageByte = imageByte;
     }
 
-    public RZoneItem(String id, String mName, int idImage) {
-        super(id, mName);
-        this.idImage = idImage;
+    public String getId() {
+        return id;
     }
 
-    public byte[] getmImage() {
-        return mImage;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setmImage(byte[] mImage) {
-        this.mImage = mImage;
+    public String getName() {
+        return name;
     }
 
-    public int getIdImage() {
-        return idImage;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setIdImage(int idImage) {
-        this.idImage = idImage;
+    public byte[] getImageByte() {
+        return imageByte;
+    }
+
+    public void setImageByte(byte[] imageByte) {
+        this.imageByte = imageByte;
     }
 }

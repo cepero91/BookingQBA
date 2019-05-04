@@ -28,15 +28,14 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
         android:fitsSystemWindows="true"
-        android:paddingTop="10dp"
         tools:context=".view.tutorial.PageFourFragment">
 
 
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/iv_use_case"
-            android:layout_width="250dp"
-            android:layout_height="180dp"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
             android:layout_marginBottom="10dp"
             android:scaleType="centerCrop"
             android:layout_centerHorizontal="true"
@@ -46,21 +45,12 @@
             app:lottie_repeatMode="reverse" />
 
 
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/cv_content_text"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/iv_use_case"
-            android:layout_centerHorizontal="true"
-            app:cardElevation="5dp"
-            app:contentPadding="15dp"
-            app:cardCornerRadius="5dp">
-
             <LinearLayout
                 android:id="@+id/ll_content_text"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/iv_use_case"
+                android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
                 android:orientation="vertical"
                 app:visibleGone="@{!safeUnbox(isDownloading)}">
@@ -78,29 +68,21 @@
                     android:textSize="18sp" />
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:orientation="horizontal">
 
-                    <com.nightonke.jellytogglebutton.JellyToggleButton
-                        android:id="@+id/jtb_download"
+                    <Switch
+                        android:id="@+id/sw_download"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:theme="@style/switchStyle"
+                        android:checked="true"
                         android:paddingEnd="3dp"
-                        android:paddingStart="3dp"
-                        app:jtbColorChangeType="hsv"
-                        app:jtbJelly="lazy_tremble_body_slim_jim"
-                        app:jtbLeftBackgroundColor="@color/material_color_grey_400"
-                        app:jtbLeftText="No"
-                        app:jtbLeftTextColor="@color/White_100"
-                        app:jtbLeftThumbColor="@color/material_color_blue_grey_400"
-                        app:jtbRightBackgroundColor="@color/material_color_grey_400"
-                        app:jtbRightText="Si"
-                        app:jtbRightTextColor="@color/White_100"
-                        app:jtbRightThumbColor="@color/colorPrimary" />
+                        android:paddingStart="3dp"/>
 
                     <TextView
                         android:id="@+id/tv_download"
@@ -115,7 +97,9 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:padding="10dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginBottom="15dp"
                     android:layout_gravity="center"
                     android:animateLayoutChanges="true"
                     android:orientation="horizontal">
@@ -157,7 +141,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:visibility="gone"
                         android:orientation="vertical">
 
                         <com.moos.library.CircleProgressView
@@ -210,11 +193,6 @@
                     fancy:fb_textColor="@color/colorPrimary" />
 
             </LinearLayout>
-
-        </android.support.v7.widget.CardView>
-
-
-
 
     </RelativeLayout>
 

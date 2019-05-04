@@ -7,6 +7,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.support.annotation.NonNull;
 
+import static android.arch.persistence.room.ForeignKey.RESTRICT;
 import static com.infinitum.bookingqba.util.Constants.RENT_DRAW_TYPE_TABLE_NAME;
 
 @Entity(tableName = RENT_DRAW_TYPE_TABLE_NAME,
@@ -16,11 +17,13 @@ import static com.infinitum.bookingqba.util.Constants.RENT_DRAW_TYPE_TABLE_NAME;
         @ForeignKey(
                 entity = DrawTypeEntity.class,
                 parentColumns = "id",
-                childColumns = "drawTypeId"),
+                childColumns = "drawTypeId",
+                onDelete = RESTRICT),
         @ForeignKey(
                 entity = RentEntity.class,
                 parentColumns = "id",
-                childColumns = "rentId"
+                childColumns = "rentId",
+                onDelete = RESTRICT
         )})
 public class RentDrawTypeEntity {
 

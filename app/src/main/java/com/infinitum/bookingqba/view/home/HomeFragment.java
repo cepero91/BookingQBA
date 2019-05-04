@@ -317,7 +317,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 R.layout.recycler_header_popular,
                 HeaderItem.class,
                 (model, finder, payloads) -> finder
-                        .find(R.id.tv_header_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
+                        .find(R.id.tv_header_title, (ViewProvider<TextView>) view -> view.setText(model.getName()))
                         .setOnClickListener(R.id.tv_view_all, (v -> mListener.onItemClick(v, model)))
         );
     }
@@ -327,8 +327,8 @@ public class HomeFragment extends BaseNavigationFragment {
                 R.layout.recycler_ref_zone_item,
                 RZoneItem.class,
                 (model, finder, payloads) -> finder
-                        .find(R.id.tv_ref_zone, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-                        .find(R.id.iv_ref_zone, (ViewProvider<AppCompatImageView>) view -> GlideApp.with(getView()).load(model.getmImage()).into(view))
+                        .find(R.id.tv_ref_zone, (ViewProvider<TextView>) view -> view.setText(model.getName()))
+                        .find(R.id.iv_ref_zone, (ViewProvider<AppCompatImageView>) view -> GlideApp.with(getView()).load(model.getImageByte()).into(view))
                         .setOnClickListener(R.id.ll_ref_zone_content, (v -> mListener.onItemClick(v, model)))
         );
     }
@@ -338,7 +338,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 layout,
                 RentPopItem.class,
                 (model, finder, payloads) -> finder
-                        .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
+                        .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getName()))
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %s", String.valueOf(model.getPrice()))))
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
@@ -352,7 +352,7 @@ public class HomeFragment extends BaseNavigationFragment {
                 layout,
                 RentNewItem.class,
                 (model, finder, payloads) -> finder
-                        .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
+                        .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getName()))
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
                                 GlideApp.with(getView()).load(model.getImagePath()).placeholder(R.drawable.placeholder).into(view))

@@ -1,15 +1,22 @@
 package com.infinitum.bookingqba.view.adapters.items.baseitem;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 
-public class BaseItem implements ViewModel{
+public class BaseItem implements ViewModel, Parcelable {
 
     private String id;
-    private String mName;
+    private String name;
+    private String imagePath;
+    private int wished;
 
-    public BaseItem(String id, String mName) {
+    public BaseItem(String id, String name, String imagePath, int wished) {
         this.id = id;
-        this.mName = mName;
+        this.name = name;
+        this.imagePath = imagePath;
+        this.wished = wished;
     }
 
     @Override
@@ -23,7 +30,7 @@ public class BaseItem implements ViewModel{
 
         final BaseItem that = (BaseItem) o;
 
-        if (!mName.equals(that.mName)) {
+        if (!name.equals(that.name)) {
             return false;
         }
         return id.equals(that.id);
@@ -36,7 +43,7 @@ public class BaseItem implements ViewModel{
 
     @Override
     public String toString() {
-        return mName;
+        return name;
     }
 
     public String getId() {
@@ -47,11 +54,60 @@ public class BaseItem implements ViewModel{
         this.id = id;
     }
 
-    public String getmName() {
-        return mName;
+    public String getName() {
+        return name;
     }
 
-    public void setmName(String mName) {
-        this.mName = mName;
+    public void setName(String name) {
+        this.name = name;
     }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public int getWished() {
+        return wished;
+    }
+
+    public void setWished(int wished) {
+        this.wished = wished;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.imagePath);
+        dest.writeInt(this.wished);
+    }
+
+    protected BaseItem(Parcel in) {
+        this.id = in.readString();
+        this.name = in.readString();
+        this.imagePath = in.readString();
+        this.wished = in.readInt();
+    }
+
+    public static final Creator<BaseItem> CREATOR = new Creator<BaseItem>() {
+        @Override
+        public BaseItem createFromParcel(Parcel source) {
+            return new BaseItem(source);
+        }
+
+        @Override
+        public BaseItem[] newArray(int size) {
+            return new BaseItem[size];
+        }
+    };
 }

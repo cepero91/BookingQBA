@@ -8,19 +8,17 @@ public class ListWishItem extends BaseItem{
     private float rating;
     private double price;
     private String rentMode;
-    private String imagePath;
 
-    public ListWishItem(String id, String mName) {
-        super(id, mName);
+    public ListWishItem(String id, String name, String imagePath, int wished) {
+        super(id, name, imagePath, wished);
     }
 
-    public ListWishItem(String id, String mName, String address, float rating, double price, String rentMode, String imagePath) {
-        super(id, mName);
+    public ListWishItem(String id, String name, String imagePath, int wished, String address, float rating, double price, String rentMode) {
+        super(id, name, imagePath, wished);
         this.address = address;
         this.rating = rating;
         this.price = price;
         this.rentMode = rentMode;
-        this.imagePath = imagePath;
     }
 
     public String getAddress() {
@@ -55,11 +53,4 @@ public class ListWishItem extends BaseItem{
         this.rentMode = rentMode;
     }
 
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
 }

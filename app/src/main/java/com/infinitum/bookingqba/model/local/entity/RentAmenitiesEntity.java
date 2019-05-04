@@ -7,21 +7,24 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.support.annotation.NonNull;
 
+import static android.arch.persistence.room.ForeignKey.RESTRICT;
 import static com.infinitum.bookingqba.util.Constants.RENT_AMENITIES_TABLE_NAME;
 
 @Entity(tableName = RENT_AMENITIES_TABLE_NAME,
         primaryKeys = {"amenityId", "rentId"},
-        indices = {@Index("amenityId"),@Index("rentId")},
+        indices = {@Index("amenityId"), @Index("rentId")},
         foreignKeys = {
-        @ForeignKey(
-                entity = AmenitiesEntity.class,
-                parentColumns = "id",
-                childColumns = "amenityId"),
-        @ForeignKey(
-                entity = RentEntity.class,
-                parentColumns = "id",
-                childColumns = "rentId"
-        )})
+                @ForeignKey(
+                        entity = AmenitiesEntity.class,
+                        parentColumns = "id",
+                        childColumns = "amenityId"
+                        , onDelete = RESTRICT),
+                @ForeignKey(
+                        entity = RentEntity.class,
+                        parentColumns = "id",
+                        childColumns = "rentId",
+                        onDelete = RESTRICT
+                )})
 public class RentAmenitiesEntity {
 
     @ColumnInfo(name = "amenityId")

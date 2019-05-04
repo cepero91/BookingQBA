@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +14,11 @@ import android.widget.TextView;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
-import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentListWishBinding;
 import com.infinitum.bookingqba.util.GlideApp;
-import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
@@ -115,7 +111,7 @@ public class ListWishFragment extends BaseNavigationFragment {
                 layout,
                 ListWishItem.class,
                 (model, finder, payloads) -> finder
-                        .find(R.id.tv_rent_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
+                        .find(R.id.tv_rent_name, (ViewProvider<TextView>) view -> view.setText(model.getName()))
                         .find(R.id.tv_address, (ViewProvider<TextView>) view -> view.setText(model.getAddress()))
                         .find(R.id.tv_rent_mode, (ViewProvider<TextView>) view -> view.setText(" /"+model.getRentMode()))
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))

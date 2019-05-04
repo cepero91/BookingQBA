@@ -14,9 +14,9 @@ public class RemovedList {
 
     @SerializedName("items")
     @Expose
-    private List<RemovedItem> items;
+    private List<String> items;
 
-    public RemovedList(String entity, List<RemovedItem> items) {
+    public RemovedList(String entity, List<String> items) {
         this.entity = entity;
         this.items = items;
     }
@@ -29,11 +29,11 @@ public class RemovedList {
         this.entity = entity;
     }
 
-    public List<RemovedItem> getItems() {
+    public List<String> getItems() {
         return items;
     }
 
-    public void setItems(List<RemovedItem> items) {
+    public void setItems(List<String> items) {
         this.items = items;
     }
 }

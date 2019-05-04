@@ -1,49 +1,51 @@
 package com.infinitum.bookingqba.view.adapters.items.rentlist;
 
 
+import android.os.Parcel;
+
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 
 public class RentListItem extends BaseItem {
 
-    private double mPrice;
+    private double price;
     private String rentMode;
-    private String mAddress;
-    private String imagePath;
+    private String address;
     private float rating;
-    private int isWished;
 
-    public RentListItem(String id, String mName, double mPrice, String rentMode, String mAddress, String imagePath, float rating, int isWished) {
-        super(id, mName);
-        this.mPrice = mPrice;
+    public RentListItem(String id, String name, String imagePath, int wished) {
+        super(id, name, imagePath, wished);
+    }
+
+    public RentListItem(String id, String name, String imagePath, int wished, double price, String rentMode, String address, float rating) {
+        super(id, name, imagePath, wished);
+        this.price = price;
         this.rentMode = rentMode;
-        this.mAddress = mAddress;
-        this.imagePath = imagePath;
+        this.address = address;
         this.rating = rating;
-        this.isWished = isWished;
     }
 
-    public double getmPrice() {
-        return mPrice;
+    public double getPrice() {
+        return price;
     }
 
-    public void setmPrice(double mPrice) {
-        this.mPrice = mPrice;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
-    public String getmAddress() {
-        return mAddress;
+    public String getRentMode() {
+        return rentMode;
     }
 
-    public void setmAddress(String mAddress) {
-        this.mAddress = mAddress;
+    public void setRentMode(String rentMode) {
+        this.rentMode = rentMode;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public String getAddress() {
+        return address;
     }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public float getRating() {
@@ -54,19 +56,38 @@ public class RentListItem extends BaseItem {
         this.rating = rating;
     }
 
-    public int getIsWished() {
-        return isWished;
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public void setIsWished(int isWished) {
-        this.isWished = isWished;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeDouble(this.price);
+        dest.writeString(this.rentMode);
+        dest.writeString(this.address);
+        dest.writeFloat(this.rating);
     }
 
-    public String getRentMode() {
-        return rentMode;
+    protected RentListItem(Parcel in) {
+        super(in);
+        this.price = in.readDouble();
+        this.rentMode = in.readString();
+        this.address = in.readString();
+        this.rating = in.readFloat();
     }
 
-    public void setRentMode(String rentMode) {
-        this.rentMode = rentMode;
-    }
+    public static final Creator<RentListItem> CREATOR = new Creator<RentListItem>() {
+        @Override
+        public RentListItem createFromParcel(Parcel source) {
+            return new RentListItem(source);
+        }
+
+        @Override
+        public RentListItem[] newArray(int size) {
+            return new RentListItem[size];
+        }
+    };
 }

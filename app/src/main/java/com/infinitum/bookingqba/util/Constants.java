@@ -10,6 +10,7 @@ public final class Constants {
     public static final String PREF_DOWNLOAD_LEVEL = "downloadLevel";
     public static final String PREF_DOWNLOAD_SUCCESS = "downloadSuccess";
     public static final String PREF_FIRST_OPEN = "firstOpen";
+    public static final String PREF_LAST_DOWNLOAD_DATE = "lastDownloadDate";
 
     //FILES
     public static final String ROOT_GALERY_FOLDER_NAME = "galery";

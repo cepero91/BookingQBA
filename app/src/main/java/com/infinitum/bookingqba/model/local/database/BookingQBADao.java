@@ -73,7 +73,7 @@ public abstract class BookingQBADao {
     }
 
 
-    @Query("SELECT * FROM DatabaseUpdate ORDER BY lastDatabaseUpdate DESC LIMIT 1")
+    @Query("SELECT * FROM DatabaseUpdate ORDER BY lastDateUpdateEntity DESC LIMIT 1")
     public abstract Flowable<List<DatabaseUpdateEntity>> getLastDatabaseUpdate();
 
     //------------------------- PROVINCIAS ---------------------------//

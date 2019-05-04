@@ -111,6 +111,10 @@
         <item name="android:textAlignment">center</item>
     </style>
 
+    <style name="switchStyle" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">#009688</item>
+    </style>
+
 
 
 

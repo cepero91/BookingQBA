@@ -186,12 +186,10 @@ public class RentDetailActivity extends AppCompatActivity implements ObservableS
     public void onClick(View v) {
         if (v.getId() == R.id.ll_content_address) {
             RentEntity entity = rentDetailBinding.getRentDetailItem().getRentEntity();
-            GeoRent geoRent = new GeoRent(entity.getId());
-            geoRent.setName(entity.getName());
+            GeoRent geoRent = new GeoRent(entity.getId(),entity.getName(),rentDetailBinding.getRentDetailItem().getFirstImage(),entity.getIsWished());
             geoRent.setRentMode(rentDetailBinding.getRentDetailItem().getRentModeName());
             geoRent.setRating(entity.getRating());
             geoRent.setGeoPoint(new GeoPoint(entity.getLatitude(), entity.getLongitude()));
-            geoRent.setImagePath(rentDetailBinding.getRentDetailItem().getFirstImage());
             geoRent.setPrice(entity.getPrice());
             ArrayList<GeoRent> rents = new ArrayList<>();
             rents.add(geoRent);

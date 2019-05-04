@@ -40,7 +40,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:fontFamily="@font/poppinsbold"
-                        android:text="@{item.getmName()}"
+                        android:text="@{item.getTitle()}"
                         android:textSize="12sp" />
 
                     <TextView

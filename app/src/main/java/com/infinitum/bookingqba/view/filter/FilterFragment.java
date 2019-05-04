@@ -187,7 +187,7 @@ public class FilterFragment extends Fragment {
                 AmenitieViewItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_amenitie_filter_title, (ViewProvider<TextView>) view -> {
-                            view.setText(model.getmName());
+                            view.setText(model.getName());
                             changeAmenitieViewState(view,view.isSelected());
                         })
                         .setOnClickListener(view -> {
@@ -210,7 +210,7 @@ public class FilterFragment extends Fragment {
                 ReferenceZoneViewItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_rzone_filter_title, (ViewProvider<TextView>) view -> {
-                            view.setText(model.getmName());
+                            view.setText(model.getName());
                         })
                         .find(R.id.iv_rzone_filter, (ViewProvider<AppCompatImageView>) view ->
                             GlideApp.with(getView()).load(model.getByteImage()).into(view))
@@ -235,7 +235,7 @@ public class FilterFragment extends Fragment {
                 StarViewItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_star_filter_title, (ViewProvider<TextView>) view -> {
-                            view.setText(model.getmName());
+                            view.setText(model.getName());
                         })
                         .find(R.id.ll_star_filter_content, (ViewProvider<LinearLayout>) view ->
                                 changeStarViewState(view,view.isSelected()))

@@ -23,22 +23,22 @@ public class DatabaseUpdateEntity {
     @NonNull
     private String id;
 
-    @ColumnInfo(name = "lastDatabaseUpdate")
+    @ColumnInfo(name = "lastDateUpdateEntity")
     @NonNull
-    private Date lastDatabaseUpdate;
+    private Date lastDateUpdateEntity;
 
     private int totalRent;
 
-    public DatabaseUpdateEntity(@NonNull Date lastDatabaseUpdate, int totalRent) {
+    public DatabaseUpdateEntity(@NonNull Date lastDateUpdateEntity, int totalRent) {
         this.id = UUID.randomUUID().toString();
-        this.lastDatabaseUpdate = lastDatabaseUpdate;
+        this.lastDateUpdateEntity = lastDateUpdateEntity;
         this.totalRent = totalRent;
     }
 
     @Ignore
-    public DatabaseUpdateEntity(@NonNull String id, @NonNull Date lastDatabaseUpdate, int totalRent) {
+    public DatabaseUpdateEntity(@NonNull String id, @NonNull Date lastDateUpdateEntity, int totalRent) {
         this.id = id;
-        this.lastDatabaseUpdate = lastDatabaseUpdate;
+        this.lastDateUpdateEntity = lastDateUpdateEntity;
         this.totalRent = totalRent;
     }
 
@@ -52,12 +52,12 @@ public class DatabaseUpdateEntity {
     }
 
     @NonNull
-    public Date getLastDatabaseUpdate() {
-        return lastDatabaseUpdate;
+    public Date getLastDateUpdateEntity() {
+        return lastDateUpdateEntity;
     }
 
-    public void setLastDatabaseUpdate(@NonNull Date lastDatabaseUpdate) {
-        this.lastDatabaseUpdate = lastDatabaseUpdate;
+    public void setLastDateUpdateEntity(@NonNull Date lastDateUpdateEntity) {
+        this.lastDateUpdateEntity = lastDateUpdateEntity;
     }
 
     public int getTotalRent() {
