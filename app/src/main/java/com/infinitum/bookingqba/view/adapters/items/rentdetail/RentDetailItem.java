@@ -11,6 +11,8 @@ public class RentDetailItem {
 
     private ArrayList<RentDetailGalerieItem> galerieItems;
 
+    private ArrayList<RentDetailCommentItem> commentItems;
+
     private ArrayList<RentDetailPoiItem> poiItems;
 
     private ArrayList<RentDetailAmenitieItem> amenitieItems;
@@ -31,6 +33,14 @@ public class RentDetailItem {
 
     public ArrayList<RentDetailGalerieItem> getGalerieItems() {
         return galerieItems;
+    }
+
+    public ArrayList<RentDetailCommentItem> getCommentItems() {
+        return commentItems;
+    }
+
+    public void setCommentItems(ArrayList<RentDetailCommentItem> commentItems) {
+        this.commentItems = commentItems;
     }
 
     public void setGalerieItems(ArrayList<RentDetailGalerieItem> galerieItems) {

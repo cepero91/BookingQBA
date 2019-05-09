@@ -2,6 +2,8 @@ package com.infinitum.bookingqba.di.module;
 
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepoImpl;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
+import com.infinitum.bookingqba.model.repository.comment.CommentRepoImpl;
+import com.infinitum.bookingqba.model.repository.comment.CommentRepository;
 import com.infinitum.bookingqba.model.repository.dbcommonsop.DBCommonOperationRepoImpl;
 import com.infinitum.bookingqba.model.repository.dbcommonsop.DBCommonOperationRepository;
 import com.infinitum.bookingqba.model.repository.drawtype.DrawTypeRepoImpl;
@@ -93,6 +95,9 @@ public interface RepositoryModule {
 
     @Binds
     OfferRepository offerRepository(OfferRepoImpl offerRepo);
+
+    @Binds
+    CommentRepository commentRepository(CommentRepoImpl commentRepo);
 
     @Binds
     DBCommonOperationRepository dbCommonOperationRepository(DBCommonOperationRepoImpl databaseUpdateRepo);

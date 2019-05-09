@@ -5,7 +5,19 @@
     <item
         android:id="@+id/action_list_wish"
         android:icon="@drawable/ic_bookmark_white"
-        android:title="Login"
+        android:title="Deseada"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_vote"
+        android:icon="@drawable/ic_star_white"
+        android:title="Votar"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_comment"
+        android:icon="@drawable/ic_comment"
+        android:title="Comentar"
+        app:showAsAction="never" />
 
 </menu>

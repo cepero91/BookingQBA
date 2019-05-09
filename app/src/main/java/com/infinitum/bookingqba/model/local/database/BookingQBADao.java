@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.model.local.database;
 import android.arch.paging.DataSource;
 import android.arch.persistence.db.SupportSQLiteQuery;
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
@@ -12,6 +13,7 @@ import android.arch.persistence.room.TypeConverters;
 import android.arch.persistence.room.Update;
 
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
+import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
 import com.infinitum.bookingqba.model.local.entity.DrawTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
@@ -31,6 +33,7 @@ import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
+import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 
 import org.oscim.core.GeoPoint;
@@ -289,6 +292,43 @@ public abstract class BookingQBADao {
     @Query("SELECT * FROM Poi")
     public abstract Flowable<List<PoiEntity>> getAllPois();
 
+    //------------------------- COMMENT ---------------------------//
+
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public abstract long addComment(CommentEntity entity);
+
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public abstract void addComments(List<CommentEntity> list);
+
+
+    @Transaction
+    @Update(onConflict = OnConflictStrategy.IGNORE)
+    public abstract void updateComment(CommentEntity entity);
+
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public abstract void updateComments(List<CommentEntity> list);
+
+
+    @Transaction
+    public void upsertComment(List<CommentEntity> list) {
+        for (CommentEntity entity : list) {
+            if (addComment(entity) == -1) {
+                updateComment(entity);
+                Timber.d("%s Updated", entity.getDescription());
+            } else {
+                Timber.d("%s Inserted", entity.getDescription());
+            }
+        }
+    }
+
+
+    @Query("SELECT * FROM Comment ORDER BY created DESC")
+    public abstract Flowable<List<CommentEntity>> getAllComment();
+
     //------------------------- RENTVISITCOUNT ---------------------//
 
     @Transaction
@@ -298,6 +338,10 @@ public abstract class BookingQBADao {
     @Transaction
     @RawQuery(observedEntities = RentVisitCountEntity.class)
     public abstract long addOrUpdateRentVisit(SupportSQLiteQuery query);
+
+    @Transaction
+    @Query("DELETE FROM RentVisitCount")
+    public abstract void deleteAllVisitoCount();
 
     //------------------------- RENTAS ---------------------------//
 
@@ -407,6 +451,10 @@ public abstract class BookingQBADao {
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
             "Province.id = :province AND Rent.isWished = 1")
     public abstract Flowable<List<RentAndGalery>> getAllWishedRents(String province);
+
+    @Transaction
+    @Query("SELECT * FROM Rent WHERE Rent.isWished = 1")
+    public abstract Single<List<RentEntity>> getAllWishedRents();
 
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)

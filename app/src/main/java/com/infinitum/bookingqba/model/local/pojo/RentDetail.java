@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.model.local.pojo;
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Relation;
 
+import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
@@ -28,6 +29,9 @@ public class RentDetail {
 
     @Relation(parentColumn = "id", entityColumn = "rent")
     private List<GalerieEntity> galeries;
+
+    @Relation(parentColumn = "id", entityColumn = "rent")
+    private List<CommentEntity> commentEntities;
 
     public RentDetail(RentEntity rentEntity) {
         this.rentEntity = rentEntity;
@@ -77,5 +81,11 @@ public class RentDetail {
         return (String) rentModeName.toArray()[0];
     }
 
+    public List<CommentEntity> getCommentEntities() {
+        return commentEntities;
+    }
 
+    public void setCommentEntities(List<CommentEntity> commentEntities) {
+        this.commentEntities = commentEntities;
+    }
 }

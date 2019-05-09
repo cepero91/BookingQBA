@@ -9,6 +9,7 @@ import android.arch.paging.PagedList;
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
+import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
@@ -28,6 +29,7 @@ import com.infinitum.bookingqba.view.adapters.items.filter.StarViewItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailAmenitieItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailCommentItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailGalerieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailPoiItem;
@@ -185,6 +187,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         item.setAmenitieItems(convertAmenitiesPojoToParcel(rentDetail.data.getAmenitieNames()));
         item.setRentModeName(rentDetail.data.getRentModeNameObject());
         item.setGalerieItems(convertGaleriePojoToParcel(rentDetail.data.getGaleries()));
+        item.setCommentItems(convertCommentPojoToParcel(rentDetail.data.getCommentEntities()));
         item.setPoiItems(convertPoisPojoToParcel(rentDetail.data.getRentPoiAndRelations()));
         return item;
     }
@@ -224,6 +227,14 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
             detailGalerieItems.add(new RentDetailGalerieItem(imagePath));
         }
         return detailGalerieItems;
+    }
+
+    private ArrayList<RentDetailCommentItem> convertCommentPojoToParcel(List<CommentEntity> commentEntities) {
+        ArrayList<RentDetailCommentItem> detailCommentItems = new ArrayList<>();
+        for (CommentEntity item : commentEntities) {
+            detailCommentItems.add(new RentDetailCommentItem(item.getId(),item.getUsername(),item.getDescription(),item.getAvatar(),item.isOwner(),item.getCreated()));
+        }
+        return detailCommentItems;
     }
 
     private ArrayList<RentDetailPoiItem> convertPoisPojoToParcel(List<RentPoiAndRelation> rentPoiAndRelations) {

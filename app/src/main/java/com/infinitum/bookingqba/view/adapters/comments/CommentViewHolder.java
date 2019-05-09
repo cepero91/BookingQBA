@@ -21,22 +21,22 @@ public class CommentViewHolder extends RecyclerView.ViewHolder{
     }
 
     public void bind(CommentItem item, int position) {
-        if (position % 2 == 0){
-            itemBinding.cvComment.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(30,12,0,12);
-            itemBinding.cvComment.setLayoutParams(params);
-        }else{
-            itemBinding.cvComment.setCardBackgroundColor(Color.parseColor("#ECEFF1"));
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(0,12,30,12);
-            itemBinding.cvComment.setLayoutParams(params);
-        }
-        itemBinding.setItem(item);
+//        if (position % 2 == 0){
+//            itemBinding.cvComment.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
+//            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//            params.setMargins(30,12,0,12);
+//            itemBinding.cvComment.setLayoutParams(params);
+//        }else{
+//            itemBinding.cvComment.setCardBackgroundColor(Color.parseColor("#ECEFF1"));
+//            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//            params.setMargins(0,12,30,12);
+//            itemBinding.cvComment.setLayoutParams(params);
+//        }
+//        itemBinding.setItem(item);
         itemBinding.executePendingBindings();
     }
 
     public void clear() {
-        itemBinding.setItem(null);
+//        itemBinding.setItem(null);
     }
 }

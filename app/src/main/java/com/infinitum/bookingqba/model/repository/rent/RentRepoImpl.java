@@ -70,7 +70,8 @@ public class RentRepoImpl implements RentRepository {
             entity.setPhoneHomeNumber(item.getPhoneHomeNumber());
             entity.setLatitude(Double.parseDouble(item.getLatitude()));
             entity.setLongitude(Double.parseDouble(item.getLongitude()));
-            entity.setRating(item.getRating());
+            entity.setRating(item.getRating().getAverage());
+            entity.setRatingCount(item.getRating().getCount());
             entity.setMaxRooms(item.getMaxRooms());
             entity.setMaxBeds(item.getMaxBeds());
             entity.setMaxBath(item.getMaxBath());

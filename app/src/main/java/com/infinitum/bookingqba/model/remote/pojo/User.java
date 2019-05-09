@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.model.remote.pojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -11,22 +12,27 @@ public class User {
     @Expose
     private String token;
 
-    @SerializedName("userName")
+    @SerializedName("username")
     @Expose
-    private String userName;
+    private String username;
 
-    @SerializedName("userAvatar")
+    @SerializedName("avatar")
     @Expose
-    private String userAvatar;
+    private String avatar;
 
     @SerializedName("rents")
     @Expose
-    private List<String> rentsId;
+    private ArrayList<String> rentsId;
 
-    public User(String token, String userName, String userAvatar, List<String> rentsId) {
+    public User(String token, String username) {
         this.token = token;
-        this.userName = userName;
-        this.userAvatar = userAvatar;
+        this.username = username;
+    }
+
+    public User(String token, String username, String avatar, ArrayList<String> rentsId) {
+        this.token = token;
+        this.username = username;
+        this.avatar = avatar;
         this.rentsId = rentsId;
     }
 
@@ -38,27 +44,27 @@ public class User {
         this.token = token;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getUserAvatar() {
-        return userAvatar;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setUserAvatar(String userAvatar) {
-        this.userAvatar = userAvatar;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
-    public List<String> getRentsId() {
+    public ArrayList<String> getRentsId() {
         return rentsId;
     }
 
-    public void setRentsId(List<String> rentsId) {
+    public void setRentsId(ArrayList<String> rentsId) {
         this.rentsId = rentsId;
     }
 }

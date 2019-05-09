@@ -120,7 +120,15 @@ dependencies {
 
     implementation 'br.com.simplepass:loading-button-android:1.14.0'
 
-    implementation 'com.nightonke:jellytogglebutton:1.0.2'
+    //GPS
+    implementation 'com.github.DMGDesignUK:DmgLocationUtils:v1.0.1'
+
+    //Timeago
+    implementation "com.github.marlonlom:timeago:$timeago"
+
+    implementation 'com.flaviofaria:kenburnsview:1.0.7'
+
+    implementation 'com.github.sujithkanna:smileyrating:1.6.8'
 
     //Leak Canary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'

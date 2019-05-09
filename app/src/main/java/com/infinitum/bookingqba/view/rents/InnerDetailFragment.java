@@ -22,6 +22,7 @@ import com.infinitum.bookingqba.databinding.FragmentInnerDetailBinding;
 import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailAmenitieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailGalerieItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailNumber;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailPoiItem;
 
 import java.util.ArrayList;
@@ -36,11 +37,15 @@ public class InnerDetailFragment extends Fragment {
     FragmentInnerDetailBinding innerDetailBinding;
 
     private static final String ARG_DESC = "argDesc";
+    private static final String ARG_RULES = "argRules";
+    private static final String ARG_NUMBER = "argNumber";
     private static final String ARG_POIS = "argPois";
     private static final String ARG_AMENITIES = "argAmenities";
     private static final String ARG_GALERIES = "argGaleries";
 
     private String argDesc;
+    private String argRules;
+    private RentDetailNumber argNumber;
     private ArrayList<RentDetailPoiItem> argPois;
     private ArrayList<RentDetailAmenitieItem> argAmenities;
     private ArrayList<RentDetailGalerieItem> argGaleries;
@@ -50,10 +55,12 @@ public class InnerDetailFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static InnerDetailFragment newInstance(String argDesc, ArrayList<RentDetailPoiItem> argPois,ArrayList<RentDetailAmenitieItem> argAmenities, ArrayList<RentDetailGalerieItem> argGaleries) {
+    public static InnerDetailFragment newInstance(String argDesc,String argRules,RentDetailNumber rentDetailNumber, ArrayList<RentDetailPoiItem> argPois,ArrayList<RentDetailAmenitieItem> argAmenities, ArrayList<RentDetailGalerieItem> argGaleries) {
         InnerDetailFragment fragment = new InnerDetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_DESC, argDesc);
+        args.putString(ARG_RULES, argRules);
+        args.putParcelable(ARG_NUMBER,rentDetailNumber);
         args.putParcelableArrayList(ARG_POIS, argPois);
         args.putParcelableArrayList(ARG_AMENITIES, argAmenities);
         args.putParcelableArrayList(ARG_GALERIES, argGaleries);
@@ -66,6 +73,8 @@ public class InnerDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             argDesc = getArguments().getString(ARG_DESC);
+            argRules = getArguments().getString(ARG_RULES);
+            argNumber = getArguments().getParcelable(ARG_NUMBER);
             argPois = getArguments().getParcelableArrayList(ARG_POIS);
             argAmenities = getArguments().getParcelableArrayList(ARG_AMENITIES);
             argGaleries = getArguments().getParcelableArrayList(ARG_GALERIES);
@@ -82,15 +91,17 @@ public class InnerDetailFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        innerDetailBinding.setDescription(argDesc);
-        setupAmenitiesAdapter(argAmenities);
-        setupPoisAdapter(argPois);
-        setupGalerieAdapter(argGaleries);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        innerDetailBinding.setDescription(argDesc);
+        innerDetailBinding.setRules(argRules);
+        innerDetailBinding.setNumber(argNumber);
+        setupAmenitiesAdapter(argAmenities);
+        setupPoisAdapter(argPois);
+        setupGalerieAdapter(argGaleries);
     }
 
     private void setupPoisAdapter(ArrayList<RentDetailPoiItem> argPois) {

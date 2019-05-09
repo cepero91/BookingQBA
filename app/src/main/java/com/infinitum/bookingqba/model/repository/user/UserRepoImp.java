@@ -2,23 +2,20 @@ package com.infinitum.bookingqba.model.repository.user;
 
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
-import com.infinitum.bookingqba.model.remote.Login;
+import com.infinitum.bookingqba.model.remote.Oauth;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class UserRepoImp implements UserRepository {
@@ -33,19 +30,18 @@ public class UserRepoImp implements UserRepository {
     }
 
     @Override
-    public Call<User> login(String username, String password) {
-        return retrofit.create(ApiInterface.class).login(username, password);
+    public Single<Response<User>> login(Oauth oauth) {
+        return retrofit.create(ApiInterface.class).login(oauth.getParam1(), oauth.getParam2(),oauth.getParam3());
     }
 
-    //Fake Login
+    //Fake Oauth
     @Override
     public Single<User> fakeLogin(String username, String password) {
         String[] rentsId = new String[]{
-                "9a526e5f-d289-4470-a521-23de426158f3",
-                "84ea7dfd-fd0a-4cfd-b022-38d3be1577be",
-                "edadb3fd-c27a-46de-83ec-bb24f8a0d51c"
+                "46768615-e60a-455c-9959-09058d6de9d9",
+                "c5f36c43-a70c-45e1-a79a-e2a8b414fab1"
         };
-        User user = new User(UUID.randomUUID().toString(), "Jose Manuel", "", Arrays.asList(rentsId));
+        User user = new User(UUID.randomUUID().toString(), "Jose Manuel");
         return Single.just(user).delay(2000, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io());
     }
 

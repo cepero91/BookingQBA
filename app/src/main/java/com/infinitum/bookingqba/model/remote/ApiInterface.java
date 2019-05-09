@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.model.remote;
 
 
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
+import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.DatabaseUpdate;
 import com.infinitum.bookingqba.model.remote.pojo.DrawType;
 import com.infinitum.bookingqba.model.remote.pojo.Galerie;
@@ -18,6 +19,7 @@ import com.infinitum.bookingqba.model.remote.pojo.RentDrawType;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoi;
 import com.infinitum.bookingqba.model.remote.pojo.RentVisitCountGroup;
+import com.infinitum.bookingqba.model.remote.pojo.RentWished;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 
@@ -27,6 +29,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -52,10 +55,16 @@ public interface ApiInterface {
 
     @FormUrlEncoded
     @POST("/api-login/")
-    Call<User> login(@Field("username")String username,@Field("password")String password);
+    Single<Response<User>> login(@Field("param1")String param1, @Field("param2")String param2, @Field("param3")String param3);
 
     @GET("secret")
     Call<String> getSecret(@Header("Authorization") String token);
+
+
+    //------------------- RENTAS EN LISTA DE DESEO ---------------------------//
+
+    @POST("/update-rent-wished/")
+    Single<ResponseResult> updateRentWished(@Body RentWished rentWished);
 
 
     //------------------- CONTADOR DE VISITAS ---------------------------//
@@ -96,6 +105,12 @@ public interface ApiInterface {
 
     @GET("/api/rents")
     Single<List<Rent>> getRents(@Query("value") String value);
+
+    //------------------- COMMENT ---------------------//
+
+    @GET("/api/comments")
+    Single<List<Comment>> getComment(@Query("value") String value);
+
 
     //------------------- MODO DE RENTA ---------------------//
 

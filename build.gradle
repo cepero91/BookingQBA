@@ -21,6 +21,7 @@ ext {
     glide="4.8.0"
     constraint_layout="1.1.2"
     filedownloader = "1.7.4"
+    timeago = "4.0.1"
 
     firebaseAds = "16.0.1"
     firebaseCore = "16.0.6"
@@ -36,6 +37,9 @@ buildscript {
         maven { url "https://jitpack.io" }
         maven{
             url "https://dl.bintray.com/infideap2/Drawer-Behavior"
+        }
+        maven {
+            url  "https://dl.bintray.com/emre/maven"
         }
     }
     dependencies {
@@ -54,6 +58,9 @@ allprojects {
         maven { url "https://jitpack.io" }
         maven{
             url "https://dl.bintray.com/infideap2/Drawer-Behavior"
+        }
+        maven {
+            url  "https://dl.bintray.com/emre/maven"
         }
     }
 }

@@ -62,6 +62,8 @@ public class RentEntity {
 
     private float rating;
 
+    private int ratingCount;
+
     private int maxRooms;
 
     private int capability;
@@ -94,7 +96,7 @@ public class RentEntity {
         this.id = id;
     }
 
-    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, @NonNull String description, @NonNull String email, String phoneNumber, String phoneHomeNumber, double latitude, double longitude, float rating, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, int isWished) {
+    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, @NonNull String description, @NonNull String email, String phoneNumber, String phoneHomeNumber, double latitude, double longitude, float rating, int ratingCount, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, int isWished) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -105,6 +107,7 @@ public class RentEntity {
         this.latitude = latitude;
         this.longitude = longitude;
         this.rating = rating;
+        this.ratingCount = ratingCount;
         this.maxRooms = maxRooms;
         this.capability = capability;
         this.maxBeds = maxBeds;
@@ -294,5 +297,13 @@ public class RentEntity {
 
     public void setIsWished(int isWished) {
         this.isWished = isWished;
+    }
+
+    public int getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(int ratingCount) {
+        this.ratingCount = ratingCount;
     }
 }

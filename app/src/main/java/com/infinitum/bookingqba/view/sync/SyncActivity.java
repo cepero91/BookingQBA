@@ -43,8 +43,7 @@ import com.liulishuo.filedownloader.FileDownloadListener;
 import com.liulishuo.filedownloader.FileDownloadQueueSet;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.muddzdev.styleabletoast.StyleableToast;
-import com.nightonke.jellytogglebutton.JellyToggleButton;
-import com.nightonke.jellytogglebutton.State;
+
 
 import org.jetbrains.annotations.Nullable;
 
@@ -132,6 +131,18 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         syncViewModel = ViewModelProviders.of(this, viewModelFactory).get(SyncViewModel.class);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        syncBinding.ivUseCase.pauseAnimation();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        syncBinding.ivUseCase.resumeAnimation();
+    }
+
     private void initButtonComponent() {
         String btnTag = sharedPreferences.getString(PREF_DOWNLOAD_LEVEL, LEVEL_ENTITY);
         syncBinding.fbDownload.setTag(btnTag);
@@ -190,9 +201,12 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
                     syncronizeGaleries(currentDateToSync);
                     break;
                 case 14:
-                    removedItems(currentDateToSync);
+                    syncronizeCommet(currentDateToSync);
                     break;
                 case 15:
+                    removedItems(currentDateToSync);
+                    break;
+                case 16:
                     completeDownload();
                     break;
             }
@@ -219,6 +233,11 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         compositeDisposable.add(entityDisposable);
     }
 
+    /**
+     * OJO CAMBIAR EL FORMATO DE SALIDA DE LA FECHA QUE DA 500 ERROR
+     * @param localResource
+     * @return
+     */
     private String checkLocalDate(Resource<DatabaseUpdateEntity> localResource) {
         if (localResource.status != Resource.Status.EMPTY) {
             return localResource.data.getLastDateUpdateEntity().toString();
@@ -350,6 +369,14 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         compositeDisposable.add(entityDisposable);
     }
 
+    private void syncronizeCommet(String dateValue) {
+        entityDisposable = syncViewModel.syncComment(dateValue)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::checkOperationResult, Timber::e);
+        compositeDisposable.add(entityDisposable);
+    }
+
     private void removedItems(String dateValue) {
         entityDisposable = syncViewModel.removedsItem(dateValue)
                 .subscribeOn(Schedulers.io())
@@ -376,15 +403,15 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private void updateEntityProgressAndContinue() {
         entityProgress++;
-        float percent = ((float) entityProgress / 16) * 100;
+        float percent = ((float) entityProgress / 17) * 100;
         saveEntityDownloadIndex(entityProgress);
         syncBinding.pbEntities.setProgress(percent);
-        if (entityProgress < 16) {
+        if (entityProgress < 17) {
             startSyncronitation(entityProgress);
-        } else if (entityProgress == 16 && !isDownloadChecked) {
+        } else if (entityProgress == 17 && !isDownloadChecked) {
             saveSuccessDownload();
             AlertUtils.showSuccessAlertAndGoHome(this);
-        } else if (entityProgress == 16 && isDownloadChecked) {
+        } else if (entityProgress == 17 && isDownloadChecked) {
             prepareForDownload();
         }
     }

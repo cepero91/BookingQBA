@@ -14,15 +14,14 @@
             type="Boolean" />
     </data>
 
-    <FrameLayout
+    <android.support.design.widget.CoordinatorLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         tools:context="com.rhumbos.nac.ui.activities.ChapterDetail">
 
 
-        <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
+        <android.support.v4.widget.NestedScrollView
             android:id="@+id/nested"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,15 +37,13 @@
                     android:layout_height="wrap_content"
                     >
 
-                    <com.github.siyamed.shapeimageview.mask.PorterShapeImageView
+                    <android.support.v7.widget.AppCompatImageView
                         android:id="@+id/iv_portrait_detail"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/rent_detail_img_dimen"
                         android:layout_gravity="center"
                         android:fitsSystemWindows="true"
                         android:scaleType="centerCrop"
-                        app:siBorderAlpha="0"
-                        app:siShape="@drawable/shape_rent_detail_rounded_bottom"
                         />
 
                     <LinearLayout
@@ -197,129 +194,6 @@
 
                     </android.support.v7.widget.CardView>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:orientation="horizontal"
-                        android:weightSum="4">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="3dp">
-
-                            <android.support.v7.widget.AppCompatImageView
-                                android:layout_width="20dp"
-                                android:layout_height="22dp"
-                                android:tint="@color/colorPrimaryDark"
-                                app:srcCompat="@drawable/ic_door_open" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="3dp"
-                                android:textAppearance="@style/SmallTextForIcon"
-                                app:setMaxRooms="@{rentDetailItem.getRentEntity().getMaxRooms()}" />
-
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginTop="5dp"
-                            android:background="@color/material_color_grey_300" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="3dp">
-
-                            <android.support.v7.widget.AppCompatImageView
-                                android:layout_width="20dp"
-                                android:layout_height="22dp"
-                                android:tint="@color/colorPrimaryDark"
-                                app:srcCompat="@drawable/ic_bed" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="3dp"
-                                android:textAppearance="@style/SmallTextForIcon"
-                                app:setMaxBeds="@{rentDetailItem.getRentEntity().getMaxBeds()}" />
-
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginTop="5dp"
-                            android:background="@color/material_color_grey_300" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="3dp">
-
-                            <android.support.v7.widget.AppCompatImageView
-                                android:layout_width="20dp"
-                                android:layout_height="22dp"
-                                android:tint="@color/colorPrimaryDark"
-                                app:srcCompat="@drawable/ic_bath" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="3dp"
-                                android:textAppearance="@style/SmallTextForIcon"
-                                app:setMaxBath="@{rentDetailItem.getRentEntity().getMaxBath()}" />
-
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginTop="5dp"
-                            android:background="@color/material_color_grey_300" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="3dp">
-
-                            <android.support.v7.widget.AppCompatImageView
-                                android:layout_width="20dp"
-                                android:layout_height="22dp"
-                                android:tint="@color/colorPrimaryDark"
-                                app:srcCompat="@drawable/ic_street_view" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="3dp"
-                                android:textAppearance="@style/SmallTextForIcon"
-                                app:setCapability="@{rentDetailItem.getRentEntity().getCapability()}" />
-
-                        </LinearLayout>
-
-
-                    </LinearLayout>
-
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -328,7 +202,7 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="5dp"
                             android:orientation="vertical"
                             app:visibleGone="@{!safeUnbox(isLoading)}">
 
@@ -370,7 +244,7 @@
 
             </RelativeLayout>
 
-        </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
+        </android.support.v4.widget.NestedScrollView>
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -382,6 +256,17 @@
             app:contentInsetStart="0dp"
             app:contentInsetStartWithNavigation="0dp" />
 
-    </FrameLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_comment"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="15dp"
+            />
+
+
+    </android.support.design.widget.CoordinatorLayout>
 
 </layout>

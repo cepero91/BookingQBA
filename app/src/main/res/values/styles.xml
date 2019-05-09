@@ -100,6 +100,12 @@
         <item name="stIconStart">@drawable/ic_exclamation_triangle</item>
     </style>
 
+    <style name="myErrorTopToast" parent="myToast">
+        <item name="stColorBackground">#F44336</item>
+        <item name="stIconStart">@drawable/ic_exclamation_triangle</item>
+        <item name="stGravity">top</item>
+    </style>
+
     <style name="MySpinnerStyle">
         <item name="android:background">@drawable/selector_custom_spinner</item>
     </style>

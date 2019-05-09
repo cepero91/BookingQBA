@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.view.home;
 
 import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -29,11 +31,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.dmgdesignuk.locationutils.easylocationutility.EasyLocationUtility;
+import com.dmgdesignuk.locationutils.easylocationutility.LocationRequestCallback;
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
+import com.google.android.gms.location.LocationRequest;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.service.SendDataWorker;
+import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
@@ -50,6 +56,7 @@ import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -68,7 +75,10 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
+import timber.log.Timber;
 
+import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
+import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
@@ -86,7 +96,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     private static final String NOTIFICATION_DEFAULT = "default";
     private static final int NOTIFICATION_ID = 1;
     private static final int MY_REQUEST_CODE = 4;
-    private static final int FROM_DETAIL_ACTIVITY_RESULT = 6;
     private ActivityHomeBinding homeBinding;
     private FragmentManager fragmentManager;
     private Fragment mFragment;
@@ -96,9 +105,12 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentDispatchingAndroidInjector;
 
-
     @Inject
     SharedPreferences sharedPreferences;
+
+    private EasyLocationUtility locationUtility;
+    private boolean isGPSActive = false;
+    private SoftReference<LocationRequestCallback> softReferenceLocation;
 
 
     @Override
@@ -115,18 +127,14 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
         initWorkRequest();
 
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
+        setupLocationUtility();
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MY_REQUEST_CODE && resultCode == FROM_DETAIL_ACTIVITY_RESULT) {
+        if (requestCode == MY_REQUEST_CODE && resultCode == FROM_DETAIL_TO_MAP) {
             if (data.getExtras() != null) {
                 ArrayList<GeoRent> geoRentList = data.getParcelableArrayListExtra("geoRents");
                 if (geoRentList != null && geoRentList.size() > 0) {
@@ -136,6 +144,16 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                     homeBinding.navView.getMenu().findItem(R.id.nav_map).setChecked(true);
                 }
             }
+        } else if (requestCode == EasyLocationUtility.RequestCodes.CURRENT_LOCATION_UPDATES) {
+            if (resultCode == Activity.RESULT_CANCELED) {
+                AlertUtils.showErrorTopToast(this, "Imposible localizar sin proveedor");
+                isGPSActive = false;
+                invalidateOptionsMenu();
+            }
+        } else if (requestCode == MY_REQUEST_CODE && resultCode == FROM_DETAIL_REFRESH) {
+            boolean refreshList = data.getBooleanExtra("refresh", false);
+            if (mFragment instanceof RentListFragment)
+                ((RentListFragment) mFragment).needToRefresh(refreshList);
         }
     }
 
@@ -152,7 +170,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 new PeriodicWorkRequest.Builder(SendDataWorker.class, 20, TimeUnit.MINUTES)
                         .setConstraints(myConstraints)
                         .build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork("MyPeriodicalWork", ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest);
+        WorkManager.getInstance().enqueueUniquePeriodicWork("MyPeriodicalWork", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
     }
 
 
@@ -179,6 +197,11 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     private void setupToolbar() {
         setSupportActionBar(homeBinding.toolbar);
+    }
+
+    private void setupLocationUtility() {
+        locationUtility = new EasyLocationUtility(this);
+        locationUtility.setLocationRequestParams(10000, 5000, LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     @Override
@@ -229,7 +252,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_filter, menu);
+        getMenuInflater().inflate(R.menu.menu_common, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -250,11 +273,8 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         login.setVisible(!loginVisibility);
         MenuItem logout = menu.findItem(R.id.action_logout);
         logout.setVisible(loginVisibility);
-        if (mFragment instanceof RentListFragment) {
-            menu.findItem(R.id.action_filter_panel).setVisible(true);
-        } else {
-            menu.findItem(R.id.action_filter_panel).setVisible(false);
-        }
+        menu.findItem(R.id.action_filter_panel).setVisible(mFragment instanceof RentListFragment);
+        menu.findItem(R.id.action_gps).setVisible(mFragment instanceof MapFragment);
         homeBinding.navView.getMenu().setGroupVisible(R.id.group_2, isProfileActive);
     }
 
@@ -280,8 +300,64 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 }
                 logoutPetition();
                 return true;
+            case R.id.action_gps:
+                initLocation(item);
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void initLocation(MenuItem item) {
+        if (!isGPSActive) {
+            isGPSActive = true;
+            changeMenuIcon(item);
+            getLocationUpdates();
+        } else {
+            isGPSActive = false;
+            changeMenuIcon(item);
+            locationUtility.stopLocationUpdates();
+        }
+    }
+
+    private void getLocationUpdates() {
+        if (locationUtility.permissionIsGranted()) {
+            // Check device settings
+            locationUtility.checkDeviceSettings(EasyLocationUtility.RequestCodes.CURRENT_LOCATION_UPDATES);
+
+            // Request location updates
+            softReferenceLocation = new SoftReference<>(getSoftLocationRequest());
+            locationUtility.getCurrentLocationUpdates(softReferenceLocation.get());
+
+        } else {
+            locationUtility.requestPermission(EasyLocationUtility.RequestCodes.CURRENT_LOCATION_UPDATES);
+        }
+    }
+
+    private LocationRequestCallback getSoftLocationRequest() {
+        return new LocationRequestCallback() {
+            @Override
+            public void onLocationResult(Location location) {
+                Toast.makeText(HomeActivity.this, String.format("Location Result %s, %s", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
+                if (mFragment instanceof MapFragment)
+                    ((MapFragment) mFragment).updateUserTracking(location.getLatitude(), location.getLongitude());
+            }
+
+            @Override
+            public void onFailedRequest(String result) {
+                Timber.e(result);
+                AlertUtils.showErrorTopToast(HomeActivity.this, "Error al localizar usuario");
+                isGPSActive = false;
+                invalidateOptionsMenu();
+            }
+        };
+    }
+
+    private void changeMenuIcon(MenuItem item) {
+        if (isGPSActive) {
+            item.setIcon(R.drawable.ic_crosshairs_focus);
+        } else {
+            item.setIcon(R.drawable.ic_crosshairs);
+        }
     }
 
 
@@ -297,24 +373,35 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         int id = menuItem.getItemId();
-        if (id == R.id.nav_home) {
+        boolean sameFragment = true;
+        if (id == R.id.nav_home && !(mFragment instanceof HomeFragment)) {
             mFragment = HomeFragment.newInstance();
-        } else if (id == R.id.nav_list) {
+            sameFragment = false;
+        } else if (id == R.id.nav_list && !(mFragment instanceof RentListFragment)) {
             String provinceName = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
             mFragment = RentListFragment.newInstance(provinceName, "", ORDER_TYPE_POPULAR);
-        } else if (id == R.id.nav_profile) {
+            sameFragment = false;
+        } else if (id == R.id.nav_profile && !(mFragment instanceof ProfileFragment)) {
             mFragment = ProfileFragment.newInstance();
-        } else if (id == R.id.nav_map) {
+            sameFragment = false;
+        } else if (id == R.id.nav_map && !(mFragment instanceof MapFragment)) {
             mFragment = MapFragment.newInstance(null, false);
-        } else if (id == R.id.nav_wish_list) {
+            sameFragment = false;
+        } else if (id == R.id.nav_wish_list && !(mFragment instanceof ListWishFragment)) {
             mFragment = ListWishFragment.newInstance();
+            sameFragment = false;
         } else if (id == R.id.nav_setting) {
-            startActivity(new Intent(HomeActivity.this,SyncActivity.class));
+            startActivity(new Intent(HomeActivity.this, SyncActivity.class));
             this.finish();
         }
-        if (mFragment != null) {
+        if (mFragment != null && !sameFragment) {
             // Highlight the selected item has been done by NavigationView
             menuItem.setChecked(true);
+
+            if (isGPSActive) {
+                locationUtility.stopLocationUpdates();
+                isGPSActive = false;
+            }
             // Close drawer
             homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
             homeBinding.drawerLayout.postDelayed(() -> {
@@ -327,6 +414,8 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             }, 300);
 
             return true;
+        } else {
+            homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
         }
         return false;
     }
@@ -356,18 +445,13 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             return;
         }
         if (mFragment instanceof HomeFragment) {
-            super.onBackPressed();
+            softReferenceLocation.clear();
+            AlertUtils.showInfoAlertAndFinishApp(this);
         } else {
             MenuItem menuItem = homeBinding.navView.getMenu().findItem(R.id.nav_home);
             onNavigationItemSelected(menuItem);
         }
 
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
 
@@ -381,7 +465,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(USER_IS_AUTH, true);
         editor.putString(USER_TOKEN, user.getToken());
-        editor.putString(USER_NAME, user.getUserName());
+        editor.putString(USER_NAME, user.getUsername());
         editor.putStringSet(USER_RENTS, new HashSet<>(user.getRentsId()));
         editor.apply();
         invalidateOptionsMenu();
@@ -432,5 +516,23 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         startActivityForResult(intent, MY_REQUEST_CODE);
     }
 
+    // -------------------------- LIVECYCLE ACTIVITY METHOD -------------------------- //
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        locationUtility.stopLocationUpdates();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
 }

@@ -130,12 +130,9 @@ public class HomeFragment extends BaseNavigationFragment {
     }
 
     private void checkPermissions() {
-        int permGranted = sharedPreferences.getInt(PERMISSION, 0);
-        if (permGranted == 0 || permGranted == PERMISSION_NOT_GRANTED) {
             final PermissionListener permissionlistener = new PermissionListener() {
                 @Override
                 public void onPermissionGranted() {
-                    savePermissionToPreference(PERMISSION_GRANTED);
                     String deviceUniqueID = getDeviceUniversalID();
                     saveImeiToPreference(deviceUniqueID);
                     Timber.e("Device ID %s", deviceUniqueID);
@@ -143,7 +140,6 @@ public class HomeFragment extends BaseNavigationFragment {
 
                 @Override
                 public void onPermissionDenied(List<String> deniedPermissions) {
-                    savePermissionToPreference(PERMISSION_NOT_GRANTED);
                 }
             };
 
@@ -154,10 +150,9 @@ public class HomeFragment extends BaseNavigationFragment {
                     .setDeniedTitle(R.string.permission_denied_title)
                     .setDeniedMessage(R.string.permission_denied_message)
                     .setGotoSettingButtonText(R.string.permission_go_setting)
-                    .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.CALL_PHONE, Manifest.permission.SEND_SMS)
+                    .setPermissions(Manifest.permission.READ_PHONE_STATE, Manifest.permission.CALL_PHONE, Manifest.permission.SEND_SMS
+                            , Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
                     .check();
-        }
-
     }
 
     private void savePermissionToPreference(int value) {
@@ -215,7 +210,7 @@ public class HomeFragment extends BaseNavigationFragment {
 
     private void saveProvinceToPreference(String uuidOnPos) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(PROVINCE_UUID,uuidOnPos);
+        editor.putString(PROVINCE_UUID, uuidOnPos);
         editor.apply();
     }
 

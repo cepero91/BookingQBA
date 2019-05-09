@@ -27,6 +27,7 @@ public final class Constants {
     public static final String RENT_MODE_TABLE_NAME = "RentMode";
     public static final String RENT_TABLE_NAME = "Rent";
     public static final String GALERIE_TABLE_NAME = "Galerie";
+    public static final String COMMENT_TABLE_NAME = "Comment";
     public static final String REFERENCE_ZONE_TABLE_NAME = "ReferenceZone";
     public static final String OFFER_TABLE_NAME = "Offer";
     public static final String RENT_AMENITIES_TABLE_NAME = "RentAmenities";
@@ -47,7 +48,8 @@ public final class Constants {
     public static final String PROVINCE_UUID_DEFAULT = "cfa7f0d7-2b67-4245-9157-48ba2117f63c";
     public static final char ORDER_TYPE_POPULAR = 'r'; // Represent attrib rating
     public static final char ORDER_TYPE_NEW = 'c'; // Represent attrib created
-
+    public static final int FROM_DETAIL_TO_MAP = 6;
+    public static final int FROM_DETAIL_REFRESH = 12;
 
     //USER LOGIN
     public static final String USER_IS_AUTH = "userIsAuth";
@@ -66,5 +68,7 @@ public final class Constants {
     public static final int LEVEL_PROGRESS_GALERY = 2;
     public static final int PROGRESS_ERROR = 2;
     public static final int PROGRESS_SUCCESS = 4;
+    public static final String GPS_ACTIVE = "gpsActive";
+    public static final String USER_GPS = "user_gps";
 
 }

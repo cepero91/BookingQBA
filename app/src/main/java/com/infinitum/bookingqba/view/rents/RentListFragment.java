@@ -115,6 +115,13 @@ public class RentListFragment extends BaseNavigationFragment {
 
     }
 
+    public void needToRefresh(boolean refresh){
+        if(refresh){
+            rentListBinding.setIsLoading(true);
+            loadPaginatedData();
+        }
+    }
+
 
     public RecyclerView.LayoutManager setupLayoutManager() {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());

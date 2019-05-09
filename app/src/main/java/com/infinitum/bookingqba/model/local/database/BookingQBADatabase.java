@@ -5,6 +5,7 @@ import android.arch.persistence.room.RoomDatabase;
 
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.ChangeRateEntity;
+import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
 import com.infinitum.bookingqba.model.local.entity.DrawTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
@@ -26,7 +27,7 @@ import com.infinitum.bookingqba.model.local.entity.RentVisitCountEntity;
         PoiTypeEntity.class, PoiEntity.class, ChangeRateEntity.class, RentModeEntity.class,
         ReferenceZoneEntity.class, RentEntity.class, GalerieEntity.class, OfferEntity.class,
         RentAmenitiesEntity.class, RentPoiEntity.class, RentDrawTypeEntity.class, RentVisitCountEntity.class,
-        DatabaseUpdateEntity.class}, version = 1)
+        DatabaseUpdateEntity.class, CommentEntity.class}, version = 1)
 public abstract class BookingQBADatabase extends RoomDatabase {
 
     public abstract BookingQBADao dao();

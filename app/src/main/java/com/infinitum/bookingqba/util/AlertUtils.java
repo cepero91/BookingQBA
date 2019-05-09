@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,10 @@ public class AlertUtils {
     }
 
     public static void showErrorToast(Context context, String message) {
+        StyleableToast.makeText(context, message, Toast.LENGTH_LONG, R.style.myErrorToast).show();
+    }
+
+    public static void showErrorTopToast(Context context, String message) {
         StyleableToast.makeText(context, message, Toast.LENGTH_LONG, R.style.myErrorToast).show();
     }
 
@@ -106,7 +111,6 @@ public class AlertUtils {
             sweetAlertDialog.getButton(SweetAlertDialog.BUTTON_CANCEL).setPadding(15, 15, 15, 15);
         });
         sweetAlertDialog.show();
-
     }
 
     public static void showErrorAlert(Context context, String message) {
@@ -122,5 +126,33 @@ public class AlertUtils {
             sweetAlertDialog.getButton(SweetAlertDialog.BUTTON_CANCEL).setPadding(15, 15, 15, 15);
         });
         sweetAlertDialog.show();
+    }
+
+    public static void showGPSErrorAndGoSetting(Context context, int requestCode) {
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(context, SweetAlertDialog.ERROR_TYPE)
+                .setTitleText("Ooopss...!")
+                .setContentText("Active la Localizacion del Dispositivo!")
+                .setConfirmText(" Ir a Localizacion ")
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        ((Activity)context).startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS),requestCode);
+                    }
+                });
+        sweetAlertDialog.show();
+    }
+
+    public static void showInfoAlertAndFinishApp(Context context) {
+        new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE)
+                .setTitleText("Aviso!")
+                .setContentText("Esta seguro que desea salir")
+                .setConfirmText("Finalizar")
+                .setConfirmClickListener(sweetAlertDialog -> {
+                    sweetAlertDialog.dismissWithAnimation();
+                    new Handler().postDelayed(() -> {
+                        ((Activity) context).finish();
+                    }, 400);
+                })
+                .show();
     }
 }

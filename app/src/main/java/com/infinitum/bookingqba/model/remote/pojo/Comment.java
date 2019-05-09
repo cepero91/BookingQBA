@@ -5,27 +5,52 @@ import com.google.gson.annotations.SerializedName;
 
 public class Comment {
 
-    @SerializedName("id")
+    @SerializedName("uui")
     @Expose
     private String id;
 
-    @SerializedName("autor")
+    @SerializedName("username")
     @Expose
-    private String autor;
+    private String username;
 
-    @SerializedName("bodyMessage")
+    @SerializedName("description")
     @Expose
-    private String bodyMessage;
+    private String description;
 
-    @SerializedName("createdAt")
+    @SerializedName("created")
     @Expose
-    private String createdAt;
+    private String created;
 
-    public Comment(String id, String autor, String bodyMessage, String createdAt) {
+    @SerializedName("avatar")
+    @Expose
+    private String avatar;
+
+    @SerializedName("rent")
+    @Expose
+    private String rent;
+
+    @SerializedName("is_owner")
+    @Expose
+    private boolean is_owner;
+
+    @SerializedName("emotion")
+    @Expose
+    private int emotion;
+
+    @SerializedName("active")
+    @Expose
+    private boolean active;
+
+    public Comment(String id, String username, String description, String created, String avatar, String rent, boolean is_owner, int emotion, boolean active) {
         this.id = id;
-        this.autor = autor;
-        this.bodyMessage = bodyMessage;
-        this.createdAt = createdAt;
+        this.username = username;
+        this.description = description;
+        this.created = created;
+        this.avatar = avatar;
+        this.rent = rent;
+        this.is_owner = is_owner;
+        this.emotion = emotion;
+        this.active = active;
     }
 
     public String getId() {
@@ -36,27 +61,67 @@ public class Comment {
         this.id = id;
     }
 
-    public String getAutor() {
-        return autor;
+    public String getUsername() {
+        return username;
     }
 
-    public void setAutor(String autor) {
-        this.autor = autor;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getBodyMessage() {
-        return bodyMessage;
+    public String getDescription() {
+        return description;
     }
 
-    public void setBodyMessage(String bodyMessage) {
-        this.bodyMessage = bodyMessage;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
+    public String getCreated() {
+        return created;
     }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getRent() {
+        return rent;
+    }
+
+    public void setRent(String rent) {
+        this.rent = rent;
+    }
+
+    public boolean isIs_owner() {
+        return is_owner;
+    }
+
+    public void setIs_owner(boolean is_owner) {
+        this.is_owner = is_owner;
+    }
+
+    public int getEmotion() {
+        return emotion;
+    }
+
+    public void setEmotion(int emotion) {
+        this.emotion = emotion;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

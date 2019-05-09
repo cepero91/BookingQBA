@@ -11,6 +11,14 @@
             type="String" />
 
         <variable
+            name="rules"
+            type="String" />
+
+        <variable
+            name="number"
+            type="com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailNumber"/>
+
+        <variable
             name="amenities"
             type="com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter" />
 
@@ -35,6 +43,130 @@
             android:paddingBottom="20dp"
             android:layout_marginTop="10dp"
             android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="3dp">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="20dp"
+                        android:layout_height="22dp"
+                        android:tint="@color/colorPrimaryDark"
+                        app:srcCompat="@drawable/ic_door_open" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:textAppearance="@style/SmallTextForIcon"
+                        app:setMaxRooms="@{number.getMaxRooms()}" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@color/material_color_grey_300" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="3dp">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="20dp"
+                        android:layout_height="22dp"
+                        android:tint="@color/colorPrimaryDark"
+                        app:srcCompat="@drawable/ic_bed" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:textAppearance="@style/SmallTextForIcon"
+                        app:setMaxBeds="@{number.getMaxBeds()}" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@color/material_color_grey_300" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="3dp">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="20dp"
+                        android:layout_height="22dp"
+                        android:tint="@color/colorPrimaryDark"
+                        app:srcCompat="@drawable/ic_bath" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:textAppearance="@style/SmallTextForIcon"
+                        app:setMaxBath="@{number.getMaxBaths()}" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@color/material_color_grey_300" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="3dp">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="20dp"
+                        android:layout_height="22dp"
+                        android:tint="@color/colorPrimaryDark"
+                        app:srcCompat="@drawable/ic_street_view" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:textAppearance="@style/SmallTextForIcon"
+                        app:setCapability="@{number.getCapability()}" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -117,6 +249,24 @@
                 app:setGalerieVisibility="@{galeries.getItemCount()}"
                 />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="15dp"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:fontFamily="@font/poppinsmedium"
+                android:text="Reglas"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="15dp"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:text="@{rules}" />
 
         </LinearLayout>
 

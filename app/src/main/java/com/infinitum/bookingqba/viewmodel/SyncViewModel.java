@@ -9,6 +9,7 @@ import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
+import com.infinitum.bookingqba.model.repository.comment.CommentRepository;
 import com.infinitum.bookingqba.model.repository.dbcommonsop.DBCommonOperationRepository;
 import com.infinitum.bookingqba.model.repository.drawtype.DrawTypeRepository;
 import com.infinitum.bookingqba.model.repository.galerie.GalerieRepository;
@@ -50,12 +51,13 @@ public class SyncViewModel extends ViewModel {
     private RentPoiRepository rentPoiRepository;
     private RentDrawTypeRepository rentDrawTypeRepository;
     private OfferRepository offerRepository;
+    private CommentRepository commentRepository;
     private DBCommonOperationRepository dBCommonOperationRepository;
 
     private List<GaleryUpdateUtil> galeryUpdateUtilList;
 
     @Inject
-    public SyncViewModel(ProvinceRepository provinceRepository, MunicipalityRepository municipalityRepository, AmenitiesRepository amenitiesRepository, PoiTypeRepository poiTypeRepository, PoiRepository poiRepository, RentRepository rentRepository, RentModeRepository rentModeRepository, ReferenceZoneRepository referenceZoneRepository, DrawTypeRepository drawTypeRepository, GalerieRepository galerieRepository, RentAmenitiesRepository rentAmenitiesRepository, RentPoiRepository rentPoiRepository, RentDrawTypeRepository rentDrawTypeRepository, OfferRepository offerRepository, DBCommonOperationRepository dBCommonOperationRepository) {
+    public SyncViewModel(ProvinceRepository provinceRepository, MunicipalityRepository municipalityRepository, AmenitiesRepository amenitiesRepository, PoiTypeRepository poiTypeRepository, PoiRepository poiRepository, RentRepository rentRepository, RentModeRepository rentModeRepository, ReferenceZoneRepository referenceZoneRepository, DrawTypeRepository drawTypeRepository, GalerieRepository galerieRepository, RentAmenitiesRepository rentAmenitiesRepository, RentPoiRepository rentPoiRepository, RentDrawTypeRepository rentDrawTypeRepository, OfferRepository offerRepository, CommentRepository commentRepository, DBCommonOperationRepository dBCommonOperationRepository) {
         this.provinceRepository = provinceRepository;
         this.municipalityRepository = municipalityRepository;
         this.amenitiesRepository = amenitiesRepository;
@@ -70,6 +72,7 @@ public class SyncViewModel extends ViewModel {
         this.rentPoiRepository = rentPoiRepository;
         this.rentDrawTypeRepository = rentDrawTypeRepository;
         this.offerRepository = offerRepository;
+        this.commentRepository = commentRepository;
         this.dBCommonOperationRepository = dBCommonOperationRepository;
         this.galeryUpdateUtilList = new ArrayList<>();
     }
@@ -167,6 +170,10 @@ public class SyncViewModel extends ViewModel {
 
     public Single<OperationResult> syncGaleries(String value){
         return galerieRepository.syncronizeGaleries(value);
+    }
+
+    public Single<OperationResult> syncComment(String value){
+        return commentRepository.syncronizeComment(value);
     }
 
     public Single<OperationResult> removedsItem(String value){

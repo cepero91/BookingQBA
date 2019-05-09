@@ -21,4 +21,10 @@
         android:title="Filter"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/action_gps"
+        android:icon="@drawable/ic_crosshairs"
+        android:title="Filter"
+        app:showAsAction="always" />
+
 </menu>

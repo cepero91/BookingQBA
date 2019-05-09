@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.rentvisitcount;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.RentVisitCountEntity;
 import com.infinitum.bookingqba.model.remote.pojo.RentVisitCount;
@@ -15,8 +16,10 @@ import retrofit2.Response;
 
 public interface RentVisitCountRepository {
 
-    Single<Resource<List<RentVisitCountEntity>>> allRentVisitCount();
-
     Single<Resource<ResponseResult>> sendVisitCountToServer();
+
+    Single<Resource<ResponseResult>> sendRentWishedToServer();
+
+    Single<OperationResult> removeHistory();
 
 }

@@ -43,7 +43,7 @@ public class Rent {
 
     @SerializedName("rating")
     @Expose
-    private Float rating;
+    private Rating rating;
 
     @SerializedName("maxRooms")
     @Expose
@@ -239,11 +239,11 @@ public class Rent {
         this.created = created;
     }
 
-    public Float getRating() {
+    public Rating getRating() {
         return rating;
     }
 
-    public void setRating(Float rating) {
+    public void setRating(Rating rating) {
         this.rating = rating;
     }
 }

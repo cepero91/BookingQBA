@@ -4,6 +4,12 @@
     xmlns:fancy="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="isLoading"
+            type="Boolean"/>
+    </data>
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -65,12 +71,22 @@
                 android:layout_height="16dp"
                 android:layout_marginTop="5dp"
                 android:layout_gravity="center"
-                android:visibility="invisible"
+                app:visibleGone="@{safeUnbox(isLoading)}"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Este es el mesaje de error"
+                android:layout_gravity="center"
+                android:fontFamily="@font/poppinsregular"
+                android:drawableLeft="@drawable/ic_exclamation_triangle"
+                android:drawableTint="@color/material_color_red_700"
+                android:textColor="@color/material_color_red_700"/>
 
 
             <mehdi.sakout.fancybuttons.FancyButton
-                android:id="@+id/btn_login"
+                android:id="@+id/login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
