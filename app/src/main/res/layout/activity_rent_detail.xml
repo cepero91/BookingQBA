@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="rentDetailItem"
-            type="com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailItem" />
+            name="rentItem"
+            type="com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem" />
 
         <variable
             name="isLoading"
@@ -54,7 +54,7 @@
                         android:layout_marginEnd="20dp"
                         android:layout_marginBottom="15dp"
                         android:orientation="horizontal"
-                        app:setGalerieVisibility="@{rentDetailItem.galerieSize()}" >
+                        app:setGalerieVisibility="@{rentItem.galerieSize()}" >
 
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="@dimen/rent_detail_icon_pic_dime"
@@ -72,7 +72,7 @@
                             android:includeFontPadding="false"
                             android:textColor="@color/White_100"
                             android:textSize="@dimen/rent_detail_icon_pic_text_size"
-                            app:setMaxGaleriePictures="@{rentDetailItem.galerieSize()}" />
+                            app:setMaxGaleriePictures="@{rentItem.galerieSize()}" />
 
 
                     </LinearLayout>
@@ -111,7 +111,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/poppinsbold"
-                                android:text="@{rentDetailItem.getRentEntity().getName()}"
+                                android:text="@{rentItem.getRentEntity().getName()}"
                                 android:textColor="@color/material_color_blue_grey_500"
                                 android:textSize="@dimen/rent_detail_rent_name_size" />
 
@@ -120,7 +120,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@+id/tv_rent_name"
-                                app:setRating="@{rentDetailItem.getRentEntity().getRating()}"
+                                app:setRating="@{rentItem.getRentEntity().getRating()}"
                                 app:srb_clickable="false"
                                 app:srb_drawableEmpty="@drawable/ic_star_o"
                                 app:srb_drawableFilled="@drawable/ic_star"
@@ -157,7 +157,7 @@
                                     android:fontFamily="@font/poppinsregular"
                                     android:includeFontPadding="false"
                                     android:maxLines="2"
-                                    android:text="@{rentDetailItem.getRentEntity().getAddress()}"
+                                    android:text="@{rentItem.getRentEntity().getAddress()}"
                                     android:textColor="@color/material_color_grey_500"
                                     android:textSize="@dimen/rent_detail_address_size" />
 
@@ -178,7 +178,7 @@
                                     android:fontFamily="@font/poppinsbold"
                                     android:textColor="@color/material_color_blue_grey_500"
                                     android:textSize="@dimen/rent_detail_price_size"
-                                    app:setPriceText="@{rentDetailItem.getRentEntity().getPrice()}" />
+                                    app:setPriceText="@{rentItem.getRentEntity().getPrice()}" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -186,7 +186,7 @@
                                     android:fontFamily="@font/poppinsregular"
                                     android:textColor="@color/material_color_grey_500"
                                     android:textSize="@dimen/rent_detail_rent_mode_size"
-                                    app:setRentModeString="@{rentDetailItem.getRentModeName()}" />
+                                    app:setRentModeString="@{rentItem.getRentModeName()}" />
 
                             </LinearLayout>
 

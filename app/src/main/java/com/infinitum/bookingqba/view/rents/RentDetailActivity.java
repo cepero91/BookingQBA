@@ -1,41 +1,32 @@
 package com.infinitum.bookingqba.view.rents;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.PopupMenu;
 
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
-import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityRentDetailBinding;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
+import com.infinitum.bookingqba.model.remote.pojo.Comment;
+import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.ColorUtil;
 import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailItem;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailNumber;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentNumber;
 import com.infinitum.bookingqba.view.adapters.rentdetail.InnerViewPagerAdapter;
 import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
 
 import org.oscim.core.GeoPoint;
@@ -54,9 +45,11 @@ import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
+import static com.infinitum.bookingqba.util.Constants.USER_ID;
+import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 
 public class RentDetailActivity extends AppCompatActivity implements NestedScrollView.OnScrollChangeListener,
-        View.OnClickListener, ViewPager.OnPageChangeListener {
+        View.OnClickListener, DialogComment.CommentInteraction, DialogRating.RatingInteraction{
 
     private ActivityRentDetailBinding rentDetailBinding;
     private int imageViewHeight;
@@ -65,6 +58,9 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
     @Inject
     ViewModelFactory viewModelFactory;
 
+    @Inject
+    SharedPreferences sharedPreferences;
+
     private RentViewModel viewModel;
     private String rentUuid = "";
     private int isWished = 0;
@@ -72,7 +68,6 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
 
     private Disposable disposable;
     private CompositeDisposable compositeDisposable;
-    private boolean isCommentActive = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,13 +77,7 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
         rentDetailBinding.setIsLoading(true);
         rentDetailBinding.fabComment.hide();
-        rentDetailBinding.fabComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogComment lf = DialogComment.newInstance();
-                lf.show(getSupportFragmentManager(), "CommentDialog");
-            }
-        });
+        rentDetailBinding.fabComment.setOnClickListener(this);
         compositeDisposable = new CompositeDisposable();
 
         if (getIntent().getExtras() != null) {
@@ -132,8 +121,8 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
     }
 
 
-    private void onSuccess(Resource<RentDetailItem> rentDetailResource) {
-        rentDetailBinding.setRentDetailItem(rentDetailResource.data);
+    private void onSuccess(Resource<RentItem> rentDetailResource) {
+        rentDetailBinding.setRentItem(rentDetailResource.data);
         setupViewPager(rentDetailResource.data);
     }
 
@@ -149,19 +138,18 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
         super.onRestoreInstanceState(savedInstanceState);
     }
 
-    private void setupViewPager(RentDetailItem rentDetailItem) {
-        RentEntity entity = rentDetailItem.getRentEntity();
+    private void setupViewPager(RentItem rentItem) {
+        RentEntity entity = rentItem.getRentEntity();
         innerViewPagerAdapter = new InnerViewPagerAdapter(getSupportFragmentManager());
-        RentDetailNumber rentDetailNumber = new RentDetailNumber(entity.getMaxBeds(), entity.getMaxBath(), entity.getCapability(), entity.getMaxRooms());
-        Fragment innerDetail = InnerDetailFragment.newInstance(entity.getDescription(), entity.getRules(), rentDetailNumber, rentDetailItem.getPoiItems(), rentDetailItem.getAmenitieItems(), rentDetailItem.getGalerieItems());
+        RentNumber rentNumber = new RentNumber(entity.getMaxBeds(), entity.getMaxBath(), entity.getCapability(), entity.getMaxRooms());
+        Fragment innerDetail = InnerDetailFragment.newInstance(entity.getDescription(), entity.getRules(), rentNumber, rentItem.getPoiItems(), rentItem.getAmenitieItems(), rentItem.getGalerieItems());
         innerViewPagerAdapter.addFragment(innerDetail, "Detalles");
-        if (rentDetailItem.getCommentItems().size() > 0) {
-            Fragment innerComment = RentCommentFragment.newInstance(rentDetailItem.getCommentItems());
+        if (rentItem.getCommentItems().size() > 0) {
+            Fragment innerComment = RentCommentFragment.newInstance(rentItem.getCommentItems());
             innerViewPagerAdapter.addFragment(innerComment, "Comentarios");
         }
         rentDetailBinding.vpPages.setAdapter(innerViewPagerAdapter);
         rentDetailBinding.tlTab.setViewPager(rentDetailBinding.vpPages);
-        rentDetailBinding.tlTab.setOnPageChangeListener(this);
         rentDetailBinding.vpPages.postDelayed(() -> rentDetailBinding.setIsLoading(false), 500);
         rentDetailBinding.executePendingBindings();
     }
@@ -183,17 +171,38 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.ll_content_address) {
-            RentEntity entity = rentDetailBinding.getRentDetailItem().getRentEntity();
-            GeoRent geoRent = new GeoRent(entity.getId(), entity.getName(), rentDetailBinding.getRentDetailItem().getFirstImage(), entity.getIsWished());
-            geoRent.setRentMode(rentDetailBinding.getRentDetailItem().getRentModeName());
-            geoRent.setRating(entity.getRating());
-            geoRent.setGeoPoint(new GeoPoint(entity.getLatitude(), entity.getLongitude()));
-            geoRent.setPrice(entity.getPrice());
-            ArrayList<GeoRent> rents = new ArrayList<>();
-            rents.add(geoRent);
-            showMapBack(rents);
+        switch (v.getId()){
+            case R.id.ll_content_address:
+                performMapAddress();
+                break;
+            case R.id.fab_comment:
+                showDialogComment();
+                break;
         }
+    }
+
+    private void showDialogComment(){
+        String username = sharedPreferences.getString(USER_NAME,"");
+        String userid = sharedPreferences.getString(USER_ID, "");
+        String rentId = rentDetailBinding.getRentItem().getRentEntity().getId();
+        if(username.equals("") && userid.equals("")){
+            AlertUtils.showErrorAlert(this,"Debe estar autenticado para comentar");
+        }else {
+            DialogComment lf = DialogComment.newInstance(username, userid, rentId);
+            lf.show(getSupportFragmentManager(), "CommentDialog");
+        }
+    }
+
+    private void performMapAddress() {
+        RentEntity entity = rentDetailBinding.getRentItem().getRentEntity();
+        GeoRent geoRent = new GeoRent(entity.getId(), entity.getName(), rentDetailBinding.getRentItem().getFirstImage(), entity.getIsWished());
+        geoRent.setRentMode(rentDetailBinding.getRentItem().getRentModeName());
+        geoRent.setRating(entity.getRating());
+        geoRent.setGeoPoint(new GeoPoint(entity.getLatitude(), entity.getLongitude()));
+        geoRent.setPrice(entity.getPrice());
+        ArrayList<GeoRent> rents = new ArrayList<>();
+        rents.add(geoRent);
+        showMapBack(rents);
     }
 
     @Override
@@ -201,7 +210,6 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
         getMenuInflater().inflate(R.menu.menu_rent_detail, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -223,7 +231,9 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
             case R.id.action_list_wish:
                 setIsWished();
                 return true;
-            case R.id.action_comment:
+            case R.id.action_vote:
+                DialogRating lf = DialogRating.newInstance();
+                lf.show(getSupportFragmentManager(), "RatingDialog");
                 return true;
             case android.R.id.home:
                 onBackPressed();
@@ -235,12 +245,12 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
     private void setIsWished() {
         if (isWished == 1) {
             isWished = 0;
-            rentDetailBinding.getRentDetailItem().getRentEntity().setIsWished(0);
-            updateEntity(rentDetailBinding.getRentDetailItem().getRentEntity());
+            rentDetailBinding.getRentItem().getRentEntity().setIsWished(0);
+            updateEntity(rentDetailBinding.getRentItem().getRentEntity());
         } else if (isWished == 0) {
             isWished = 1;
-            rentDetailBinding.getRentDetailItem().getRentEntity().setIsWished(1);
-            updateEntity(rentDetailBinding.getRentDetailItem().getRentEntity());
+            rentDetailBinding.getRentItem().getRentEntity().setIsWished(1);
+            updateEntity(rentDetailBinding.getRentItem().getRentEntity());
         }
     }
 
@@ -267,12 +277,10 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
     @Override
     public void onScrollChange(NestedScrollView nestedScrollView, int i, int i1, int i2, int i3) {
         changeToolbarBackground(i1);
-        if(isCommentActive) {
-            if (i3 > i1) {
-                rentDetailBinding.fabComment.hide();
-            } else {
-                rentDetailBinding.fabComment.show();
-            }
+        if (i3 > i1) {
+            rentDetailBinding.fabComment.hide();
+        } else {
+            rentDetailBinding.fabComment.show();
         }
     }
 
@@ -283,22 +291,15 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
     }
 
     @Override
-    public void onPageScrolled(int i, float v, int i1) {
-
+    public void sendComment(Comment comment) {
+        disposable = viewModel.addComment(comment).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(()-> AlertUtils.showSuccessToast(this,"Comentario guardado"),Timber::e);
+        compositeDisposable.add(disposable);
     }
 
     @Override
-    public void onPageSelected(int i) {
-        if (innerViewPagerAdapter.getPageTitle(i).equals("Comentarios")) {
-            isCommentActive = true;
-        } else {
-            isCommentActive = false;
-            rentDetailBinding.fabComment.hide();
-        }
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int i) {
+    public void sendRating(float rating) {
 
     }
 }

@@ -19,20 +19,24 @@ import com.infinitum.bookingqba.model.local.pojo.RentAmenitieAndRelation;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
+import com.infinitum.bookingqba.model.local.tconverter.CommentEmotion;
+import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
+import com.infinitum.bookingqba.model.repository.comment.CommentRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
+import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.ReferenceZoneViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.AmenitieViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.StarViewItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailAmenitieItem;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailCommentItem;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailGalerieItem;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailItem;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailPoiItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentAmenitieItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentCommentItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentGalerieItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 
 import org.oscim.core.GeoPoint;
@@ -57,14 +61,16 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private AmenitiesRepository amenitiesRepository;
     private RentRepository rentRepository;
     private ReferenceZoneRepository rzoneRepository;
+    private CommentRepository commentRepository;
     private Map<String, List<ViewModel>> filterMap;
     private LiveData<PagedList<RentListItem>> ldRentsList;
 
     @Inject
-    public RentViewModel(AmenitiesRepository amenitiesRepository, RentRepository rentRepository, ReferenceZoneRepository rzoneRepository) {
+    public RentViewModel(AmenitiesRepository amenitiesRepository, RentRepository rentRepository, ReferenceZoneRepository rzoneRepository, CommentRepository commentRepository) {
         this.amenitiesRepository = amenitiesRepository;
         this.rentRepository = rentRepository;
         this.rzoneRepository = rzoneRepository;
+        this.commentRepository = commentRepository;
         filterMap = new HashMap<>();
     }
 
@@ -72,15 +78,16 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     /**
      * Lista paginada de rentas segun tipo de orden y provincia
+     *
      * @return
      */
-    public LiveData<PagedList<RentListItem>> getLiveDataRentList(char orderType, String province){
-        DataSource.Factory<Integer,RentListItem> dataSource = rentRepository.allRentByOrderType(orderType,province).mapByPage(input -> {
+    public LiveData<PagedList<RentListItem>> getLiveDataRentList(char orderType, String province) {
+        DataSource.Factory<Integer, RentListItem> dataSource = rentRepository.allRentByOrderType(orderType, province).mapByPage(input -> {
             List<RentListItem> itemsUi = new ArrayList<>();
             RentListItem tempItem;
-            for(RentAndGalery entity: input){
+            for (RentAndGalery entity : input) {
                 String imagePath = entity.getImageAtPos(0);
-                tempItem = new RentListItem(entity.getId(),entity.getName(),imagePath,entity.getIsWished());
+                tempItem = new RentListItem(entity.getId(), entity.getName(), imagePath, entity.getIsWished());
                 tempItem.setRating(entity.getRating());
                 tempItem.setAddress(entity.getAddress());
                 tempItem.setRentMode(entity.getRentMode());
@@ -89,36 +96,36 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
             }
             return itemsUi;
         });
-        LivePagedListBuilder<Integer, RentListItem> pagedListBuilder= new LivePagedListBuilder<>(dataSource, 10);
+        LivePagedListBuilder<Integer, RentListItem> pagedListBuilder = new LivePagedListBuilder<>(dataSource, 10);
         ldRentsList = pagedListBuilder.build();
         return ldRentsList;
     }
 
 
-    public Flowable<Resource<List<ListWishItem>>> getRentListWish(String province){
+    public Flowable<Resource<List<ListWishItem>>> getRentListWish(String province) {
         return rentRepository.allWishedRent(province).map(this::transformToWishList).subscribeOn(Schedulers.io());
     }
 
-    public Flowable<Resource<List<GeoRent>>> getGeoRent(){
+    public Flowable<Resource<List<GeoRent>>> getGeoRent() {
         return rentRepository.allRent().map(this::transformToGeoRent);
     }
 
     // --------------------------- RENT WISHED ---------------------------------------------//
 
-    public Completable updateRentIsWished(String uuid, int isWished){
-        return rentRepository.updateIsWishedRent(uuid,isWished);
+    public Completable updateRentIsWished(String uuid, int isWished) {
+        return rentRepository.updateIsWishedRent(uuid, isWished);
     }
 
-    public Completable updateRent(RentEntity entity){
+    public Completable updateRent(RentEntity entity) {
         return rentRepository.update(entity);
     }
 
     // --------------------------- FILTER LIST --------------------------------------------- //
 
     public Flowable<Map<String, List<ViewModel>>> getMapFilterItems() {
-        if(filterMap!=null && filterMap.size()>0){
+        if (filterMap != null && filterMap.size() > 0) {
             return Flowable.just(filterMap);
-        }else{
+        } else {
             return getMapFlowable();
         }
     }
@@ -131,7 +138,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 .subscribeOn(Schedulers.io())
                 .map(this::transformRZoneToMap);
         Flowable<List<ViewModel>> starFlow = Flowable.just(getStarItem()).subscribeOn(Schedulers.io());
-        return Flowable.combineLatest(amenitieFlow, zoneFlow,starFlow, (viewModels, viewModels2, viewModels3) -> {
+        return Flowable.combineLatest(amenitieFlow, zoneFlow, starFlow, (viewModels, viewModels2, viewModels3) -> {
             filterMap.put("Amenities", viewModels);
             filterMap.put("Zone", viewModels2);
             filterMap.put("Star", viewModels3);
@@ -140,10 +147,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
 
-    private List<ViewModel> getStarItem(){
+    private List<ViewModel> getStarItem() {
         List<ViewModel> starViewItemList = new ArrayList<>();
-        for(int i=1; i <= MAX_STAR; i++){
-            starViewItemList.add(new StarViewItem(UUID.randomUUID().toString(),String.valueOf(i),false));
+        for (int i = 1; i <= MAX_STAR; i++) {
+            starViewItemList.add(new StarViewItem(UUID.randomUUID().toString(), String.valueOf(i), false));
         }
         return starViewItemList;
     }
@@ -162,7 +169,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     public void resetAllFilterItem() {
         Observable.fromIterable(filterMap.values())
                 .flatMap(this::iterateViewItem)
-                .doOnNext(viewModel -> ((CheckableItem)viewModel).setChecked(false))
+                .doOnNext(viewModel -> ((CheckableItem) viewModel).setChecked(false))
                 .subscribeOn(Schedulers.io())
                 .subscribe();
     }
@@ -173,7 +180,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     // ------------------------ RENT DETAIL --------------------------------------------- //
 
-    public Flowable<Resource<RentDetailItem>> getRentDetailById(String uuid){
+    public Flowable<Resource<RentItem>> getRentDetailById(String uuid) {
         return rentRepository
                 .getRentDetailById(uuid)
                 .map(this::parseRentDetailPojoToItem)
@@ -182,8 +189,8 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 .subscribeOn(Schedulers.io());
     }
 
-    private RentDetailItem parseRentDetailPojoToItem(Resource<RentDetail> rentDetail){
-        RentDetailItem item = new RentDetailItem(rentDetail.data.getRentEntity());
+    private RentItem parseRentDetailPojoToItem(Resource<RentDetail> rentDetail) {
+        RentItem item = new RentItem(rentDetail.data.getRentEntity());
         item.setAmenitieItems(convertAmenitiesPojoToParcel(rentDetail.data.getAmenitieNames()));
         item.setRentModeName(rentDetail.data.getRentModeNameObject());
         item.setGalerieItems(convertGaleriePojoToParcel(rentDetail.data.getGaleries()));
@@ -192,10 +199,23 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return item;
     }
 
+    public Completable addComment(Comment comment) {
+        CommentEntity entity = new CommentEntity(comment.getId(), comment.getUsername(), comment.getDescription(), comment.getRent(), comment.getUserid());
+        entity.setEmotion(CommentEmotion.fromLevel(comment.getEmotion()));
+        entity.setActive(comment.isActive());
+        entity.setOwner(comment.isIs_owner());
+        entity.setAvatar(null);
+        entity.setCreated(DateUtils.dateStringToDate(comment.getCreated()));
+        List<CommentEntity> list = new ArrayList<>();
+        list.add(entity);
+//        return commentRepository.insert(list);
+        return Completable.complete();
+    }
+
     //-------------------------- RENT VISIT COUNT ---------------------------------------- //
 
-    public Completable addOrUpdateRentVisitCount(String id,String rentId){
-        return rentRepository.addOrUpdateRentVisitCount(id,rentId);
+    public Completable addOrUpdateRentVisitCount(String id, String rentId) {
+        return rentRepository.addOrUpdateRentVisitCount(id, rentId);
     }
 
     // ------------------------- TRANSFORM METHOD ---------------------------------------- //
@@ -220,37 +240,37 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return viewItemList;
     }
 
-    private ArrayList<RentDetailGalerieItem> convertGaleriePojoToParcel(List<GalerieEntity> galerieEntities) {
-        ArrayList<RentDetailGalerieItem> detailGalerieItems = new ArrayList<>();
+    private ArrayList<RentGalerieItem> convertGaleriePojoToParcel(List<GalerieEntity> galerieEntities) {
+        ArrayList<RentGalerieItem> detailGalerieItems = new ArrayList<>();
         for (GalerieEntity item : galerieEntities) {
-            String imagePath = item.getImageLocalPath()!=null?item.getImageLocalPath():item.getImageUrl();
-            detailGalerieItems.add(new RentDetailGalerieItem(imagePath));
+            String imagePath = item.getImageLocalPath() != null ? item.getImageLocalPath() : item.getImageUrl();
+            detailGalerieItems.add(new RentGalerieItem(imagePath));
         }
         return detailGalerieItems;
     }
 
-    private ArrayList<RentDetailCommentItem> convertCommentPojoToParcel(List<CommentEntity> commentEntities) {
-        ArrayList<RentDetailCommentItem> detailCommentItems = new ArrayList<>();
+    private ArrayList<RentCommentItem> convertCommentPojoToParcel(List<CommentEntity> commentEntities) {
+        ArrayList<RentCommentItem> detailCommentItems = new ArrayList<>();
         for (CommentEntity item : commentEntities) {
-            detailCommentItems.add(new RentDetailCommentItem(item.getId(),item.getUsername(),item.getDescription(),item.getAvatar(),item.isOwner(),item.getCreated()));
+            detailCommentItems.add(new RentCommentItem(item.getId(), item.getUsername(), item.getDescription(), item.getAvatar(), item.isOwner(), item.getCreated()));
         }
         return detailCommentItems;
     }
 
-    private ArrayList<RentDetailPoiItem> convertPoisPojoToParcel(List<RentPoiAndRelation> rentPoiAndRelations) {
-        ArrayList<RentDetailPoiItem> detailPoiItems = new ArrayList<>();
+    private ArrayList<RentPoiItem> convertPoisPojoToParcel(List<RentPoiAndRelation> rentPoiAndRelations) {
+        ArrayList<RentPoiItem> detailPoiItems = new ArrayList<>();
         for (RentPoiAndRelation item : rentPoiAndRelations) {
             PoiEntity poiEntity = item.getPoiAndRelationsObject().getPoiEntity();
             PoiTypeEntity poiTypeEntity = item.getPoiAndRelationsObject().getPoiTypeEntitySetObject();
-            detailPoiItems.add(new RentDetailPoiItem(poiEntity.getName(), poiTypeEntity.getImage()));
+            detailPoiItems.add(new RentPoiItem(poiEntity.getName(), poiTypeEntity.getImage()));
         }
         return detailPoiItems;
     }
 
-    private ArrayList<RentDetailAmenitieItem> convertAmenitiesPojoToParcel(List<RentAmenitieAndRelation> amenitieNameArrayList) {
-        ArrayList<RentDetailAmenitieItem> detailAmenitieItems = new ArrayList<>();
+    private ArrayList<RentAmenitieItem> convertAmenitiesPojoToParcel(List<RentAmenitieAndRelation> amenitieNameArrayList) {
+        ArrayList<RentAmenitieItem> detailAmenitieItems = new ArrayList<>();
         for (RentAmenitieAndRelation item : amenitieNameArrayList) {
-            detailAmenitieItems.add(new RentDetailAmenitieItem(item.getAmenitieNameobject()));
+            detailAmenitieItems.add(new RentAmenitieItem(item.getAmenitieNameobject()));
         }
         return detailAmenitieItems;
     }
@@ -258,10 +278,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private Resource<List<GeoRent>> transformToGeoRent(Resource<List<RentAndGalery>> listResource) {
         List<GeoRent> geoRentList = new ArrayList<>();
         GeoRent geoRent;
-        if(listResource.data!=null && listResource.data.size()>0) {
+        if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndGalery rentAndGalery : listResource.data) {
                 String imagePath = rentAndGalery.getImageAtPos(0);
-                geoRent = new GeoRent(rentAndGalery.getId(),rentAndGalery.getName(),imagePath,rentAndGalery.getIsWished());
+                geoRent = new GeoRent(rentAndGalery.getId(), rentAndGalery.getName(), imagePath, rentAndGalery.getIsWished());
                 geoRent.setGeoPoint(new GeoPoint(rentAndGalery.getLatitude(), rentAndGalery.getLongitude()));
                 geoRent.setPrice(rentAndGalery.getPrice());
                 geoRent.setRating(rentAndGalery.getRating());
@@ -269,7 +289,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 geoRentList.add(geoRent);
             }
             return Resource.success(geoRentList);
-        }else{
+        } else {
             return Resource.error("Null or empty values");
         }
     }
@@ -277,10 +297,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private Resource<List<ListWishItem>> transformToWishList(Resource<List<RentAndGalery>> listResource) {
         List<ListWishItem> listWishItems = new ArrayList<>();
         ListWishItem item;
-        if(listResource.data!=null && listResource.data.size()>0) {
+        if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndGalery rentAndGalery : listResource.data) {
                 String imagePath = rentAndGalery.getImageAtPos(0);
-                item = new ListWishItem(rentAndGalery.getId(),rentAndGalery.getName(),imagePath,rentAndGalery.getIsWished());
+                item = new ListWishItem(rentAndGalery.getId(), rentAndGalery.getName(), imagePath, rentAndGalery.getIsWished());
                 item.setAddress(rentAndGalery.getAddress());
                 item.setPrice(rentAndGalery.getPrice());
                 item.setRating(rentAndGalery.getRating());
@@ -288,7 +308,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 listWishItems.add(item);
             }
             return Resource.success(listWishItems);
-        }else{
+        } else {
             return Resource.error("Null or empty values");
         }
     }

@@ -71,17 +71,23 @@
                 android:layout_height="16dp"
                 android:layout_marginTop="5dp"
                 android:layout_gravity="center"
+                android:indeterminate="true"
                 app:visibleGone="@{safeUnbox(isLoading)}"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_error"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Este es el mesaje de error"
+                android:padding="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:textAlignment="center"
+                android:includeFontPadding="false"
                 android:layout_gravity="center"
-                android:fontFamily="@font/poppinsregular"
-                android:drawableLeft="@drawable/ic_exclamation_triangle"
-                android:drawableTint="@color/material_color_red_700"
+                android:animateLayoutChanges="true"
+                android:fontFamily="@font/poppinsitalic"
+                app:visibleGone="@{!safeUnbox(isLoading)}"
                 android:textColor="@color/material_color_red_700"/>
 
 

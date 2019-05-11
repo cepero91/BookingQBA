@@ -3,7 +3,7 @@ package com.infinitum.bookingqba.model.local.tconverter;
 import android.arch.persistence.room.TypeConverter;
 
 public enum CommentEmotion {
-    AWFUL(0), GOOD(1), EXCELLENT(2);
+    TERRIBLE(1), MALO(2), MEJORABLE(3), BUENO(4), EXCELENTE(5);
 
     private final int emotionLevel;
 

@@ -25,11 +25,13 @@ import android.widget.Toast;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentLoginBinding;
 import com.infinitum.bookingqba.model.remote.Oauth;
+import com.infinitum.bookingqba.model.remote.pojo.ErrorResponse;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.view.interaction.LoginInteraction;
 import com.infinitum.bookingqba.viewmodel.UserViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -146,7 +148,6 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
         super.onDestroy();
     }
 
-    //TERMINAR EN LA CASA ESTOS EVENTOS
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.login) {
@@ -162,8 +163,10 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
                     .map((Function<Response<User>, Pair<Boolean, ArrayList<String>>>) response -> {
                         loginBinding.setIsLoading(false);
                         if (response.code() == 200 && response.body() != null) {
+                            interaction.onLogin(response.body());
                             return new Pair<>(true, response.body().getRentsId());
                         } else {
+                            loginBinding.tvError.setText("Credenciales erroneas");
                             return new Pair<>(false, new ArrayList<>());
                         }
                     })
@@ -184,16 +187,28 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
                             dismiss();
                         } else {
                             v.setEnabled(true);
+                            loginBinding.setIsLoading(false);
                         }
                     })
                     .onErrorReturn(throwable -> {
-                        Timber.e(throwable);
+                        onLoginError(v, throwable);
                         return RESULT_ERROR;
                     })
                     .subscribe();
             compositeDisposable.add(disposable);
 
         }
+    }
+
+    private void onLoginError(View v, Throwable throwable) {
+        Timber.e(throwable);
+        v.setEnabled(true);
+        if (throwable instanceof ConnectException) {
+            loginBinding.tvError.setText("Oopss! sin conexion");
+        }else{
+            loginBinding.tvError.setText("Oopss! un error ha ocurrido");
+        }
+        loginBinding.setIsLoading(false);
     }
 
     private Single<Pair<Boolean, Boolean>> checkExist(Pair<Boolean, ArrayList<String>> pair) {

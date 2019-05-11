@@ -23,12 +23,23 @@
             android:paddingTop="40dp"
             android:visibility="visible">
 
-            <com.hsalf.smilerating.SmileRating
-                android:id="@+id/ratingView"
-                android:layout_width="match_parent"
+            <com.willy.ratingbar.BaseRatingBar
+                android:id="@+id/sr_scale_rating"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                app:isIndicator="false" />
+                android:layout_marginBottom="10dp"
+                android:layout_gravity="center"
+                app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srb_rating="4"
+                app:srb_stepSize="0.5"
+                app:srb_starWidth="38dp"
+                app:srb_starHeight="38dp"
+                app:srb_starPadding="3dp"
+                app:srb_clickable="true"
+                app:srb_scrollable="true"
+                app:srb_drawableFilled="@drawable/ic_star"
+                app:srb_drawableEmpty="@drawable/ic_star_o"/>
 
             <EditText
                 android:id="@+id/et_comment"
@@ -58,7 +69,7 @@
                 fancy:fb_fontIconResource="&#xf00c;"
                 fancy:fb_iconPosition="left"
                 fancy:fb_radius="30dp"
-                fancy:fb_text=" COMENTAR"
+                fancy:fb_text=" VOTAR"
                 fancy:fb_textColor="#FFF" />
 
 

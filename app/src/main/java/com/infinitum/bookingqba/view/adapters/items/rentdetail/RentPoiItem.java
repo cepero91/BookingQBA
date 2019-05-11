@@ -5,12 +5,18 @@ import android.os.Parcelable;
 
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 
-public class RentDetailAmenitieItem implements ViewModel, Parcelable {
+public class RentPoiItem implements ViewModel, Parcelable {
 
     private String mName;
+    private byte[] iconByte;
 
-    public RentDetailAmenitieItem(String mName) {
+    public RentPoiItem(String mName) {
         this.mName = mName;
+    }
+
+    public RentPoiItem(String mName, byte[] iconByte) {
+        this.mName = mName;
+        this.iconByte = iconByte;
     }
 
     @Override
@@ -22,7 +28,7 @@ public class RentDetailAmenitieItem implements ViewModel, Parcelable {
             return false;
         }
 
-        final RentDetailAmenitieItem that = (RentDetailAmenitieItem) o;
+        final RentPoiItem that = (RentPoiItem) o;
         return !mName.equals(that.mName);
     }
 
@@ -44,6 +50,14 @@ public class RentDetailAmenitieItem implements ViewModel, Parcelable {
         this.mName = mName;
     }
 
+    public byte[] getIconByte() {
+        return iconByte;
+    }
+
+    public void setIconByte(byte[] iconByte) {
+        this.iconByte = iconByte;
+    }
+
 
     @Override
     public int describeContents() {
@@ -53,21 +67,23 @@ public class RentDetailAmenitieItem implements ViewModel, Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.mName);
+        dest.writeByteArray(this.iconByte);
     }
 
-    protected RentDetailAmenitieItem(Parcel in) {
+    protected RentPoiItem(Parcel in) {
         this.mName = in.readString();
+        this.iconByte = in.createByteArray();
     }
 
-    public static final Parcelable.Creator<RentDetailAmenitieItem> CREATOR = new Parcelable.Creator<RentDetailAmenitieItem>() {
+    public static final Parcelable.Creator<RentPoiItem> CREATOR = new Parcelable.Creator<RentPoiItem>() {
         @Override
-        public RentDetailAmenitieItem createFromParcel(Parcel source) {
-            return new RentDetailAmenitieItem(source);
+        public RentPoiItem createFromParcel(Parcel source) {
+            return new RentPoiItem(source);
         }
 
         @Override
-        public RentDetailAmenitieItem[] newArray(int size) {
-            return new RentDetailAmenitieItem[size];
+        public RentPoiItem[] newArray(int size) {
+            return new RentPoiItem[size];
         }
     };
 }

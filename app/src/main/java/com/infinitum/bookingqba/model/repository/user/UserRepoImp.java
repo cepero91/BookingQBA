@@ -31,7 +31,10 @@ public class UserRepoImp implements UserRepository {
 
     @Override
     public Single<Response<User>> login(Oauth oauth) {
-        return retrofit.create(ApiInterface.class).login(oauth.getParam1(), oauth.getParam2(),oauth.getParam3());
+        return retrofit.create(ApiInterface.class)
+                .login(oauth.getParam1(), oauth.getParam2(),oauth.getParam3())
+                .subscribeOn(Schedulers.io())
+                .delay(2000,TimeUnit.MILLISECONDS);
     }
 
     //Fake Oauth

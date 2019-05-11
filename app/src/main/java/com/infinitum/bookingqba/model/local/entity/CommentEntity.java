@@ -8,6 +8,7 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.infinitum.bookingqba.model.local.tconverter.CommentEmotion;
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
@@ -30,6 +31,10 @@ public class CommentEntity {
     @NonNull
     private String id;
 
+    @ColumnInfo(name = "userid")
+    @NonNull
+    private String userid;
+
     @ColumnInfo(name = "username")
     @NonNull
     private String username;
@@ -39,7 +44,6 @@ public class CommentEntity {
 
     private Date created;
 
-    @NonNull
     private byte[] avatar;
 
     @NonNull
@@ -53,14 +57,17 @@ public class CommentEntity {
     private CommentEmotion emotion;
 
     @Ignore
-    public CommentEntity(@NonNull String id, @NonNull String username, @NonNull String description) {
+    public CommentEntity(@NonNull String id, @NonNull String username, @NonNull String description, @NonNull String rent, @NonNull String userid) {
         this.id = id;
         this.username = username;
         this.description = description;
+        this.rent = rent;
+        this.userid = userid;
     }
 
-    public CommentEntity(@NonNull String id, @NonNull String username, @NonNull String description, Date created, @NonNull byte[] avatar, @NonNull String rent, boolean owner, boolean active, CommentEmotion emotion) {
+    public CommentEntity(@NonNull String id, @NonNull String userid, @NonNull String username, @NonNull String description, Date created, byte[] avatar, @NonNull String rent, boolean owner, boolean active, CommentEmotion emotion) {
         this.id = id;
+        this.userid = userid;
         this.username = username;
         this.description = description;
         this.created = created;
@@ -98,12 +105,11 @@ public class CommentEntity {
         this.description = description;
     }
 
-    @NonNull
     public byte[] getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(@NonNull byte[] avatar) {
+    public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
     }
 
@@ -146,5 +152,14 @@ public class CommentEntity {
 
     public void setEmotion(CommentEmotion emotion) {
         this.emotion = emotion;
+    }
+
+    @NonNull
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(@NonNull String userid) {
+        this.userid = userid;
     }
 }

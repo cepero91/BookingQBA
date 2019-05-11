@@ -22,8 +22,7 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentInnerCommentBinding;
 import com.infinitum.bookingqba.util.GlideApp;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailAmenitieItem;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailCommentItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentCommentItem;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -36,7 +35,7 @@ RentCommentFragment extends Fragment {
 
     private static final String ARG_COMMENT = "comment";
 
-    private ArrayList<RentDetailCommentItem> argComment;
+    private ArrayList<RentCommentItem> argComment;
     private Locale locale;
 
 
@@ -44,7 +43,7 @@ RentCommentFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static RentCommentFragment newInstance(ArrayList<RentDetailCommentItem> argComment) {
+    public static RentCommentFragment newInstance(ArrayList<RentCommentItem> argComment) {
         RentCommentFragment fragment = new RentCommentFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_COMMENT, argComment);
@@ -70,16 +69,18 @@ RentCommentFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        locale = new Locale("es", "ES");
+        setupCommentAdapter(argComment);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        locale = new Locale("es", "ES");
-        setupCommentAdapter(argComment);
+        setHasOptionsMenu(false);
     }
 
-    private void setupCommentAdapter(ArrayList<RentDetailCommentItem> argComment) {
+    private void setupCommentAdapter(ArrayList<RentCommentItem> argComment) {
         if(argComment!=null && argComment.size()>0) {
             RendererRecyclerViewAdapter adapter = new RendererRecyclerViewAdapter();
             adapter.registerRenderer(getCommentBinder());
@@ -93,7 +94,7 @@ RentCommentFragment extends Fragment {
     private ViewBinder<?> getCommentBinder() {
         return new ViewBinder<>(
                 R.layout.recycler_comment_item,
-                RentDetailCommentItem.class,
+                RentCommentItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_username, (ViewProvider<TextView>) view -> view.setText(model.getUsername()))
                         .find(R.id.tv_description, (ViewProvider<TextView>) view -> view.setText(model.getDescription()))

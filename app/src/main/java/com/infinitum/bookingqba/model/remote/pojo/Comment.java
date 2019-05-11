@@ -41,6 +41,15 @@ public class Comment {
     @Expose
     private boolean active;
 
+    @SerializedName("userid")
+    @Expose
+    private String userid;
+
+    public Comment(String id, String username) {
+        this.id = id;
+        this.username = username;
+    }
+
     public Comment(String id, String username, String description, String created, String avatar, String rent, boolean is_owner, int emotion, boolean active) {
         this.id = id;
         this.username = username;
@@ -123,5 +132,13 @@ public class Comment {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
     }
 }

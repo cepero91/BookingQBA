@@ -16,7 +16,7 @@
 
         <variable
             name="number"
-            type="com.infinitum.bookingqba.view.adapters.items.rentdetail.RentDetailNumber"/>
+            type="com.infinitum.bookingqba.view.adapters.items.rentdetail.RentNumber"/>
 
         <variable
             name="amenities"

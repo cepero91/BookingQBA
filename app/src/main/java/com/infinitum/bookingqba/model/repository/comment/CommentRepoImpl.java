@@ -45,10 +45,9 @@ public class CommentRepoImpl implements CommentRepository {
         ArrayList<CommentEntity> listEntity = new ArrayList<>();
         CommentEntity entity;
         for (Comment item : comments) {
-            entity = new CommentEntity(item.getId(), item.getUsername(), item.getDescription());
+            entity = new CommentEntity(item.getId(), item.getUsername(), item.getDescription(),item.getRent(), item.getUserid());
             entity.setAvatar(Base64.decode(item.getAvatar(), Base64.DEFAULT));
             entity.setOwner(item.isIs_owner());
-            entity.setRent(item.getRent());
             entity.setCreated(DateUtils.dateStringToDate(item.getCreated()));
             entity.setActive(item.isActive());
             entity.setEmotion(CommentEmotion.fromLevel(item.getEmotion()));

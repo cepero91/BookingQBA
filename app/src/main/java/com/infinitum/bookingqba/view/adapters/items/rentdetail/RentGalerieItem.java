@@ -5,11 +5,11 @@ import android.os.Parcelable;
 
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 
-public class RentDetailGalerieItem implements ViewModel, Parcelable {
+public class RentGalerieItem implements ViewModel, Parcelable {
 
     private String image;
 
-    public RentDetailGalerieItem(String image) {
+    public RentGalerieItem(String image) {
         this.image = image;
     }
 
@@ -31,19 +31,19 @@ public class RentDetailGalerieItem implements ViewModel, Parcelable {
         dest.writeString(this.image);
     }
 
-    protected RentDetailGalerieItem(Parcel in) {
+    protected RentGalerieItem(Parcel in) {
         this.image = in.readString();
     }
 
-    public static final Parcelable.Creator<RentDetailGalerieItem> CREATOR = new Parcelable.Creator<RentDetailGalerieItem>() {
+    public static final Parcelable.Creator<RentGalerieItem> CREATOR = new Parcelable.Creator<RentGalerieItem>() {
         @Override
-        public RentDetailGalerieItem createFromParcel(Parcel source) {
-            return new RentDetailGalerieItem(source);
+        public RentGalerieItem createFromParcel(Parcel source) {
+            return new RentGalerieItem(source);
         }
 
         @Override
-        public RentDetailGalerieItem[] newArray(int size) {
-            return new RentDetailGalerieItem[size];
+        public RentGalerieItem[] newArray(int size) {
+            return new RentGalerieItem[size];
         }
     };
 }

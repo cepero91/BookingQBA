@@ -3,14 +3,14 @@ package com.infinitum.bookingqba.view.adapters.items.rentdetail;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class RentDetailNumber implements Parcelable {
+public class RentNumber implements Parcelable {
 
     private int maxBeds;
     private int maxBaths;
     private int capability;
     private int maxRooms;
 
-    public RentDetailNumber(int maxBeds, int maxBaths, int capability, int maxRooms) {
+    public RentNumber(int maxBeds, int maxBaths, int capability, int maxRooms) {
         this.maxBeds = maxBeds;
         this.maxBaths = maxBaths;
         this.capability = capability;
@@ -63,22 +63,22 @@ public class RentDetailNumber implements Parcelable {
         dest.writeInt(this.maxRooms);
     }
 
-    protected RentDetailNumber(Parcel in) {
+    protected RentNumber(Parcel in) {
         this.maxBeds = in.readInt();
         this.maxBaths = in.readInt();
         this.capability = in.readInt();
         this.maxRooms = in.readInt();
     }
 
-    public static final Parcelable.Creator<RentDetailNumber> CREATOR = new Parcelable.Creator<RentDetailNumber>() {
+    public static final Parcelable.Creator<RentNumber> CREATOR = new Parcelable.Creator<RentNumber>() {
         @Override
-        public RentDetailNumber createFromParcel(Parcel source) {
-            return new RentDetailNumber(source);
+        public RentNumber createFromParcel(Parcel source) {
+            return new RentNumber(source);
         }
 
         @Override
-        public RentDetailNumber[] newArray(int size) {
-            return new RentDetailNumber[size];
+        public RentNumber[] newArray(int size) {
+            return new RentNumber[size];
         }
     };
 }

@@ -7,7 +7,7 @@ import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 
 import java.util.Date;
 
-public class RentDetailCommentItem implements ViewModel, Parcelable {
+public class RentCommentItem implements ViewModel, Parcelable {
 
     private String id;
     private String username;
@@ -16,7 +16,7 @@ public class RentDetailCommentItem implements ViewModel, Parcelable {
     private boolean owner;
     private Date created;
 
-    public RentDetailCommentItem(String id, String username, String description, byte[] avatar, boolean owner, Date created) {
+    public RentCommentItem(String id, String username, String description, byte[] avatar, boolean owner, Date created) {
         this.id = id;
         this.username = username;
         this.description = description;
@@ -89,7 +89,7 @@ public class RentDetailCommentItem implements ViewModel, Parcelable {
         dest.writeLong(this.created != null ? this.created.getTime() : -1);
     }
 
-    protected RentDetailCommentItem(Parcel in) {
+    protected RentCommentItem(Parcel in) {
         this.id = in.readString();
         this.username = in.readString();
         this.description = in.readString();
@@ -99,15 +99,15 @@ public class RentDetailCommentItem implements ViewModel, Parcelable {
         this.created = tmpCreated == -1 ? null : new Date(tmpCreated);
     }
 
-    public static final Parcelable.Creator<RentDetailCommentItem> CREATOR = new Parcelable.Creator<RentDetailCommentItem>() {
+    public static final Parcelable.Creator<RentCommentItem> CREATOR = new Parcelable.Creator<RentCommentItem>() {
         @Override
-        public RentDetailCommentItem createFromParcel(Parcel source) {
-            return new RentDetailCommentItem(source);
+        public RentCommentItem createFromParcel(Parcel source) {
+            return new RentCommentItem(source);
         }
 
         @Override
-        public RentDetailCommentItem[] newArray(int size) {
-            return new RentDetailCommentItem[size];
+        public RentCommentItem[] newArray(int size) {
+            return new RentCommentItem[size];
         }
     };
 }

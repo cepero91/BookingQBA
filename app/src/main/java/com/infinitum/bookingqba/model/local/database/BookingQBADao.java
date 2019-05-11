@@ -441,7 +441,7 @@ public abstract class BookingQBADao {
 
     @Transaction
     @TypeConverters(DateTypeConverter.class)
-    @Query("SELECT * FROM Rent WHERE id=:uuid")
+    @Query("SELECT * FROM Rent WHERE Rent.id=:uuid")
     public abstract Flowable<RentDetail> getRentDetailById(String uuid);
 
     @Transaction

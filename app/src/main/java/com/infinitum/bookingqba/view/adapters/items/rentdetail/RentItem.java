@@ -3,23 +3,22 @@ package com.infinitum.bookingqba.view.adapters.items.rentdetail;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class RentDetailItem {
+public class RentItem {
 
     private RentEntity rentEntity;
 
-    private ArrayList<RentDetailGalerieItem> galerieItems;
+    private ArrayList<RentGalerieItem> galerieItems;
 
-    private ArrayList<RentDetailCommentItem> commentItems;
+    private ArrayList<RentCommentItem> commentItems;
 
-    private ArrayList<RentDetailPoiItem> poiItems;
+    private ArrayList<RentPoiItem> poiItems;
 
-    private ArrayList<RentDetailAmenitieItem> amenitieItems;
+    private ArrayList<RentAmenitieItem> amenitieItems;
 
     private String rentModeName;
 
-    public RentDetailItem(RentEntity rentEntity) {
+    public RentItem(RentEntity rentEntity) {
         this.rentEntity = rentEntity;
     }
 
@@ -31,35 +30,35 @@ public class RentDetailItem {
         this.rentEntity = rentEntity;
     }
 
-    public ArrayList<RentDetailGalerieItem> getGalerieItems() {
+    public ArrayList<RentGalerieItem> getGalerieItems() {
         return galerieItems;
     }
 
-    public ArrayList<RentDetailCommentItem> getCommentItems() {
+    public ArrayList<RentCommentItem> getCommentItems() {
         return commentItems;
     }
 
-    public void setCommentItems(ArrayList<RentDetailCommentItem> commentItems) {
+    public void setCommentItems(ArrayList<RentCommentItem> commentItems) {
         this.commentItems = commentItems;
     }
 
-    public void setGalerieItems(ArrayList<RentDetailGalerieItem> galerieItems) {
+    public void setGalerieItems(ArrayList<RentGalerieItem> galerieItems) {
         this.galerieItems = galerieItems;
     }
 
-    public ArrayList<RentDetailPoiItem> getPoiItems() {
+    public ArrayList<RentPoiItem> getPoiItems() {
         return poiItems;
     }
 
-    public void setPoiItems(ArrayList<RentDetailPoiItem> poiItems) {
+    public void setPoiItems(ArrayList<RentPoiItem> poiItems) {
         this.poiItems = poiItems;
     }
 
-    public ArrayList<RentDetailAmenitieItem> getAmenitieItems() {
+    public ArrayList<RentAmenitieItem> getAmenitieItems() {
         return amenitieItems;
     }
 
-    public void setAmenitieItems(ArrayList<RentDetailAmenitieItem> amenitieItems) {
+    public void setAmenitieItems(ArrayList<RentAmenitieItem> amenitieItems) {
         this.amenitieItems = amenitieItems;
     }
 

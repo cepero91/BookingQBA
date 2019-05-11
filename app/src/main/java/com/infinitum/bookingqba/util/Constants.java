@@ -55,6 +55,7 @@ public final class Constants {
     public static final String USER_IS_AUTH = "userIsAuth";
     public static final String IS_PROFILE_ACTIVE = "profileActive";
     public static final String USER_NAME = "userName";
+    public static final String USER_ID = "userId";
     public static final String USER_TOKEN = "userToken";
     public static final String USER_RENTS = "userRents";
 

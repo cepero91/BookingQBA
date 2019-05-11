@@ -25,7 +25,7 @@
             android:layout_width="@dimen/home_iv_pop_width"
             android:layout_height="@dimen/home_iv_pop_height"
             app:siBorderAlpha="0"
-            app:siRadius="20dp" />
+            app:siRadius="15dp" />
 
     </FrameLayout>
 
@@ -43,6 +43,7 @@
         app:srb_starHeight="20dp"
         app:srb_starPadding="3dp"
         app:srb_clickable="false"
+        app:srb_scrollable="false"
         app:srb_drawableFilled="@drawable/ic_star"
         app:srb_drawableEmpty="@drawable/ic_star_o"/>
 
