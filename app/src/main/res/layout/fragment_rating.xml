@@ -56,7 +56,7 @@
 
 
             <mehdi.sakout.fancybuttons.FancyButton
-                android:id="@+id/login"
+                android:id="@+id/fb_vote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

@@ -7,6 +7,7 @@ import android.arch.persistence.db.SupportSQLiteQuery;
 import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
+import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
@@ -150,6 +151,13 @@ public class RentRepoImpl implements RentRepository {
         SupportSQLiteQuery query = new SimpleSQLiteQuery("INSERT OR REPLACE INTO RentVisitCount VALUES ('" + rent + "', COALESCE(" +
                 "(SELECT visitCount FROM RentVisitCount WHERE rentId = '" + rent + "'),0)+1)");
         return Completable.fromAction(() -> qbaDao.addOrUpdateRentVisit(query)).subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Completable addOrUpdateRating(RatingEntity entity) {
+//        SupportSQLiteQuery query = new SimpleSQLiteQuery("INSERT OR REPLACE INTO Rating VALUES ('" + rent + "', COALESCE((SELECT * FROM Rating WHERE rent = '" + entity.getRent() + "'),0)+1)");
+//        return Completable.fromAction(() -> qbaDao.addOrUpdateRentVisit(query)).subscribeOn(Schedulers.io());
+        return Completable.complete();
     }
 
     @Override

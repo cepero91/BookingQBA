@@ -14,6 +14,7 @@ import com.infinitum.bookingqba.model.local.entity.OfferEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
+import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentDrawTypeEntity;
@@ -27,7 +28,7 @@ import com.infinitum.bookingqba.model.local.entity.RentVisitCountEntity;
         PoiTypeEntity.class, PoiEntity.class, ChangeRateEntity.class, RentModeEntity.class,
         ReferenceZoneEntity.class, RentEntity.class, GalerieEntity.class, OfferEntity.class,
         RentAmenitiesEntity.class, RentPoiEntity.class, RentDrawTypeEntity.class, RentVisitCountEntity.class,
-        DatabaseUpdateEntity.class, CommentEntity.class}, version = 1)
+        DatabaseUpdateEntity.class, CommentEntity.class, RatingEntity.class}, version = 1)
 public abstract class BookingQBADatabase extends RoomDatabase {
 
     public abstract BookingQBADao dao();

@@ -28,6 +28,7 @@ public final class Constants {
     public static final String RENT_TABLE_NAME = "Rent";
     public static final String GALERIE_TABLE_NAME = "Galerie";
     public static final String COMMENT_TABLE_NAME = "Comment";
+    public static final String RATING_TABLE_NAME = "Rating";
     public static final String REFERENCE_ZONE_TABLE_NAME = "ReferenceZone";
     public static final String OFFER_TABLE_NAME = "Offer";
     public static final String RENT_AMENITIES_TABLE_NAME = "RentAmenities";

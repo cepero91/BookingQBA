@@ -4,6 +4,7 @@ import android.arch.paging.DataSource;
 
 import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
@@ -32,6 +33,8 @@ public interface RentRepository {
     Flowable<Resource<RentDetail>> getRentDetailById(String uuid);
 
     Completable addOrUpdateRentVisitCount(String id, String rent);
+
+    Completable addOrUpdateRating(RatingEntity entity);
 
     Flowable<Resource<List<RentAndGalery>>> allWishedRent(String province);
 

@@ -15,6 +15,7 @@ import android.view.View;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityRentDetailBinding;
 import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.util.AlertUtils;
@@ -299,8 +300,12 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
     }
 
     @Override
-    public void sendRating(float rating) {
-
+    public void sendRating(float rating, String comment) {
+        String rentId = rentDetailBinding.getRentItem().getRentEntity().getId();
+        disposable = viewModel.addRating(rating,comment,rentId).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(()-> AlertUtils.showSuccessToast(this,"Rating guardado"),Timber::e);
+        compositeDisposable.add(disposable);
     }
 }
 

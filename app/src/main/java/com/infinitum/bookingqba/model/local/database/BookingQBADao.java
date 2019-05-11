@@ -22,6 +22,7 @@ import com.infinitum.bookingqba.model.local.entity.OfferEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
+import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentDrawTypeEntity;
@@ -441,7 +442,7 @@ public abstract class BookingQBADao {
 
     @Transaction
     @TypeConverters(DateTypeConverter.class)
-    @Query("SELECT * FROM Rent WHERE Rent.id=:uuid")
+    @Query("SELECT Rent.* FROM Rent INNER JOIN Comment ON Comment.rent = :uuid AND Comment.active == 1 WHERE Rent.id=:uuid")
     public abstract Flowable<RentDetail> getRentDetailById(String uuid);
 
     @Transaction
@@ -459,6 +460,12 @@ public abstract class BookingQBADao {
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
     public abstract long updateRentIsWished(SupportSQLiteQuery query);
+
+    //------------------------- RATING ---------------------------//
+
+    @Transaction
+    @RawQuery(observedEntities = RatingEntity.class)
+    public abstract long addOrUpdateRating(SupportSQLiteQuery query);
 
     //------------------------- MODOS DE RENTA ---------------------------//
 

@@ -13,6 +13,7 @@ import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
+import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAmenitieAndRelation;
@@ -199,6 +200,11 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return item;
     }
 
+    /**
+     * TODO TODABIA NO HAY USERID CUANDO SE EFECTUA EL LOGIN
+     * @param comment
+     * @return
+     */
     public Completable addComment(Comment comment) {
         CommentEntity entity = new CommentEntity(comment.getId(), comment.getUsername(), comment.getDescription(), comment.getRent(), comment.getUserid());
         entity.setEmotion(CommentEmotion.fromLevel(comment.getEmotion()));
@@ -209,6 +215,12 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         List<CommentEntity> list = new ArrayList<>();
         list.add(entity);
 //        return commentRepository.insert(list);
+        return Completable.complete();
+    }
+
+    public Completable addRating(float rating, String comment, String rent) {
+        RatingEntity entity = new RatingEntity(UUID.randomUUID().toString(),rating,comment,rent);
+//        return rentRepository.addOrUpdateRating(entity);
         return Completable.complete();
     }
 

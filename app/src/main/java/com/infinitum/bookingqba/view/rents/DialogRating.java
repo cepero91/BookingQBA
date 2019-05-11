@@ -91,9 +91,19 @@ public class DialogRating extends DialogFragment implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.fb_vote:
+                performRating();
+        }
+    }
+
+    private void performRating() {
+        String voteComment = ratingBinding.etComment.getText().toString();
+        float rating = ratingBinding.srScaleRating.getRating();
+        ratingInteraction.sendRating(rating,voteComment);
     }
 
     public interface RatingInteraction{
-        void sendRating(float rating);
+        void sendRating(float rating, String voteComment);
     }
 }
