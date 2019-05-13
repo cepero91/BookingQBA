@@ -9,6 +9,7 @@ import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
+import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -185,5 +186,12 @@ public class RentRepoImpl implements RentRepository {
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)
                 .onErrorReturn(OperationResult::error);
+    }
+
+    @Override
+    public Flowable<Resource<List<RentModeEntity>>> allRentMode() {
+        return qbaDao.getAllRentsMode().subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
     }
 }

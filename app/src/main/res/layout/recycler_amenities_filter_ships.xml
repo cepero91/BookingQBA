@@ -7,5 +7,5 @@
     android:fontFamily="@font/poppinsregular"
     android:includeFontPadding="false"
     android:text="Amenitie"
-    android:textSize="14sp" />
+    android:textSize="12sp" />
 

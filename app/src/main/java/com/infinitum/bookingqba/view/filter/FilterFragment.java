@@ -134,9 +134,6 @@ public class FilterFragment extends Fragment {
                         if (mapResourse.containsKey("Zone")) {
                             setReferenceZoneAdapter(mapResourse.get("Zone"));
                         }
-                        if (mapResourse.containsKey("Star")) {
-                            setStarAdapter(mapResourse.get("Star"));
-                        }
                         filterBinding.setIsLoading(false);
                     }
 
@@ -171,15 +168,6 @@ public class FilterFragment extends Fragment {
         filterBinding.rvReferenceZone.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
     }
 
-    public void setStarAdapter(List<ViewModel> items) {
-        RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
-        recyclerViewAdapter.registerRenderer(viewBinderStarFilter(R.layout.recycler_stars_filter_ships));
-        recyclerViewAdapter.setItems(items);
-        filterBinding.rvStar.setAdapter(recyclerViewAdapter);
-        filterBinding.rvStar.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        filterBinding.rvStar.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
-    }
-
 
     private ViewBinder<AmenitieViewItem> viewBinderAmenitiesFilter(int layout) {
         return new ViewBinder<>(
@@ -211,42 +199,16 @@ public class FilterFragment extends Fragment {
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_rzone_filter_title, (ViewProvider<TextView>) view -> {
                             view.setText(model.getName());
+                            changeReferenceZoneViewState(view,view.isSelected());
                         })
-                        .find(R.id.iv_rzone_filter, (ViewProvider<AppCompatImageView>) view ->
-                            GlideApp.with(getView()).load(model.getByteImage()).into(view))
-                        .find(R.id.ll_rzone_filter_content, (ViewProvider<LinearLayout>) view ->
-                            changeReferenceZoneViewState(view,view.isSelected()))
                         .setOnClickListener(view -> {
                             rentViewModel.changeStateFilterItem("Zone", model.getId());
                             if (view.isSelected()) {
                                 view.setSelected(false);
-                                changeReferenceZoneViewState(view.findViewById(R.id.ll_rzone_filter_content),view.isSelected());
+                                changeReferenceZoneViewState(view.findViewById(R.id.tv_rzone_filter_title),view.isSelected());
                             } else {
                                 view.setSelected(true);
-                                changeReferenceZoneViewState(view.findViewById(R.id.ll_rzone_filter_content),view.isSelected());
-                            }
-                        })
-        );
-    }
-
-    private ViewBinder<StarViewItem> viewBinderStarFilter(int layout) {
-        return new ViewBinder<>(
-                layout,
-                StarViewItem.class,
-                (model, finder, payloads) -> finder
-                        .find(R.id.tv_star_filter_title, (ViewProvider<TextView>) view -> {
-                            view.setText(model.getName());
-                        })
-                        .find(R.id.ll_star_filter_content, (ViewProvider<LinearLayout>) view ->
-                                changeStarViewState(view,view.isSelected()))
-                        .setOnClickListener(view -> {
-                            rentViewModel.changeStateFilterItem("Star", model.getId());
-                            if (view.isSelected()) {
-                                view.setSelected(false);
-                                changeStarViewState(view.findViewById(R.id.ll_star_filter_content),view.isSelected());
-                            } else {
-                                view.setSelected(true);
-                                changeStarViewState(view.findViewById(R.id.ll_star_filter_content),view.isSelected());
+                                changeReferenceZoneViewState(view.findViewById(R.id.tv_rzone_filter_title),view.isSelected());
                             }
                         })
         );
@@ -258,32 +220,18 @@ public class FilterFragment extends Fragment {
             textView.setTextColor(Color.WHITE);
             textView.setBackgroundResource(R.drawable.shape_amenitie_filter_ship_selected);
         }else{
-            textView.setTextColor(Color.parseColor("#009689"));
+            textView.setTextColor(Color.parseColor("#9E9E9E"));
             textView.setBackgroundResource(R.drawable.shape_amenitie_filter_ship_unselected);
         }
     }
 
-    private void changeReferenceZoneViewState(LinearLayout view, boolean isSelected){
+    private void changeReferenceZoneViewState(TextView textView, boolean isSelected){
         if(isSelected){
-            TextView textView = view.findViewById(R.id.tv_rzone_filter_title);
-            textView.setTextColor(Color.parseColor("#009689"));
-            view.setBackgroundResource(R.drawable.shape_rzone_filter_ship_selected);
+            textView.setTextColor(Color.WHITE);
+            textView.setBackgroundResource(R.drawable.shape_amenitie_filter_ship_selected);
         }else{
-            TextView textView = view.findViewById(R.id.tv_rzone_filter_title);
             textView.setTextColor(Color.parseColor("#9E9E9E"));
-            view.setBackgroundResource(R.drawable.shape_rzone_filter_ship_unselected);
-        }
-    }
-
-    private void changeStarViewState(LinearLayout view, boolean isSelected){
-        if(isSelected){
-            TextView textView = view.findViewById(R.id.tv_star_filter_title);
-            textView.setTextColor(Color.parseColor("#009689"));
-            view.setBackgroundResource(R.drawable.shape_rzone_filter_ship_selected);
-        }else{
-            TextView textView = view.findViewById(R.id.tv_star_filter_title);
-            textView.setTextColor(Color.parseColor("#9E9E9E"));
-            view.setBackgroundResource(R.drawable.shape_rzone_filter_ship_unselected);
+            textView.setBackgroundResource(R.drawable.shape_amenitie_filter_ship_unselected);
         }
     }
 

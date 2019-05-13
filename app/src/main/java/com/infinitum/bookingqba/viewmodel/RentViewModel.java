@@ -138,22 +138,11 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         Flowable<List<ViewModel>> zoneFlow = rzoneRepository.allReferencesZone()
                 .subscribeOn(Schedulers.io())
                 .map(this::transformRZoneToMap);
-        Flowable<List<ViewModel>> starFlow = Flowable.just(getStarItem()).subscribeOn(Schedulers.io());
-        return Flowable.combineLatest(amenitieFlow, zoneFlow, starFlow, (viewModels, viewModels2, viewModels3) -> {
+        return Flowable.combineLatest(amenitieFlow, zoneFlow, (viewModels, viewModels2) -> {
             filterMap.put("Amenities", viewModels);
             filterMap.put("Zone", viewModels2);
-            filterMap.put("Star", viewModels3);
             return filterMap;
         });
-    }
-
-
-    private List<ViewModel> getStarItem() {
-        List<ViewModel> starViewItemList = new ArrayList<>();
-        for (int i = 1; i <= MAX_STAR; i++) {
-            starViewItemList.add(new StarViewItem(UUID.randomUUID().toString(), String.valueOf(i), false));
-        }
-        return starViewItemList;
     }
 
 

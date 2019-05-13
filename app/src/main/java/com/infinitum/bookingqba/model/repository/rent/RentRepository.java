@@ -6,6 +6,7 @@ import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
+import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 
@@ -43,5 +44,7 @@ public interface RentRepository {
     Completable update(RentEntity entity);
 
     Single<OperationResult> syncronizeRents(String dateValue);
+
+    Flowable<Resource<List<RentModeEntity>>> allRentMode();
 
 }
