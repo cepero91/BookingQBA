@@ -18,7 +18,7 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
 import static com.infinitum.bookingqba.util.Constants.COMMENT_TABLE_NAME;
 import static com.infinitum.bookingqba.util.Constants.RATING_TABLE_NAME;
 
-@Entity(tableName = RATING_TABLE_NAME, indices = {@Index("rent")},
+@Entity(tableName = RATING_TABLE_NAME, indices = {@Index(value = "rent", unique = true)},
         foreignKeys = {@ForeignKey(entity = RentEntity.class,
                 parentColumns = "id",
                 childColumns = "rent",

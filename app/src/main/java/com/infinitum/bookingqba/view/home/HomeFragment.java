@@ -117,8 +117,6 @@ public class HomeFragment extends BaseNavigationFragment {
 
         fragmentHomeBinding.setIsLoading(true);
 
-        checkPermissions();
-
         loadProvinces();
 
         setupRecyclerView();
@@ -127,57 +125,6 @@ public class HomeFragment extends BaseNavigationFragment {
         fragmentHomeBinding.spinner.setPositiveButton(getResources().getString(R.string.positive_buttom));
 
 
-    }
-
-    private void checkPermissions() {
-            final PermissionListener permissionlistener = new PermissionListener() {
-                @Override
-                public void onPermissionGranted() {
-                    String deviceUniqueID = getDeviceUniversalID();
-                    saveImeiToPreference(deviceUniqueID);
-                    Timber.e("Device ID %s", deviceUniqueID);
-                }
-
-                @Override
-                public void onPermissionDenied(List<String> deniedPermissions) {
-                }
-            };
-
-            TedPermission.with(getActivity())
-                    .setPermissionListener(permissionlistener)
-                    .setRationaleTitle(R.string.permission_dialog_title)
-                    .setRationaleMessage(R.string.permission_dialog_message)
-                    .setDeniedTitle(R.string.permission_denied_title)
-                    .setDeniedMessage(R.string.permission_denied_message)
-                    .setGotoSettingButtonText(R.string.permission_go_setting)
-                    .setPermissions(Manifest.permission.READ_PHONE_STATE, Manifest.permission.CALL_PHONE, Manifest.permission.SEND_SMS
-                            , Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
-                    .check();
-    }
-
-    private void savePermissionToPreference(int value) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(PERMISSION, value);
-        editor.apply();
-    }
-
-
-    private void saveImeiToPreference(String deviceUniqueID) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(IMEI, deviceUniqueID);
-        editor.apply();
-    }
-
-    @SuppressLint("MissingPermission")
-    private String getDeviceUniversalID() {
-        String deviceUniqueID = null;
-        if (telephonyManager != null) {
-            deviceUniqueID = telephonyManager.getDeviceId();
-        }
-        if (deviceUniqueID == null) {
-            deviceUniqueID = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
-        }
-        return deviceUniqueID;
     }
 
     private void loadProvinces() {

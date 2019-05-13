@@ -1,40 +1,71 @@
 package com.infinitum.bookingqba.view.home;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.StateListAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Looper;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.dmgdesignuk.locationutils.easylocationutility.EasyLocationUtility;
-import com.dmgdesignuk.locationutils.easylocationutility.LocationRequestCallback;
+
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+import com.infinitum.bookingqba.BuildConfig;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
 import com.infinitum.bookingqba.model.remote.pojo.User;
@@ -57,7 +88,10 @@ import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 
 import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +113,7 @@ import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
+import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
@@ -101,6 +136,26 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     private Fragment mFragment;
     private FilterFragment filterFragment;
 
+    //------------------------- LOCATION VAR --------------------------//
+    private static final int REQUEST_CHECK_SETTINGS = 0x1;
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
+    private FusedLocationProviderClient mFusedLocationClient;
+    private SettingsClient mSettingsClient;
+    private LocationRequest mLocationRequest;
+    private LocationSettingsRequest mLocationSettingsRequest;
+    private LocationReference locationReference;
+    private LocationCallback locationCallback;
+    private Location mCurrentLocation;
+    private Boolean mRequestingLocationUpdates;
+
+    //-------------------------- PERMISSION VAR --------------------------------//
+    private String locationPerm = Manifest.permission.ACCESS_FINE_LOCATION;
+    private String readPhonePerm = Manifest.permission.READ_PHONE_STATE;
+    private static final int LOCATION_REQUEST_CODE = 1240;
+    private static final int READ_PHONE_REQUEST_CODE = 1241;
 
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentDispatchingAndroidInjector;
@@ -108,9 +163,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     @Inject
     SharedPreferences sharedPreferences;
 
-    private EasyLocationUtility locationUtility;
-    private boolean isGPSActive = false;
-    private SoftReference<LocationRequestCallback> softReferenceLocation;
+    private TelephonyManager telephonyManager;
 
 
     @Override
@@ -123,38 +176,32 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
         initializeFragment(savedInstanceState);
 
+        checkSinglePermission(readPhonePerm,READ_PHONE_REQUEST_CODE);
+
         initDrawerLayout();
 
         initWorkRequest();
 
-        setupLocationUtility();
+        setupLocationApi();
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MY_REQUEST_CODE && resultCode == FROM_DETAIL_TO_MAP) {
-            if (data.getExtras() != null) {
-                ArrayList<GeoRent> geoRentList = data.getParcelableArrayListExtra("geoRents");
-                if (geoRentList != null && geoRentList.size() > 0) {
-                    mFragment = MapFragment.newInstance(geoRentList, true);
-                    fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.frame_container, mFragment).commit();
-                    homeBinding.navView.getMenu().findItem(R.id.nav_map).setChecked(true);
-                }
-            }
-        } else if (requestCode == EasyLocationUtility.RequestCodes.CURRENT_LOCATION_UPDATES) {
-            if (resultCode == Activity.RESULT_CANCELED) {
-                AlertUtils.showErrorTopToast(this, "Imposible localizar sin proveedor");
-                isGPSActive = false;
-                invalidateOptionsMenu();
-            }
-        } else if (requestCode == MY_REQUEST_CODE && resultCode == FROM_DETAIL_REFRESH) {
-            boolean refreshList = data.getBooleanExtra("refresh", false);
-            if (mFragment instanceof RentListFragment)
-                ((RentListFragment) mFragment).needToRefresh(refreshList);
+    // ------------------ INITIALIZE UI ----------------------------------- //
+
+    private void setupToolbar() {
+        setSupportActionBar(homeBinding.toolbar);
+    }
+
+    private void initializeFragment(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            mFragment = getSupportFragmentManager().getFragment(savedInstanceState, STATE_ACTIVE_FRAGMENT);
         }
+        if (mFragment == null) {
+            mFragment = HomeFragment.newInstance();
+        }
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.frame_container,
+                mFragment).commit();
     }
 
     @Override
@@ -172,7 +219,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                         .build();
         WorkManager.getInstance().enqueueUniquePeriodicWork("MyPeriodicalWork", ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest);
     }
-
 
     private void initDrawerLayout() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -195,14 +241,212 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         homeBinding.drawerLayout.setViewElevation(Gravity.START, 20);
     }
 
-    private void setupToolbar() {
-        setSupportActionBar(homeBinding.toolbar);
+    // ---------------------- LOCATION METHOD ------------------------ //
+
+    private void setupLocationApi() {
+        mRequestingLocationUpdates = false;
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mSettingsClient = LocationServices.getSettingsClient(this);
+        createLocationCallback();
+        createLocationRequest();
+        buildLocationSettingsRequest();
     }
 
-    private void setupLocationUtility() {
-        locationUtility = new EasyLocationUtility(this);
-        locationUtility.setLocationRequestParams(10000, 5000, LocationRequest.PRIORITY_HIGH_ACCURACY);
+    private void createLocationCallback() {
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                mCurrentLocation = locationResult.getLastLocation();
+                updateMapLocation(mCurrentLocation);
+            }
+        };
+        locationReference = new LocationReference(locationCallback);
     }
+
+    private void updateMapLocation(Location mCurrentLocation) {
+        if(mCurrentLocation!=null && mFragment instanceof MapFragment){
+            ((MapFragment)mFragment).updateUserTracking(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
+        }
+    }
+
+    private void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    private void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+
+    @SuppressLint("MissingPermission")
+    private void startLocationUpdates() {
+        // Begin by checking if the device has the necessary location settings.
+        mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
+                .addOnSuccessListener(this, locationSettingsResponse -> {
+                    //noinspection MissingPermission
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                            locationReference, Looper.myLooper());
+
+                })
+                .addOnFailureListener(this, e -> {
+                    int statusCode = ((ApiException) e).getStatusCode();
+                    switch (statusCode) {
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            try {
+                                ResolvableApiException rae = (ResolvableApiException) e;
+                                rae.startResolutionForResult(HomeActivity.this, REQUEST_CHECK_SETTINGS);
+                            } catch (IntentSender.SendIntentException sie) {
+                                Timber.e(sie);
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            Timber.e("Location settings are inadequate");
+                            mRequestingLocationUpdates = false;
+                    }
+                });
+    }
+
+    private void stopLocationUpdates() {
+        mFusedLocationClient.removeLocationUpdates(locationReference)
+                .addOnCompleteListener(this, task -> {
+                    Timber.e("Location Callback removed");
+                    mRequestingLocationUpdates = false;
+                });
+        mRequestingLocationUpdates = false;
+        invalidateOptionsMenu();
+    }
+
+    //-------------- CLASE WRAPER EVITA LEAKS CON EL LOCATION CALLBACKS ---------------//
+
+    private static class LocationReference extends LocationCallback{
+        private WeakReference<LocationCallback> locationWeakReference;
+
+        public LocationReference(LocationCallback locationCallback) {
+            this.locationWeakReference = new WeakReference<>(locationCallback);
+        }
+
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            super.onLocationResult(locationResult);
+            if(locationWeakReference != null && locationWeakReference.get() != null){
+                locationWeakReference.get().onLocationResult(locationResult);
+            }
+        }
+    }
+
+    // ------------------------- PERMISSION -------------------------------- //
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == LOCATION_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                checkPermissionResult(permissions, LOCATION_REQUEST_CODE, "Localizacion");
+            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mRequestingLocationUpdates = true;
+                invalidateOptionsMenu();
+                startLocationUpdates();
+            }
+        } else if (requestCode == READ_PHONE_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                checkPermissionResult(permissions, READ_PHONE_REQUEST_CODE, "Estado del Telefono");
+            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permiso otorgado", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private boolean checkSinglePermission(String perm, int requestCode) {
+        if (ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
+            String[] perms = new String[1];
+            perms[0] = perm;
+            ActivityCompat.requestPermissions(this, perms, requestCode);
+            return false;
+        }
+        return true;
+    }
+
+    private void checkPermissionResult(String[] permissions, int requestCode, String permCodeName) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
+            String msg = String.format("Permiso de %s requerido, por favor otorguelo.", permCodeName);
+            showDialog(msg, "Otorgar",
+                    (dialog, which) -> {
+                        dialog.dismiss();
+                        checkSinglePermission(permissions[0], requestCode);
+                    }, "No, cerrar", (dialog, which) -> dialog.dismiss(), false);
+        } else {
+            String msg = "Has negado permanentemente el permiso requerido. Puede que la aplicacion no funcione correctamente. Dirijase a SETTING ==> APLICATION y otorguelo.";
+            showDialog(msg, "Ir",
+                    (dialog, which) -> {
+                        dialog.dismiss();
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.fromParts("package", getPackageName(), null));
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }, "No, cerrar", (dialog, which) -> dialog.dismiss(), false);
+        }
+    }
+
+    public void showDialog(String msg, String positiveLabel, DialogInterface.OnClickListener onClickListener,
+                           String negativeLevel, DialogInterface.OnClickListener onCancelListener, boolean isCancelable) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Aviso!!");
+        builder.setMessage(msg);
+        builder.setCancelable(isCancelable);
+        builder.setPositiveButton(positiveLabel, onClickListener);
+        builder.setNegativeButton(negativeLevel, onCancelListener);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    //------------------------------ ACTIVITY RESULT ---------------------- //
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case MY_REQUEST_CODE:
+                switch (resultCode) {
+                    case FROM_DETAIL_TO_MAP:
+                        if (data.getExtras() != null) {
+                            ArrayList<GeoRent> geoRentList = data.getParcelableArrayListExtra("geoRents");
+                            if (geoRentList != null && geoRentList.size() > 0) {
+                                mFragment = MapFragment.newInstance(geoRentList, true);
+                                fragmentManager = getSupportFragmentManager();
+                                fragmentManager.beginTransaction().replace(R.id.frame_container, mFragment).commit();
+                                homeBinding.navView.getMenu().findItem(R.id.nav_map).setChecked(true);
+                            }
+                        }
+                        break;
+                    case FROM_DETAIL_REFRESH:
+                        boolean refreshList = data.getBooleanExtra("refresh", false);
+                        if (mFragment instanceof RentListFragment)
+                            ((RentListFragment) mFragment).needToRefresh(refreshList);
+                        break;
+                }
+                break;
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        startLocationUpdates();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        mRequestingLocationUpdates = false;
+                        AlertUtils.showErrorToast(this,"Imposible ser localizado");
+                        invalidateOptionsMenu();
+                        break;
+                }
+                break;
+        }
+    }
+
+    // ----------------------- INSTANCE STATE ----------------------------------//
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -210,19 +454,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         super.onSaveInstanceState(outState);
     }
 
-    private void initializeFragment(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            mFragment = getSupportFragmentManager().getFragment(savedInstanceState, STATE_ACTIVE_FRAGMENT);
-        }
-        if (mFragment == null) {
-            mFragment = HomeFragment.newInstance();
-        }
-        fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frame_container,
-                mFragment).commit();
-
-    }
-
+    // ------------------------ USER CLICKS EVENTS ---------------------------- //
 
     @Override
     public void onItemClick(View view, ViewModel baseItem) {
@@ -249,6 +481,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         startActivityForResult(intent, MY_REQUEST_CODE);
     }
 
+    // ---------------------------- MENU ---------------------------------- //
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -308,58 +541,25 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     }
 
     private void initLocation(MenuItem item) {
-        if (!isGPSActive) {
-            isGPSActive = true;
-            changeMenuIcon(item);
-            getLocationUpdates();
-        } else {
-            isGPSActive = false;
-            changeMenuIcon(item);
-            locationUtility.stopLocationUpdates();
-        }
-    }
-
-    private void getLocationUpdates() {
-        if (locationUtility.permissionIsGranted()) {
-            // Check device settings
-            locationUtility.checkDeviceSettings(EasyLocationUtility.RequestCodes.CURRENT_LOCATION_UPDATES);
-
-            // Request location updates
-            softReferenceLocation = new SoftReference<>(getSoftLocationRequest());
-            locationUtility.getCurrentLocationUpdates(softReferenceLocation.get());
-
-        } else {
-            locationUtility.requestPermission(EasyLocationUtility.RequestCodes.CURRENT_LOCATION_UPDATES);
-        }
-    }
-
-    private LocationRequestCallback getSoftLocationRequest() {
-        return new LocationRequestCallback() {
-            @Override
-            public void onLocationResult(Location location) {
-                Toast.makeText(HomeActivity.this, String.format("Location Result %s, %s", location.getLatitude(), location.getLongitude()), Toast.LENGTH_SHORT).show();
-                if (mFragment instanceof MapFragment)
-                    ((MapFragment) mFragment).updateUserTracking(location.getLatitude(), location.getLongitude());
+        if (checkSinglePermission(locationPerm, LOCATION_REQUEST_CODE)) {
+            if (!mRequestingLocationUpdates) {
+                mRequestingLocationUpdates = true;
+                startLocationUpdates();
+                changeMenuIcon(item);
+            } else {
+                stopLocationUpdates();
+                changeMenuIcon(item);
             }
-
-            @Override
-            public void onFailedRequest(String result) {
-                Timber.e(result);
-                AlertUtils.showErrorTopToast(HomeActivity.this, "Error al localizar usuario");
-                isGPSActive = false;
-                invalidateOptionsMenu();
-            }
-        };
+        }
     }
 
     private void changeMenuIcon(MenuItem item) {
-        if (isGPSActive) {
+        if (mRequestingLocationUpdates) {
             item.setIcon(R.drawable.ic_crosshairs_focus);
         } else {
             item.setIcon(R.drawable.ic_crosshairs);
         }
     }
-
 
     private void logoutPetition() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -368,7 +568,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         invalidateOptionsMenu();
         showGroupMenuProfile(false);
     }
-
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -398,9 +597,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             // Highlight the selected item has been done by NavigationView
             menuItem.setChecked(true);
 
-            if (isGPSActive) {
-                locationUtility.stopLocationUpdates();
-                isGPSActive = false;
+            if (mRequestingLocationUpdates) {
+                mFusedLocationClient.removeLocationUpdates(locationReference);
+                mRequestingLocationUpdates = false;
             }
             // Close drawer
             homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
@@ -445,7 +644,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             return;
         }
         if (mFragment instanceof HomeFragment) {
-            softReferenceLocation.clear();
             AlertUtils.showInfoAlertAndFinishApp(this);
         } else {
             MenuItem menuItem = homeBinding.navView.getMenu().findItem(R.id.nav_home);
@@ -516,22 +714,36 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         startActivityForResult(intent, MY_REQUEST_CODE);
     }
 
+    // -------------------------- PREFERENCES ---------------------------------------- //
+
+    private void saveImeiToPreference(String deviceUniqueID) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(IMEI, deviceUniqueID);
+        editor.apply();
+    }
+
+    @SuppressLint("MissingPermission")
+    private String getDeviceUniversalID() {
+        String deviceUniqueID = null;
+        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (telephonyManager != null) {
+            deviceUniqueID = telephonyManager.getDeviceId();
+        }
+        if (deviceUniqueID == null) {
+            deviceUniqueID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        }
+        return deviceUniqueID;
+    }
+
     // -------------------------- LIVECYCLE ACTIVITY METHOD -------------------------- //
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        locationUtility.stopLocationUpdates();
-    }
 
     @Override
     protected void onDestroy() {
+        try {
+            mFusedLocationClient.removeLocationUpdates(locationReference);
+        }catch (Exception e){
+            Timber.e("onDestroy removeLocationUpdates %s",e.getMessage());
+        }
         super.onDestroy();
     }
 

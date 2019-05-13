@@ -220,8 +220,8 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     public Completable addRating(float rating, String comment, String rent) {
         RatingEntity entity = new RatingEntity(UUID.randomUUID().toString(),rating,comment,rent);
-//        return rentRepository.addOrUpdateRating(entity);
-        return Completable.complete();
+        return rentRepository.addOrUpdateRating(entity);
+//        return Completable.complete();
     }
 
     //-------------------------- RENT VISIT COUNT ---------------------------------------- //

@@ -59,6 +59,8 @@ public class DialogRating extends DialogFragment implements View.OnClickListener
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        ratingBinding.fbVote.setOnClickListener(this);
+
         int width = getResources().getDimensionPixelSize(R.dimen.dialog_login_width);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getDialog().getWindow().setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
