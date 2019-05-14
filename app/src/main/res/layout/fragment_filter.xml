@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:fancy="http://schemas.android.com/apk/res-auto">
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -12,19 +13,49 @@
     </data>
 
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".view.filter.FilterFragment">
 
-        <ScrollView
-            android:id="@+id/sv_filters_item"
+        <FrameLayout
+            android:id="@+id/ll_bar"
             android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="5dp"
+                android:padding="5dp"
+                app:srcCompat="@drawable/ic_close_white_24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/poppinsregular"
+                android:includeFontPadding="false"
+                android:text="Busqueda avanzada"
+                android:textColor="@color/White_100"
+                android:textSize="18sp" />
+
+        </FrameLayout>
+
+        <ScrollView
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_above="@+id/v_line"
-            android:layout_alignParentStart="true"
-            android:clipToPadding="false"
-            android:fillViewport="false">
+            android:layout_marginBottom="60dp"
+            android:layout_marginTop="60dp"
+            app:layout_constraintBottom_toTopOf="@+id/ll_btn_content"
+            app:layout_constraintTop_toBottomOf="@+id/ll_bar">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -34,60 +65,18 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppinsbold"
-                        android:textColor="@color/material_color_blue_grey_500"
                         android:paddingTop="5dp"
                         android:text="Modo de Renta"
                         android:textAlignment="center"
-                        android:textSize="16sp" />
-
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center">
-
-                        <android.support.v7.widget.CardView
-                            android:id="@+id/cv_spinner"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            app:cardCornerRadius="10dp"
-                            app:cardElevation="5dp">
-
-                            <Spinner
-                                android:id="@+id/spinner_rent_mode"
-                                style="@style/MySpinnerStyle"
-                                android:layout_width="160dp"
-                                android:layout_height="wrap_content"
-                                android:spinnerMode="dropdown" />
-
-                        </android.support.v7.widget.CardView>
-
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
                         android:textColor="@color/material_color_blue_grey_500"
-                        android:paddingTop="5dp"
-                        android:text="Zona"
-                        android:textAlignment="center"
                         android:textSize="16sp" />
 
                     <FrameLayout
@@ -96,7 +85,7 @@
                         android:layout_gravity="center">
 
                         <android.support.v7.widget.RecyclerView
-                            android:id="@+id/rv_reference_zone"
+                            android:id="@+id/rv_rent_mode"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -111,17 +100,51 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginBottom="15dp"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppinsbold"
+                        android:paddingTop="5dp"
+                        android:text="Municipio"
+                        android:textAlignment="center"
                         android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="16sp" />
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center">
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rv_municipality"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:nestedScrollingEnabled="false"
+                            android:paddingLeft="10dp"
+                            app:visibleGone="@{!safeUnbox(isLoading)}" />
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsbold"
                         android:paddingTop="5dp"
                         android:text="Facilidades"
                         android:textAlignment="center"
+                        android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="16sp" />
 
                     <FrameLayout
@@ -151,10 +174,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppinsbold"
-                        android:textColor="@color/material_color_blue_grey_500"
                         android:paddingTop="5dp"
                         android:text="Estrellas"
                         android:textAlignment="center"
+                        android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="16sp" />
 
                     <FrameLayout
@@ -168,17 +191,67 @@
                             android:layout_gravity="center"
                             app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:srb_rating="4"
-                            app:srb_stepSize="0.5"
-                            app:srb_starWidth="34dp"
+                            app:srb_clickable="true"
+                            app:srb_drawableEmpty="@drawable/ic_star_o"
+                            app:srb_drawableFilled="@drawable/ic_star"
+                            app:srb_rating="0"
+                            app:srb_scrollable="true"
                             app:srb_starHeight="34dp"
                             app:srb_starPadding="3dp"
-                            app:srb_clickable="true"
-                            app:srb_scrollable="true"
-                            app:srb_drawableFilled="@drawable/ic_star"
-                            app:srb_drawableEmpty="@drawable/ic_star_o"/>
+                            app:srb_starWidth="34dp"
+                            app:srb_stepSize="0.5" />
 
                     </FrameLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsbold"
+                        android:paddingTop="5dp"
+                        android:text="Precio"
+                        android:textAlignment="center"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <com.github.guilhe.views.SeekBarRangedView
+                            android:id="@+id/price_seek"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            custom:backgroundColor="#C0C0C0"
+                            custom:backgroundHeight="10dp"
+                            custom:currentMax="450"
+                            custom:currentMin="100"
+                            custom:max="1000"
+                            custom:min="0"
+                            custom:progressColor="@color/colorPrimary"
+                            custom:progressHeight="20dp"
+                            custom:rounded="true" />
+
+                        <TextView
+                            android:id="@+id/tv_min_max"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/poppinsregular"
+                            android:padding="5dp"
+                            android:text="min:100  max:450"
+                            android:textSize="12sp" />
+
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -187,61 +260,46 @@
 
         </ScrollView>
 
-        <View
-            android:id="@+id/v_line"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_above="@+id/ll_btn_content"
-            android:layout_alignParentStart="true"
-            android:background="@color/material_color_blue_grey_100" />
 
         <LinearLayout
             android:id="@+id/ll_btn_content"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_alignParentBottom="true"
-            android:background="@color/White_100"
+            android:layout_height="?actionBarSize"
+            android:background="@color/colorPrimary"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
 
-            <mehdi.sakout.fancybuttons.FancyButton
+            <Button
                 android:id="@+id/btn_filter"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                fancy:fb_borderColor="#4DB6AC"
-                fancy:fb_borderWidth="2dp"
-                fancy:fb_defaultColor="#FFF"
-                fancy:fb_focusColor="#424243"
-                fancy:fb_fontIconResource="&#xf00c;"
-                fancy:fb_radius="30dp"
-                fancy:fb_text="Filtrar"
-                fancy:fb_textColor="#4DB6AC"/>
+                android:layout_weight="1"
+                android:background="@null"
+                android:text="Filtrar"
+                android:textColor="@color/White_100" />
 
-            <mehdi.sakout.fancybuttons.FancyButton
+            <View
+                android:layout_width="0.5dp"
+                android:layout_height="match_parent"
+                android:background="@color/White_100" />
+
+            <Button
                 android:id="@+id/btn_clean"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                fancy:fb_borderColor="#F44336"
-                fancy:fb_borderWidth="2dp"
-                fancy:fb_defaultColor="#FFF"
-                fancy:fb_focusColor="#424243"
-                fancy:fb_fontIconResource="&#xf12d;"
-                fancy:fb_radius="30dp"
-                fancy:fb_text="Limpiar"
-                fancy:fb_textColor="#F44336"/>
+                android:layout_weight="1"
+                android:background="@null"
+                android:text="Limpiar"
+                android:textColor="@color/White_100" />
+
 
         </LinearLayout>
 
-    </RelativeLayout>
+
+    </android.support.constraint.ConstraintLayout>
 
 </layout>

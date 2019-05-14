@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.model.repository.municipality;
 
 import com.infinitum.bookingqba.model.OperationResult;
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.MunicipalityEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
@@ -12,6 +13,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
@@ -81,6 +83,14 @@ public class MunicipalityRepoImpl implements MunicipalityRepository {
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)
                 .onErrorReturn(OperationResult::error);
+    }
+
+    @Override
+    public Flowable<Resource<List<MunicipalityEntity>>> allMunicipalities() {
+        return qbaDao.getAllMunicipalities()
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
     }
 
 }

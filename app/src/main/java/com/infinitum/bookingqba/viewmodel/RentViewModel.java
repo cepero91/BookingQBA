@@ -11,25 +11,30 @@ import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
+import com.infinitum.bookingqba.model.local.entity.MunicipalityEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
+import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAmenitieAndRelation;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
 import com.infinitum.bookingqba.model.local.tconverter.CommentEmotion;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
+import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.comment.CommentRepository;
+import com.infinitum.bookingqba.model.repository.municipality.MunicipalityRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.ReferenceZoneViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.AmenitieViewItem;
+import com.infinitum.bookingqba.view.adapters.items.filter.RentModeViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.StarViewItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
@@ -62,16 +67,20 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private AmenitiesRepository amenitiesRepository;
     private RentRepository rentRepository;
     private ReferenceZoneRepository rzoneRepository;
+    private MunicipalityRepository municipalityRepository;
     private CommentRepository commentRepository;
-    private Map<String, List<ViewModel>> filterMap;
+    private Map<String, List<CheckableItem>> filterMap;
     private LiveData<PagedList<RentListItem>> ldRentsList;
 
     @Inject
-    public RentViewModel(AmenitiesRepository amenitiesRepository, RentRepository rentRepository, ReferenceZoneRepository rzoneRepository, CommentRepository commentRepository) {
+    public RentViewModel(AmenitiesRepository amenitiesRepository, RentRepository rentRepository
+            , ReferenceZoneRepository rzoneRepository, CommentRepository commentRepository
+            , MunicipalityRepository municipalityRepository) {
         this.amenitiesRepository = amenitiesRepository;
         this.rentRepository = rentRepository;
         this.rzoneRepository = rzoneRepository;
         this.commentRepository = commentRepository;
+        this.municipalityRepository = municipalityRepository;
         filterMap = new HashMap<>();
     }
 
@@ -123,7 +132,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     // --------------------------- FILTER LIST --------------------------------------------- //
 
-    public Flowable<Map<String, List<ViewModel>>> getMapFilterItems() {
+    public Flowable<Map<String, List<CheckableItem>>> getMapFilterItems() {
         if (filterMap != null && filterMap.size() > 0) {
             return Flowable.just(filterMap);
         } else {
@@ -131,40 +140,29 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         }
     }
 
-    private Flowable<Map<String, List<ViewModel>>> getMapFlowable() {
-        Flowable<List<ViewModel>> amenitieFlow = amenitiesRepository.allAmenities()
+    private Flowable<Map<String, List<CheckableItem>>> getMapFlowable() {
+        Flowable<List<CheckableItem>> amenitieFlow = amenitiesRepository.allAmenities()
                 .subscribeOn(Schedulers.io())
                 .map(this::transformAmenitieToMap);
-        Flowable<List<ViewModel>> zoneFlow = rzoneRepository.allReferencesZone()
+        Flowable<List<CheckableItem>> rentModeFlow = rentRepository.allRentMode()
                 .subscribeOn(Schedulers.io())
-                .map(this::transformRZoneToMap);
-        return Flowable.combineLatest(amenitieFlow, zoneFlow, (viewModels, viewModels2) -> {
-            filterMap.put("Amenities", viewModels);
-            filterMap.put("Zone", viewModels2);
+                .map(this::transformRentModeToMap);
+        Flowable<List<CheckableItem>> municipalityFlow = municipalityRepository.allMunicipalities()
+                .subscribeOn(Schedulers.io())
+                .map(this::transformMunToMap);
+        return Flowable.combineLatest(amenitieFlow, rentModeFlow, municipalityFlow ,(amenities, rentmode, municipalities) -> {
+            filterMap.put("Amenities", amenities);
+            filterMap.put("RentMode", rentmode);
+            filterMap.put("Municipality", municipalities);
             return filterMap;
-        });
+        }).subscribeOn(Schedulers.io());
     }
 
+//    public Flowable<Resource<List<RentAndGalery>>> filter(Map<String,List<String>> filterParams){
+//        return Flowable.empty().subscribeOn(Schedulers.io());
+//    }
 
-    public void changeStateFilterItem(String key, String id) {
-        if (filterMap.containsKey(key)) {
-            Flowable.fromIterable(filterMap.get(key))
-                    .filter(viewModel -> ((CheckableItem) viewModel).getId().equals(id))
-                    .doOnNext(viewModel -> ((CheckableItem) viewModel).setChecked(!((CheckableItem) viewModel).isChecked()))
-                    .subscribeOn(Schedulers.io())
-                    .subscribe();
-        }
-    }
-
-    public void resetAllFilterItem() {
-        Observable.fromIterable(filterMap.values())
-                .flatMap(this::iterateViewItem)
-                .doOnNext(viewModel -> ((CheckableItem) viewModel).setChecked(false))
-                .subscribeOn(Schedulers.io())
-                .subscribe();
-    }
-
-    private Observable<ViewModel> iterateViewItem(List<ViewModel> viewModels) {
+    private Observable<ViewModel> iterateViewItem(List<CheckableItem> viewModels) {
         return Observable.fromIterable(viewModels);
     }
 
@@ -191,6 +189,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     /**
      * TODO TODABIA NO HAY USERID CUANDO SE EFECTUA EL LOGIN
+     *
      * @param comment
      * @return
      */
@@ -208,7 +207,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     public Completable addRating(float rating, String comment, String rent) {
-        RatingEntity entity = new RatingEntity(UUID.randomUUID().toString(),rating,comment,rent);
+        RatingEntity entity = new RatingEntity(UUID.randomUUID().toString(), rating, comment, rent);
         return rentRepository.addOrUpdateRating(entity);
 //        return Completable.complete();
     }
@@ -221,21 +220,41 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     // ------------------------- TRANSFORM METHOD ---------------------------------------- //
 
-    private List<ViewModel> transformAmenitieToMap(Resource<List<AmenitiesEntity>> listResource) {
-        ArrayList<ViewModel> viewItemList = new ArrayList<>();
+    private List<CheckableItem> transformAmenitieToMap(Resource<List<AmenitiesEntity>> listResource) {
+        ArrayList<CheckableItem> viewItemList = new ArrayList<>();
         if (listResource.data != null) {
             for (AmenitiesEntity entity : listResource.data) {
-                viewItemList.add(new AmenitieViewItem(entity.getId(), entity.getName(), false));
+                viewItemList.add(new CheckableItem(entity.getId(), entity.getName(), false));
             }
         }
         return viewItemList;
     }
 
-    private List<ViewModel> transformRZoneToMap(Resource<List<ReferenceZoneEntity>> listResource) {
-        ArrayList<ViewModel> viewItemList = new ArrayList<>();
+    private List<CheckableItem> transformRZoneToMap(Resource<List<ReferenceZoneEntity>> listResource) {
+        ArrayList<CheckableItem> viewItemList = new ArrayList<>();
         if (listResource.data != null) {
             for (ReferenceZoneEntity entity : listResource.data) {
-                viewItemList.add(new ReferenceZoneViewItem(entity.getId(), entity.getName(), false, entity.getImage()));
+                viewItemList.add(new CheckableItem(entity.getId(), entity.getName(), false));
+            }
+        }
+        return viewItemList;
+    }
+
+    private List<CheckableItem> transformRentModeToMap(Resource<List<RentModeEntity>> listResource) {
+        ArrayList<CheckableItem> viewItemList = new ArrayList<>();
+        if (listResource.data != null) {
+            for (RentModeEntity entity : listResource.data) {
+                viewItemList.add(new CheckableItem(entity.getId(), entity.getName(), false));
+            }
+        }
+        return viewItemList;
+    }
+
+    private List<CheckableItem> transformMunToMap(Resource<List<MunicipalityEntity>> listResource) {
+        ArrayList<CheckableItem> viewItemList = new ArrayList<>();
+        if (listResource.data != null) {
+            for (MunicipalityEntity entity : listResource.data) {
+                viewItemList.add(new CheckableItem(entity.getId(), entity.getName(), false));
             }
         }
         return viewItemList;

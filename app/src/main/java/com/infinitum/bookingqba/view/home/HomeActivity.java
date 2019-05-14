@@ -68,6 +68,8 @@ import com.gun0912.tedpermission.TedPermission;
 import com.infinitum.bookingqba.BuildConfig;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
+import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.util.AlertUtils;
@@ -176,7 +178,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
         initializeFragment(savedInstanceState);
 
-        checkSinglePermission(readPhonePerm,READ_PHONE_REQUEST_CODE);
+        checkSinglePermission(readPhonePerm, READ_PHONE_REQUEST_CODE);
 
         initDrawerLayout();
 
@@ -265,8 +267,8 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     }
 
     private void updateMapLocation(Location mCurrentLocation) {
-        if(mCurrentLocation!=null && mFragment instanceof MapFragment){
-            ((MapFragment)mFragment).updateUserTracking(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
+        if (mCurrentLocation != null && mFragment instanceof MapFragment) {
+            ((MapFragment) mFragment).updateUserTracking(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         }
     }
 
@@ -323,7 +325,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     //-------------- CLASE WRAPER EVITA LEAKS CON EL LOCATION CALLBACKS ---------------//
 
-    private static class LocationReference extends LocationCallback{
+    private static class LocationReference extends LocationCallback {
         private WeakReference<LocationCallback> locationWeakReference;
 
         public LocationReference(LocationCallback locationCallback) {
@@ -333,7 +335,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         @Override
         public void onLocationResult(LocationResult locationResult) {
             super.onLocationResult(locationResult);
-            if(locationWeakReference != null && locationWeakReference.get() != null){
+            if (locationWeakReference != null && locationWeakReference.get() != null) {
                 locationWeakReference.get().onLocationResult(locationResult);
             }
         }
@@ -438,7 +440,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                         break;
                     case Activity.RESULT_CANCELED:
                         mRequestingLocationUpdates = false;
-                        AlertUtils.showErrorToast(this,"Imposible ser localizado");
+                        AlertUtils.showErrorToast(this, "Imposible ser localizado");
                         invalidateOptionsMenu();
                         break;
                 }
@@ -652,12 +654,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     }
 
-
-    @Override
-    public void onFilterClick(Map<String, List<String>> map) {
-
-    }
-
     @Override
     public void onLogin(User user) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -714,6 +710,19 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         startActivityForResult(intent, MY_REQUEST_CODE);
     }
 
+    // -------------------------- FILTER --------------------------------------------- //
+
+    @Override
+    public void onFilterElement(Resource<List<RentAndGalery>> resourceResult) {
+
+    }
+
+    @Override
+    public void onFilterClean() {
+        if (mFragment instanceof RentListFragment)
+            ((RentListFragment) mFragment).needToRefresh(true);
+    }
+
     // -------------------------- PREFERENCES ---------------------------------------- //
 
     private void saveImeiToPreference(String deviceUniqueID) {
@@ -741,8 +750,8 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     protected void onDestroy() {
         try {
             mFusedLocationClient.removeLocationUpdates(locationReference);
-        }catch (Exception e){
-            Timber.e("onDestroy removeLocationUpdates %s",e.getMessage());
+        } catch (Exception e) {
+            Timber.e("onDestroy removeLocationUpdates %s", e.getMessage());
         }
         super.onDestroy();
     }

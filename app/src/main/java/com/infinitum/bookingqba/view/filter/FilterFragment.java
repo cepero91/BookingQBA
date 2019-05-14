@@ -8,29 +8,29 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.github.guilhe.views.SeekBarRangedView;
 import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentFilterBinding;
-import com.infinitum.bookingqba.util.GlideApp;
+import com.infinitum.bookingqba.view.adapters.FilterAdapter;
 import com.infinitum.bookingqba.view.adapters.items.filter.AmenitieViewItem;
+import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.ReferenceZoneViewItem;
-import com.infinitum.bookingqba.view.adapters.items.filter.StarViewItem;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,13 +42,14 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.ResourceSubscriber;
+import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link FilterFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FilterFragment extends Fragment {
+public class FilterFragment extends Fragment implements View.OnClickListener{
 
     @Inject
     protected ViewModelFactory viewModelFactory;
@@ -64,6 +65,10 @@ public class FilterFragment extends Fragment {
     private Disposable disposable;
 
     private RendererRecyclerViewAdapter viewAdapter;
+
+    FilterAdapter rentModeAdapter;
+    FilterAdapter amenitiesAdapter;
+    FilterAdapter munAdapter;
 
 
     public FilterFragment() {
@@ -94,7 +99,23 @@ public class FilterFragment extends Fragment {
 
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
 
+        filterBinding.btnFilter.setOnClickListener(this);
+        filterBinding.btnClean.setOnClickListener(this);
+
         filterBinding.setIsLoading(true);
+
+        filterBinding.priceSeek.setOnSeekBarRangedChangeListener(new SeekBarRangedView.OnSeekBarRangedChangeListener() {
+            @Override
+            public void onChanged(SeekBarRangedView view, float minValue, float maxValue) {
+
+            }
+
+            @Override
+            public void onChanging(SeekBarRangedView view, float minValue, float maxValue) {
+                filterBinding.tvMinMax.setText(String.format("min: %2.0f  max: %2.0f", minValue, maxValue));
+            }
+        });
+
 
         testingFilter();
 
@@ -112,7 +133,6 @@ public class FilterFragment extends Fragment {
     }
 
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -125,116 +145,73 @@ public class FilterFragment extends Fragment {
         disposable = rentViewModel.getMapFilterItems()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new ResourceSubscriber<Map<String, List<ViewModel>>>() {
-                    @Override
-                    public void onNext(Map<String, List<ViewModel>> mapResourse) {
-                        if (mapResourse.containsKey("Amenities")) {
-                            setAmenitiesAdapter(mapResourse.get("Amenities"));
-                        }
-                        if (mapResourse.containsKey("Zone")) {
-                            setReferenceZoneAdapter(mapResourse.get("Zone"));
-                        }
-                        filterBinding.setIsLoading(false);
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                .subscribe(this::updateUI, Timber::e);
         compositeDisposable.add(disposable);
     }
 
-    public void setAmenitiesAdapter(List<ViewModel> items) {
-        RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
-        recyclerViewAdapter.registerRenderer(viewBinderAmenitiesFilter(R.layout.recycler_amenities_filter_ships));
-        recyclerViewAdapter.setItems(items);
-        filterBinding.rvAmenities.setAdapter(recyclerViewAdapter);
+    private void updateUI(Map<String, List<CheckableItem>> mapResourse) {
+        if (mapResourse.containsKey("Amenities")) {
+            setAmenitiesAdapter(mapResourse.get("Amenities"));
+        }
+        if (mapResourse.containsKey("Municipality")) {
+            setReferenceZoneAdapter(mapResourse.get("Municipality"));
+        }
+        if (mapResourse.containsKey("RentMode")) {
+            setRentModeAdapter(mapResourse.get("RentMode"));
+        }
+        filterBinding.setIsLoading(false);
+    }
+
+    public void setAmenitiesAdapter(List<CheckableItem> items) {
+        amenitiesAdapter = new FilterAdapter(items);
+        filterBinding.rvAmenities.setAdapter(amenitiesAdapter);
         filterBinding.rvAmenities.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         filterBinding.rvAmenities.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
     }
 
-    public void setReferenceZoneAdapter(List<ViewModel> items) {
-        RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
-        recyclerViewAdapter.registerRenderer(viewBinderRZoneFilter(R.layout.recycler_rzone_filter_ships));
-        recyclerViewAdapter.setItems(items);
-        filterBinding.rvReferenceZone.setAdapter(recyclerViewAdapter);
-        filterBinding.rvReferenceZone.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        filterBinding.rvReferenceZone.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
+    public void setReferenceZoneAdapter(List<CheckableItem> items) {
+        munAdapter = new FilterAdapter(items);
+        filterBinding.rvMunicipality.setAdapter(munAdapter);
+        filterBinding.rvMunicipality.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        filterBinding.rvMunicipality.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
+    }
+
+    public void setRentModeAdapter(List<CheckableItem> items) {
+        rentModeAdapter = new FilterAdapter(items);
+        filterBinding.rvRentMode.setAdapter(rentModeAdapter);
+        filterBinding.rvRentMode.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        filterBinding.rvRentMode.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
     }
 
 
-    private ViewBinder<AmenitieViewItem> viewBinderAmenitiesFilter(int layout) {
-        return new ViewBinder<>(
-                layout,
-                AmenitieViewItem.class,
-                (model, finder, payloads) -> finder
-                        .find(R.id.tv_amenitie_filter_title, (ViewProvider<TextView>) view -> {
-                            view.setText(model.getName());
-                            changeAmenitieViewState(view,view.isSelected());
-                        })
-                        .setOnClickListener(view -> {
-                            rentViewModel.changeStateFilterItem("Amenities", model.getId());
-                            if (view.isSelected()) {
-                                view.setSelected(false);
-                                changeAmenitieViewState(view.findViewById(R.id.tv_amenitie_filter_title),view.isSelected());
-                            } else {
-                                view.setSelected(true);
-                                changeAmenitieViewState(view.findViewById(R.id.tv_amenitie_filter_title),view.isSelected());
-                            }
-                        })
-        );
-    }
-
-
-    private ViewBinder<ReferenceZoneViewItem> viewBinderRZoneFilter(int layout) {
-        return new ViewBinder<>(
-                layout,
-                ReferenceZoneViewItem.class,
-                (model, finder, payloads) -> finder
-                        .find(R.id.tv_rzone_filter_title, (ViewProvider<TextView>) view -> {
-                            view.setText(model.getName());
-                            changeReferenceZoneViewState(view,view.isSelected());
-                        })
-                        .setOnClickListener(view -> {
-                            rentViewModel.changeStateFilterItem("Zone", model.getId());
-                            if (view.isSelected()) {
-                                view.setSelected(false);
-                                changeReferenceZoneViewState(view.findViewById(R.id.tv_rzone_filter_title),view.isSelected());
-                            } else {
-                                view.setSelected(true);
-                                changeReferenceZoneViewState(view.findViewById(R.id.tv_rzone_filter_title),view.isSelected());
-                            }
-                        })
-        );
-    }
-
-
-    private void changeAmenitieViewState(TextView textView, boolean isSelected){
-        if(isSelected){
-            textView.setTextColor(Color.WHITE);
-            textView.setBackgroundResource(R.drawable.shape_amenitie_filter_ship_selected);
-        }else{
-            textView.setTextColor(Color.parseColor("#9E9E9E"));
-            textView.setBackgroundResource(R.drawable.shape_amenitie_filter_ship_unselected);
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_filter:
+                //todo something with filter
+                break;
+            case R.id.btn_clean:
+                rentModeAdapter.resetSelectedItem();
+                munAdapter.resetSelectedItem();
+                amenitiesAdapter.resetSelectedItem();
+                interaction.onFilterClean();
+                break;
         }
     }
 
-    private void changeReferenceZoneViewState(TextView textView, boolean isSelected){
-        if(isSelected){
-            textView.setTextColor(Color.WHITE);
-            textView.setBackgroundResource(R.drawable.shape_amenitie_filter_ship_selected);
-        }else{
-            textView.setTextColor(Color.parseColor("#9E9E9E"));
-            textView.setBackgroundResource(R.drawable.shape_amenitie_filter_ship_unselected);
+    private Map<String,List<String>> getFilterParams(){
+        Map<String,List<String>> filterParams = new HashMap<>();
+        if(amenitiesAdapter.getSelectedItems().size()>0){
+            filterParams.put("Amenities",amenitiesAdapter.getSelectedItems());
         }
+        if(munAdapter.getSelectedItems().size()>0){
+            filterParams.put("Municipality",munAdapter.getSelectedItems());
+        }
+        if(rentModeAdapter.getSelectedItems().size()>0){
+            filterParams.put("RentMode",rentModeAdapter.getSelectedItems());
+        }
+        return filterParams;
     }
-
 }
 
 

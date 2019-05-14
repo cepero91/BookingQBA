@@ -125,6 +125,8 @@ dependencies {
     //GPS
     implementation 'com.google.android.gms:play-services-location:16.0.0'
 
+    implementation 'com.github.guilhe:seekbar-ranged-view:1.0.3'
+
     //Timeago
     implementation "com.github.marlonlom:timeago:$timeago"
 
