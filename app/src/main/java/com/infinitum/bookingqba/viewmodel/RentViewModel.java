@@ -158,9 +158,9 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         }).subscribeOn(Schedulers.io());
     }
 
-//    public Flowable<Resource<List<RentAndGalery>>> filter(Map<String,List<String>> filterParams){
-//        return Flowable.empty().subscribeOn(Schedulers.io());
-//    }
+    public Flowable<Resource<List<RentAndGalery>>> filter(Map<String,List<String>> filterParams){
+        return rentRepository.filterRents(filterParams).subscribeOn(Schedulers.io());
+    }
 
     private Observable<ViewModel> iterateViewItem(List<CheckableItem> viewModels) {
         return Observable.fromIterable(viewModels);

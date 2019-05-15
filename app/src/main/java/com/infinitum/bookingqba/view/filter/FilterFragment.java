@@ -21,6 +21,8 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentFilterBinding;
+import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.view.adapters.FilterAdapter;
 import com.infinitum.bookingqba.view.adapters.items.filter.AmenitieViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
@@ -188,7 +190,10 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_filter:
-                //todo something with filter
+                disposable = rentViewModel.filter(getFilterParams()).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::filterResult,Timber::e);
+                compositeDisposable.add(disposable);
                 break;
             case R.id.btn_clean:
                 rentModeAdapter.resetSelectedItem();
@@ -196,6 +201,12 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
                 amenitiesAdapter.resetSelectedItem();
                 interaction.onFilterClean();
                 break;
+        }
+    }
+
+    private void filterResult(Resource<List<RentAndGalery>> resource) {
+        if(resource.data!=null){
+            Timber.e("Recoge tu resultado");
         }
     }
 

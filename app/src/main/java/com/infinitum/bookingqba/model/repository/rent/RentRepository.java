@@ -11,6 +11,7 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 
 import java.util.List;
+import java.util.Map;
 
 
 import io.reactivex.Completable;
@@ -46,5 +47,7 @@ public interface RentRepository {
     Single<OperationResult> syncronizeRents(String dateValue);
 
     Flowable<Resource<List<RentModeEntity>>> allRentMode();
+
+    Flowable<Resource<List<RentAndGalery>>> filterRents(Map<String,List<String>> filterParams);
 
 }

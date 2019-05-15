@@ -175,47 +175,6 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppinsbold"
                         android:paddingTop="5dp"
-                        android:text="Estrellas"
-                        android:textAlignment="center"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="16sp" />
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <com.willy.ratingbar.BaseRatingBar
-                            android:id="@+id/sr_scale_rating"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:srb_clickable="true"
-                            app:srb_drawableEmpty="@drawable/ic_star_o"
-                            app:srb_drawableFilled="@drawable/ic_star"
-                            app:srb_rating="0"
-                            app:srb_scrollable="true"
-                            app:srb_starHeight="34dp"
-                            app:srb_starPadding="3dp"
-                            app:srb_starWidth="34dp"
-                            app:srb_stepSize="0.5" />
-
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:paddingTop="5dp"
                         android:text="Precio"
                         android:textAlignment="center"
                         android:textColor="@color/material_color_blue_grey_500"

@@ -461,6 +461,10 @@ public abstract class BookingQBADao {
     @RawQuery(observedEntities = RentEntity.class)
     public abstract long updateRentIsWished(SupportSQLiteQuery query);
 
+    @Transaction
+    @RawQuery(observedEntities = RentEntity.class)
+    public abstract Flowable<List<RentAndGalery>> filterRents(SupportSQLiteQuery query);
+
     //------------------------- RATING ---------------------------//
 
     @Transaction
