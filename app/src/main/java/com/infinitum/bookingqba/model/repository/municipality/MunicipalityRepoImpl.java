@@ -93,4 +93,12 @@ public class MunicipalityRepoImpl implements MunicipalityRepository {
                 .onErrorReturn(Resource::error);
     }
 
+    @Override
+    public Flowable<Resource<List<MunicipalityEntity>>> allMunicipalitiesByProvince(String province) {
+        return qbaDao.getAllMunicipalitiesByProvince(province)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
 }

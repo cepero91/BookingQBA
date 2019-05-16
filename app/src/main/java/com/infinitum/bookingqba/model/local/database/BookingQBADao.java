@@ -180,6 +180,9 @@ public abstract class BookingQBADao {
     @Query("SELECT * FROM Municipality")
     public abstract Flowable<List<MunicipalityEntity>> getAllMunicipalities();
 
+    @Query("SELECT Municipality.* FROM Municipality JOIN Province ON Province.id = Municipality.province AND Province.id = :province")
+    public abstract Flowable<List<MunicipalityEntity>> getAllMunicipalitiesByProvince(String province);
+
 
     //------------------------- FACILIDADES ---------------------------//
 
@@ -442,7 +445,7 @@ public abstract class BookingQBADao {
 
     @Transaction
     @TypeConverters(DateTypeConverter.class)
-    @Query("SELECT Rent.* FROM Rent INNER JOIN Comment ON Comment.rent = :uuid AND Comment.active == 1 WHERE Rent.id=:uuid")
+    @Query("SELECT Rent.* FROM Rent WHERE Rent.id=:uuid")
     public abstract Flowable<RentDetail> getRentDetailById(String uuid);
 
     @Transaction
@@ -463,7 +466,7 @@ public abstract class BookingQBADao {
 
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
-    public abstract Flowable<List<RentAndGalery>> filterRents(SupportSQLiteQuery query);
+    public abstract DataSource.Factory<Integer, RentAndGalery> filterRents(SupportSQLiteQuery query);
 
     //------------------------- RATING ---------------------------//
 

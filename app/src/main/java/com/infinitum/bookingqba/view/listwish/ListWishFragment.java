@@ -68,6 +68,7 @@ public class ListWishFragment extends BaseNavigationFragment {
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
 
         wishBinding.setIsLoading(true);
+        wishBinding.setIsEmpty(false);
 
         setupRecyclerView();
 
@@ -97,11 +98,17 @@ public class ListWishFragment extends BaseNavigationFragment {
 
 
     public void setItemsAdapter(List<ListWishItem> rendererViewModelList) {
-        RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
-        recyclerViewAdapter.registerRenderer(getListWishBinder(R.layout.recycler_list_wish_item));
-        recyclerViewAdapter.setItems(rendererViewModelList);
-        wishBinding.recyclerView.setAdapter(recyclerViewAdapter);
-        wishBinding.setIsLoading(false);
+        if(rendererViewModelList.size()>0) {
+            RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
+            recyclerViewAdapter.registerRenderer(getListWishBinder(R.layout.recycler_list_wish_item));
+            recyclerViewAdapter.setItems(rendererViewModelList);
+            wishBinding.recyclerView.setAdapter(recyclerViewAdapter);
+            wishBinding.setIsLoading(false);
+            wishBinding.setIsEmpty(false);
+        }else{
+            wishBinding.setIsLoading(false);
+            wishBinding.setIsEmpty(true);
+        }
     }
 
 

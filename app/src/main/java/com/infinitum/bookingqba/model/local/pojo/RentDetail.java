@@ -10,6 +10,7 @@ import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -82,7 +83,13 @@ public class RentDetail {
     }
 
     public List<CommentEntity> getCommentEntities() {
-        return commentEntities;
+        List<CommentEntity> commentActives = new ArrayList<>();
+        for(CommentEntity entity: commentEntities) {
+            if(entity.isActive()){
+                commentActives.add(entity);
+            }
+        }
+        return commentActives;
     }
 
     public void setCommentEntities(List<CommentEntity> commentEntities) {

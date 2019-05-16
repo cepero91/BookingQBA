@@ -147,6 +147,7 @@ dependencies {
     //Circle Image View
     implementation 'com.mikhaellopez:circularimageview:3.2.0'
     implementation 'com.github.siyamed:android-shape-imageview:0.9.3@aar'
+    implementation 'com.yinglan.shadowimageview:shadowimageview:1.0.4'
 
     //Adapter
     implementation 'com.github.vivchar:RendererRecyclerViewAdapter:2.6.0'

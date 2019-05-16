@@ -38,12 +38,6 @@ import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 
 public class RentRepoImpl implements RentRepository {
 
-    public static final String RENTMODE = "RentMode";
-    public static final String MUNICIPALITY = "Municipality";
-    public static final String AMENITIES = "Amenities";
-    public static final String PRICE = "Price";
-    public static final String RATING = "Rating";
-
     private Retrofit retrofit;
     private BookingQBADao qbaDao;
 
@@ -205,106 +199,13 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public Flowable<Resource<List<RentAndGalery>>> filterRents(Map<String, List<String>> filterParams) {
-        SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(generalQuery(filterParams));
-        if (true) {
-            Timber.e("Hi");
-        }
-        return qbaDao.filterRents(simpleSQLiteQuery)
-                .subscribeOn(Schedulers.io())
-                .map(Resource::success)
-                .onErrorReturn(Resource::error);
+    public DataSource.Factory<Integer,RentAndGalery> filterRents(Map<String, List<String>> filterParams) {
+        String query  = FilterRepositoryUtil.generalQuery(filterParams);
+        SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query);
+        return qbaDao.filterRents(simpleSQLiteQuery);
     }
 
-    private String generalQuery(Map<String, List<String>> filterParams) {
-        String generalQuery = "";
-        if (filterParams.containsKey(RENTMODE) && filterParams.size() == 1) {
-            generalQuery = filterWithRentMode(filterParams.get(RENTMODE), "Rent","q1");
-        } else if (filterParams.containsKey(MUNICIPALITY) && filterParams.size() == 1) {
-//            generalQuery = filterWithMunicipality(filterParams.get(MUNICIPALITY), "Rent");
-        } else if (filterParams.containsKey(AMENITIES) && filterParams.size() == 1) {
-            generalQuery = filterWithAmenities(filterParams.get(AMENITIES), "Rent");
-        } else if (filterParams.containsKey(PRICE) && filterParams.size() == 1) {
-            float min = Float.parseFloat(filterParams.get(PRICE).get(0));
-            float max = Float.parseFloat(filterParams.get(PRICE).get(1));
-            generalQuery = filterWithPriceRange(min, max, "Rent");
-        } else if (filterParams.containsKey(RENTMODE) && filterParams.containsKey(MUNICIPALITY)
-                && filterParams.size() == 2) {
-            String subquery = String.format("(%s)",filterWithRentMode(filterParams.get(RENTMODE),"Rent","q1"));
-            generalQuery = filterWithMunicipality(filterParams.get(MUNICIPALITY),subquery,"q2");
-        } else if (filterParams.containsKey(RENTMODE) && filterParams.containsKey(AMENITIES)
-                && filterParams.size() == 2) {
 
-        } else if (filterParams.containsKey(RENTMODE) && filterParams.containsKey(PRICE)
-                && filterParams.size() == 2) {
 
-        } else if (filterParams.containsKey(MUNICIPALITY) && filterParams.containsKey(AMENITIES)
-                && filterParams.size() == 2) {
 
-        } else if (filterParams.containsKey(MUNICIPALITY) && filterParams.containsKey(PRICE)
-                && filterParams.size() == 2) {
-
-        } else if (filterParams.containsKey(AMENITIES) && filterParams.containsKey(PRICE)
-                && filterParams.size() == 2) {
-
-        } else if (filterParams.containsKey(RENTMODE) && filterParams.containsKey(MUNICIPALITY)
-                && filterParams.containsKey(AMENITIES) && filterParams.size() == 3) {
-
-        } else if (filterParams.containsKey(RENTMODE) && filterParams.containsKey(MUNICIPALITY)
-                && filterParams.containsKey(AMENITIES) && filterParams.containsKey(PRICE)
-                && filterParams.size() == 4) {
-
-        } else if (filterParams.containsKey(MUNICIPALITY) && filterParams.containsKey(AMENITIES)
-                && filterParams.containsKey(PRICE) && filterParams.size() == 3) {
-
-        } else if (filterParams.containsKey(RENTMODE) && filterParams.containsKey(AMENITIES)
-                && filterParams.containsKey(PRICE) && filterParams.size() == 3) {
-
-        } else if (filterParams.containsKey(RENTMODE) && filterParams.containsKey(MUNICIPALITY)
-                && filterParams.containsKey(PRICE) && filterParams.size() == 3) {
-
-        }
-        return generalQuery;
-    }
-
-    private String filterWithRentMode(List<String> rentModes, String subquery, String alias) {
-        String stringQuery = "SELECT * FROM "+subquery+" AS "+alias+" JOIN RentMode On "+alias+".rentMode = RentMode.id " +
-                "WHERE RentMode.id IN ("+convertListToCommaSeparated(rentModes)+") GROUP BY "+alias+".id";
-        return stringQuery;
-    }
-
-    private String filterWithAmenities(List<String> amenities, String subquery) {
-        String stringQuery = String.format("SELECT * FROM %s JOIN RentAmenities on Rent.id = RentAmenities.rentId " +
-                "JOIN Amenities on Amenities.id = RentAmenities.amenityId WHERE RentAmenities.amenityId " +
-                "IN (%s) GROUP BY rentId having count (*) = '" + amenities.size() + "'", subquery, convertListToCommaSeparated(amenities));
-        return stringQuery;
-    }
-
-    private String filterWithMunicipality(List<String> municipality, String subquery, String alias) {
-        String stringQuery = "SELECT * FROM "+subquery+" AS "+alias+" JOIN Municipality on Municipality.id = "+alias+".municipality " +
-                "WHERE "+alias+".municipality IN("+convertListToCommaSeparated(municipality)+") " +
-                "GROUP BY "+alias+".id";
-        return stringQuery;
-    }
-
-    private String filterWithPriceRange(float min, float max, String subquery) {
-        String stringQuery = String.format("SELECT * FROM %s WHERE Rent.price " +
-                "BETWEEN %2.0f AND %2.0f", subquery, min, max);
-        return stringQuery;
-    }
-
-    private String filterWithRating(float rating, String subquery) {
-        String stringQuery = String.format("SELECT * FROM %s WHERE Rent.rating = %.1f", subquery, rating);
-        return stringQuery;
-    }
-
-    private String convertListToCommaSeparated(List<String> ids) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < ids.size(); i++) {
-            stringBuilder.append("'").append(ids.get(i)).append("'");
-            if (i < ids.size() - 1)
-                stringBuilder.append(SEPARATOR);
-        }
-        return stringBuilder.toString();
-    }
 }

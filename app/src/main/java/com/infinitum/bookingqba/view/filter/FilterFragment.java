@@ -1,7 +1,9 @@
 package com.infinitum.bookingqba.view.filter;
 
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.arch.paging.PagedList;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
@@ -27,11 +29,13 @@ import com.infinitum.bookingqba.view.adapters.FilterAdapter;
 import com.infinitum.bookingqba.view.adapters.items.filter.AmenitieViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.ReferenceZoneViewItem;
+import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,19 +76,28 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
     FilterAdapter amenitiesAdapter;
     FilterAdapter munAdapter;
 
+    public static final String PROVINCE = "province";
+    private String argProvince;
+
 
     public FilterFragment() {
         // Required empty public constructor
     }
 
-    public static FilterFragment newInstance() {
+    public static FilterFragment newInstance(String argProvince) {
         FilterFragment fragment = new FilterFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(PROVINCE,argProvince);
+        fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            argProvince = getArguments().getString(PROVINCE);
+        }
     }
 
 
@@ -134,7 +147,6 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -142,9 +154,8 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
         compositeDisposable.clear();
     }
 
-
     private void testingFilter() {
-        disposable = rentViewModel.getMapFilterItems()
+        disposable = rentViewModel.getMapFilterItems(argProvince)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::updateUI, Timber::e);
@@ -190,10 +201,8 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_filter:
-                disposable = rentViewModel.filter(getFilterParams()).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::filterResult,Timber::e);
-                compositeDisposable.add(disposable);
+                rentViewModel.filter(getFilterParams()).observe(this, pagedList ->
+                        interaction.onFilterElement(pagedList));
                 break;
             case R.id.btn_clean:
                 rentModeAdapter.resetSelectedItem();
@@ -205,8 +214,8 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
     }
 
     private void filterResult(Resource<List<RentAndGalery>> resource) {
-        if(resource.data!=null){
-            Timber.e("Recoge tu resultado");
+        if(resource.data!=null && resource.data.size()>0){
+
         }
     }
 
@@ -220,6 +229,14 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
         }
         if(rentModeAdapter.getSelectedItems().size()>0){
             filterParams.put("RentMode",rentModeAdapter.getSelectedItems());
+        }
+        if(filterBinding.priceSeek.getSelectedMaxValue()>0){
+            float min = filterBinding.priceSeek.getSelectedMinValue();
+            float max = filterBinding.priceSeek.getSelectedMaxValue();
+            List<String> params = new ArrayList<>();
+            params.add(String.valueOf(min));
+            params.add(String.valueOf(max));
+            filterParams.put("Price",params);
         }
         return filterParams;
     }

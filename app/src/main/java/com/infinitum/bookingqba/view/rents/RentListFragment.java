@@ -24,6 +24,8 @@ import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 
+import java.util.List;
+
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 
 /**
@@ -89,6 +91,7 @@ public class RentListFragment extends BaseNavigationFragment {
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
 
         rentListBinding.setIsLoading(true);
+        rentListBinding.setIsEmpty(false);
 
         loadPaginatedData();
 
@@ -102,7 +105,6 @@ public class RentListFragment extends BaseNavigationFragment {
     }
 
     private void loadPaginatedData() {
-
         pagerAdapter = new RentListAdapter(getActivity().getLayoutInflater(),mListener);
 
         rentViewModel.getLiveDataRentList(mOrderType,mProvinceParam).observe(this, rentListItems -> {
@@ -122,11 +124,27 @@ public class RentListFragment extends BaseNavigationFragment {
         }
     }
 
+    public void filterListResult(PagedList<RentListItem> pagedList){
+        if(pagedList.size()>0) {
+            pagerAdapter.submitList(pagedList);
+            rentListBinding.recyclerView.setAdapter(pagerAdapter);
+            rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
+            rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(0, 5));
+            rentListBinding.setIsLoading(false);
+            rentListBinding.setIsEmpty(false);
+        }else{
+            rentListBinding.setIsLoading(false);
+            rentListBinding.setIsEmpty(true);
+        }
+    }
+
 
     public RecyclerView.LayoutManager setupLayoutManager() {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         return mLayoutManager;
     }
+
+
 
 
     @Override

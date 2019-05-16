@@ -6,6 +6,10 @@
         <variable
             name="isLoading"
             type="Boolean" />
+
+        <variable
+            name="isEmpty"
+            type="Boolean" />
     </data>
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -19,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layoutAnimation="@anim/layout_anim_fall_down"
-            app:visibleGone="@{!safeUnbox(isLoading)}"
+            app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; !safeUnbox(isEmpty)}"
             />
 
 
@@ -32,6 +36,17 @@
             android:layout_gravity="top"
             style="?android:attr/progressBarStyleHorizontal"
             app:visibleGone="@{safeUnbox(isLoading)}" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_gravity="center"
+            app:visibleGone="@{safeUnbox(isEmpty)}"
+            app:lottie_loop="true"
+            app:lottie_repeatMode="restart"
+            app:lottie_autoPlay="true"
+            app:lottie_enableMergePathsForKitKatAndAbove="true"
+            app:lottie_fileName="lottie/empty.json"/>
 
 
     </FrameLayout>

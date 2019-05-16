@@ -21,4 +21,6 @@ public interface MunicipalityRepository {
 
     Flowable<Resource<List<MunicipalityEntity>>> allMunicipalities();
 
+    Flowable<Resource<List<MunicipalityEntity>>> allMunicipalitiesByProvince(String province);
+
 }

@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.arch.paging.PagedList;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -77,6 +78,7 @@ import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
+import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.view.filter.FilterFragment;
@@ -520,7 +522,8 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             case R.id.action_filter_panel:
                 //FILTER
                 if (filterFragment == null) {
-                    filterFragment = FilterFragment.newInstance();
+                    String provinceId = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
+                    filterFragment = FilterFragment.newInstance(provinceId);
                 }
                 fragmentManager.beginTransaction().replace(R.id.filter_container, filterFragment).commit();
                 homeBinding.drawerLayout.postDelayed(() -> homeBinding.drawerLayout.openDrawer(Gravity.END), 200);
@@ -713,8 +716,13 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     // -------------------------- FILTER --------------------------------------------- //
 
     @Override
-    public void onFilterElement(Resource<List<RentAndGalery>> resourceResult) {
-
+    public void onFilterElement(PagedList<RentListItem> resourceResult) {
+        if (mFragment instanceof RentListFragment){
+            ((RentListFragment) mFragment).filterListResult(resourceResult);
+            if (homeBinding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                homeBinding.drawerLayout.closeDrawer(GravityCompat.END,true);
+            }
+        }
     }
 
     @Override

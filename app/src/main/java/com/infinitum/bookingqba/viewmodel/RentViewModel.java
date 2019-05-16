@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
+import android.support.annotation.NonNull;
 
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.model.Resource;
@@ -92,20 +93,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
      * @return
      */
     public LiveData<PagedList<RentListItem>> getLiveDataRentList(char orderType, String province) {
-        DataSource.Factory<Integer, RentListItem> dataSource = rentRepository.allRentByOrderType(orderType, province).mapByPage(input -> {
-            List<RentListItem> itemsUi = new ArrayList<>();
-            RentListItem tempItem;
-            for (RentAndGalery entity : input) {
-                String imagePath = entity.getImageAtPos(0);
-                tempItem = new RentListItem(entity.getId(), entity.getName(), imagePath, entity.getIsWished());
-                tempItem.setRating(entity.getRating());
-                tempItem.setAddress(entity.getAddress());
-                tempItem.setRentMode(entity.getRentMode());
-                tempItem.setPrice(entity.getPrice());
-                itemsUi.add(tempItem);
-            }
-            return itemsUi;
-        });
+        DataSource.Factory<Integer, RentListItem> dataSource = rentRepository.allRentByOrderType(orderType, province).mapByPage(this::transformPaginadedData);
         LivePagedListBuilder<Integer, RentListItem> pagedListBuilder = new LivePagedListBuilder<>(dataSource, 10);
         ldRentsList = pagedListBuilder.build();
         return ldRentsList;
@@ -113,7 +101,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
 
     public Flowable<Resource<List<ListWishItem>>> getRentListWish(String province) {
-        return rentRepository.allWishedRent(province).map(this::transformToWishList).subscribeOn(Schedulers.io());
+        return rentRepository.allWishedRent(province)
+                .subscribeOn(Schedulers.io())
+                .map(this::transformToWishList)
+                .onErrorReturn(Resource::error);
     }
 
     public Flowable<Resource<List<GeoRent>>> getGeoRent() {
@@ -132,25 +123,25 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     // --------------------------- FILTER LIST --------------------------------------------- //
 
-    public Flowable<Map<String, List<CheckableItem>>> getMapFilterItems() {
+    public Flowable<Map<String, List<CheckableItem>>> getMapFilterItems(String province) {
         if (filterMap != null && filterMap.size() > 0) {
             return Flowable.just(filterMap);
         } else {
-            return getMapFlowable();
+            return getMapFlowable(province);
         }
     }
 
-    private Flowable<Map<String, List<CheckableItem>>> getMapFlowable() {
+    private Flowable<Map<String, List<CheckableItem>>> getMapFlowable(String province) {
         Flowable<List<CheckableItem>> amenitieFlow = amenitiesRepository.allAmenities()
                 .subscribeOn(Schedulers.io())
                 .map(this::transformAmenitieToMap);
         Flowable<List<CheckableItem>> rentModeFlow = rentRepository.allRentMode()
                 .subscribeOn(Schedulers.io())
                 .map(this::transformRentModeToMap);
-        Flowable<List<CheckableItem>> municipalityFlow = municipalityRepository.allMunicipalities()
+        Flowable<List<CheckableItem>> municipalityFlow = municipalityRepository.allMunicipalitiesByProvince(province)
                 .subscribeOn(Schedulers.io())
                 .map(this::transformMunToMap);
-        return Flowable.combineLatest(amenitieFlow, rentModeFlow, municipalityFlow ,(amenities, rentmode, municipalities) -> {
+        return Flowable.combineLatest(amenitieFlow, rentModeFlow, municipalityFlow, (amenities, rentmode, municipalities) -> {
             filterMap.put("Amenities", amenities);
             filterMap.put("RentMode", rentmode);
             filterMap.put("Municipality", municipalities);
@@ -158,12 +149,12 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         }).subscribeOn(Schedulers.io());
     }
 
-    public Flowable<Resource<List<RentAndGalery>>> filter(Map<String,List<String>> filterParams){
-        return rentRepository.filterRents(filterParams).subscribeOn(Schedulers.io());
-    }
-
-    private Observable<ViewModel> iterateViewItem(List<CheckableItem> viewModels) {
-        return Observable.fromIterable(viewModels);
+    public LiveData<PagedList<RentListItem>> filter(Map<String, List<String>> filterParams) {
+        DataSource.Factory<Integer, RentListItem> dataSource = rentRepository.filterRents(filterParams)
+                .mapByPage(this::transformPaginadedData);
+        LivePagedListBuilder<Integer, RentListItem> pagedListBuilder = new LivePagedListBuilder<>(dataSource, 10);
+        ldRentsList = pagedListBuilder.build();
+        return ldRentsList;
     }
 
     // ------------------------ RENT DETAIL --------------------------------------------- //
@@ -317,19 +308,33 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private Resource<List<ListWishItem>> transformToWishList(Resource<List<RentAndGalery>> listResource) {
         List<ListWishItem> listWishItems = new ArrayList<>();
         ListWishItem item;
-        if (listResource.data != null && listResource.data.size() > 0) {
-            for (RentAndGalery rentAndGalery : listResource.data) {
-                String imagePath = rentAndGalery.getImageAtPos(0);
-                item = new ListWishItem(rentAndGalery.getId(), rentAndGalery.getName(), imagePath, rentAndGalery.getIsWished());
-                item.setAddress(rentAndGalery.getAddress());
-                item.setPrice(rentAndGalery.getPrice());
-                item.setRating(rentAndGalery.getRating());
-                item.setRentMode(rentAndGalery.getRentMode());
-                listWishItems.add(item);
-            }
-            return Resource.success(listWishItems);
-        } else {
-            return Resource.error("Null or empty values");
+        for (RentAndGalery rentAndGalery : listResource.data) {
+            String imagePath = rentAndGalery.getImageAtPos(0);
+            item = new ListWishItem(rentAndGalery.getId(), rentAndGalery.getName(), imagePath, rentAndGalery.getIsWished());
+            item.setAddress(rentAndGalery.getAddress());
+            item.setPrice(rentAndGalery.getPrice());
+            item.setRating(rentAndGalery.getRating());
+            item.setRentMode(rentAndGalery.getRentMode());
+            listWishItems.add(item);
         }
+        return Resource.success(listWishItems);
     }
+
+    @NonNull
+    private List<RentListItem> transformPaginadedData(List<RentAndGalery> input) {
+        List<RentListItem> itemsUi = new ArrayList<>();
+        RentListItem tempItem;
+        for (RentAndGalery entity : input) {
+            String imagePath = entity.getImageAtPos(0);
+            tempItem = new RentListItem(entity.getId(), entity.getName(), imagePath, entity.getIsWished());
+            tempItem.setRating(entity.getRating());
+            tempItem.setAddress(entity.getAddress());
+            tempItem.setRentMode(entity.getRentMode());
+            tempItem.setPrice(entity.getPrice());
+            itemsUi.add(tempItem);
+        }
+        return itemsUi;
+    }
+
+
 }
