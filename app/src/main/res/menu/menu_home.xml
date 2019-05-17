@@ -20,9 +20,9 @@
             android:title="Mapa" />
 
         <item
-            android:id="@+id/nav_setting"
-            android:icon="@drawable/ic_gear"
-            android:title="Configuracion" />
+            android:id="@+id/nav_info"
+            android:icon="@drawable/ic_info"
+            android:title="Informacion" />
     </group>
 
     <group android:id="@+id/group_2" android:checkableBehavior="single" android:visible="false">

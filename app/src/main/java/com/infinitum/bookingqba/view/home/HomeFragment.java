@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -22,6 +23,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.target.CustomViewTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.github.vivchar.rendererrecyclerviewadapter.CompositeViewHolder;
 import com.github.vivchar.rendererrecyclerviewadapter.CompositeViewState;
@@ -222,12 +227,12 @@ public class HomeFragment extends BaseNavigationFragment {
     }
 
     public void setItemsAdapter(List<ViewModel> rendererViewModelList) {
+        fragmentHomeBinding.setIsLoading(false);
         recyclerViewAdapter = new RendererRecyclerViewAdapter();
         recyclerViewAdapter.registerRenderer(getHeader());
         recyclerViewAdapter.registerRenderer(getCompositeBinder());
         recyclerViewAdapter.setItems(rendererViewModelList);
         fragmentHomeBinding.recyclerView.setAdapter(recyclerViewAdapter);
-        fragmentHomeBinding.setIsLoading(false);
     }
 
     @NonNull
@@ -284,7 +289,9 @@ public class HomeFragment extends BaseNavigationFragment {
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %s", String.valueOf(model.getPrice()))))
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
-                                GlideApp.with(getView()).load(model.getImagePath()).placeholder(R.drawable.placeholder).into(view))
+                                GlideApp.with(getView()).load(model.getImagePath())
+                                        .placeholder(R.drawable.placeholder)
+                                        .into(view))
                         .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
         );
     }

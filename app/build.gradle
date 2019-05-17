@@ -57,7 +57,6 @@ dependencies {
     //Room
     implementation "android.arch.persistence.room:runtime:$roomVersion"
     implementation "android.arch.paging:runtime:$paging"
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     annotationProcessor "android.arch.persistence.room:compiler:$roomVersion"
     implementation "android.arch.persistence.room:rxjava2:$roomVersion"
 
@@ -147,7 +146,6 @@ dependencies {
     //Circle Image View
     implementation 'com.mikhaellopez:circularimageview:3.2.0'
     implementation 'com.github.siyamed:android-shape-imageview:0.9.3@aar'
-    implementation 'com.yinglan.shadowimageview:shadowimageview:1.0.4'
 
     //Adapter
     implementation 'com.github.vivchar:RendererRecyclerViewAdapter:2.6.0'

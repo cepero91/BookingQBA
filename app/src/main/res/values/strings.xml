@@ -15,7 +15,7 @@
     <string name="navigation_drawer_open">open</string>
     <string name="navigation_drawer_close">close</string>
 
-    <string name="dialog_provinces_title">Seleccione una province</string>
+    <string name="dialog_provinces_title">Seleccione una provincia</string>
     <string name="positive_buttom">Cerrar</string>
 
     <string name="permission_dialog_title">Aviso!!</string>
@@ -62,4 +62,11 @@ Natoque augue bibendum etiam aliquet fames vestibulum in justo libero elementum,
 
 In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor sollicitudin justo at mauris tempor sapien gravida feugiat, cum euismod orci mollis dapibus dictumst venenatis tempus. Ridiculus primis egestas cubilia fusce fermentum imperdiet mollis feugiat lectus a metus, ut id nostra pretium leo ultrices proin rhoncus montes laoreet donec, penatibus vivamus consequat quis urna faucibus elementum turpis enim aliquet. Sollicitudin leo ultrices sed nostra curabitur in ad lacus, pretium eu sociis donec erat primis magna metus montes, molestie diam interdum sem taciti nec aliquet. Vestibulum enim himenaeos massa conubia dictum luctus posuere diam faucibus odio, litora justo senectus nunc class fringilla urna risus augue vel lectus, mauris potenti nisi consequat ultricies curae torquent mus imperdiet.
     </string>
+    <string name="txt_feedback">Si te ha ayudado la aplicacion y deseas sugerirnos una idea para mejorar, por favor escribenos. Lo tomaremos en cuenta</string>
+    <string name="sugerir">Sugerir</string>
+    <string name="ayudanos_a_mejorar">Ayudanos a mejorar</string>
+    <string name="propiedad_intelectual">Propiedad Intelectual</string>
+    <string name="actualizacion_disponible">Actualizacion Disponible</string>
+    <string name="hace_mas_de_un_mes">Hace mas de un mes</string>
+    <string name="ultima_actualizacion">Ultima actualizacion</string>
 </resources>

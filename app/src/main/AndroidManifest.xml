@@ -55,7 +55,6 @@
             android:exported="false"
             tools:node="remove" />
 
-        <activity android:name=".view.home.LocationActivity"></activity>
     </application>
 
 </manifest>

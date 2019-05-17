@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/material_color_grey_100"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppinsbold"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="Base de Datos"
+            android:textAlignment="center"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:orientation="horizontal"
+            android:weightSum="6">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:drawableTop="@drawable/ic_database_3"
+                    android:fontFamily="@font/poppinsregular"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:text="Sincronzar"
+                    android:textAllCaps="false"
+                    android:textColor="@color/material_color_blue_grey_500" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:background="@drawable/shape_bg_info_left"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:fontFamily="@font/poppinsregular"
+                    android:text="@string/ultima_actualizacion"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginStart="15dp"
+                    android:fontFamily="@font/poppinsitalic"
+                    android:text="@string/hace_mas_de_un_mes"
+                    android:textColor="@color/material_color_blue_grey_300"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:fontFamily="@font/poppinsregular"
+                    android:text="@string/actualizacion_disponible"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginStart="15dp"
+                    android:fontFamily="@font/poppinsitalic"
+                    android:text="19/12/2019"
+                    android:textColor="@color/material_color_blue_grey_300"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/material_color_grey_100"
+            android:fontFamily="@font/poppinsbold"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="@string/propiedad_intelectual"
+            android:textAlignment="center"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:orientation="horizontal"
+            android:weightSum="6">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:background="@drawable/shape_bg_info_right"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:fontFamily="@font/poppinsregular"
+                    android:text="Desarrollo y Diseño: "
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="15dp"
+                    android:fontFamily="@font/poppinsitalic"
+                    android:text="Tec. Inf. Jose Manuel Cepero"
+                    android:textColor="@color/material_color_blue_grey_300"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:fontFamily="@font/poppinsregular"
+                    android:text="Version: "
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="15dp"
+                    android:fontFamily="@font/poppinsitalic"
+                    android:text="1.0 beta"
+                    android:textColor="@color/material_color_blue_grey_300"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:drawableTop="@drawable/ic_file_3"
+                    android:fontFamily="@font/poppinsregular"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:text="Politicas"
+                    android:textAllCaps="false"
+                    android:textColor="@color/material_color_blue_grey_500" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/material_color_grey_100"
+            android:fontFamily="@font/poppinsbold"
+            android:padding="5dp"
+            android:text="@string/ayudanos_a_mejorar"
+            android:textAlignment="center"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="6">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@color/material_color_grey_100"
+                android:gravity="center">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="@null"
+                    android:drawableTop="@drawable/ic_speech_bubble"
+                    android:fontFamily="@font/poppinsregular"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:text="@string/sugerir"
+                    android:textAllCaps="false"
+                    android:textColor="@color/material_color_blue_grey_500" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:background="@drawable/shape_bg_info_left"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:fontFamily="@font/poppinsregular"
+                    android:text="@string/txt_feedback"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</layout>

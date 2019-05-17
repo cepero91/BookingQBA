@@ -79,6 +79,7 @@ import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
+import com.infinitum.bookingqba.view.info.InfoFragment;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.view.filter.FilterFragment;
@@ -594,9 +595,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         } else if (id == R.id.nav_wish_list && !(mFragment instanceof ListWishFragment)) {
             mFragment = ListWishFragment.newInstance();
             sameFragment = false;
-        } else if (id == R.id.nav_setting) {
-            startActivity(new Intent(HomeActivity.this, SyncActivity.class));
-            this.finish();
+        } else if (id == R.id.nav_info && !(mFragment instanceof InfoFragment)) {
+            mFragment = InfoFragment.newInstance();
+            sameFragment = false;
         }
         if (mFragment != null && !sameFragment) {
             // Highlight the selected item has been done by NavigationView
