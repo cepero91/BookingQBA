@@ -3,10 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <data>
+        <variable
+            name="localUpdate"
+            type="String"/>
+        <variable
+            name="remoteAvailable"
+            type="String"/>
+    </data>
+
+    <com.xw.repo.widget.BounceScrollView
+        android:id="@+id/nested"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/material_color_grey_100"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <TextView
@@ -69,7 +84,7 @@
                     android:layout_gravity="start"
                     android:layout_marginStart="15dp"
                     android:fontFamily="@font/poppinsitalic"
-                    android:text="@string/hace_mas_de_un_mes"
+                    android:text="@{localUpdate}"
                     android:textColor="@color/material_color_blue_grey_300"
                     android:textSize="12sp" />
 
@@ -88,7 +103,7 @@
                     android:layout_gravity="start"
                     android:layout_marginStart="15dp"
                     android:fontFamily="@font/poppinsitalic"
-                    android:text="19/12/2019"
+                    android:text="@{remoteAvailable}"
                     android:textColor="@color/material_color_blue_grey_300"
                     android:textSize="12sp" />
 
@@ -248,5 +263,7 @@
 
 
     </LinearLayout>
+
+    </com.xw.repo.widget.BounceScrollView>
 
 </layout>

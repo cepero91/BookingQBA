@@ -1,4 +1,4 @@
-package com.infinitum.bookingqba.view.adapters.rentlist;
+package com.infinitum.bookingqba.view.adapters;
 
 import android.arch.paging.PagedListAdapter;
 import android.databinding.DataBindingUtil;

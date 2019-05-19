@@ -30,8 +30,8 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_info" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/Font-Awesome-SVG-PNG-master/Font-Awesome-SVG-PNG-master/black/svg/info.svg" />
+                            <entry key="outputName" value="ic_eraser" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/Font-Awesome-SVG-PNG-master/Font-Awesome-SVG-PNG-master/black/svg/eraser.svg" />
                           </map>
                         </option>
                       </PersistentState>

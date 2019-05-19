@@ -15,7 +15,6 @@ import android.view.View;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityRentDetailBinding;
 import com.infinitum.bookingqba.model.Resource;
-import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.util.AlertUtils;
@@ -24,8 +23,10 @@ import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentNumber;
-import com.infinitum.bookingqba.view.adapters.rentdetail.InnerViewPagerAdapter;
+import com.infinitum.bookingqba.view.adapters.InnerViewPagerAdapter;
+import com.infinitum.bookingqba.view.galery.GaleryActivity;
 import com.infinitum.bookingqba.view.home.HomeActivity;
+import com.infinitum.bookingqba.view.interaction.GaleryInteraction;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
@@ -42,6 +43,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
@@ -50,7 +52,7 @@ import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 
 public class RentDetailActivity extends AppCompatActivity implements NestedScrollView.OnScrollChangeListener,
-        View.OnClickListener, DialogComment.CommentInteraction, DialogRating.RatingInteraction{
+        View.OnClickListener, DialogComment.CommentInteraction, DialogRating.RatingInteraction, GaleryInteraction{
 
     private ActivityRentDetailBinding rentDetailBinding;
     private int imageViewHeight;
@@ -77,7 +79,6 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
         rentDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_rent_detail);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
         rentDetailBinding.setIsLoading(true);
-        rentDetailBinding.fabComment.hide();
         rentDetailBinding.fabComment.setOnClickListener(this);
         compositeDisposable = new CompositeDisposable();
 
@@ -94,9 +95,9 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
         }
 
         //Configurations
+        rentDetailBinding.nested.setOnScrollChangeListener(this);
         rentDetailBinding.llContentAddress.setOnClickListener(this);
         imageViewHeight = getResources().getDimensionPixelSize(R.dimen.rent_detail_img_dimen);
-        rentDetailBinding.nested.setOnScrollChangeListener(this);
         setupToolbar();
     }
 
@@ -150,9 +151,9 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
             innerViewPagerAdapter.addFragment(innerComment, "Comentarios");
         }
         rentDetailBinding.vpPages.setAdapter(innerViewPagerAdapter);
+        OverScrollDecoratorHelper.setUpOverScroll(rentDetailBinding.vpPages);
         rentDetailBinding.tlTab.setViewPager(rentDetailBinding.vpPages);
-        rentDetailBinding.vpPages.postDelayed(() -> rentDetailBinding.setIsLoading(false), 500);
-        rentDetailBinding.executePendingBindings();
+        rentDetailBinding.setIsLoading(false);
     }
 
 
@@ -278,11 +279,6 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
     @Override
     public void onScrollChange(NestedScrollView nestedScrollView, int i, int i1, int i2, int i3) {
         changeToolbarBackground(i1);
-        if (i3 > i1) {
-            rentDetailBinding.fabComment.hide();
-        } else {
-            rentDetailBinding.fabComment.show();
-        }
     }
 
     private void changeToolbarBackground(float i1) {
@@ -306,6 +302,14 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(()-> AlertUtils.showSuccessToast(this,"Rating guardado"),Timber::e);
         compositeDisposable.add(disposable);
+    }
+
+    @Override
+    public void onGaleryClick(String id) {
+        Intent intent = new Intent(this, GaleryActivity.class);
+        intent.putExtra("id",id);
+        intent.putParcelableArrayListExtra("imageList",rentDetailBinding.getRentItem().getGalerieItems());
+        startActivity(intent);
     }
 }
 

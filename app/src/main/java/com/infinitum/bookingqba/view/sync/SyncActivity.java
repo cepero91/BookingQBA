@@ -1,55 +1,37 @@
 package com.infinitum.bookingqba.view.sync;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
-import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.view.ViewCompat;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivitySyncBinding;
 import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
-import com.infinitum.bookingqba.model.local.entity.DrawTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
-import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
-import com.infinitum.bookingqba.model.local.entity.RentEntity;
-import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
-import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.util.NetworkHelper;
-import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.viewmodel.SyncViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.liulishuo.filedownloader.BaseDownloadTask;
 import com.liulishuo.filedownloader.FileDownloadListener;
 import com.liulishuo.filedownloader.FileDownloadQueueSet;
 import com.liulishuo.filedownloader.FileDownloader;
-import com.muddzdev.styleabletoast.StyleableToast;
 
 
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -60,11 +42,6 @@ import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Consumer;
-import io.reactivex.observers.DisposableCompletableObserver;
-import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -75,7 +52,6 @@ import static com.infinitum.bookingqba.util.Constants.LEVEL_PROGRESS_ENTITY;
 import static com.infinitum.bookingqba.util.Constants.LEVEL_PROGRESS_GALERY;
 import static com.infinitum.bookingqba.util.Constants.PREF_ENTITY_DOWNLOAD_INDEX;
 import static com.infinitum.bookingqba.util.Constants.PREF_DOWNLOAD_LEVEL;
-import static com.infinitum.bookingqba.util.Constants.PREF_DOWNLOAD_SUCCESS;
 import static com.infinitum.bookingqba.util.Constants.PREF_LAST_DOWNLOAD_DATE;
 import static com.infinitum.bookingqba.util.Constants.PROGRESS_ERROR;
 import static com.infinitum.bookingqba.util.Constants.PROGRESS_SUCCESS;
@@ -418,7 +394,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private void prepareForDownload() {
         galeryDisposable = syncViewModel
-                .galerieEntityList()
+                .galeriesEntityVersionOne()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(this::prepareLinksForDownload)

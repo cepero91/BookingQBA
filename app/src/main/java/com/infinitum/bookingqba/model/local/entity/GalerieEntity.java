@@ -34,11 +34,14 @@ public class GalerieEntity {
     @NonNull
     private String rent;
 
-    public GalerieEntity(@NonNull String id, @NonNull String imageUrl, @Nullable String imageLocalPath, @NonNull String rent) {
+    private int version;
+
+    public GalerieEntity(@NonNull String id, @NonNull String imageUrl, String imageLocalPath, @NonNull String rent, int version) {
         this.id = id;
         this.imageUrl = imageUrl;
         this.imageLocalPath = imageLocalPath;
         this.rent = rent;
+        this.version = version;
     }
 
     @NonNull
@@ -75,5 +78,13 @@ public class GalerieEntity {
 
     public void setRent(@NonNull String rent) {
         this.rent = rent;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

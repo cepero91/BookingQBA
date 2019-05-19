@@ -1,7 +1,6 @@
 package com.infinitum.bookingqba.view.rents;
 
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
 import android.databinding.DataBindingUtil;
@@ -19,12 +18,11 @@ import android.view.ViewGroup;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentRentListBinding;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
-import com.infinitum.bookingqba.view.adapters.rentlist.RentListAdapter;
+import com.infinitum.bookingqba.view.adapters.RentListAdapter;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
-import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 
-import java.util.List;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 
@@ -111,7 +109,7 @@ public class RentListFragment extends BaseNavigationFragment {
             pagerAdapter.submitList(rentListItems);
             rentListBinding.recyclerView.setAdapter(pagerAdapter);
             rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
-            rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(0, 5));
+            OverScrollDecoratorHelper.setUpOverScroll(rentListBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
             rentListBinding.setIsLoading(false);
         });
 
@@ -129,7 +127,7 @@ public class RentListFragment extends BaseNavigationFragment {
             pagerAdapter.submitList(pagedList);
             rentListBinding.recyclerView.setAdapter(pagerAdapter);
             rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
-            rentListBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(0, 5));
+            OverScrollDecoratorHelper.setUpOverScroll(rentListBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
             rentListBinding.setIsLoading(false);
             rentListBinding.setIsEmpty(false);
         }else{

@@ -16,6 +16,10 @@ public class User {
     @Expose
     private String username;
 
+    @SerializedName("userid")
+    @Expose
+    private String userid;
+
     @SerializedName("avatar")
     @Expose
     private String avatar;
@@ -29,9 +33,10 @@ public class User {
         this.username = username;
     }
 
-    public User(String token, String username, String avatar, ArrayList<String> rentsId) {
+    public User(String token, String username, String userid, String avatar, ArrayList<String> rentsId) {
         this.token = token;
         this.username = username;
+        this.userid = userid;
         this.avatar = avatar;
         this.rentsId = rentsId;
     }
@@ -66,5 +71,13 @@ public class User {
 
     public void setRentsId(ArrayList<String> rentsId) {
         this.rentsId = rentsId;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
     }
 }

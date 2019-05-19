@@ -20,6 +20,8 @@ public interface GalerieRepository {
 
     Flowable<List<GalerieEntity>> allGaleries();
 
+    Flowable<List<GalerieEntity>> allGaleriesVersionOne();
+
     Completable updateGalery(GalerieEntity galerieEntity);
 
     Completable updateListGaleryUtil(List<GaleryUpdateUtil> list);

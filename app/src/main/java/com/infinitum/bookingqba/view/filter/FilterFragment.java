@@ -25,6 +25,7 @@ import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentFilterBinding;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
+import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.view.adapters.FilterAdapter;
 import com.infinitum.bookingqba.view.adapters.items.filter.AmenitieViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
@@ -55,7 +56,7 @@ import timber.log.Timber;
  * Use the {@link FilterFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FilterFragment extends Fragment implements View.OnClickListener{
+public class FilterFragment extends Fragment implements View.OnClickListener, FilterAdapter.OnShipClick {
 
     @Inject
     protected ViewModelFactory viewModelFactory;
@@ -87,7 +88,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
     public static FilterFragment newInstance(String argProvince) {
         FilterFragment fragment = new FilterFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(PROVINCE,argProvince);
+        bundle.putString(PROVINCE, argProvince);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -122,7 +123,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
         filterBinding.priceSeek.setOnSeekBarRangedChangeListener(new SeekBarRangedView.OnSeekBarRangedChangeListener() {
             @Override
             public void onChanged(SeekBarRangedView view, float minValue, float maxValue) {
-
+                onShipClick();
             }
 
             @Override
@@ -176,21 +177,21 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
     }
 
     public void setAmenitiesAdapter(List<CheckableItem> items) {
-        amenitiesAdapter = new FilterAdapter(items);
+        amenitiesAdapter = new FilterAdapter(items, this);
         filterBinding.rvAmenities.setAdapter(amenitiesAdapter);
         filterBinding.rvAmenities.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         filterBinding.rvAmenities.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
     }
 
     public void setReferenceZoneAdapter(List<CheckableItem> items) {
-        munAdapter = new FilterAdapter(items);
+        munAdapter = new FilterAdapter(items, this);
         filterBinding.rvMunicipality.setAdapter(munAdapter);
         filterBinding.rvMunicipality.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         filterBinding.rvMunicipality.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
     }
 
     public void setRentModeAdapter(List<CheckableItem> items) {
-        rentModeAdapter = new FilterAdapter(items);
+        rentModeAdapter = new FilterAdapter(items, this);
         filterBinding.rvRentMode.setAdapter(rentModeAdapter);
         filterBinding.rvRentMode.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         filterBinding.rvRentMode.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
@@ -199,10 +200,9 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_filter:
-                rentViewModel.filter(getFilterParams()).observe(this, pagedList ->
-                        interaction.onFilterElement(pagedList));
+                interaction.closeFilter();
                 break;
             case R.id.btn_clean:
                 rentModeAdapter.resetSelectedItem();
@@ -213,32 +213,36 @@ public class FilterFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-    private void filterResult(Resource<List<RentAndGalery>> resource) {
-        if(resource.data!=null && resource.data.size()>0){
-
+    private Map<String, List<String>> getFilterParams() {
+        Map<String, List<String>> filterParams = new HashMap<>();
+        if (amenitiesAdapter.getSelectedItems().size() > 0) {
+            filterParams.put("Amenities", amenitiesAdapter.getSelectedItems());
         }
-    }
-
-    private Map<String,List<String>> getFilterParams(){
-        Map<String,List<String>> filterParams = new HashMap<>();
-        if(amenitiesAdapter.getSelectedItems().size()>0){
-            filterParams.put("Amenities",amenitiesAdapter.getSelectedItems());
+        if (munAdapter.getSelectedItems().size() > 0) {
+            filterParams.put("Municipality", munAdapter.getSelectedItems());
         }
-        if(munAdapter.getSelectedItems().size()>0){
-            filterParams.put("Municipality",munAdapter.getSelectedItems());
+        if (rentModeAdapter.getSelectedItems().size() > 0) {
+            filterParams.put("RentMode", rentModeAdapter.getSelectedItems());
         }
-        if(rentModeAdapter.getSelectedItems().size()>0){
-            filterParams.put("RentMode",rentModeAdapter.getSelectedItems());
-        }
-        if(filterBinding.priceSeek.getSelectedMaxValue()>0){
+        if (filterBinding.priceSeek.getSelectedMaxValue() > 0) {
             float min = filterBinding.priceSeek.getSelectedMinValue();
             float max = filterBinding.priceSeek.getSelectedMaxValue();
             List<String> params = new ArrayList<>();
             params.add(String.valueOf(min));
             params.add(String.valueOf(max));
-            filterParams.put("Price",params);
+            filterParams.put("Price", params);
         }
         return filterParams;
+    }
+
+    @Override
+    public void onShipClick() {
+        if (getFilterParams().size() > 0) {
+            rentViewModel.filter(getFilterParams(),argProvince).observe(this, pagedList ->
+                    interaction.onFilterElement(pagedList));
+        } else {
+            interaction.onFilterClean();
+        }
     }
 }
 

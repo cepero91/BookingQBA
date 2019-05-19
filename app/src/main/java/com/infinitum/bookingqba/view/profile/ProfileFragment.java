@@ -34,7 +34,6 @@ import com.infinitum.bookingqba.databinding.FragmentProfileBinding;
 import com.infinitum.bookingqba.model.remote.pojo.RentAnalitics;
 import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.SpinnerAdapter;
-import com.infinitum.bookingqba.view.adapters.comments.CommentListAdapter;
 import com.infinitum.bookingqba.view.adapters.items.comment.CommentItem;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentAnaliticsViewModel;

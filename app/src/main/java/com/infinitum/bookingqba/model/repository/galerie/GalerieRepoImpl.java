@@ -61,7 +61,7 @@ public class GalerieRepoImpl implements GalerieRepository {
         ArrayList<GalerieEntity> listEntity = new ArrayList<>();
         GalerieEntity entity;
         for (Galerie item : gsonList) {
-            entity = new GalerieEntity(item.getId(), BASIC_URL_API + "/" + item.getImage(), null, item.getRent());
+            entity = new GalerieEntity(item.getId(), BASIC_URL_API + "/" + item.getImage(), null, item.getRent(),1);
             listEntity.add(entity);
         }
         return listEntity;
@@ -77,6 +77,11 @@ public class GalerieRepoImpl implements GalerieRepository {
     @Override
     public Flowable<List<GalerieEntity>> allGaleries() {
         return qbaDao.getAllGaleries().subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Flowable<List<GalerieEntity>> allGaleriesVersionOne() {
+        return qbaDao.getAllGaleriesVersionOne().subscribeOn(Schedulers.io());
     }
 
     @Override

@@ -199,8 +199,8 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public DataSource.Factory<Integer,RentAndGalery> filterRents(Map<String, List<String>> filterParams) {
-        String query  = FilterRepositoryUtil.generalQuery(filterParams);
+    public DataSource.Factory<Integer,RentAndGalery> filterRents(Map<String, List<String>> filterParams, String province) {
+        String query  = FilterRepositoryUtil.generalQuery(filterParams,province);
         SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query);
         return qbaDao.filterRents(simpleSQLiteQuery);
     }

@@ -48,6 +48,6 @@ public interface RentRepository {
 
     Flowable<Resource<List<RentModeEntity>>> allRentMode();
 
-    DataSource.Factory<Integer,RentAndGalery> filterRents(Map<String,List<String>> filterParams);
+    DataSource.Factory<Integer,RentAndGalery> filterRents(Map<String,List<String>> filterParams, String province);
 
 }

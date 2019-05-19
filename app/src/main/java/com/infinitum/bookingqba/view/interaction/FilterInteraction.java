@@ -11,6 +11,8 @@ import java.util.Map;
 
 public interface FilterInteraction {
 
+    void closeFilter();
+
     void onFilterElement(PagedList<RentListItem> resourceResult);
 
     void onFilterClean();

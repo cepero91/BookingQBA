@@ -619,7 +619,7 @@ public abstract class BookingQBADao {
     }
 
     @Transaction
-    @Query("UPDATE Galerie SET imageLocalPath=:imageLocalPath WHERE id=:uuid")
+    @Query("UPDATE Galerie SET imageLocalPath=:imageLocalPath, version=2 WHERE id=:uuid")
     public abstract void updateImageLocalPathGalerie(String uuid, String imageLocalPath);
 
     @Transaction
@@ -632,6 +632,9 @@ public abstract class BookingQBADao {
 
     @Query("SELECT * FROM Galerie")
     public abstract Flowable<List<GalerieEntity>> getAllGaleries();
+
+    @Query("SELECT * FROM Galerie WHERE version = 1")
+    public abstract Flowable<List<GalerieEntity>> getAllGaleriesVersionOne();
 
     //------------------------- OFERTA ---------------------------//
 

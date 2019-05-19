@@ -16,6 +16,7 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/material_color_grey_100"
         tools:context=".view.filter.FilterFragment">
 
         <FrameLayout
@@ -28,14 +29,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
-            <android.support.v7.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="5dp"
-                android:padding="5dp"
-                app:srcCompat="@drawable/ic_close_white_24dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -50,7 +43,7 @@
         </FrameLayout>
 
         <ScrollView
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="60dp"
             android:layout_marginTop="60dp"
@@ -225,8 +218,8 @@
         <LinearLayout
             android:id="@+id/ll_btn_content"
             android:layout_width="match_parent"
+            android:background="@color/White_100"
             android:layout_height="?actionBarSize"
-            android:background="@color/colorPrimary"
             android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="2"
@@ -234,28 +227,27 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
-            <Button
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/btn_filter"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@null"
-                android:text="Filtrar"
-                android:textColor="@color/White_100" />
+                app:srcCompat="@drawable/ic_filter"
+                android:tint="@color/colorPrimary"
+                android:layout_weight="1"/>
 
             <View
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
-                android:background="@color/White_100" />
+                android:background="@color/material_color_grey_200" />
 
-            <Button
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/btn_clean"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:tint="@color/material_color_red_500"
+                app:srcCompat="@drawable/ic_eraser"
                 android:layout_weight="1"
-                android:background="@null"
-                android:text="Limpiar"
-                android:textColor="@color/White_100" />
+                />
 
 
         </LinearLayout>

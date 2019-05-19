@@ -77,8 +77,8 @@ public class SyncViewModel extends ViewModel {
         this.galeryUpdateUtilList = new ArrayList<>();
     }
 
-    public Flowable<List<GalerieEntity>> galerieEntityList() {
-        return galerieRepository.allGaleries();
+    public Flowable<List<GalerieEntity>> galeriesEntityVersionOne() {
+        return galerieRepository.allGaleriesVersionOne();
     }
 
     public Completable updateGalerie(GalerieEntity galerieEntity){

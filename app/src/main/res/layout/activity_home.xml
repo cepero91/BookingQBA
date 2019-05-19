@@ -36,22 +36,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="?attr/actionBarSize"
                         android:background="@color/colorPrimary"
-                        app:popupTheme="@style/AppTheme.PopupOverlay"
                         app:contentInsetLeft="0dp"
                         app:contentInsetStart="0dp"
                         app:contentInsetStartWithNavigation="0dp"
-                        />
+                        app:popupTheme="@style/AppTheme.PopupOverlay" />
 
                 </android.support.design.widget.CollapsingToolbarLayout>
 
             </android.support.design.widget.AppBarLayout>
 
             <!-- Main Content -->
-            <FrameLayout
-                android:id="@+id/frame_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                <FrameLayout
+                    android:id="@+id/frame_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                     />
 
         </android.support.design.widget.CoordinatorLayout>
 
@@ -62,24 +62,24 @@
             android:layout_gravity="start"
             android:fitsSystemWindows="false"
             app:headerLayout="@layout/nav_header_drawer"
-            app:menu="@menu/menu_home"
-            app:itemTextAppearance="@style/NavItemTextStyle"
             app:itemBackground="@android:color/transparent"
             app:itemIconTint="@drawable/selector_navigation_item"
-            app:itemTextColor="@drawable/selector_navigation_item"/>
+            app:itemTextAppearance="@style/NavItemTextStyle"
+            app:itemTextColor="@drawable/selector_navigation_item"
+            app:menu="@menu/menu_home" />
 
         <android.support.design.widget.NavigationView
             android:id="@+id/nav_view_notification"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/material_color_grey_100"
             android:layout_gravity="end"
+            android:background="@color/material_color_grey_100"
             android:fitsSystemWindows="false">
 
             <FrameLayout
                 android:id="@+id/filter_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
         </android.support.design.widget.NavigationView>
 

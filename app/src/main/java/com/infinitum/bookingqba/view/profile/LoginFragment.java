@@ -171,12 +171,14 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
                         }
                     })
                     .flatMap(this::checkExist)
-                    .map(booleanBooleanPair -> {
-                        if (booleanBooleanPair.first && booleanBooleanPair.second) {
+                    .map(booleanStatusPair -> {
+                        if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.HOST_USER_RENT_FOUND) {
                             interaction.showGroupMenuProfile(true);
                             return RESULT_DISMISS;
-                        } else if (booleanBooleanPair.first && !booleanBooleanPair.second) {
+                        } else if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.HOST_USER_RENT_NOT_FOUND) {
                             interaction.showNotificationToUpdate(getResources().getString(R.string.notification_sync_msg));
+                            return RESULT_DISMISS;
+                        } else if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.NORMAL_USER) {
                             return RESULT_DISMISS;
                         } else {
                             return RESULT_ERROR;
@@ -205,20 +207,28 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
         v.setEnabled(true);
         if (throwable instanceof ConnectException) {
             loginBinding.tvError.setText("Oopss! sin conexion");
-        }else{
+        } else {
             loginBinding.tvError.setText("Oopss! un error ha ocurrido");
         }
         loginBinding.setIsLoading(false);
     }
 
-    private Single<Pair<Boolean, Boolean>> checkExist(Pair<Boolean, ArrayList<String>> pair) {
+    private Single<Pair<Boolean, UserStatus>> checkExist(Pair<Boolean, ArrayList<String>> pair) {
         if (pair.first && pair.second.size() > 0) {
             return userViewModel.checkIfRentExists(pair.second)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .map(exist -> new Pair<>(true, exist));
+                    .map(exist -> {
+                        if (exist) {
+                            return new Pair<>(true, UserStatus.HOST_USER_RENT_FOUND);
+                        } else {
+                            return new Pair<>(true, UserStatus.HOST_USER_RENT_NOT_FOUND);
+                        }
+                    });
+        } else if (pair.first) {
+            return Single.just(new Pair<>(true, UserStatus.NORMAL_USER));
         } else {
-            return Single.just(new Pair<>(pair.first, false));
+            return Single.just(new Pair<>(pair.first, UserStatus.NO_USER));
         }
     }
 
@@ -235,5 +245,12 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
             isValid = false;
         }
         return isValid;
+    }
+
+    public enum UserStatus {
+        NO_USER,
+        NORMAL_USER,
+        HOST_USER_RENT_FOUND,
+        HOST_USER_RENT_NOT_FOUND
     }
 }

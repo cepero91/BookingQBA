@@ -131,6 +131,12 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         }
     }
 
+    public void changeStateFilterItem(int pos, String levelParam){
+        CheckableItem item = filterMap.get(levelParam).get(pos);
+        boolean currentState = item.isChecked();
+        item.setChecked(!currentState);
+    }
+
     private Flowable<Map<String, List<CheckableItem>>> getMapFlowable(String province) {
         Flowable<List<CheckableItem>> amenitieFlow = amenitiesRepository.allAmenities()
                 .subscribeOn(Schedulers.io())
@@ -149,8 +155,8 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         }).subscribeOn(Schedulers.io());
     }
 
-    public LiveData<PagedList<RentListItem>> filter(Map<String, List<String>> filterParams) {
-        DataSource.Factory<Integer, RentListItem> dataSource = rentRepository.filterRents(filterParams)
+    public LiveData<PagedList<RentListItem>> filter(Map<String, List<String>> filterParams, String province) {
+        DataSource.Factory<Integer, RentListItem> dataSource = rentRepository.filterRents(filterParams, province)
                 .mapByPage(this::transformPaginadedData);
         LivePagedListBuilder<Integer, RentListItem> pagedListBuilder = new LivePagedListBuilder<>(dataSource, 10);
         ldRentsList = pagedListBuilder.build();
@@ -255,7 +261,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         ArrayList<RentGalerieItem> detailGalerieItems = new ArrayList<>();
         for (GalerieEntity item : galerieEntities) {
             String imagePath = item.getImageLocalPath() != null ? item.getImageLocalPath() : item.getImageUrl();
-            detailGalerieItems.add(new RentGalerieItem(imagePath));
+            detailGalerieItems.add(new RentGalerieItem(item.getId(),imagePath));
         }
         return detailGalerieItems;
     }

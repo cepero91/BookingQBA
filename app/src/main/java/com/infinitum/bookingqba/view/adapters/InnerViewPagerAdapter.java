@@ -1,4 +1,4 @@
-package com.infinitum.bookingqba.view.adapters.rentdetail;
+package com.infinitum.bookingqba.view.adapters;
 
 import android.app.Activity;
 import android.content.Context;

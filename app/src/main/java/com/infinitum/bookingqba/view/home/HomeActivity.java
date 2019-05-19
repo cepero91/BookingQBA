@@ -123,6 +123,7 @@ import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID_DEFAULT;
+import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
@@ -181,7 +182,10 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
         initializeFragment(savedInstanceState);
 
-        checkSinglePermission(readPhonePerm, READ_PHONE_REQUEST_CODE);
+        if (checkSinglePermission(readPhonePerm, READ_PHONE_REQUEST_CODE)) {
+            if (sharedPreferences.getString(IMEI, "").equals(""))
+                sharedPreferences.edit().putString(IMEI, getDeviceUniversalID()).apply();
+        }
 
         initDrawerLayout();
 
@@ -362,6 +366,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 checkPermissionResult(permissions, READ_PHONE_REQUEST_CODE, "Estado del Telefono");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permiso otorgado", Toast.LENGTH_SHORT).show();
+                if (sharedPreferences.getString(IMEI, "").equals("")) {
+                    sharedPreferences.edit().putString(getDeviceUniversalID(), "").apply();
+                }
             }
         }
     }
@@ -664,6 +671,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         editor.putBoolean(USER_IS_AUTH, true);
         editor.putString(USER_TOKEN, user.getToken());
         editor.putString(USER_NAME, user.getUsername());
+        editor.putString(USER_ID, user.getUserid());
         editor.putStringSet(USER_RENTS, new HashSet<>(user.getRentsId()));
         editor.apply();
         invalidateOptionsMenu();
@@ -716,20 +724,26 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     // -------------------------- FILTER --------------------------------------------- //
 
+
+    @Override
+    public void closeFilter() {
+        if (homeBinding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            homeBinding.drawerLayout.closeDrawer(GravityCompat.END);
+        }
+    }
+
     @Override
     public void onFilterElement(PagedList<RentListItem> resourceResult) {
-        if (mFragment instanceof RentListFragment){
+        if (mFragment instanceof RentListFragment) {
             ((RentListFragment) mFragment).filterListResult(resourceResult);
-            if (homeBinding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
-                homeBinding.drawerLayout.closeDrawer(GravityCompat.END,true);
-            }
         }
     }
 
     @Override
     public void onFilterClean() {
-        if (mFragment instanceof RentListFragment)
+        if (mFragment instanceof RentListFragment) {
             ((RentListFragment) mFragment).needToRefresh(true);
+        }
     }
 
     // -------------------------- PREFERENCES ---------------------------------------- //

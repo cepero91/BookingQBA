@@ -19,9 +19,11 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
 
     private List<CheckableItem> checkableItemList;
     private SparseBooleanArray selectionIndex;
+    private OnShipClick onShipClick;
 
-    public FilterAdapter(List<CheckableItem> checkableItemList) {
+    public FilterAdapter(List<CheckableItem> checkableItemList, OnShipClick onShipClick) {
         this.checkableItemList = checkableItemList;
+        this.onShipClick = onShipClick;
         initSparseBoolean(checkableItemList.size());
     }
 
@@ -34,13 +36,16 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
 
     @Override
     public void onBindViewHolder(@NonNull FilterViewHolder filterViewHolder, int i) {
-        if(selectionIndex.get(i)){
+        if (selectionIndex.get(i)) {
             filterViewHolder.changeViewState(true);
-        }else{
+        } else {
             filterViewHolder.changeViewState(false);
         }
         filterViewHolder.bind(checkableItemList.get(i));
-        filterViewHolder.itemView.setOnClickListener(v -> changeCheckState(i));
+        filterViewHolder.itemView.setOnClickListener(v -> {
+            changeCheckState(i);
+            onShipClick.onShipClick();
+        });
     }
 
 
@@ -49,33 +54,35 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
         return checkableItemList == null ? 0 : checkableItemList.size();
     }
 
-    private void initSparseBoolean(int size){
-        selectionIndex = new SparseBooleanArray(size);
-        for(int i=0; i < size; i++){
-            selectionIndex.append(i,false);
+    private void initSparseBoolean(int size) {
+        if (size > 0) {
+            selectionIndex = new SparseBooleanArray(size);
+            for (int i = 0; i < size; i++) {
+                selectionIndex.append(i, false);
+            }
         }
     }
 
-    public ArrayList<String> getSelectedItems(){
+    public ArrayList<String> getSelectedItems() {
         ArrayList<String> selectedItems = new ArrayList<>();
-        for(int i=0; i < selectionIndex.size(); i++){
-            if(selectionIndex.get(i)){
+        for (int i = 0; i < selectionIndex.size(); i++) {
+            if (selectionIndex.get(i)) {
                 selectedItems.add(checkableItemList.get(i).getId());
             }
         }
         return selectedItems;
     }
 
-    private void changeCheckState(int pos){
-        if(selectionIndex.get(pos)){
-            selectionIndex.append(pos,false);
-        }else{
-            selectionIndex.append(pos,true);
+    private void changeCheckState(int pos) {
+        if (selectionIndex.get(pos)) {
+            selectionIndex.append(pos, false);
+        } else {
+            selectionIndex.append(pos, true);
         }
         notifyDataSetChanged();
     }
 
-    public void resetSelectedItem(){
+    public void resetSelectedItem() {
         initSparseBoolean(checkableItemList.size());
         notifyDataSetChanged();
     }
@@ -101,6 +108,9 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
                 filterShipTitle.setBackgroundResource(R.drawable.shape_filter_ship_unselected);
             }
         }
+    }
 
+    public interface OnShipClick {
+        void onShipClick();
     }
 }

@@ -63,6 +63,7 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.IMEI;
@@ -232,6 +233,7 @@ public class HomeFragment extends BaseNavigationFragment {
         recyclerViewAdapter.registerRenderer(getHeader());
         recyclerViewAdapter.registerRenderer(getCompositeBinder());
         recyclerViewAdapter.setItems(rendererViewModelList);
+        OverScrollDecoratorHelper.setUpOverScroll(fragmentHomeBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         fragmentHomeBinding.recyclerView.setAdapter(recyclerViewAdapter);
     }
 

@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.view.rents;
 
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,8 +25,11 @@ import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentAmenitieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentGalerieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentNumber;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
+import com.infinitum.bookingqba.view.interaction.GaleryInteraction;
 
 import java.util.ArrayList;
+
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,6 +53,7 @@ public class InnerDetailFragment extends Fragment {
     private ArrayList<RentPoiItem> argPois;
     private ArrayList<RentAmenitieItem> argAmenities;
     private ArrayList<RentGalerieItem> argGaleries;
+    private GaleryInteraction galeryInteraction;
 
 
     public InnerDetailFragment() {
@@ -84,7 +89,7 @@ public class InnerDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        innerDetailBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_inner_detail, container, false);
+        innerDetailBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_inner_detail, container, false);
         return innerDetailBinding.getRoot();
     }
 
@@ -106,32 +111,40 @@ public class InnerDetailFragment extends Fragment {
         setupGalerieAdapter(argGaleries);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof GaleryInteraction){
+            this.galeryInteraction = (GaleryInteraction) context;
+        }
+    }
+
     private void setupPoisAdapter(ArrayList<RentPoiItem> argPois) {
-        if(argPois!=null && argPois.size()>0) {
+        if (argPois != null && argPois.size() > 0) {
             RendererRecyclerViewAdapter adapter = new RendererRecyclerViewAdapter();
             adapter.registerRenderer(getPoiVinder());
             adapter.setItems(argPois);
-            innerDetailBinding.rvPois.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
+            innerDetailBinding.rvPois.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
             innerDetailBinding.setPois(adapter);
         }
     }
 
     private void setupAmenitiesAdapter(ArrayList<RentAmenitieItem> argAmenities) {
-        if(argAmenities!=null && argAmenities.size()>0) {
+        if (argAmenities != null && argAmenities.size() > 0) {
             RendererRecyclerViewAdapter adapter = new RendererRecyclerViewAdapter();
             adapter.registerRenderer(getAmenitiesVinder());
             adapter.setItems(argAmenities);
-            innerDetailBinding.rvAmenities.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
+            innerDetailBinding.rvAmenities.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
             innerDetailBinding.setAmenities(adapter);
         }
     }
 
     private void setupGalerieAdapter(ArrayList<RentGalerieItem> argGaleries) {
-        if(argGaleries!=null && argGaleries.size()>0) {
+        if (argGaleries != null && argGaleries.size() > 0) {
             RendererRecyclerViewAdapter adapter = new RendererRecyclerViewAdapter();
             adapter.registerRenderer(getGalerieVinder());
             adapter.setItems(argGaleries);
-            innerDetailBinding.rvGaleries.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
+            innerDetailBinding.rvGaleries.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
             innerDetailBinding.setGaleries(adapter);
         }
     }
@@ -161,6 +174,9 @@ public class InnerDetailFragment extends Fragment {
                 RentGalerieItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.iv_galerie, (ViewProvider<RoundedImageView>) view -> GlideApp.with(getView()).load(model.getImage()).placeholder(R.drawable.placeholder).into(view))
+                        .setOnClickListener(v -> {
+                            galeryInteraction.onGaleryClick(model.getId());
+                        })
         );
     }
 }
