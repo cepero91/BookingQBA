@@ -153,7 +153,8 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
         rentDetailBinding.vpPages.setAdapter(innerViewPagerAdapter);
         OverScrollDecoratorHelper.setUpOverScroll(rentDetailBinding.vpPages);
         rentDetailBinding.tlTab.setViewPager(rentDetailBinding.vpPages);
-        rentDetailBinding.setIsLoading(false);
+        rentDetailBinding.executePendingBindings();
+        rentDetailBinding.vpPages.postDelayed(() -> rentDetailBinding.setIsLoading(false),500);
     }
 
 

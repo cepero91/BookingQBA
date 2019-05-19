@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
@@ -103,6 +104,7 @@ public class ListWishFragment extends BaseNavigationFragment {
             recyclerViewAdapter.registerRenderer(getListWishBinder(R.layout.recycler_list_wish_item));
             recyclerViewAdapter.setItems(rendererViewModelList);
             wishBinding.recyclerView.setAdapter(recyclerViewAdapter);
+            OverScrollDecoratorHelper.setUpOverScroll(wishBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
             wishBinding.setIsLoading(false);
             wishBinding.setIsEmpty(false);
         }else{

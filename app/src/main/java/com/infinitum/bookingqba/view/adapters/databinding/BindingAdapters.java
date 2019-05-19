@@ -27,6 +27,11 @@ public class BindingAdapters {
         view.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
+    @BindingAdapter("discreteVisibility")
+    public static void discreteVisibility(View view, boolean show) {
+        view.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
     @BindingAdapter("visibleGoneAnim")
     public static void showHideAnim(View view, boolean show) {
         if (show) {
@@ -54,8 +59,7 @@ public class BindingAdapters {
 
     @BindingAdapter("setPriceText")
     public static void setPriceText(TextView view, double price) {
-        String priceString = String.valueOf(price);
-        view.setText(String.format("$ %s", priceString));
+        view.setText(String.format("$ %.2f", price));
     }
 
     @BindingAdapter("setRentModeString")
@@ -152,6 +156,11 @@ public class BindingAdapters {
         }else if(wished == 0){
             view.setVisibility(View.GONE);
         }
+    }
+
+    @BindingAdapter("setVotes")
+    public static void setVotes(TextView view, int votes) {
+        view.setText(String.format("(%s voto%s)",votes,votes>1?"s":""));
     }
 
 
