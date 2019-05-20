@@ -111,7 +111,7 @@ public class DialogComment extends DialogFragment implements View.OnClickListene
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof RentDetailActivity){
+        if(context instanceof CommentInteraction){
             commentInteraction = (CommentInteraction) context;
         } else {
             throw new RuntimeException(context.toString()

@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.view.adapters.items.spinneritem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProvinceSpinnerList {
@@ -17,7 +18,7 @@ public class ProvinceSpinnerList {
     private String[] createArrayNames(){
         String[] arr  = new String[itemList.size()];
         for (int i = 0; i < itemList.size(); i++) {
-            arr[i] = itemList.get(i).getName();
+           arr[i] = itemList.get(i).getName();
         }
         return arr;
     }
@@ -28,6 +29,17 @@ public class ProvinceSpinnerList {
             arr[i] = itemList.get(i).getUuid();
         }
         return arr;
+    }
+
+    public int provincePosByUuid(String uuid){
+        int pos = -1;
+        for(int i=0; i < arrayUuid.length; i++){
+            if(arrayUuid[i].equals(uuid)){
+                pos = i;
+                break;
+            }
+        }
+        return pos;
     }
 
     public String getUuidOnPos(int pos){

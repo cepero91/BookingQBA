@@ -6,57 +6,73 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <FrameLayout
-        android:id="@+id/fl_iv_rent"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:foreground="@drawable/shape_placeholder_circle"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.github.siyamed.shapeimageview.RoundedImageView
-            android:id="@+id/iv_rent"
-            android:layout_width="@dimen/rent_new_iv_size"
-            android:layout_height="@dimen/rent_new_iv_size"
-            app:siBorderAlpha="0"
-            app:siRadius="15dp" />
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-    </FrameLayout>
+            <FrameLayout
+                android:id="@+id/fl_iv_rent"
+                android:layout_width="@dimen/rent_new_iv_size"
+                android:layout_height="wrap_content"
+                android:foreground="@drawable/shape_placeholder_circle">
+
+                <com.github.siyamed.shapeimageview.RoundedImageView
+                    android:id="@+id/iv_rent"
+                    android:layout_width="@dimen/rent_new_iv_size"
+                    android:layout_height="@dimen/rent_new_iv_size"
+                    app:siBorderAlpha="0"
+                    app:siRadius="15dp" />
+
+            </FrameLayout>
 
 
-    <com.willy.ratingbar.BaseRatingBar
-        android:id="@+id/sr_scale_rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginStart="20dp"
-        app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srb_rating="4"
-        app:srb_stepSize="0.5"
-        app:srb_starWidth="@dimen/rent_new_star_size"
-        app:srb_starHeight="@dimen/rent_new_star_size"
-        app:srb_starPadding="2dp"
-        app:srb_clickable="false"
-        app:srb_scrollable="false"
-        app:srb_drawableFilled="@drawable/ic_star"
-        app:srb_drawableEmpty="@drawable/ic_star_o"/>
+            <com.willy.ratingbar.BaseRatingBar
+                android:id="@+id/sr_scale_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srb_clickable="false"
+                app:srb_drawableEmpty="@drawable/ic_star_o"
+                app:srb_drawableFilled="@drawable/ic_star"
+                app:srb_rating="4"
+                app:srb_scrollable="false"
+                app:srb_starHeight="@dimen/rent_new_star_size"
+                app:srb_starPadding="2dp"
+                app:srb_starWidth="@dimen/rent_new_star_size"
+                app:srb_stepSize="0.5" />
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/poppinsbold"
-        android:text="Titulo"
-        android:textColor="@color/White_100"
-        android:textSize="@dimen/recycler_rent_new_name_size"
-        app:layout_constraintBottom_toTopOf="@+id/sr_scale_rating"
-        app:layout_constraintStart_toStartOf="@+id/sr_scale_rating" />
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/poppinsbold"
+                android:maxLines="1"
+                android:text="Titulo"
+                android:textColor="@color/White_100"
+                android:textSize="@dimen/recycler_rent_new_name_size"
+                app:layout_constraintBottom_toTopOf="@+id/sr_scale_rating"
+                app:layout_constraintStart_toStartOf="@+id/sr_scale_rating" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
 
 </android.support.constraint.ConstraintLayout>

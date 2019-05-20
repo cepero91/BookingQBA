@@ -11,6 +11,7 @@ public final class Constants {
     public static final String PREF_DOWNLOAD_SUCCESS = "downloadSuccess";
     public static final String PREF_FIRST_OPEN = "firstOpen";
     public static final String PREF_LAST_DOWNLOAD_DATE = "lastDownloadDate";
+    public static final String ALTERNATIVE_SYNC = "altSync";
 
     //FILES
     public static final String ROOT_GALERY_FOLDER_NAME = "galery";
@@ -46,6 +47,7 @@ public final class Constants {
 
     //NAVIGATION
     public static final String PROVINCE_UUID = "province";
+    public static final String PROVINCE_SPINNER_INDEX = "spinnerIndex";
     public static final String PROVINCE_UUID_DEFAULT = "cfa7f0d7-2b67-4245-9157-48ba2117f63c";
     public static final char ORDER_TYPE_POPULAR = 'r'; // Represent attrib rating
     public static final char ORDER_TYPE_NEW = 'c'; // Represent attrib created

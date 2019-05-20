@@ -40,10 +40,9 @@
                     android:layout_marginStart="20dp">
 
                     <com.toptoche.searchablespinnerlibrary.SearchableSpinner
-                        android:id="@+id/spinner"
+                        android:id="@+id/spinner_provinces"
                         android:layout_width="match_parent"
                         android:layout_height="42dp"
-                        android:adapter="@{entries}"
                         android:background="@null"
                         android:gravity="center"
                         android:paddingEnd="10dp"
@@ -69,7 +68,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
-                    android:layoutAnimation="@anim/layout_anim_fall_down"
                     android:paddingBottom="15dp"
                     android:paddingTop="10dp"
                     app:layoutManager="android.support.v7.widget.GridLayoutManager"

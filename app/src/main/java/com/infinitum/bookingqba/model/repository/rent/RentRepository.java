@@ -9,6 +9,7 @@ import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
+import com.infinitum.bookingqba.model.remote.pojo.Rating;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ public interface RentRepository {
 
     DataSource.Factory<Integer,RentAndGalery> allRentByOrderType(char orderType, String province);
 
+    DataSource.Factory<Integer,RentAndGalery> allRentByZone(String province, String zone);
+
     Flowable<Resource<List<RentAndGalery>>> fivePopRentByProvince(String province);
 
     Flowable<Resource<List<RentAndGalery>>> fiveNewRentByProvince(String province);
@@ -37,6 +40,8 @@ public interface RentRepository {
     Completable addOrUpdateRentVisitCount(String id, String rent);
 
     Completable addOrUpdateRating(RatingEntity entity);
+
+    Single<RatingEntity> getLastRentVote(String rent);
 
     Flowable<Resource<List<RentAndGalery>>> allWishedRent(String province);
 

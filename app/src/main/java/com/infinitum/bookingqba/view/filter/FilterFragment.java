@@ -49,6 +49,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.ResourceSubscriber;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
 
 /**
@@ -128,7 +129,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
 
             @Override
             public void onChanging(SeekBarRangedView view, float minValue, float maxValue) {
-                filterBinding.tvMinMax.setText(String.format("min: %2.0f  max: %2.0f", minValue, maxValue));
+                filterBinding.tvMinMax.setText(String.format("min: $%2.0f  max: $%2.0f", minValue, maxValue));
             }
         });
 
@@ -180,21 +181,21 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
         amenitiesAdapter = new FilterAdapter(items, this);
         filterBinding.rvAmenities.setAdapter(amenitiesAdapter);
         filterBinding.rvAmenities.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        filterBinding.rvAmenities.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
+        OverScrollDecoratorHelper.setUpOverScroll(filterBinding.rvAmenities, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
     }
 
     public void setReferenceZoneAdapter(List<CheckableItem> items) {
         munAdapter = new FilterAdapter(items, this);
         filterBinding.rvMunicipality.setAdapter(munAdapter);
         filterBinding.rvMunicipality.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        filterBinding.rvMunicipality.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
+        OverScrollDecoratorHelper.setUpOverScroll(filterBinding.rvMunicipality, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
     }
 
     public void setRentModeAdapter(List<CheckableItem> items) {
         rentModeAdapter = new FilterAdapter(items, this);
         filterBinding.rvRentMode.setAdapter(rentModeAdapter);
         filterBinding.rvRentMode.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        filterBinding.rvRentMode.addItemDecoration(new BetweenSpacesItemDecoration(5, 5));
+        OverScrollDecoratorHelper.setUpOverScroll(filterBinding.rvRentMode, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
     }
 
 
@@ -208,6 +209,8 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
                 rentModeAdapter.resetSelectedItem();
                 munAdapter.resetSelectedItem();
                 amenitiesAdapter.resetSelectedItem();
+                filterBinding.priceSeek.setSelectedMinValue(0f);
+                filterBinding.priceSeek.setSelectedMaxValue(0f);
                 interaction.onFilterClean();
                 break;
         }

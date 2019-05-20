@@ -26,7 +26,7 @@
     <dimen name="home_iv_pop_width">280dp</dimen>
     <dimen name="home_iv_pop_height">150dp</dimen>
 
-    <dimen name="rent_new_iv_size">130dp</dimen>
+    <dimen name="rent_new_iv_size">135dp</dimen>
     <dimen name="recycler_rent_new_name_size">12sp</dimen>
     <dimen name="rent_new_star_size">14dp</dimen>
 

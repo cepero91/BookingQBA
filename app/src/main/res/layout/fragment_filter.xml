@@ -16,14 +16,14 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/material_color_grey_100"
+        android:background="@color/White_100"
         tools:context=".view.filter.FilterFragment">
 
         <FrameLayout
             android:id="@+id/ll_bar"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
-            android:background="@color/colorPrimary"
+            android:background="@color/material_color_grey_200"
             android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -37,12 +37,12 @@
                 android:fontFamily="@font/poppinsregular"
                 android:includeFontPadding="false"
                 android:text="Busqueda avanzada"
-                android:textColor="@color/White_100"
+                android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="18sp" />
 
         </FrameLayout>
 
-        <ScrollView
+        <com.xw.repo.widget.BounceScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="60dp"
@@ -58,8 +58,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginTop="5dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -83,7 +83,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:nestedScrollingEnabled="false"
-                            android:paddingLeft="10dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
                             app:visibleGone="@{!safeUnbox(isLoading)}" />
 
                     </FrameLayout>
@@ -93,7 +94,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
+                    android:layout_marginBottom="12dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -117,7 +118,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:nestedScrollingEnabled="false"
-                            android:paddingLeft="10dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
                             app:visibleGone="@{!safeUnbox(isLoading)}" />
 
                     </FrameLayout>
@@ -127,7 +129,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
+                    android:layout_marginBottom="12dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -150,7 +152,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:nestedScrollingEnabled="false"
-                            android:paddingLeft="10dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
                             app:visibleGone="@{!safeUnbox(isLoading)}" />
 
                     </FrameLayout>
@@ -201,7 +204,7 @@
                             android:layout_gravity="center"
                             android:fontFamily="@font/poppinsregular"
                             android:padding="5dp"
-                            android:text="min:100  max:450"
+                            android:text="min: $0  max: $0"
                             android:textSize="12sp" />
 
 
@@ -212,13 +215,13 @@
 
             </LinearLayout>
 
-        </ScrollView>
+        </com.xw.repo.widget.BounceScrollView>
 
 
         <LinearLayout
             android:id="@+id/ll_btn_content"
             android:layout_width="match_parent"
-            android:background="@color/White_100"
+            android:background="@color/material_color_grey_200"
             android:layout_height="?actionBarSize"
             android:gravity="center"
             android:orientation="horizontal"
@@ -230,7 +233,8 @@
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/btn_filter"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:scaleType="center"
                 app:srcCompat="@drawable/ic_filter"
                 android:tint="@color/colorPrimary"
                 android:layout_weight="1"/>
@@ -238,12 +242,15 @@
             <View
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
-                android:background="@color/material_color_grey_200" />
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/material_color_blue_grey_100" />
 
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/btn_clean"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:scaleType="center"
                 android:tint="@color/material_color_red_500"
                 app:srcCompat="@drawable/ic_eraser"
                 android:layout_weight="1"

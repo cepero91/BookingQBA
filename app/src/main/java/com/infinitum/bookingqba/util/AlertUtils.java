@@ -74,6 +74,18 @@ public class AlertUtils {
                 .show();
     }
 
+    public static void showSuccessAlertAndFinish(Context context) {
+        new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText("Buen trabajo!")
+                .setContentText("Tarea concluida con éxito!")
+                .setConfirmText("Finalizar")
+                .setConfirmClickListener(sweetAlertDialog -> {
+                    sweetAlertDialog.dismissWithAnimation();
+                    new Handler().postDelayed(((Activity) context)::finish, 500);
+                })
+                .show();
+    }
+
     public static void showInfoAlert(Context context, String message) {
         new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE)
                 .setTitleText("Aviso!")

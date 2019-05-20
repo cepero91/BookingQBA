@@ -29,29 +29,13 @@ public class InformationViewModel extends ViewModel {
         this.dbCommonOperationRepository = dbCommonOperationRepository;
     }
 
-    public Flowable<String> lastLocalDatabaseUpdate(){
+    public Flowable<Resource<DatabaseUpdateEntity>> lastLocalDatabaseUpdate(){
         return dbCommonOperationRepository.lastDatabaseUpdateLocal()
-                .subscribeOn(Schedulers.io())
-                .map(databaseUpdateEntityResource -> {
-                    if(databaseUpdateEntityResource.data!=null){
-                        TimeAgoMessages messages = new TimeAgoMessages.Builder().withLocale(new Locale("es", "ES")).build();
-                        String dateRelative = TimeAgo.using(databaseUpdateEntityResource.data.getLastDateUpdateEntity().getTime(), messages);
-                        return dateRelative;
-                    }
-                    return "No disponible";
-                });
+                .subscribeOn(Schedulers.io());
     }
 
-    public Flowable<String> lastRemoteDatabaseUpdate(){
+    public Flowable<Resource<DatabaseUpdateEntity>> lastRemoteDatabaseUpdate(){
         return dbCommonOperationRepository.lastDatabaseUpdateRemote()
-                .subscribeOn(Schedulers.io())
-                .map(databaseUpdateEntityResource -> {
-                    if(databaseUpdateEntityResource.data!=null){
-                        TimeAgoMessages messages = new TimeAgoMessages.Builder().withLocale(new Locale("es", "ES")).build();
-                        String dateRelative = TimeAgo.using(databaseUpdateEntityResource.data.getLastDateUpdateEntity().getTime(), messages);
-                        return dateRelative;
-                    }
-                    return "No disponible";
-                });
+                .subscribeOn(Schedulers.io());
     }
 }

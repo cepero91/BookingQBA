@@ -20,55 +20,42 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentInnerDetailBinding;
+import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.util.GlideApp;
+import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentAmenitieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentGalerieItem;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentNumber;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentInnerDetail;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
-import com.infinitum.bookingqba.view.interaction.GaleryInteraction;
+import com.infinitum.bookingqba.view.interaction.InnerDetailInteraction;
+
+import org.oscim.core.GeoPoint;
 
 import java.util.ArrayList;
-
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link InnerDetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class InnerDetailFragment extends Fragment {
+public class InnerDetailFragment extends Fragment implements View.OnClickListener{
 
     FragmentInnerDetailBinding innerDetailBinding;
 
-    private static final String ARG_DESC = "argDesc";
-    private static final String ARG_RULES = "argRules";
-    private static final String ARG_NUMBER = "argNumber";
-    private static final String ARG_POIS = "argPois";
-    private static final String ARG_AMENITIES = "argAmenities";
-    private static final String ARG_GALERIES = "argGaleries";
+    public static final String RENT_INNER_DETAIL = "rentInnerDetail";
+    private RentInnerDetail rentInnerDetail;
 
-    private String argDesc;
-    private String argRules;
-    private RentNumber argNumber;
-    private ArrayList<RentPoiItem> argPois;
-    private ArrayList<RentAmenitieItem> argAmenities;
-    private ArrayList<RentGalerieItem> argGaleries;
-    private GaleryInteraction galeryInteraction;
+    private InnerDetailInteraction innerDetailInteraction;
 
 
     public InnerDetailFragment() {
         // Required empty public constructor
     }
 
-    public static InnerDetailFragment newInstance(String argDesc, String argRules, RentNumber rentNumber, ArrayList<RentPoiItem> argPois, ArrayList<RentAmenitieItem> argAmenities, ArrayList<RentGalerieItem> argGaleries) {
+    public static InnerDetailFragment newInstance(RentInnerDetail rentInnerDetail) {
         InnerDetailFragment fragment = new InnerDetailFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_DESC, argDesc);
-        args.putString(ARG_RULES, argRules);
-        args.putParcelable(ARG_NUMBER, rentNumber);
-        args.putParcelableArrayList(ARG_POIS, argPois);
-        args.putParcelableArrayList(ARG_AMENITIES, argAmenities);
-        args.putParcelableArrayList(ARG_GALERIES, argGaleries);
+        args.putParcelable(RENT_INNER_DETAIL, rentInnerDetail);
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,12 +64,7 @@ public class InnerDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            argDesc = getArguments().getString(ARG_DESC);
-            argRules = getArguments().getString(ARG_RULES);
-            argNumber = getArguments().getParcelable(ARG_NUMBER);
-            argPois = getArguments().getParcelableArrayList(ARG_POIS);
-            argAmenities = getArguments().getParcelableArrayList(ARG_AMENITIES);
-            argGaleries = getArguments().getParcelableArrayList(ARG_GALERIES);
+            rentInnerDetail = getArguments().getParcelable(RENT_INNER_DETAIL);
         }
     }
 
@@ -98,24 +80,24 @@ public class InnerDetailFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         setHasOptionsMenu(false);
+
+        innerDetailBinding.llContentAddress.setOnClickListener(this);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        innerDetailBinding.setDescription(argDesc);
-        innerDetailBinding.setRules(argRules);
-        innerDetailBinding.setNumber(argNumber);
-        setupAmenitiesAdapter(argAmenities);
-        setupPoisAdapter(argPois);
-        setupGalerieAdapter(argGaleries);
+        innerDetailBinding.setDetail(rentInnerDetail);
+        setupAmenitiesAdapter(rentInnerDetail.getAmenitieItems());
+        setupPoisAdapter(rentInnerDetail.getRentPoiItems());
+        setupGalerieAdapter(rentInnerDetail.getGalerieItems());
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof GaleryInteraction){
-            this.galeryInteraction = (GaleryInteraction) context;
+        if(context instanceof InnerDetailInteraction){
+            this.innerDetailInteraction = (InnerDetailInteraction) context;
         }
     }
 
@@ -175,8 +157,27 @@ public class InnerDetailFragment extends Fragment {
                 (model, finder, payloads) -> finder
                         .find(R.id.iv_galerie, (ViewProvider<RoundedImageView>) view -> GlideApp.with(getView()).load(model.getImage()).placeholder(R.drawable.placeholder).into(view))
                         .setOnClickListener(v -> {
-                            galeryInteraction.onGaleryClick(model.getId());
+                            innerDetailInteraction.onGaleryClick(model.getId());
                         })
         );
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.ll_content_address:
+                createGeoRent();
+        }
+    }
+
+    private void createGeoRent() {
+        GeoRent geoRent = new GeoRent(rentInnerDetail.getId(), rentInnerDetail.getName(), rentInnerDetail.firstImage(), rentInnerDetail.getWished());
+        geoRent.setRentMode(rentInnerDetail.getRentMode());
+        geoRent.setRating(rentInnerDetail.getRating());
+        geoRent.setGeoPoint(new GeoPoint(rentInnerDetail.getLatitude(), rentInnerDetail.getLongitude()));
+        geoRent.setPrice(rentInnerDetail.getPrice());
+        ArrayList<GeoRent> geoRents = new ArrayList<>();
+        geoRents.add(geoRent);
+        innerDetailInteraction.onAddressClick(geoRents);
     }
 }

@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/shape_filter_ship_unselected"
     android:fontFamily="@font/poppinsregular"
+    android:layout_margin="5dp"
     android:includeFontPadding="false"
     android:text="filter"
     android:textSize="12sp" />

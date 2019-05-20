@@ -72,10 +72,9 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
     }
 
     @Override
-    public Flowable<Resource<List<ReferenceZoneEntity>>> allReferencesZone() {
-        return qbaDao.getAllReferencesZone()
+    public Flowable<Resource<List<ReferenceZoneEntity>>> allReferencesZone(String province) {
+        return qbaDao.getAllReferencesZone(province)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
     }

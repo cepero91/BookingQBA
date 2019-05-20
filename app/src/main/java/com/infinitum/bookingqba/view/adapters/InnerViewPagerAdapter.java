@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -26,10 +27,10 @@ public class InnerViewPagerAdapter extends WrappingFragmentPagerAdapter {
     private List<Fragment> fragmentList = new ArrayList<>();
     private List<String> titleList = new ArrayList<>();
 
-    public InnerViewPagerAdapter(FragmentManager fm) {
+    public InnerViewPagerAdapter(FragmentManager fm, List<Fragment> fragmentList) {
         super(fm);
+        this.fragmentList = fragmentList;
     }
-
 
     @Override
     public Fragment getItem(int i) {
@@ -41,6 +42,9 @@ public class InnerViewPagerAdapter extends WrappingFragmentPagerAdapter {
         titleList.add(title);
     }
 
+    public void setFragmentList(List<Fragment> fragmentList){
+        fragmentList.addAll(fragmentList);
+    }
 
     @Override
     public int getCount() {

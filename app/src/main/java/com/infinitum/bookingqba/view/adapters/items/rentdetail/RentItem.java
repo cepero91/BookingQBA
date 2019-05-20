@@ -6,32 +6,22 @@ import java.util.ArrayList;
 
 public class RentItem {
 
-    private RentEntity rentEntity;
-
-    private ArrayList<RentGalerieItem> galerieItems;
+    private RentInnerDetail rentInnerDetail;
 
     private ArrayList<RentCommentItem> commentItems;
 
-    private ArrayList<RentPoiItem> poiItems;
+    private ArrayList<RentOfferItem> offerItems;
 
-    private ArrayList<RentAmenitieItem> amenitieItems;
-
-    private String rentModeName;
-
-    public RentItem(RentEntity rentEntity) {
-        this.rentEntity = rentEntity;
+    public RentItem() {
     }
 
-    public RentEntity getRentEntity() {
-        return rentEntity;
+
+    public RentInnerDetail getRentInnerDetail() {
+        return rentInnerDetail;
     }
 
-    public void setRentEntity(RentEntity rentEntity) {
-        this.rentEntity = rentEntity;
-    }
-
-    public ArrayList<RentGalerieItem> getGalerieItems() {
-        return galerieItems;
+    public void setRentInnerDetail(RentInnerDetail rentInnerDetail) {
+        this.rentInnerDetail = rentInnerDetail;
     }
 
     public ArrayList<RentCommentItem> getCommentItems() {
@@ -42,43 +32,11 @@ public class RentItem {
         this.commentItems = commentItems;
     }
 
-    public void setGalerieItems(ArrayList<RentGalerieItem> galerieItems) {
-        this.galerieItems = galerieItems;
+    public ArrayList<RentOfferItem> getOfferItems() {
+        return offerItems;
     }
 
-    public ArrayList<RentPoiItem> getPoiItems() {
-        return poiItems;
-    }
-
-    public void setPoiItems(ArrayList<RentPoiItem> poiItems) {
-        this.poiItems = poiItems;
-    }
-
-    public ArrayList<RentAmenitieItem> getAmenitieItems() {
-        return amenitieItems;
-    }
-
-    public void setAmenitieItems(ArrayList<RentAmenitieItem> amenitieItems) {
-        this.amenitieItems = amenitieItems;
-    }
-
-    public String getRentModeName() {
-        return rentModeName;
-    }
-
-    public void setRentModeName(String rentModeName) {
-        this.rentModeName = rentModeName;
-    }
-
-    public String getFirstImage(){
-        return galerieItems.get(0).getImage();
-    }
-
-    public int galerieSize(){
-        if(galerieItems!=null){
-            return galerieItems.size();
-        }else{
-            return 0;
-        }
+    public void setOfferItems(ArrayList<RentOfferItem> offerItems) {
+        this.offerItems = offerItems;
     }
 }

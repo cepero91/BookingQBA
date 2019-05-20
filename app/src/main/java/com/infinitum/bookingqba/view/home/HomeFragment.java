@@ -1,13 +1,9 @@
 package com.infinitum.bookingqba.view.home;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
@@ -19,14 +15,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.request.target.CustomViewTarget;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.github.vivchar.rendererrecyclerviewadapter.CompositeViewHolder;
 import com.github.vivchar.rendererrecyclerviewadapter.CompositeViewState;
@@ -37,12 +30,11 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.CompositeViewBinder
 import com.github.vivchar.rendererrecyclerviewadapter.binder.CompositeViewStateProvider;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.TedPermission;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentHomeBinding;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.util.GlideApp;
+import com.infinitum.bookingqba.view.adapters.SpinnerAdapter;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.RecyclerViewItem;
 import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RentNewItem;
@@ -66,10 +58,7 @@ import io.reactivex.schedulers.Schedulers;
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
 
-import static com.infinitum.bookingqba.util.Constants.IMEI;
-import static com.infinitum.bookingqba.util.Constants.PERMISSION;
-import static com.infinitum.bookingqba.util.Constants.PERMISSION_GRANTED;
-import static com.infinitum.bookingqba.util.Constants.PERMISSION_NOT_GRANTED;
+import static com.infinitum.bookingqba.util.Constants.PROVINCE_SPINNER_INDEX;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
 
 
@@ -85,6 +74,7 @@ public class HomeFragment extends BaseNavigationFragment {
     private Disposable disposable;
 
     private ProvinceSpinnerList spinnerList;
+    private SpinnerAdapter adapter;
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -121,20 +111,19 @@ public class HomeFragment extends BaseNavigationFragment {
 
         setHasOptionsMenu(true);
 
+        homeViewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
         fragmentHomeBinding.setIsLoading(true);
 
         loadProvinces();
 
         setupRecyclerView();
 
-        fragmentHomeBinding.spinner.setTitle(getResources().getString(R.string.dialog_provinces_title));
-        fragmentHomeBinding.spinner.setPositiveButton(getResources().getString(R.string.positive_buttom));
-
+        fragmentHomeBinding.spinnerProvinces.setTitle(getResources().getString(R.string.dialog_provinces_title));
+        fragmentHomeBinding.spinnerProvinces.setPositiveButton(getResources().getString(R.string.positive_buttom));
 
     }
 
     private void loadProvinces() {
-        homeViewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeViewModel.class);
         disposable = homeViewModel.getProvinces()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -144,14 +133,19 @@ public class HomeFragment extends BaseNavigationFragment {
 
 
     private void onProvinceLoad(Resource<ProvinceSpinnerList> listResource) {
+        int provinceIndex = sharedPreferences.getInt(PROVINCE_SPINNER_INDEX, 0);
         this.spinnerList = listResource.data;
-        ArrayAdapter adapter = new ArrayAdapter<>(getView().getContext(), R.layout.spinner_text_layout, spinnerList.getArrayNames());
-        fragmentHomeBinding.setEntries(adapter);
-        fragmentHomeBinding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        if (adapter == null) {
+            adapter = new SpinnerAdapter(getView().getContext(), R.layout.spinner_text_layout, spinnerList.getArrayNames());
+        }
+        fragmentHomeBinding.spinnerProvinces.setAdapter(adapter);
+        fragmentHomeBinding.spinnerProvinces.setSelection(provinceIndex);
+        fragmentHomeBinding.spinnerProvinces.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                loadData(spinnerList.getUuidOnPos(position));
-                saveProvinceToPreference(spinnerList.getUuidOnPos(position));
+                String uuid = spinnerList.getUuidOnPos(position);
+                loadData(uuid);
+                saveProvinceToPreference(position,uuid);
             }
 
             @Override
@@ -159,41 +153,19 @@ public class HomeFragment extends BaseNavigationFragment {
 
             }
         });
+
     }
 
-    private void saveProvinceToPreference(String uuidOnPos) {
+    private void saveProvinceToPreference(int pos, String uuid) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(PROVINCE_UUID, uuidOnPos);
+        editor.putInt(PROVINCE_SPINNER_INDEX, pos);
+        editor.putString(PROVINCE_UUID, uuid);
         editor.apply();
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-    }
-
-
-    @NonNull
-    private CompositeViewBinder<?> getCompositeRent() {
-        return (CompositeViewBinder) new CompositeViewBinder<>(
-                R.layout.recycler_composite,
-                R.id.recycler_view,
-                RecyclerViewItem.class,
-                Collections.singletonList(new BetweenSpacesItemDecoration(5, 0)),
-                new CompositeViewStateProvider<RecyclerViewItem, CompositeViewHolder>() {
-                    @Override
-                    public ViewState createViewState(@NonNull final CompositeViewHolder holder) {
-                        return new CompositeViewState(holder);
-                    }
-
-                    @Override
-                    public int createViewStateID(@NonNull final RecyclerViewItem model) {
-                        return model.getID();
-                    }
-                }
-        ).registerRenderer(getReferenceZone())
-                .registerRenderer(getRentPopItem(R.layout.recycler_rent_pop_item))
-                .registerRenderer(getRentNewItem(R.layout.recycler_rent_new_item));
     }
 
 
@@ -235,6 +207,8 @@ public class HomeFragment extends BaseNavigationFragment {
         recyclerViewAdapter.setItems(rendererViewModelList);
         OverScrollDecoratorHelper.setUpOverScroll(fragmentHomeBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         fragmentHomeBinding.recyclerView.setAdapter(recyclerViewAdapter);
+        LayoutAnimationController animationController = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_anim_fall_down);
+        fragmentHomeBinding.recyclerView.setLayoutAnimation(animationController);
     }
 
     @NonNull

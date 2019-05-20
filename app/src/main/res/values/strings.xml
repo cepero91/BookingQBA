@@ -69,4 +69,7 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="actualizacion_disponible">Actualizacion Disponible</string>
     <string name="hace_mas_de_un_mes">Hace mas de un mes</string>
     <string name="ultima_actualizacion">Ultima actualizacion</string>
+    <string name="detail">Detalles</string>
+    <string name="comment">Comentarios</string>
+    <string name="offer">Ofertas</string>
 </resources>

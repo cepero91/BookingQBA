@@ -5,6 +5,7 @@ import android.arch.persistence.room.Relation;
 
 import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
+import com.infinitum.bookingqba.model.local.entity.OfferEntity;
 import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
@@ -33,6 +34,9 @@ public class RentDetail {
 
     @Relation(parentColumn = "id", entityColumn = "rent")
     private List<CommentEntity> commentEntities;
+
+    @Relation(parentColumn = "id", entityColumn = "rent")
+    private List<OfferEntity> offerEntities;
 
     public RentDetail(RentEntity rentEntity) {
         this.rentEntity = rentEntity;
@@ -94,5 +98,13 @@ public class RentDetail {
 
     public void setCommentEntities(List<CommentEntity> commentEntities) {
         this.commentEntities = commentEntities;
+    }
+
+    public List<OfferEntity> getOfferEntities() {
+        return offerEntities;
+    }
+
+    public void setOfferEntities(List<OfferEntity> offerEntities) {
+        this.offerEntities = offerEntities;
     }
 }

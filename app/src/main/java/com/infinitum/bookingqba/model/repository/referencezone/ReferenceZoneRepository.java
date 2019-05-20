@@ -16,7 +16,7 @@ public interface ReferenceZoneRepository {
 
     Completable insert(List<ReferenceZoneEntity> entities);
 
-    Flowable<Resource<List<ReferenceZoneEntity>>> allReferencesZone();
+    Flowable<Resource<List<ReferenceZoneEntity>>> allReferencesZone(String province);
 
     Single<OperationResult> syncronizeReferenceZone(String dateValue);
 

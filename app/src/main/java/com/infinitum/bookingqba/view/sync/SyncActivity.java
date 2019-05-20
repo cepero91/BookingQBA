@@ -31,8 +31,10 @@ import com.liulishuo.filedownloader.FileDownloader;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -45,6 +47,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static com.infinitum.bookingqba.util.Constants.ALTERNATIVE_SYNC;
 import static com.infinitum.bookingqba.util.Constants.LEVEL_ENTITY;
 import static com.infinitum.bookingqba.util.Constants.LEVEL_GALERY;
 import static com.infinitum.bookingqba.util.Constants.LEVEL_GALERY_PAUSED;
@@ -63,6 +66,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     private SyncViewModel syncViewModel;
     private Disposable entityDisposable;
     private CompositeDisposable compositeDisposable;
+
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -85,14 +89,19 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     private int progressGalery = 0;
     private int sizeGalerieList = 0;
     private long galerySpaceInMb = 0;
-    private boolean isDownloadChecked = true;
+    private boolean downloadImages = true;
     private String currentDateToSync = "";
+    private boolean alternativeSync = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidInjection.inject(this);
         syncBinding = DataBindingUtil.setContentView(this, R.layout.activity_sync);
+
+        if(getIntent().hasExtra(ALTERNATIVE_SYNC)){
+            alternativeSync = getIntent().getBooleanExtra(ALTERNATIVE_SYNC,false);
+        }
 
         FileDownloader.setup(this);
 
@@ -198,25 +207,27 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(pair -> {
-                    if (pair.first) {
-                        currentDateToSync = pair.second;
+                .subscribe(booleanStringPair -> {
+                    if (booleanStringPair.first) {
+                        currentDateToSync = booleanStringPair.second;
                         startSyncOnLevel(downloadIndex);
                     } else {
                         AlertUtils.showInfoAlertAndGoHome(this, getResources().getString(R.string.no_need_update));
                     }
-                }).subscribe();
+                },Timber::e);
         compositeDisposable.add(entityDisposable);
     }
 
     /**
      * OJO CAMBIAR EL FORMATO DE SALIDA DE LA FECHA QUE DA 500 ERROR
+     *
      * @param localResource
      * @return
      */
     private String checkLocalDate(Resource<DatabaseUpdateEntity> localResource) {
         if (localResource.status != Resource.Status.EMPTY) {
-            return localResource.data.getLastDateUpdateEntity().toString();
+            SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", new Locale("es", "ES"));
+            return parser.format(localResource.data.getLastDateUpdateEntity());
         } else {
             return getResources().getString(R.string.default_sync_date);
         }
@@ -384,11 +395,19 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         syncBinding.pbEntities.setProgress(percent);
         if (entityProgress < 17) {
             startSyncronitation(entityProgress);
-        } else if (entityProgress == 17 && !isDownloadChecked) {
-            saveSuccessDownload();
-            AlertUtils.showSuccessAlertAndGoHome(this);
-        } else if (entityProgress == 17 && isDownloadChecked) {
+        } else if (entityProgress == 17 && !downloadImages) {
+            notifyDownloadEnds();
+        } else if (entityProgress == 17 && downloadImages) {
             prepareForDownload();
+        }
+    }
+
+    private void notifyDownloadEnds() {
+        saveSuccessDownload();
+        if(alternativeSync){
+            AlertUtils.showSuccessAlertAndFinish(this);
+        }else {
+            AlertUtils.showSuccessAlertAndGoHome(this);
         }
     }
 
@@ -480,10 +499,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         entityDisposable = syncViewModel.updateGaleryUpdateUtilList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    saveSuccessDownload();
-                    AlertUtils.showSuccessAlertAndGoHome(SyncActivity.this);
-                }, this::onDownloadError);
+                .subscribe(this::notifyDownloadEnds, this::onDownloadError);
         compositeDisposable.add(entityDisposable);
     }
 
@@ -550,7 +566,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(PREF_DOWNLOAD_LEVEL, LEVEL_ENTITY);
         editor.putInt(PREF_ENTITY_DOWNLOAD_INDEX, 0);
-        editor.putString(PREF_LAST_DOWNLOAD_DATE,currentDateToSync);
+        editor.putString(PREF_LAST_DOWNLOAD_DATE, currentDateToSync);
         editor.apply();
     }
 
@@ -657,10 +673,10 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
-            isDownloadChecked = true;
+            downloadImages = true;
         } else {
-            isDownloadChecked = false;
+            downloadImages = false;
         }
-        changeVisibilityProgressGalery(isDownloadChecked);
+        changeVisibilityProgressGalery(downloadImages);
     }
 }

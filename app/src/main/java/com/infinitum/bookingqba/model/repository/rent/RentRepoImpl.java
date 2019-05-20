@@ -13,6 +13,7 @@ import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
+import com.infinitum.bookingqba.model.remote.pojo.Rating;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.util.DateUtils;
 
@@ -125,6 +126,11 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
+    public DataSource.Factory<Integer, RentAndGalery> allRentByZone(String province, String zone) {
+        return qbaDao.getAllRentByZone(province, zone);
+    }
+
+    @Override
     public Flowable<Resource<List<RentAndGalery>>> fivePopRentByProvince(String province) {
         return qbaDao.getFivePopRents(province)
                 .subscribeOn(Schedulers.io())
@@ -160,8 +166,12 @@ public class RentRepoImpl implements RentRepository {
     @Override
     public Completable addOrUpdateRating(RatingEntity entity) {
         SupportSQLiteQuery query = new SimpleSQLiteQuery("INSERT OR REPLACE INTO Rating VALUES ('" + entity.getId() + "','" + entity.getRating() + "', '" + entity.getComment() + "', '" + entity.getRent() + "')");
-        return Completable.fromAction(() -> qbaDao.addOrUpdateRentVisit(query)).subscribeOn(Schedulers.io());
-//        return Completable.complete();
+        return Completable.fromAction(() -> qbaDao.addOrUpdateRating(query)).subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<RatingEntity> getLastRentVote(String rent) {
+        return qbaDao.getLastRentVote(rent).subscribeOn(Schedulers.io());
     }
 
     @Override

@@ -103,16 +103,12 @@ public class RentListFragment extends BaseNavigationFragment {
     }
 
     private void loadPaginatedData() {
-        pagerAdapter = new RentListAdapter(getActivity().getLayoutInflater(),mListener);
-
-        rentViewModel.getLiveDataRentList(mOrderType,mProvinceParam).observe(this, rentListItems -> {
-            pagerAdapter.submitList(rentListItems);
-            rentListBinding.recyclerView.setAdapter(pagerAdapter);
-            rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
-            OverScrollDecoratorHelper.setUpOverScroll(rentListBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
-            rentListBinding.setIsLoading(false);
-        });
-
+        pagerAdapter = new RentListAdapter(getActivity().getLayoutInflater(), mListener);
+        if(mReferenceZoneParam!=null && mReferenceZoneParam.length()>0){
+            rentViewModel.getAllRentByZone(mProvinceParam,mReferenceZoneParam).observe(this, this::setupPagerAdapter);
+        }else {
+            rentViewModel.getLiveDataRentList(mOrderType, mProvinceParam).observe(this, this::setupPagerAdapter);
+        }
     }
 
     public void needToRefresh(boolean refresh){
@@ -123,6 +119,10 @@ public class RentListFragment extends BaseNavigationFragment {
     }
 
     public void filterListResult(PagedList<RentListItem> pagedList){
+        setupPagerAdapter(pagedList);
+    }
+
+    private void setupPagerAdapter(PagedList<RentListItem> pagedList) {
         if(pagedList.size()>0) {
             pagerAdapter.submitList(pagedList);
             rentListBinding.recyclerView.setAdapter(pagerAdapter);

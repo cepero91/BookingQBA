@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-            name="description"
-            type="String" />
-
-        <variable
-            name="rules"
-            type="String" />
-
-        <variable
-            name="number"
-            type="com.infinitum.bookingqba.view.adapters.items.rentdetail.RentNumber"/>
+            name="detail"
+            type="com.infinitum.bookingqba.view.adapters.items.rentdetail.RentInnerDetail" />
 
         <variable
             name="amenities"
@@ -30,7 +21,7 @@
             name="galeries"
             type="com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter" />
 
-</data>
+    </data>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -40,15 +31,132 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="5dp"
+                android:paddingTop="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="5dp"
+                android:background="@drawable/rounded_rect_grey">
+
+                <TextView
+                    android:id="@+id/tv_rent_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsbold"
+                    android:text="@{detail.getName()}"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="@dimen/rent_detail_rent_name_size" />
+
+                <LinearLayout
+                    android:id="@+id/ll_content_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_rent_name"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <com.willy.ratingbar.BaseRatingBar
+                        android:id="@+id/sr_scale_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:setRating="@{detail.getRating()}"
+                        app:srb_clickable="false"
+                        app:srb_drawableEmpty="@drawable/ic_star_o"
+                        app:srb_drawableFilled="@drawable/ic_star"
+                        app:srb_scrollable="false"
+                        app:srb_starHeight="16dp"
+                        app:srb_starPadding="2dp"
+                        app:srb_starWidth="16dp"
+                        app:srb_stepSize="0.5" />
+
+                    <TextView
+                        android:id="@+id/tv_votes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsregular"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/material_color_grey_500"
+                        android:textSize="12sp"
+                        app:setVotes="@{detail.getVotes()}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_content_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ll_content_rating"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="12dp"
+                        android:tint="@color/colorPrimaryDark"
+                        app:srcCompat="@drawable/ic_map_marked" />
+
+                    <TextView
+                        android:id="@+id/tv_rent_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/poppinsregular"
+                        android:includeFontPadding="false"
+                        android:maxLines="2"
+                        android:text="@{detail.getAddress()}"
+                        android:textColor="@color/material_color_grey_500"
+                        android:textSize="@dimen/rent_detail_address_size" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignTop="@+id/tv_rent_name"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsbold"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="@dimen/rent_detail_price_size"
+                        app:setPriceText="@{detail.getPrice()}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsregular"
+                        android:textColor="@color/material_color_grey_500"
+                        android:textSize="@dimen/rent_detail_rent_mode_size"
+                        app:setRentModeString="@{detail.getRentMode()}" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal"
                 android:weightSum="4">
 
@@ -71,7 +179,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         android:textAppearance="@style/SmallTextForIcon"
-                        app:setMaxRooms="@{number.getMaxRooms()}" />
+                        app:setMaxRooms="@{detail.getMaxRooms()}" />
 
                 </LinearLayout>
 
@@ -101,7 +209,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         android:textAppearance="@style/SmallTextForIcon"
-                        app:setMaxBeds="@{number.getMaxBeds()}" />
+                        app:setMaxBeds="@{detail.getMaxBeds()}" />
 
                 </LinearLayout>
 
@@ -131,7 +239,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         android:textAppearance="@style/SmallTextForIcon"
-                        app:setMaxBath="@{number.getMaxBaths()}" />
+                        app:setMaxBath="@{detail.getMaxBaths()}" />
 
                 </LinearLayout>
 
@@ -161,7 +269,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
                         android:textAppearance="@style/SmallTextForIcon"
-                        app:setCapability="@{number.getCapability()}" />
+                        app:setCapability="@{detail.getCapability()}" />
 
                 </LinearLayout>
 
@@ -172,10 +280,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:fontFamily="@font/poppinsmedium"
                 android:layout_marginStart="15dp"
+                android:fontFamily="@font/poppinsmedium"
                 android:text="Facilidades"
+                android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="14sp" />
 
             <android.support.v7.widget.RecyclerView
@@ -184,89 +292,86 @@
                 android:layout_height="35dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
-                android:paddingStart="15dp"
                 android:adapter="@{amenities}"
-                />
+                android:paddingStart="15dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="15dp"
                 android:layout_marginStart="15dp"
-                android:textColor="@color/material_color_blue_grey_500"
+                android:layout_marginTop="15dp"
                 android:fontFamily="@font/poppinsmedium"
                 android:text="Descripcion"
+                android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="14sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
                 android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
                 android:fontFamily="@font/poppinsregular"
-                android:text="@{description}" />
+                android:text="@{detail.getDescription()}" />
 
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
                 android:layout_marginStart="15dp"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="14sp"
+                android:layout_marginTop="20dp"
                 android:fontFamily="@font/poppinsmedium"
-                android:text="Lugares Cercanos" />
+                android:text="Lugares Cercanos"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="14sp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_pois"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
-                android:layout_marginTop="10dp"
-                android:paddingStart="15dp"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
                 android:adapter="@{pois}"
-                />
+                android:paddingStart="15dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
                 android:layout_marginStart="15dp"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="14sp"
+                android:layout_marginTop="20dp"
                 android:fontFamily="@font/poppinsmedium"
                 android:text="Imagenes"
-                app:setGalerieVisibility="@{galeries.getItemCount()}"/>
+                android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="14sp"
+                app:setGalerieVisibility="@{detail.galerieSize()}" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_galeries"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
-                android:layout_marginTop="5dp"
-                android:paddingStart="15dp"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
                 android:adapter="@{galeries}"
-                app:setGalerieVisibility="@{galeries.getItemCount()}"
-                />
+                android:paddingStart="15dp"
+                app:setGalerieVisibility="@{detail.galerieSize()}" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="15dp"
                 android:layout_marginStart="15dp"
-                android:textColor="@color/material_color_blue_grey_500"
+                android:layout_marginTop="15dp"
                 android:fontFamily="@font/poppinsmedium"
                 android:text="Reglas"
+                android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="14sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
                 android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
                 android:fontFamily="@font/poppinsregular"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:text="@{rules}" />
+                android:text="@{detail.getRules()}"
+                android:textColor="@color/material_color_blue_grey_500" />
 
         </LinearLayout>
 

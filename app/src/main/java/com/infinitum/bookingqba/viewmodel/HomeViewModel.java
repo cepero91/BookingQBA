@@ -1,6 +1,8 @@
 package com.infinitum.bookingqba.viewmodel;
 
 
+import android.support.annotation.NonNull;
+
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
@@ -49,13 +51,15 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
     public Flowable<Resource<ProvinceSpinnerList>> getProvinces() {
         return provinceRepository
                 .allProvinces()
-                .flatMap(resource -> transformProvinces(resource, new ArrayList<>()))
+                .map(this::transformProvinces)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());
     }
 
 
-    public Flowable<Resource<List<ViewModel>>> getReferencesZone() {
-        return referenceZoneRepository.allReferencesZone()
+    public Flowable<Resource<List<ViewModel>>> getReferencesZone(String province) {
+        return referenceZoneRepository.allReferencesZone(province)
                 .map(this::transformRZoneEntity)
                 .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());
@@ -77,17 +81,24 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     public Flowable<Resource<List<ViewModel>>> getAllItems(String province) {
-        return Flowable.combineLatest(getReferencesZone(), getPopRents(province), getNewRents(province), (listResource, listResource2, listResource3) -> {
-            List<com.github.vivchar.rendererrecyclerviewadapter.ViewModel> allItems = new ArrayList<>();
-            if (listResource.data != null && listResource2.data != null && listResource3.data != null) {
-                allItems.addAll(listResource.data);
-                allItems.add(new HeaderItem(UUID.randomUUID().toString(), "Lo más popular", ORDER_TYPE_POPULAR));
-                allItems.addAll(listResource2.data);
-                allItems.add(new HeaderItem(UUID.randomUUID().toString(), "Lo más nuevo", ORDER_TYPE_NEW));
-                allItems.addAll(listResource3.data);
-            }
-            return Resource.success(allItems);
-        }).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
+        return Flowable.combineLatest(getReferencesZone(province), getPopRents(province), getNewRents(province),
+                this::getCompositeRecyclerViewModels)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @NonNull
+    private List<ViewModel> getCompositeRecyclerViewModels(Resource<List<ViewModel>> listResource, Resource<List<ViewModel>> listResource2, Resource<List<ViewModel>> listResource3) {
+        List<ViewModel> allItems = new ArrayList<>();
+        if (listResource.data != null && listResource2.data != null && listResource3.data != null) {
+            allItems.addAll(listResource.data);
+            allItems.add(new HeaderItem(UUID.randomUUID().toString(), "Lo más popular", ORDER_TYPE_POPULAR));
+            allItems.addAll(listResource2.data);
+            allItems.add(new HeaderItem(UUID.randomUUID().toString(), "Lo más nuevo", ORDER_TYPE_NEW));
+            allItems.addAll(listResource3.data);
+        }
+        return allItems;
     }
 
 
@@ -100,7 +111,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndGalery entity : listResource.data) {
                 String imagePath = entity.getImageAtPos(0);
-                tempItem = new RentNewItem(entity.getId(),entity.getName(),imagePath,entity.getIsWished());
+                tempItem = new RentNewItem(entity.getId(), entity.getName(), imagePath, entity.getIsWished());
                 tempItem.setRating(entity.getRating());
                 tempItem.setImagePath(imagePath);
                 tempItem.setWished(entity.getIsWished());
@@ -120,7 +131,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndGalery entity : listResource.data) {
                 String imagePath = entity.getImageAtPos(0);
-                tempItem = new RentPopItem(entity.getId(),entity.getName(),imagePath,entity.getIsWished());
+                tempItem = new RentPopItem(entity.getId(), entity.getName(), imagePath, entity.getIsWished());
                 tempItem.setPrice(entity.getPrice());
                 tempItem.setWished(entity.getIsWished());
                 tempItem.setImagePath(imagePath);
@@ -129,7 +140,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
             }
             compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(), items));
             return Resource.success(compositeList);
-        }else{
+        } else {
             return Resource.error("Null or empty values");
         }
     }
@@ -148,16 +159,16 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         }
     }
 
-    private Flowable<Resource<ProvinceSpinnerList>> transformProvinces(Resource<List<ProvinceEntity>> listResource, List<SpinnerProvinceItem> listOutput) {
-        return Flowable.fromIterable(listResource.data)
-                .map(entity -> new SpinnerProvinceItem(entity.getId(), entity.getName()))
-                .doOnNext(listOutput::add)
-                .toList()
-                .toFlowable()
-                .map(ProvinceSpinnerList::new)
-                .map(Resource::success)
-                .onErrorReturn(Resource::error)
-                .subscribeOn(Schedulers.io());
+    private ProvinceSpinnerList transformProvinces(Resource<List<ProvinceEntity>> listResource) {
+        List<SpinnerProvinceItem> spinnerProvinceItemList =  new ArrayList<>();
+        ProvinceSpinnerList provinceSpinnerList = new ProvinceSpinnerList(spinnerProvinceItemList);
+        if(listResource.data!= null && listResource.data.size()>0){
+           for(ProvinceEntity entity: listResource.data){
+               spinnerProvinceItemList.add(new SpinnerProvinceItem(entity.getId(),entity.getName()));
+           }
+           provinceSpinnerList = new ProvinceSpinnerList(spinnerProvinceItemList);
+        }
+        return provinceSpinnerList;
     }
 
 

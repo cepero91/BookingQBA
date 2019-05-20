@@ -79,10 +79,12 @@ import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
+import com.infinitum.bookingqba.view.info.DialogFeedback;
 import com.infinitum.bookingqba.view.info.InfoFragment;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.view.filter.FilterFragment;
+import com.infinitum.bookingqba.view.interaction.InfoInteraction;
 import com.infinitum.bookingqba.view.interaction.LoginInteraction;
 import com.infinitum.bookingqba.view.listwish.ListWishFragment;
 import com.infinitum.bookingqba.view.map.MapFragment;
@@ -116,6 +118,7 @@ import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
 import timber.log.Timber;
 
+import static com.infinitum.bookingqba.util.Constants.ALTERNATIVE_SYNC;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.IMEI;
@@ -131,7 +134,8 @@ import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
 public class HomeActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector,
         FragmentNavInteraction, NavigationView.OnNavigationItemSelectedListener,
-        FilterInteraction, LoginInteraction, MapFragment.OnFragmentMapInteraction {
+        FilterInteraction, LoginInteraction, MapFragment.OnFragmentMapInteraction,
+        InfoInteraction, DialogFeedback.FeedbackInteraction {
 
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
     private static final String NOTIFICATION_DEFAULT = "default";
@@ -478,7 +482,12 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                     mFragment).commit();
             homeBinding.navView.getMenu().getItem(1).setChecked(true);
         } else if (baseItem instanceof RZoneItem) {
-            Toast.makeText(this, ((RZoneItem) baseItem).getName(), Toast.LENGTH_SHORT).show();
+            String provinceName = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
+            mFragment = RentListFragment.newInstance(provinceName, ((RZoneItem) baseItem).getId(), ORDER_TYPE_POPULAR);
+            fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.frame_container,
+                    mFragment).commit();
+            homeBinding.navView.getMenu().getItem(1).setChecked(true);
         } else if (baseItem instanceof BaseItem) {
             navigateToDetailActivity((BaseItem) baseItem, view);
         }
@@ -534,6 +543,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                     filterFragment = FilterFragment.newInstance(provinceId);
                 }
                 fragmentManager.beginTransaction().replace(R.id.filter_container, filterFragment).commit();
+                homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
                 homeBinding.drawerLayout.postDelayed(() -> homeBinding.drawerLayout.openDrawer(Gravity.END), 200);
                 break;
             case R.id.action_login:
@@ -654,6 +664,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         }
         if (homeBinding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             homeBinding.drawerLayout.closeDrawer(GravityCompat.END);
+            homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START);
             return;
         }
         if (mFragment instanceof HomeFragment) {
@@ -729,6 +740,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     public void closeFilter() {
         if (homeBinding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             homeBinding.drawerLayout.closeDrawer(GravityCompat.END);
+            homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START);
         }
     }
 
@@ -744,6 +756,34 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         if (mFragment instanceof RentListFragment) {
             ((RentListFragment) mFragment).needToRefresh(true);
         }
+    }
+
+    //---------------------------- INFO ------------------------------------------------//
+
+    @Override
+    public void startSync() {
+        Intent intent = new Intent(this, SyncActivity.class);
+        intent.putExtra(ALTERNATIVE_SYNC, true);
+        startActivity(intent);
+    }
+
+    @Override
+    public void showPoliticsDialog() {
+
+    }
+
+    @Override
+    public void showFeedbackDialog() {
+        DialogFeedback dialogFeedback = DialogFeedback.newInstance();
+        dialogFeedback.show(fragmentManager, "DialogFeedback");
+    }
+
+    @Override
+    public void sendFeedback(String feedback) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "bookingqba.app@gmail.com", null));
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback");
+        intent.putExtra(Intent.EXTRA_TEXT, feedback);
+        startActivity(Intent.createChooser(intent, "Enviar email..."));
     }
 
     // -------------------------- PREFERENCES ---------------------------------------- //

@@ -457,6 +457,14 @@ public abstract class BookingQBADao {
     public abstract Flowable<List<RentAndGalery>> getAllWishedRents(String province);
 
     @Transaction
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
+            "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
+            "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
+            "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
+            "Province.id = :province AND Rent.referenceZone = :zone ORDER BY Rent.rating DESC")
+    public abstract DataSource.Factory<Integer, RentAndGalery> getAllRentByZone(String province, String zone);
+
+    @Transaction
     @Query("SELECT * FROM Rent WHERE Rent.isWished = 1")
     public abstract Single<List<RentEntity>> getAllWishedRents();
 
@@ -473,6 +481,11 @@ public abstract class BookingQBADao {
     @Transaction
     @RawQuery(observedEntities = RatingEntity.class)
     public abstract long addOrUpdateRating(SupportSQLiteQuery query);
+
+    @Transaction
+    @Query("SELECT * FROM Rating WHERE rent = :rent")
+    public abstract Single<RatingEntity> getLastRentVote(String rent);
+
 
     //------------------------- MODOS DE RENTA ---------------------------//
 
@@ -545,8 +558,11 @@ public abstract class BookingQBADao {
     }
 
 
-    @Query("SELECT * FROM ReferenceZone")
-    public abstract Flowable<List<ReferenceZoneEntity>> getAllReferencesZone();
+    @Query("SELECT ReferenceZone.* FROM ReferenceZone JOIN Rent ON Rent.referenceZone = ReferenceZone.id " +
+            "JOIN Municipality ON Rent.municipality = Municipality.id " +
+            "JOIN Province on Province.id = Municipality.province " +
+            "WHERE Province.id = :province GROUP BY ReferenceZone.id")
+    public abstract Flowable<List<ReferenceZoneEntity>> getAllReferencesZone(String province);
 
 
     //------------------------- TIPO DE MONEDA ---------------------------//
