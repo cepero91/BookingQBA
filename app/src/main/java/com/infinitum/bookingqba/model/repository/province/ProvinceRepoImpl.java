@@ -19,6 +19,7 @@ import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
+import timber.log.Timber;
 
 public class ProvinceRepoImpl implements ProvinceRepository {
 
@@ -37,6 +38,7 @@ public class ProvinceRepoImpl implements ProvinceRepository {
      * @return
      */
     private Single<List<Province>> fetchProvinces(String value) {
+        Timber.e("Sync fetchProvinces");
         return retrofit.create(ApiInterface.class).getProvinces(value);
     }
 

@@ -26,6 +26,7 @@ import io.reactivex.Single;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
+import timber.log.Timber;
 
 public class DBCommonOperationRepoImpl implements DBCommonOperationRepository {
 
@@ -45,6 +46,7 @@ public class DBCommonOperationRepoImpl implements DBCommonOperationRepository {
      * @return
      */
     private Flowable<DatabaseUpdate> fetchDatabaseUpdate() {
+        Timber.e("Sync fetchDatabaseUpdate");
         return retrofit.create(ApiInterface.class).getDatabaseUpdate();
     }
 

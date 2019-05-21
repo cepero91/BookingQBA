@@ -10,28 +10,28 @@ public class RentWished {
 
     @SerializedName("imei")
     @Expose
-    private String rentId;
+    private String imei;
 
     @SerializedName("items")
     @Expose
     private List<String> uuids;
 
-    public RentWished(String rentId) {
-        this.rentId = rentId;
+    public RentWished(String imei) {
+        this.imei = imei;
         this.uuids = new ArrayList<>();
     }
 
-    public RentWished(String rentId, List<String> uuids) {
-        this.rentId = rentId;
+    public RentWished(String imei, List<String> uuids) {
+        this.imei = imei;
         this.uuids = uuids;
     }
 
-    public String getRentId() {
-        return rentId;
+    public String getImei() {
+        return imei;
     }
 
-    public void setRentId(String rentId) {
-        this.rentId = rentId;
+    public void setImei(String imei) {
+        this.imei = imei;
     }
 
     public List<String> getUuids() {

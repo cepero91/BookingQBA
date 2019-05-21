@@ -12,7 +12,7 @@ public class DateUtils {
 
     public static Date dateStringToDate(String dateString){
         dateString = dateString.replace("T"," ");
-        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", new Locale("es", "ES"));
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new Locale("es", "ES"));
         try {
             return parser.parse(dateString);
         } catch (ParseException e) {
@@ -22,8 +22,13 @@ public class DateUtils {
     }
 
     public static String currentDateToString(){
-        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", new Locale("es", "ES"));
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new Locale("es", "ES"));
         return parser.format(Calendar.getInstance().getTime());
+    }
+
+    public static String parseDateToString(Date date){
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new Locale("es", "ES"));
+        return parser.format(date);
     }
 
     public static boolean dateLocalIsLessThanRemote(Date dateLocal, Date dateRemote) {

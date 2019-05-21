@@ -333,6 +333,9 @@ public abstract class BookingQBADao {
     @Query("SELECT * FROM Comment ORDER BY created DESC")
     public abstract Flowable<List<CommentEntity>> getAllComment();
 
+    @Query("SELECT * FROM Comment WHERE Comment.active = 0")
+    public abstract Single<List<CommentEntity>> getAllInactiveComment();
+
     //------------------------- RENTVISITCOUNT ---------------------//
 
     @Transaction
@@ -346,6 +349,14 @@ public abstract class BookingQBADao {
     @Transaction
     @Query("DELETE FROM RentVisitCount")
     public abstract void deleteAllVisitoCount();
+
+    @Transaction
+    @Query("DELETE FROM Comment WHERE Comment.active = 0")
+    public abstract void deleteAllInactiveComment();
+
+    @Transaction
+    @Query("DELETE FROM Rating")
+    public abstract void deleteAllRatingVotes();
 
     //------------------------- RENTAS ---------------------------//
 
@@ -485,6 +496,10 @@ public abstract class BookingQBADao {
     @Transaction
     @Query("SELECT * FROM Rating WHERE rent = :rent")
     public abstract Single<RatingEntity> getLastRentVote(String rent);
+
+    @Transaction
+    @Query("SELECT * FROM Rating")
+    public abstract Single<List<RatingEntity>> getAllRating();
 
 
     //------------------------- MODOS DE RENTA ---------------------------//

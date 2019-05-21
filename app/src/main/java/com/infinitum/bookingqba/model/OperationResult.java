@@ -33,6 +33,10 @@ public class OperationResult {
         return new OperationResult(Result.ERROR,throwable.getMessage());
     }
 
+    public static OperationResult empty(String message){
+        return new OperationResult(Result.EMPTY,message);
+    }
+
     @NonNull
     public Result getResult() {
         return result;
@@ -49,6 +53,7 @@ public class OperationResult {
 
     public enum Result{
         SUCCESS,
-        ERROR
+        ERROR,
+        EMPTY
     }
 }

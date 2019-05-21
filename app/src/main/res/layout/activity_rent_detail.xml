@@ -14,146 +14,94 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.rents.RentDetailActivity">
-
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/rent_detail_img_dimen"
-            android:fitsSystemWindows="true"
-            android:theme="@style/AppTheme.AppBarOverlay"
-            app:layout_behavior="com.infinitum.bookingqba.view.widgets.FixAppBarLayoutBehavior">
-
-            <android.support.design.widget.CollapsingToolbarLayout
-                android:id="@+id/toolbar_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                app:contentScrim="@color/colorPrimary"
-                app:expandedTitleMarginBottom="35dp"
-                app:layout_collapseMode="parallax"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:statusBarScrim="@android:color/transparent">
-
-                <android.support.v7.widget.AppCompatImageView
-                    android:id="@+id/iv_portrait_detail"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/rent_detail_img_dimen"
-                    android:layout_gravity="center"
-                    android:fitsSystemWindows="true"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/bedroom" />
-
-
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?android:attr/actionBarSize"
-                    android:background="@android:color/transparent"
-                    android:contentInsetLeft="0dp"
-                    android:contentInsetStart="0dp"
-                    app:contentInsetLeft="0dp"
-                    app:contentInsetStart="0dp"
-                    app:contentInsetStartWithNavigation="0dp"
-                    app:layout_collapseMode="pin"
-                    app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-            </android.support.design.widget.CollapsingToolbarLayout>
-
-        </android.support.design.widget.AppBarLayout>
-
+        tools:context="com.rhumbos.nac.ui.activities.ChapterDetail">
 
         <android.support.v4.widget.NestedScrollView
+            android:id="@+id/nested"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:clipToPadding="true">
 
-            <LinearLayout
-                android:id="@+id/ll_content_navigation"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <FrameLayout
-                    android:id="@+id/fl_single"
+                    android:id="@+id/shapeview_image"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/iv_portrait_detail"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/rent_detail_img_dimen"
+                        android:focusableInTouchMode="true"
+                        android:layout_gravity="center"
+                        android:fitsSystemWindows="true"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/bedroom" />
+
+                </FrameLayout>
 
                 <LinearLayout
-                    android:id="@+id/cl_composite"
+                    android:id="@+id/ll_content_navigation"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                    android:layout_below="@+id/shapeview_image"
+                    android:orientation="vertical">
 
-                    <com.gauravk.bubblenavigation.BubbleNavigationConstraintView
-                        android:id="@+id/floating_top_bar_navigation"
+                    <FrameLayout
+                        android:id="@+id/fl_single"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginLeft="18dp"
-                        android:layout_marginRight="18dp"
-                        android:layout_marginStart="10dp"
-                        android:background="@color/White_100"
-                        android:elevation="5dp"
-                        android:padding="5dp"
-                        app:bnc_mode="packed">
+                        android:layout_height="wrap_content" />
 
-                        <com.gauravk.bubblenavigation.BubbleToggleView
-                            android:id="@+id/l_item_detail"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:bt_active="true"
-                            app:bt_colorActive="@color/green_active"
-                            app:bt_colorInactive="@color/green_inactive"
-                            app:bt_icon="@drawable/ic_info_nav"
-                            app:bt_shape="@drawable/default_transition_rect"
-                            app:bt_shapeColor="@color/green_bg_light"
-                            app:bt_title="@string/detail" />
-
-                        <com.gauravk.bubblenavigation.BubbleToggleView
-                            android:id="@+id/l_item_comment"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:visibility="gone"
-                            app:bt_colorActive="@color/blue_active"
-                            app:bt_colorInactive="@color/blue_inactive"
-                            app:bt_icon="@drawable/ic_comments_nav"
-                            app:bt_shape="@drawable/default_transition_rect"
-                            app:bt_shapeColor="@color/blue_bg_light"
-                            app:bt_title="@string/comment" />
-
-                        <com.gauravk.bubblenavigation.BubbleToggleView
-                            android:id="@+id/l_item_offer"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:visibility="gone"
-                            app:bt_colorActive="@color/yellow_active"
-                            app:bt_colorInactive="@color/yellow_inactive"
-                            app:bt_icon="@drawable/ic_gift_nav"
-                            app:bt_shape="@drawable/default_transition_rect"
-                            app:bt_shapeColor="@color/yellow_bg_light"
-                            app:bt_title="@string/offer" />
-
-                    </com.gauravk.bubblenavigation.BubbleNavigationConstraintView>
-
-                    <viewpagerwc.ui.dom.wrapping.WrappingViewPager
-                        android:id="@+id/view_pager"
+                    <LinearLayout
+                        android:id="@+id/cl_composite"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <com.ogaclejapan.smarttablayout.SmartTabLayout
+                            android:id="@+id/tl_tab"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            app:stl_customTabTextLayoutId="@layout/custom_tab"
+                            app:stl_customTabTextViewId="@id/custom_text"
+                            app:stl_dividerColor="@android:color/transparent"
+                            app:stl_indicatorColor="@color/colorPrimaryDark"
+                            app:stl_indicatorCornerRadius="1.5dp"
+                            app:stl_indicatorInterpolation="smart"
+                            app:stl_indicatorThickness="3dp"
+                            app:stl_underlineColor="@android:color/transparent" />
+
+
+                        <viewpagerwc.ui.dom.wrapping.WrappingViewPager
+                            android:id="@+id/view_pager"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </RelativeLayout>
 
         </android.support.v4.widget.NestedScrollView>
 
+        <!--</com.xw.repo.widget.BounceScrollView>-->
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:contentInsetStart="0dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_comment"
@@ -163,6 +111,7 @@
             android:layout_margin="15dp"
             app:fabSize="normal"
             app:layout_anchorGravity="bottom|end"
+            app:layout_behavior="com.infinitum.bookingqba.view.widgets.FabBehavior"
             app:srcCompat="@drawable/ic_comment" />
 
 

@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.util.Pair;
@@ -99,8 +100,8 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         AndroidInjection.inject(this);
         syncBinding = DataBindingUtil.setContentView(this, R.layout.activity_sync);
 
-        if(getIntent().hasExtra(ALTERNATIVE_SYNC)){
-            alternativeSync = getIntent().getBooleanExtra(ALTERNATIVE_SYNC,false);
+        if (getIntent().hasExtra(ALTERNATIVE_SYNC)) {
+            alternativeSync = getIntent().getExtras().getBoolean(ALTERNATIVE_SYNC, false);
         }
 
         FileDownloader.setup(this);
@@ -198,7 +199,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         }
     }
 
-    private void startSyncronitation(int downloadIndex) {
+    private void checkRemoteUpdateData(int downloadIndex) {
         entityDisposable = Flowable.zip(syncViewModel.getDatabaseUpdateLocal(),
                 syncViewModel.getDatabaseUpdateRemote(), (localResource, remoteResource) -> {
                     boolean updateNeeded = checkIfUpdateNeeded(localResource, remoteResource);
@@ -214,7 +215,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
                     } else {
                         AlertUtils.showInfoAlertAndGoHome(this, getResources().getString(R.string.no_need_update));
                     }
-                },Timber::e);
+                }, Timber::e);
         compositeDisposable.add(entityDisposable);
     }
 
@@ -226,7 +227,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
      */
     private String checkLocalDate(Resource<DatabaseUpdateEntity> localResource) {
         if (localResource.status != Resource.Status.EMPTY) {
-            SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", new Locale("es", "ES"));
+            SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new Locale("es", "ES"));
             return parser.format(localResource.data.getLastDateUpdateEntity());
         } else {
             return getResources().getString(R.string.default_sync_date);
@@ -394,7 +395,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         saveEntityDownloadIndex(entityProgress);
         syncBinding.pbEntities.setProgress(percent);
         if (entityProgress < 17) {
-            startSyncronitation(entityProgress);
+            startSyncOnLevel(entityProgress);
         } else if (entityProgress == 17 && !downloadImages) {
             notifyDownloadEnds();
         } else if (entityProgress == 17 && downloadImages) {
@@ -404,9 +405,9 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private void notifyDownloadEnds() {
         saveSuccessDownload();
-        if(alternativeSync){
+        if (alternativeSync) {
             AlertUtils.showSuccessAlertAndFinish(this);
-        }else {
+        } else {
             AlertUtils.showSuccessAlertAndGoHome(this);
         }
     }
@@ -465,13 +466,19 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void startDownloadImages(List<BaseDownloadTask> taskList) {
-        if (queueSet != null) {
-            queueSet.reuseAndStart();
+        if (taskList.size() > 0) {
+            if (queueSet != null) {
+                queueSet.reuseAndStart();
+            } else {
+                queueSet = new FileDownloadQueueSet(getDownloaderListener());
+                queueSet.disableCallbackProgressTimes();
+                queueSet.downloadSequentially(taskList);
+                queueSet.start();
+            }
         } else {
-            queueSet = new FileDownloadQueueSet(getDownloaderListener());
-            queueSet.disableCallbackProgressTimes();
-            queueSet.downloadSequentially(taskList);
-            queueSet.start();
+            syncBinding.pbGalery.startProgressAnimation();
+            new Handler().postDelayed(() -> notifyDownloadEnds(),1200);
+
         }
 
     }
@@ -568,6 +575,13 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         editor.putInt(PREF_ENTITY_DOWNLOAD_INDEX, 0);
         editor.putString(PREF_LAST_DOWNLOAD_DATE, currentDateToSync);
         editor.apply();
+        entityProgress = 0;
+        uniqueDownloadErrorAlert = false;
+        progressGalery = 0;
+        sizeGalerieList = 0;
+        galerySpaceInMb = 0;
+        downloadImages = true;
+        currentDateToSync = "";
     }
 
     private void disposeAllDisposable() {
@@ -638,7 +652,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
                 entityProgress = sharedPreferences.getInt(PREF_ENTITY_DOWNLOAD_INDEX, 0);
                 syncBinding.fbDownload.setEnabled(false);
                 changeProgressColor(LEVEL_PROGRESS_ENTITY, PROGRESS_SUCCESS);
-                startSyncronitation(entityProgress);
+                checkRemoteUpdateData(entityProgress);
             } else if (syncBinding.fbDownload.getTag().equals(LEVEL_GALERY)) {
                 prepareForDownload();
                 changeProgressColor(LEVEL_PROGRESS_GALERY, PROGRESS_SUCCESS);

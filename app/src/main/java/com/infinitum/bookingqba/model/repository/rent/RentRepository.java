@@ -9,7 +9,6 @@ import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
-import com.infinitum.bookingqba.model.remote.pojo.Rating;
 
 import java.util.List;
 import java.util.Map;

@@ -3,7 +3,7 @@ package com.infinitum.bookingqba.model.remote.pojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Rating {
+public class RatingEmbeded {
 
     @SerializedName("average")
     @Expose
@@ -13,7 +13,7 @@ public class Rating {
     @Expose
     private int count;
 
-    public Rating(float average, int count) {
+    public RatingEmbeded(float average, int count) {
         this.average = average;
         this.count = count;
     }

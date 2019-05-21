@@ -130,6 +130,7 @@ public class DialogComment extends DialogFragment implements View.OnClickListene
         switch (v.getId()) {
             case R.id.login:
                 addComment();
+                dismiss();
         }
     }
 

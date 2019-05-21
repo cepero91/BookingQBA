@@ -27,9 +27,14 @@ public class InnerViewPagerAdapter extends WrappingFragmentPagerAdapter {
     private List<Fragment> fragmentList = new ArrayList<>();
     private List<String> titleList = new ArrayList<>();
 
-    public InnerViewPagerAdapter(FragmentManager fm, List<Fragment> fragmentList) {
+    public InnerViewPagerAdapter(FragmentManager fm) {
+        super(fm);
+    }
+
+    public InnerViewPagerAdapter(FragmentManager fm, List<Fragment> fragmentList, List<String> titleList) {
         super(fm);
         this.fragmentList = fragmentList;
+        this.titleList = titleList;
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -108,6 +109,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
             adapter.setItems(argPois);
             innerDetailBinding.rvPois.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
             innerDetailBinding.setPois(adapter);
+            ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvPois,false);
         }
     }
 
@@ -118,6 +120,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
             adapter.setItems(argAmenities);
             innerDetailBinding.rvAmenities.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
             innerDetailBinding.setAmenities(adapter);
+            ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvAmenities,false);
         }
     }
 
@@ -128,6 +131,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
             adapter.setItems(argGaleries);
             innerDetailBinding.rvGaleries.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
             innerDetailBinding.setGaleries(adapter);
+            ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvGaleries,false);
         }
     }
 

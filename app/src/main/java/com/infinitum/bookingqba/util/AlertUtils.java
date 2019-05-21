@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.view.ViewCompat;
@@ -20,6 +21,12 @@ import com.muddzdev.styleabletoast.StyleableToast;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static android.view.Gravity.CENTER;
+import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
+import static com.infinitum.bookingqba.util.Constants.USER_ID;
+import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
+import static com.infinitum.bookingqba.util.Constants.USER_NAME;
+import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
+import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
 public class AlertUtils {
 
@@ -154,7 +161,7 @@ public class AlertUtils {
         sweetAlertDialog.show();
     }
 
-    public static void showInfoAlertAndFinishApp(Context context) {
+    public static void showInfoAlertAndFinishApp(Context context, SharedPreferences sharedPreferences) {
         new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE)
                 .setTitleText("Aviso!")
                 .setContentText("Esta seguro que desea salir")
@@ -162,6 +169,14 @@ public class AlertUtils {
                 .setConfirmClickListener(sweetAlertDialog -> {
                     sweetAlertDialog.dismissWithAnimation();
                     new Handler().postDelayed(() -> {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean(USER_IS_AUTH,false);
+                        editor.putString(USER_NAME,"");
+                        editor.putString(USER_ID,"");
+                        editor.putString(USER_TOKEN,"");
+                        editor.putStringSet(USER_RENTS,null);
+                        editor.putBoolean(IS_PROFILE_ACTIVE,false);
+                        editor.commit();
                         ((Activity) context).finish();
                     }, 400);
                 })

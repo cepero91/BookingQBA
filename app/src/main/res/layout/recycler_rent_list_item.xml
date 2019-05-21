@@ -91,7 +91,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:srb_drawableEmpty="@drawable/ic_star_o"
                         app:srb_drawableFilled="@drawable/ic_star"
-                        app:setRating="@{item.rating}"
+                        app:setRating="@{item.getRating()}"
                         app:srb_scrollable="false"
                         app:srb_clickable="false"
                         app:srb_starHeight="16dp"

@@ -13,7 +13,6 @@ import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
-import com.infinitum.bookingqba.model.remote.pojo.Rating;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.util.DateUtils;
 
@@ -27,14 +26,10 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
-import timber.log.Timber;
 
-import static com.infinitum.bookingqba.model.repository.dbcommonsop.DBCommonOperationRepoImpl.SEPARATOR;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 
 public class RentRepoImpl implements RentRepository {
@@ -76,8 +71,8 @@ public class RentRepoImpl implements RentRepository {
             entity.setPhoneHomeNumber(item.getPhoneHomeNumber());
             entity.setLatitude(Double.parseDouble(item.getLatitude()));
             entity.setLongitude(Double.parseDouble(item.getLongitude()));
-            entity.setRating(item.getRating().getAverage());
-            entity.setRatingCount(item.getRating().getCount());
+            entity.setRating(item.getRatingEmbeded().getAverage());
+            entity.setRatingCount(item.getRatingEmbeded().getCount());
             entity.setMaxRooms(item.getMaxRooms());
             entity.setMaxBeds(item.getMaxBeds());
             entity.setMaxBath(item.getMaxBath());

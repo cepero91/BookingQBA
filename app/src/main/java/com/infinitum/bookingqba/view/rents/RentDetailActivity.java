@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,7 +57,7 @@ import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 
 
-public class RentDetailActivity extends AppCompatActivity implements
+public class RentDetailActivity extends AppCompatActivity implements NestedScrollView.OnScrollChangeListener,
         View.OnClickListener, DialogComment.CommentInteraction, DialogRating.RatingInteraction, InnerDetailInteraction {
 
     public static final int HAS_COMMENT_ONLY = 0;
@@ -109,6 +110,7 @@ public class RentDetailActivity extends AppCompatActivity implements
         }
 
         //Configurations
+        rentDetailBinding.nested.setOnScrollChangeListener(this);
         imageViewHeight = getResources().getDimensionPixelSize(R.dimen.rent_detail_img_dimen);
         setupToolbar();
     }
@@ -154,45 +156,47 @@ public class RentDetailActivity extends AppCompatActivity implements
 
     private void setupViewPager(RentItem rentItem) {
         if (rentItem.getCommentItems().size() > 0 && rentItem.getOfferItems().size() == 0) {
-            changeNavTabVisibility(HAS_COMMENT_ONLY);
+            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
             setupViewPagerWithNav(getFragmentList(rentItem, HAS_COMMENT_ONLY));
         } else if (rentItem.getOfferItems().size() > 0 && rentItem.getCommentItems().size() == 0) {
-            changeNavTabVisibility(HAS_OFFER_ONLY);
+            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
             setupViewPagerWithNav(getFragmentList(rentItem, HAS_OFFER_ONLY));
         } else if (rentItem.getOfferItems().size() > 0 && rentItem.getCommentItems().size() > 0) {
-            changeNavTabVisibility(HAS_COMMENT_OFFER);
+            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
             setupViewPagerWithNav(getFragmentList(rentItem, HAS_COMMENT_OFFER));
         } else {
+            rentDetailBinding.clComposite.setVisibility(View.GONE);
             Fragment innerDetail = InnerDetailFragment.newInstance(rentItem.getRentInnerDetail());
             fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.fl_single, innerDetail).commit();
         }
     }
 
-    private void changeNavTabVisibility(int type) {
-        switch (type) {
-            case HAS_COMMENT_ONLY:
-                rentDetailBinding.flSingle.setVisibility(View.GONE);
-                rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
-                rentDetailBinding.lItemComment.setVisibility(View.VISIBLE);
-                break;
-            case HAS_OFFER_ONLY:
-                rentDetailBinding.flSingle.setVisibility(View.GONE);
-                rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
-                rentDetailBinding.lItemOffer.setVisibility(View.VISIBLE);
-                break;
-            case HAS_COMMENT_OFFER:
-                rentDetailBinding.flSingle.setVisibility(View.GONE);
-                rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
-                rentDetailBinding.lItemComment.setVisibility(View.VISIBLE);
-                rentDetailBinding.lItemOffer.setVisibility(View.VISIBLE);
-                break;
-        }
-    }
+//    private void changeNavTabVisibility(int type) {
+//        switch (type) {
+//            case HAS_COMMENT_ONLY:
+//                rentDetailBinding.flSingle.setVisibility(View.GONE);
+//                rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
+//                rentDetailBinding.lItemComment.setVisibility(View.VISIBLE);
+//                break;
+//            case HAS_OFFER_ONLY:
+//                rentDetailBinding.flSingle.setVisibility(View.GONE);
+//                rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
+//                rentDetailBinding.lItemOffer.setVisibility(View.VISIBLE);
+//                break;
+//            case HAS_COMMENT_OFFER:
+//                rentDetailBinding.flSingle.setVisibility(View.GONE);
+//                rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
+//                rentDetailBinding.lItemComment.setVisibility(View.VISIBLE);
+//                rentDetailBinding.lItemOffer.setVisibility(View.VISIBLE);
+//                break;
+//        }
+//    }
 
     @NonNull
-    private List<Fragment> getFragmentList(RentItem rentItem, int type) {
+    private Pair<List<Fragment>,List<String>> getFragmentList(RentItem rentItem, int type) {
         List<Fragment> fragments = new ArrayList<>();
+        List<String> titles = new ArrayList<>();
         innerDetail = InnerDetailFragment.newInstance(rentItem.getRentInnerDetail());
         commentDetail = RentCommentFragment.newInstance(rentItem.getCommentItems());
         offerDetail = RentOfferFragment.newInstance(rentItem.getOfferItems());
@@ -200,44 +204,31 @@ public class RentDetailActivity extends AppCompatActivity implements
             case HAS_COMMENT_ONLY:
                 fragments.add(innerDetail);
                 fragments.add(commentDetail);
+                titles.add("Detalles");
+                titles.add("Comentarios");
                 break;
             case HAS_OFFER_ONLY:
                 fragments.add(innerDetail);
-                fragments.add(commentDetail);
+                fragments.add(offerDetail);
+                titles.add("Detalles");
+                titles.add("Ofertas");
                 break;
             case HAS_COMMENT_OFFER:
                 fragments.add(innerDetail);
                 fragments.add(commentDetail);
                 fragments.add(offerDetail);
+                titles.add("Detalles");
+                titles.add("Comentarios");
+                titles.add("Ofertas");
                 break;
         }
-        return fragments;
+        return new Pair<>(fragments,titles);
     }
 
-    private void setupViewPagerWithNav(List<Fragment> fragmentList) {
-        innerViewPagerAdapter = new InnerViewPagerAdapter(getSupportFragmentManager(),fragmentList);
+    private void setupViewPagerWithNav(Pair<List<Fragment>,List<String>> pair) {
+        innerViewPagerAdapter = new InnerViewPagerAdapter(getSupportFragmentManager(),pair.first,pair.second);
         rentDetailBinding.viewPager.setAdapter(innerViewPagerAdapter);
-        rentDetailBinding.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int i, float v, int i1) {
-
-            }
-
-            @Override
-            public void onPageSelected(int i) {
-                rentDetailBinding.floatingTopBarNavigation.setCurrentActiveItem(i);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-            }
-        });
-        rentDetailBinding.floatingTopBarNavigation.setNavigationChangeListener(new BubbleNavigationChangeListener() {
-            @Override
-            public void onNavigationChanged(View view, int position) {
-                rentDetailBinding.viewPager.setCurrentItem(position);
-            }
-        });
+        rentDetailBinding.tlTab.setViewPager(rentDetailBinding.viewPager);
     }
 
 
@@ -342,6 +333,10 @@ public class RentDetailActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void onScrollChange(NestedScrollView nestedScrollView, int i, int i1, int i2, int i3) {
+        changeToolbarBackground(i1);
+    }
 
     private void changeToolbarBackground(float i1) {
         int baseColor = getResources().getColor(R.color.colorPrimary);
@@ -362,7 +357,7 @@ public class RentDetailActivity extends AppCompatActivity implements
         String rentId = rentUuid;
         disposable = viewModel.addRating(rating, comment, rentId).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> AlertUtils.showSuccessToast(this, "Rating guardado"), Timber::e);
+                .subscribe(() -> AlertUtils.showSuccessToast(this, "RatingEmbeded guardado"), Timber::e);
         compositeDisposable.add(disposable);
     }
 

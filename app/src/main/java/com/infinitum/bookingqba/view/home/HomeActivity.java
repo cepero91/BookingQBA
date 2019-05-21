@@ -230,7 +230,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 new PeriodicWorkRequest.Builder(SendDataWorker.class, 20, TimeUnit.MINUTES)
                         .setConstraints(myConstraints)
                         .build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork("MyPeriodicalWork", ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest);
+        WorkManager.getInstance().enqueueUniquePeriodicWork("MyPeriodicalWork", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
     }
 
     private void initDrawerLayout() {
@@ -668,12 +668,11 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             return;
         }
         if (mFragment instanceof HomeFragment) {
-            AlertUtils.showInfoAlertAndFinishApp(this);
+            AlertUtils.showInfoAlertAndFinishApp(this, sharedPreferences);
         } else {
             MenuItem menuItem = homeBinding.navView.getMenu().findItem(R.id.nav_home);
             onNavigationItemSelected(menuItem);
         }
-
     }
 
     @Override

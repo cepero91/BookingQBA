@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.model.remote;
 
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
+import com.infinitum.bookingqba.model.remote.pojo.CommentGroup;
 import com.infinitum.bookingqba.model.remote.pojo.DatabaseUpdate;
 import com.infinitum.bookingqba.model.remote.pojo.DrawType;
 import com.infinitum.bookingqba.model.remote.pojo.Galerie;
@@ -11,6 +12,7 @@ import com.infinitum.bookingqba.model.remote.pojo.Offer;
 import com.infinitum.bookingqba.model.remote.pojo.Poi;
 import com.infinitum.bookingqba.model.remote.pojo.PoiType;
 import com.infinitum.bookingqba.model.remote.pojo.Province;
+import com.infinitum.bookingqba.model.remote.pojo.RatingVoteGroup;
 import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
 import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
@@ -65,6 +67,16 @@ public interface ApiInterface {
 
     @POST("/update-rent-wished/")
     Single<ResponseResult> updateRentWished(@Body RentWished rentWished);
+
+    // ------------------ VOTACIONES DE ESTRELLAS DE LOS USUARIOS ------------//
+
+    @POST("/update-rent-rating/")
+    Single<ResponseResult> updateRatingVotes(@Body RatingVoteGroup ratingVoteGroup);
+
+    // ------------------ COMENTARIOS DE USUARIOS ------------//
+
+    @POST("/update-rent-comment/")
+    Single<ResponseResult> updateRentComment(@Body CommentGroup commentGroup);
 
 
     //------------------- CONTADOR DE VISITAS ---------------------------//

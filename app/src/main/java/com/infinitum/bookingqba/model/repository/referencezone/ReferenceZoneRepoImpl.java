@@ -24,6 +24,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
+import timber.log.Timber;
 
 public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
 
@@ -41,6 +42,7 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
      * @return
      */
     private Single<List<ReferenceZone>> fetchReferencesZone(String value) {
+        Timber.e("Sync fetchReferencesZone");
         return retrofit.create(ApiInterface.class).getReferencesZone(value);
     }
 
