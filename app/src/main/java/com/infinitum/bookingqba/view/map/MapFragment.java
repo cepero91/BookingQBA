@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.CafeBarMapMarkerBinding;
 import com.infinitum.bookingqba.databinding.FragmentMapBinding;
@@ -411,7 +412,12 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
             GeoRent geoRent = geoRentArrayList.get(markerIndex);
             cafeBarMapMarkerBinding.setItem(geoRent);
             currentMarkerIndex = markerIndex;
-            mapBinding.flMarker.addView(cafeBarMapMarkerBinding.getRoot());
+            if (mapBinding.flMarker.getChildCount() > 0) {
+                mapBinding.flMarker.removeAllViews();
+                mapBinding.flMarker.addView(cafeBarMapMarkerBinding.getRoot());
+            } else {
+                mapBinding.flMarker.addView(cafeBarMapMarkerBinding.getRoot());
+            }
             ObjectAnimator markerAnimator = ObjectAnimator.ofFloat(mapBinding.flMarker, "translationY", 150f, 0f);
             markerAnimator.setDuration(500);
             markerAnimator.setInterpolator(new AccelerateDecelerateInterpolator());

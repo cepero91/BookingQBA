@@ -16,92 +16,58 @@
         android:layout_height="match_parent"
         tools:context="com.rhumbos.nac.ui.activities.ChapterDetail">
 
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/nested"
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clipToPadding="true">
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <RelativeLayout
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/toolbarCollapse"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                app:contentScrim="?attr/colorPrimary"
+                app:title=""
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                <FrameLayout
-                    android:id="@+id/shapeview_image"
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/iv_rent"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="@dimen/rent_detail_img_dimen"
+                    android:layout_gravity="center"
+                    android:fitsSystemWindows="true"
+                    android:focusableInTouchMode="true"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/bedroom" />
 
-                    <android.support.v7.widget.AppCompatImageView
-                        android:id="@+id/iv_portrait_detail"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/rent_detail_img_dimen"
-                        android:focusableInTouchMode="true"
-                        android:layout_gravity="center"
-                        android:fitsSystemWindows="true"
-                        android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/bedroom" />
-
-                </FrameLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_content_navigation"
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_below="@+id/shapeview_image"
-                    android:orientation="vertical">
+                    android:layout_height="?actionBarSize"
+                    app:layout_collapseMode="pin" />
 
-                    <FrameLayout
-                        android:id="@+id/fl_single"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+            </android.support.design.widget.CollapsingToolbarLayout>
 
-                    <LinearLayout
-                        android:id="@+id/cl_composite"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:visibility="gone">
+            <com.ogaclejapan.smarttablayout.SmartTabLayout
+                android:id="@+id/tl_tab"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                app:stl_customTabTextLayoutId="@layout/custom_tab"
+                app:stl_customTabTextViewId="@id/custom_text"
+                app:stl_dividerColor="@android:color/transparent"
+                app:stl_indicatorColor="@color/colorPrimaryDark"
+                app:stl_indicatorCornerRadius="1.5dp"
+                app:stl_indicatorInterpolation="smart"
+                app:stl_indicatorThickness="3dp"
+                app:stl_underlineColor="@android:color/transparent" />
 
-                        <com.ogaclejapan.smarttablayout.SmartTabLayout
-                            android:id="@+id/tl_tab"
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            app:stl_customTabTextLayoutId="@layout/custom_tab"
-                            app:stl_customTabTextViewId="@id/custom_text"
-                            app:stl_dividerColor="@android:color/transparent"
-                            app:stl_indicatorColor="@color/colorPrimaryDark"
-                            app:stl_indicatorCornerRadius="1.5dp"
-                            app:stl_indicatorInterpolation="smart"
-                            app:stl_indicatorThickness="3dp"
-                            app:stl_underlineColor="@android:color/transparent" />
+        </android.support.design.widget.AppBarLayout>
 
-
-                        <viewpagerwc.ui.dom.wrapping.WrappingViewPager
-                            android:id="@+id/view_pager"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"/>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </RelativeLayout>
-
-        </android.support.v4.widget.NestedScrollView>
-
-        <!--</com.xw.repo.widget.BounceScrollView>-->
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:contentInsetStart="0dp"
-            app:contentInsetStartWithNavigation="0dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_comment"

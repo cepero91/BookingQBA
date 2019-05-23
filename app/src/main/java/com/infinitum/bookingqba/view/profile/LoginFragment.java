@@ -4,6 +4,7 @@ package com.infinitum.bookingqba.view.profile;
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
@@ -14,6 +15,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,6 +27,8 @@ import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentLoginBinding;
+import com.infinitum.bookingqba.model.remote.APIError;
+import com.infinitum.bookingqba.model.remote.ErrorUtils;
 import com.infinitum.bookingqba.model.remote.Oauth;
 import com.infinitum.bookingqba.model.remote.pojo.ErrorResponse;
 import com.infinitum.bookingqba.model.remote.pojo.User;
@@ -163,10 +168,12 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
                     .map((Function<Response<User>, Pair<Boolean, ArrayList<String>>>) response -> {
                         loginBinding.setIsLoading(false);
                         if (response.code() == 200 && response.body() != null) {
+                            loginBinding.tvError.setText("");
                             interaction.onLogin(response.body());
                             return new Pair<>(true, response.body().getRentsId());
                         } else {
-                            loginBinding.tvError.setText("Credenciales erroneas");
+                            String errorMsg = ErrorUtils.parseError(response).getMsg();
+                            loginBinding.tvError.setText(errorMsg);
                             return new Pair<>(false, new ArrayList<>());
                         }
                     })
@@ -200,6 +207,12 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
             compositeDisposable.add(disposable);
 
         }
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        interaction.dismissDialog();
+        super.onDismiss(dialog);
     }
 
     private void onLoginError(View v, Throwable throwable) {

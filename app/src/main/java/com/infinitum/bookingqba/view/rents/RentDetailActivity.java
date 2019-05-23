@@ -56,8 +56,9 @@ import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 
+//NestedScrollView.OnScrollChangeListener,
 
-public class RentDetailActivity extends AppCompatActivity implements NestedScrollView.OnScrollChangeListener,
+public class RentDetailActivity extends AppCompatActivity implements
         View.OnClickListener, DialogComment.CommentInteraction, DialogRating.RatingInteraction, InnerDetailInteraction {
 
     public static final int HAS_COMMENT_ONLY = 0;
@@ -102,7 +103,7 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
             String imageUrlPath = getIntent().getExtras().getString("url");
             isWished = getIntent().getExtras().getInt("wished");
             mirrorWished = isWished;
-            GlideApp.with(this).load(imageUrlPath).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(rentDetailBinding.ivPortraitDetail);
+            GlideApp.with(this).load(imageUrlPath).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(rentDetailBinding.ivRent);
         }
 
         if (rentUuid.length() > 1) {
@@ -110,7 +111,7 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
         }
 
         //Configurations
-        rentDetailBinding.nested.setOnScrollChangeListener(this);
+//        rentDetailBinding.nested.setOnScrollChangeListener(this);
         imageViewHeight = getResources().getDimensionPixelSize(R.dimen.rent_detail_img_dimen);
         setupToolbar();
     }
@@ -156,16 +157,16 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
 
     private void setupViewPager(RentItem rentItem) {
         if (rentItem.getCommentItems().size() > 0 && rentItem.getOfferItems().size() == 0) {
-            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
+//            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
             setupViewPagerWithNav(getFragmentList(rentItem, HAS_COMMENT_ONLY));
         } else if (rentItem.getOfferItems().size() > 0 && rentItem.getCommentItems().size() == 0) {
-            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
+//            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
             setupViewPagerWithNav(getFragmentList(rentItem, HAS_OFFER_ONLY));
         } else if (rentItem.getOfferItems().size() > 0 && rentItem.getCommentItems().size() > 0) {
-            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
+//            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
             setupViewPagerWithNav(getFragmentList(rentItem, HAS_COMMENT_OFFER));
         } else {
-            rentDetailBinding.clComposite.setVisibility(View.GONE);
+//            rentDetailBinding.clComposite.setVisibility(View.GONE);
             Fragment innerDetail = InnerDetailFragment.newInstance(rentItem.getRentInnerDetail());
             fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.fl_single, innerDetail).commit();
@@ -227,8 +228,8 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
 
     private void setupViewPagerWithNav(Pair<List<Fragment>,List<String>> pair) {
         innerViewPagerAdapter = new InnerViewPagerAdapter(getSupportFragmentManager(),pair.first,pair.second);
-        rentDetailBinding.viewPager.setAdapter(innerViewPagerAdapter);
-        rentDetailBinding.tlTab.setViewPager(rentDetailBinding.viewPager);
+        rentDetailBinding.viewpager.setAdapter(innerViewPagerAdapter);
+        rentDetailBinding.tlTab.setViewPager(rentDetailBinding.viewpager);
     }
 
 
@@ -333,10 +334,10 @@ public class RentDetailActivity extends AppCompatActivity implements NestedScrol
         }
     }
 
-    @Override
-    public void onScrollChange(NestedScrollView nestedScrollView, int i, int i1, int i2, int i3) {
-        changeToolbarBackground(i1);
-    }
+//    @Override
+//    public void onScrollChange(NestedScrollView nestedScrollView, int i, int i1, int i2, int i3) {
+//        changeToolbarBackground(i1);
+//    }
 
     private void changeToolbarBackground(float i1) {
         int baseColor = getResources().getColor(R.color.colorPrimary);

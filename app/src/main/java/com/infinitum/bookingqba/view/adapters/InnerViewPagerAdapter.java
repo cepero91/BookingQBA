@@ -22,7 +22,7 @@ import viewpagerwc.ui.dom.wrapping.WrappingFragmentPagerAdapter;
 import viewpagerwc.ui.dom.wrapping.WrappingFragmentStatePagerAdapter;
 import viewpagerwc.ui.dom.wrapping.WrappingViewPager;
 
-public class InnerViewPagerAdapter extends WrappingFragmentPagerAdapter {
+public class InnerViewPagerAdapter extends FragmentPagerAdapter {
 
     private List<Fragment> fragmentList = new ArrayList<>();
     private List<String> titleList = new ArrayList<>();

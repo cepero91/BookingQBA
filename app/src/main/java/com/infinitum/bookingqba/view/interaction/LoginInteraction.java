@@ -10,4 +10,6 @@ public interface LoginInteraction {
 
     void showGroupMenuProfile(boolean show);
 
+    void dismissDialog();
+
 }

@@ -27,10 +27,10 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -39,7 +39,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,26 +50,15 @@ import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.TedPermission;
-import com.infinitum.bookingqba.BuildConfig;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
-import com.infinitum.bookingqba.model.Resource;
-import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.util.AlertUtils;
@@ -94,14 +82,9 @@ import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 
-import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -124,6 +107,7 @@ import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
+import static com.infinitum.bookingqba.util.Constants.PERIODICAL_WORK_NAME;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID_DEFAULT;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
@@ -166,6 +150,10 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     private String readPhonePerm = Manifest.permission.READ_PHONE_STATE;
     private static final int LOCATION_REQUEST_CODE = 1240;
     private static final int READ_PHONE_REQUEST_CODE = 1241;
+
+    //-------------------------- LOGING FRAGMENT ------------------------------//
+    private static final String LOGIN_TAG = "login";
+    private boolean loginIsClicked = false;
 
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentDispatchingAndroidInjector;
@@ -230,7 +218,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 new PeriodicWorkRequest.Builder(SendDataWorker.class, 20, TimeUnit.MINUTES)
                         .setConstraints(myConstraints)
                         .build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork("MyPeriodicalWork", ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
+        WorkManager.getInstance().enqueueUniquePeriodicWork(PERIODICAL_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest);
     }
 
     private void initDrawerLayout() {
@@ -547,8 +535,10 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 homeBinding.drawerLayout.postDelayed(() -> homeBinding.drawerLayout.openDrawer(Gravity.END), 200);
                 break;
             case R.id.action_login:
-                LoginFragment lf = LoginFragment.newInstance();
-                lf.show(fragmentManager, "LoginFragment");
+                if(!loginIsClicked) {
+                    loginIsClicked = true;
+                    showLoginDialog();
+                }
                 return true;
             case R.id.action_logout:
                 if (mFragment instanceof ProfileFragment) {
@@ -687,6 +677,24 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         invalidateOptionsMenu();
     }
 
+    void showLoginDialog() {
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        Fragment prev = fragmentManager.findFragmentByTag(LOGIN_TAG);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        LoginFragment loginFragment = LoginFragment.newInstance();
+        loginFragment.show(ft, LOGIN_TAG);
+    }
+
+    @Override
+    public void dismissDialog() {
+        loginIsClicked = false;
+    }
+
     @Override
     public void showNotificationToUpdate(String msg) {
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -721,7 +729,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         editor.putBoolean(IS_PROFILE_ACTIVE, show);
         editor.apply();
     }
-
 
     @Override
     public void onMapInteraction(GeoRent geoRent) {

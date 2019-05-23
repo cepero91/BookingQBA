@@ -5,6 +5,8 @@ public final class Constants {
     //API
     public static final String BASIC_URL_API = "http://192.168.137.1:8000";
 
+    public static final String PERIODICAL_WORK_NAME = "MyPeriodicalWork";
+
     //SHARED PREFERENCES KEY
     public static final String PREF_ENTITY_DOWNLOAD_INDEX = "dbDownloadLevel";
     public static final String PREF_DOWNLOAD_LEVEL = "downloadLevel";

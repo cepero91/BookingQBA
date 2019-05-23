@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.work.ListenableWorker;
 import androidx.work.RxWorker;
 import androidx.work.WorkerParameters;
 import io.reactivex.Completable;
@@ -35,6 +36,28 @@ public class SendDataWorker extends RxWorker {
         this.repository = repository;
     }
 
+    @Override
+    public Single<Result> createWork() {
+        return doAllWork()
+                .subscribeOn(Schedulers.io())
+                .flatMap(this::checkWorkResult)
+                .onErrorReturn(throwable -> {
+                    Timber.e("ALL WORK FAILED == reason ==> %s", throwable.getMessage());
+                    return Result.success();
+                });
+    }
+
+    public Single<List<OperationResult>> doAllWork() {
+        return Single.zip(visitWork(), wishedWork(), ratingWork(), commentWork(), (visit, wished, rating, comment) -> {
+            List<OperationResult> list = new ArrayList<>();
+            list.add(visit);
+            list.add(wished);
+            list.add(rating);
+            list.add(comment);
+            return list;
+        }).subscribeOn(Schedulers.io());
+    }
+
     public Single<OperationResult> visitWork() {
         return repository.traceVisitCountToServer();
     }
@@ -51,37 +74,35 @@ public class SendDataWorker extends RxWorker {
         return repository.traceCommentToServer();
     }
 
-    public Single<List<OperationResult>> doAllWork() {
-        return Single.zip(visitWork(), wishedWork(), ratingWork(), commentWork(), (visit, wished, rating, comment) -> {
-            List<OperationResult> list = new ArrayList<>();
-            list.add(visit);
-            list.add(wished);
-            list.add(rating);
-            list.add(comment);
-            return list;
-        }).subscribeOn(Schedulers.io());
+    private Single<Result> checkWorkResult(List<OperationResult> operationResults) {
+        for (int i = 0; i < operationResults.size(); i++) {
+            if (operationResults.get(i).result == OperationResult.Result.SUCCESS) {
+                Timber.e("WORK %s SUCCESS", getNameOfWorkByIndex(i));
+            } else {
+                Timber.e("WORK %s ERROR, reason ==> %s", getNameOfWorkByIndex(i), operationResults.get(i).message);
+            }
+        }
+        return Single.just(Result.success());
     }
 
 
-    @Override
-    public Single<Result> createWork() {
-        return doAllWork()
-                .subscribeOn(Schedulers.io())
-                .flatMap(operationResults -> {
-                    for(OperationResult operationResult: operationResults){
-                        if(operationResult.result == OperationResult.Result.SUCCESS){
-                            Timber.e("WORK SUCCESS");
-                        }else{
-                            Timber.e("WORK ERROR");
-                        }
-                    }
-                    return Single.just(Result.success());
-                })
-                .onErrorReturn(throwable -> {
-                    Timber.e("WORKER FAILED");
-                    Timber.e(throwable);
-                    return Result.success();
-                });
+    public String getNameOfWorkByIndex(int index) {
+        String name = "";
+        switch (index) {
+            case 0:
+                name = "VISIT COUNT";
+                break;
+            case 1:
+                name = "WISHED RENT";
+                break;
+            case 2:
+                name = "RATING VOTES";
+                break;
+            case 3:
+                name = "RENT COMMENTS";
+                break;
+        }
+        return name;
     }
 
 }

@@ -18,9 +18,8 @@ import com.infinitum.bookingqba.model.remote.pojo.RentVisitCount;
 import com.infinitum.bookingqba.model.remote.pojo.RentVisitCountGroup;
 import com.infinitum.bookingqba.model.remote.pojo.RentWished;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
+import com.infinitum.bookingqba.model.remote.ResponseResultException;
 import com.infinitum.bookingqba.util.DateUtils;
-
-import org.reactivestreams.Publisher;
 
 import java.util.List;
 
@@ -28,7 +27,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import timber.log.Timber;
@@ -70,6 +68,7 @@ public class UserTraceImpl implements UserTraceRepository {
                 .subscribeOn(Schedulers.io())
                 .map(this::tranformEntityToRentVisitCountGroup)
                 .flatMap(this::sendVisitToServer)
+                .onErrorReturn(Resource::error)
                 .flatMapCompletable(this::removeVisitCount)
                 .toSingle(OperationResult::success)
                 .onErrorReturn(OperationResult::error);
@@ -81,6 +80,7 @@ public class UserTraceImpl implements UserTraceRepository {
                 .subscribeOn(Schedulers.io())
                 .map(this::tranformEntityToCommentGroup)
                 .flatMap(this::sendCommentToServer)
+                .onErrorReturn(Resource::error)
                 .flatMapCompletable(this::removeInactiveComment)
                 .toSingle(OperationResult::success)
                 .onErrorReturn(OperationResult::error);
@@ -102,7 +102,7 @@ public class UserTraceImpl implements UserTraceRepository {
         if(resultResource.data!= null && resultResource.data.getCode()==200) {
             return Completable.fromAction(() -> qbaDao.deleteAllVisitoCount());
         }else{
-            return Completable.complete();
+            return Completable.error(new ResponseResultException(resultResource.message));
         }
     }
 
@@ -110,7 +110,7 @@ public class UserTraceImpl implements UserTraceRepository {
         if(resultResource.data!= null && resultResource.data.getCode()==200) {
             return Completable.fromAction(() -> qbaDao.deleteAllRatingVotes());
         }else {
-            return Completable.error(new NullPointerException());
+            return Completable.error(new ResponseResultException(resultResource.message));
         }
     }
 
@@ -118,7 +118,7 @@ public class UserTraceImpl implements UserTraceRepository {
         if(resultResource.data!= null && resultResource.data.getCode()==200) {
             return Completable.fromAction(() -> qbaDao.deleteAllInactiveComment());
         }else{
-            return Completable.complete();
+            return Completable.error(new ResponseResultException(resultResource.message));
         }
     }
 
