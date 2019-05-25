@@ -43,7 +43,8 @@
         <activity
             android:name=".view.home.HomeActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity
             android:name=".view.rents.RentDetailActivity"
             android:screenOrientation="portrait"

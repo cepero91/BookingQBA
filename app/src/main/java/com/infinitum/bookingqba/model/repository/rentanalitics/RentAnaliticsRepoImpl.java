@@ -1,9 +1,18 @@
 package com.infinitum.bookingqba.model.repository.rentanalitics;
 
+import android.arch.persistence.db.SimpleSQLiteQuery;
+
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
+import com.infinitum.bookingqba.model.local.entity.RentEntity;
+import com.infinitum.bookingqba.model.remote.ApiInterface;
+import com.infinitum.bookingqba.model.remote.pojo.AnaliticsGroup;
 import com.infinitum.bookingqba.model.remote.pojo.RentAnalitics;
+import com.infinitum.bookingqba.util.StringUtils;
+import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerItem;
+import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
 import com.infinitum.bookingqba.view.profile.DataGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +36,28 @@ public class RentAnaliticsRepoImpl implements RentAnaliticsRepository{
     @Override
     public Single<List<RentAnalitics>> getRentAnalitics(List<String> uuids) {
         return Single.just(DataGenerator.getRentAnalitic()).subscribeOn(Schedulers.io()).delay(2000, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public Single<AnaliticsGroup> rentAnalitics(String uuid) {
+        return retrofit.create(ApiInterface.class).rentAnalitics(uuid);
+    }
+
+    @Override
+    public Single<CommonSpinnerList> rentByUuidCommaSeparate(List<String> uuids) {
+        String comma = StringUtils.convertListToCommaSeparated(uuids);
+        SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(String.format("SELECT * FROM Rent WHERE Rent.id IN(%s)",comma));
+        return qbaDao.getRentByStringUuidCommaSeparate(simpleSQLiteQuery)
+                .subscribeOn(Schedulers.io())
+                .map(this::transformToSpinnerList);
+    }
+
+    private CommonSpinnerList transformToSpinnerList(List<RentEntity> rentEntityList) {
+        List<CommonSpinnerItem> commonSpinnerItemList = new ArrayList<>();
+        for(RentEntity rentEntity: rentEntityList){
+            commonSpinnerItemList.add(new CommonSpinnerItem(rentEntity.getId(),rentEntity.getName()));
+        }
+        return new CommonSpinnerList(commonSpinnerItemList);
     }
 
 }

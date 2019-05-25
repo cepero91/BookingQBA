@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.model.remote;
 
 
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
+import com.infinitum.bookingqba.model.remote.pojo.AnaliticsGroup;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.CommentGroup;
 import com.infinitum.bookingqba.model.remote.pojo.DatabaseUpdate;
@@ -84,6 +85,10 @@ public interface ApiInterface {
     @POST("/update-visit-count/")
     Single<ResponseResult> updateRentVisitCount(@Body RentVisitCountGroup rentVisitCountGroup);
 
+    //------------------- ANALITICS ---------------------------//
+
+    @GET("/api/statistic/")
+    Single<AnaliticsGroup> rentAnalitics(@Query("value") String uuid);
 
     //------------------- PROVINCIAS ---------------------//
     /**

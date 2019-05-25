@@ -7,30 +7,23 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentLoginBinding;
-import com.infinitum.bookingqba.model.remote.APIError;
-import com.infinitum.bookingqba.model.remote.ErrorUtils;
+import com.infinitum.bookingqba.model.remote.errors.ErrorUtils;
 import com.infinitum.bookingqba.model.remote.Oauth;
-import com.infinitum.bookingqba.model.remote.pojo.ErrorResponse;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.view.interaction.LoginInteraction;
 import com.infinitum.bookingqba.viewmodel.UserViewModel;
@@ -38,22 +31,16 @@ import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
 import java.net.ConnectException;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
-import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import dagger.android.support.AndroidSupportInjection;
-import io.reactivex.Completable;
-import io.reactivex.CompletableSource;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 

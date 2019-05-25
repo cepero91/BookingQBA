@@ -1,15 +1,14 @@
 package com.infinitum.bookingqba.view.adapters.items.spinneritem;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ProvinceSpinnerList {
+public class CommonSpinnerList {
 
-    private List<SpinnerProvinceItem> itemList;
+    private List<CommonSpinnerItem> itemList;
     private String[] arrayNames;
     private String[] arrayUuid;
 
-    public ProvinceSpinnerList(List<SpinnerProvinceItem> itemList) {
+    public CommonSpinnerList(List<CommonSpinnerItem> itemList) {
         this.itemList = itemList;
         this.arrayNames = createArrayNames();
         this.arrayUuid = createArrayUuid();

@@ -26,9 +26,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
-                app:contentScrim="?attr/colorPrimary"
+                app:contentScrim="@color/colorPrimary"
                 app:title=""
-                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+                app:layout_scrollFlags="scroll|enterAlways|snap">
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/iv_rent"
@@ -44,7 +44,8 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
-                    app:layout_collapseMode="pin" />
+                    app:layout_collapseMode="pin"
+                    />
 
             </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -52,6 +53,7 @@
                 android:id="@+id/tl_tab"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
+                android:background="@color/White_100"
                 app:stl_customTabTextLayoutId="@layout/custom_tab"
                 app:stl_customTabTextViewId="@id/custom_text"
                 app:stl_dividerColor="@android:color/transparent"
@@ -67,6 +69,7 @@
             android:id="@+id/viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         <android.support.design.widget.FloatingActionButton

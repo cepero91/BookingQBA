@@ -64,6 +64,7 @@ public class RentDetailActivity extends AppCompatActivity implements
     public static final int HAS_COMMENT_ONLY = 0;
     public static final int HAS_OFFER_ONLY = 1;
     public static final int HAS_COMMENT_OFFER = 2;
+    public static final int HAS_DETAIL_ONLY = 3;
     private ActivityRentDetailBinding rentDetailBinding;
     private int imageViewHeight;
     private InnerViewPagerAdapter innerViewPagerAdapter;
@@ -166,10 +167,7 @@ public class RentDetailActivity extends AppCompatActivity implements
 //            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
             setupViewPagerWithNav(getFragmentList(rentItem, HAS_COMMENT_OFFER));
         } else {
-//            rentDetailBinding.clComposite.setVisibility(View.GONE);
-            Fragment innerDetail = InnerDetailFragment.newInstance(rentItem.getRentInnerDetail());
-            fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.fl_single, innerDetail).commit();
+            setupViewPagerWithNav(getFragmentList(rentItem, HAS_DETAIL_ONLY));
         }
     }
 
@@ -202,19 +200,27 @@ public class RentDetailActivity extends AppCompatActivity implements
         commentDetail = RentCommentFragment.newInstance(rentItem.getCommentItems());
         offerDetail = RentOfferFragment.newInstance(rentItem.getOfferItems());
         switch (type) {
+            case HAS_DETAIL_ONLY:
+                rentDetailBinding.tlTab.setVisibility(View.GONE);
+                fragments.add(innerDetail);
+                titles.add("Detalles");
+                break;
             case HAS_COMMENT_ONLY:
+                rentDetailBinding.tlTab.setVisibility(View.VISIBLE);
                 fragments.add(innerDetail);
                 fragments.add(commentDetail);
                 titles.add("Detalles");
                 titles.add("Comentarios");
                 break;
             case HAS_OFFER_ONLY:
+                rentDetailBinding.tlTab.setVisibility(View.VISIBLE);
                 fragments.add(innerDetail);
                 fragments.add(offerDetail);
                 titles.add("Detalles");
                 titles.add("Ofertas");
                 break;
             case HAS_COMMENT_OFFER:
+                rentDetailBinding.tlTab.setVisibility(View.VISIBLE);
                 fragments.add(innerDetail);
                 fragments.add(commentDetail);
                 fragments.add(offerDetail);

@@ -422,7 +422,7 @@ public abstract class BookingQBADao {
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.id = :province ORDER BY Rent.rating DESC LIMIT 5")
+            "Province.id = :province ORDER BY Rent.rating DESC LIMIT 3")
     public abstract Flowable<List<RentAndGalery>> getFivePopRents(String province);
 
     @Transaction
@@ -430,7 +430,7 @@ public abstract class BookingQBADao {
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.id = :province ORDER BY Rent.created DESC LIMIT 5")
+            "Province.id = :province ORDER BY Rent.created DESC LIMIT 3")
     public abstract Flowable<List<RentAndGalery>> getFiveNewRents(String province);
 
     /**
@@ -486,6 +486,10 @@ public abstract class BookingQBADao {
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
     public abstract DataSource.Factory<Integer, RentAndGalery> filterRents(SupportSQLiteQuery query);
+
+    @Transaction
+    @RawQuery(observedEntities = RentEntity.class)
+    public abstract Single<List<RentEntity>> getRentByStringUuidCommaSeparate(SupportSQLiteQuery query);
 
     //------------------------- RATING ---------------------------//
 

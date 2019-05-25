@@ -6,9 +6,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        
-        <item name="android:textColorHint">@color/material_color_grey_300</item>
-        <item name="android:textColor">@color/material_color_grey_500</item>
 
     </style>
 
@@ -108,6 +105,13 @@
 
     <style name="MySpinnerStyle">
         <item name="android:background">@drawable/selector_custom_spinner</item>
+    </style>
+
+    <style name="SpinnerTextStyle" parent="TextAppearance.AppCompat.Widget.TextView.SpinnerItem">
+        <item name="android:fontFamily">@font/poppinsmedium</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textColor">@color/White_100</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="checkboxTextStyle" >

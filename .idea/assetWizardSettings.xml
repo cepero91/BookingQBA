@@ -30,8 +30,11 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_info_nav" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/Font-Awesome-SVG-PNG-master/Font-Awesome-SVG-PNG-master/black/svg/info.svg" />
+                            <entry key="height" value="512" />
+                            <entry key="outputName" value="ic_lightbulb" />
+                            <entry key="overrideSize" value="true" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/fontawesome-free-5.7.2-desktop/svgs/regular/lightbulb.svg" />
+                            <entry key="width" value="352" />
                           </map>
                         </option>
                       </PersistentState>

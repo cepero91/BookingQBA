@@ -2,46 +2,38 @@ package com.infinitum.bookingqba.view.profile;
 
 
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.github.siyamed.shapeimageview.RoundedImageView;
-import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
-import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentProfileBinding;
 import com.infinitum.bookingqba.model.remote.pojo.RentAnalitics;
 import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.SpinnerAdapter;
-import com.infinitum.bookingqba.view.adapters.items.comment.CommentItem;
-import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
+import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
 import com.infinitum.bookingqba.viewmodel.RentAnaliticsViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
-import com.willy.ratingbar.BaseRatingBar;
 
-import java.util.ArrayList;
+import java.net.ConnectException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -50,7 +42,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
+
+import static com.infinitum.bookingqba.util.Constants.BASE_URL_API;
+import static com.infinitum.bookingqba.util.Constants.USER_AVATAR;
+import static com.infinitum.bookingqba.util.Constants.USER_NAME;
+import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
 
 
 public class ProfileFragment extends Fragment {
@@ -59,6 +57,9 @@ public class ProfileFragment extends Fragment {
 
     @Inject
     ViewModelFactory viewModelFactory;
+
+    @Inject
+    SharedPreferences sharedPreferences;
 
     private RentAnaliticsViewModel viewModel;
 
@@ -94,10 +95,11 @@ public class ProfileFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        profileBinding.setIsLoading(true);
         profileBinding.setShowSelect(false);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentAnaliticsViewModel.class);
+
+        loadUserData();
 
         loadRentAnalitics();
 
@@ -117,95 +119,170 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadRentAnalitics() {
-        disposable = viewModel.getRentAnalitics(new ArrayList<>()).subscribeOn(Schedulers.io())
+        Set<String> stringSet = sharedPreferences.getStringSet(USER_RENTS, null);
+        String[] rentSelect = stringSet.toArray(new String[stringSet.size()]);
+        if (rentSelect != null && rentSelect.length > 1) {
+            profileBinding.tvRentName.setVisibility(View.GONE);
+            disposable = viewModel.getRentSpinnerList(Arrays.asList(rentSelect))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(commonSpinnerList -> {
+                        updateSpinnerView(commonSpinnerList);
+                    }, Timber::e);
+            compositeDisposable.add(disposable);
+        }
+    }
+
+    private void loadUserData() {
+        String avatar = sharedPreferences.getString(USER_AVATAR, "");
+        String url = BASE_URL_API + "/" + avatar;
+        GlideApp.with(getView())
+                .load(url)
+                .placeholder(R.drawable.user_placeholder)
+                .into(profileBinding.userAvatar);
+        profileBinding.tvUsername.setText(sharedPreferences.getString(USER_NAME, getString(R.string.empty_text)));
+    }
+
+    private void updateSpinnerView(CommonSpinnerList commonSpinnerList) {
+        String[] arrNames = commonSpinnerList.getArrayNames();
+        profileBinding.setItems(arrNames);
+        profileBinding.setShowSelect(true);
+        profileBinding.setIsLoading(false);
+        profileBinding.spinnerRents.post(() -> {
+            int height = profileBinding.spinnerRents.getHeight();
+            profileBinding.spinnerRents.setDropDownVerticalOffset(height);
+        });
+        profileBinding.spinnerRents.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spinner_profile_text_layout, arrNames));
+        profileBinding.spinnerRents.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String uuid = commonSpinnerList.getUuidOnPos(position);
+                profileBinding.setIsLoading(true);
+                profileBinding.tvMsg.setText("");
+                fetchRentAnalitic(uuid);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void fetchRentAnalitic(String uuid) {
+        disposable = viewModel.rentAnalitics(uuid)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(rentAnalitics -> {
-                    updateViews(rentAnalitics);
-                }, Timber::e);
+                .subscribe(analiticsGroup -> {
+                    if (analiticsGroup != null) {
+                        profileBinding.setIsLoading(false);
+                        profileBinding.srScaleRating.setRating(analiticsGroup.getRatingStarAnalitics().getRatingAverage());
+                        profileBinding.pbDetailPercent.setEndProgress(analiticsGroup.getProfilePercentAnalitics().getPercent());
+                        profileBinding.pbDetailPercent.startProgressAnimation();
+
+                        ValueAnimator visitAnimator = getAnimatorTextNumber(profileBinding.tvVisitCount, analiticsGroup.getVisitAnalitics().getTotalVisit());
+                        ValueAnimator commentAnimator = getAnimatorTextNumber(profileBinding.tvTotalComments, analiticsGroup.getGeneralCommentAnalitics().getTotalComment());
+                        ValueAnimator wishAnimator = getAnimatorTextNumber(profileBinding.tvTotalListWish, analiticsGroup.getWishAnalitics().getTotalWish());
+                        ValueAnimator terribleAnimator = getAnimatorTextNumber(profileBinding.tvTerribleCount,
+                                analiticsGroup.getCommentsEmotionAnalitics().getTerribleCount());
+                        ValueAnimator badAnimator = getAnimatorTextNumber(profileBinding.tvBadCount,
+                                analiticsGroup.getCommentsEmotionAnalitics().getBadCount());
+                        ValueAnimator okAnimator = getAnimatorTextNumber(profileBinding.tvOkCount,
+                                analiticsGroup.getCommentsEmotionAnalitics().getOkCount());
+                        ValueAnimator goodAnimator = getAnimatorTextNumber(profileBinding.tvGoodCount,
+                                analiticsGroup.getCommentsEmotionAnalitics().getGoodCount());
+                        ValueAnimator excelentAnimator = getAnimatorTextNumber(profileBinding.tvExcelentCount,
+                                analiticsGroup.getCommentsEmotionAnalitics().getExcelentCount());
+                        startNumberAnimation(visitAnimator, commentAnimator, wishAnimator,
+                                terribleAnimator, badAnimator, okAnimator, goodAnimator,
+                                excelentAnimator);
+
+                        int totalVotes = analiticsGroup.getRatingStarAnalitics().getTotalVotes();
+                        float percent5 = ((float) analiticsGroup.getRatingStarAnalitics().getFiveStar() / (float) totalVotes) * 100;
+                        float percent4 = ((float) analiticsGroup.getRatingStarAnalitics().getFourStar() / (float) totalVotes) * 100;
+                        float percent3 = ((float) analiticsGroup.getRatingStarAnalitics().getThreeStar() / (float) totalVotes) * 100;
+                        float percent2 = ((float) analiticsGroup.getRatingStarAnalitics().getTwoStar() / (float) totalVotes) * 100;
+                        float percent1 = ((float) analiticsGroup.getRatingStarAnalitics().getOneStar() / (float) totalVotes) * 100;
+
+                        profileBinding.pb5Star.setEndProgress(percent5);
+                        profileBinding.pb4Star.setEndProgress(percent4);
+                        profileBinding.pb3Star.setEndProgress(percent3);
+                        profileBinding.pb2Star.setEndProgress(percent2);
+                        profileBinding.pb1Star.setEndProgress(percent1);
+
+                        profileBinding.pb5Star.startProgressAnimation();
+                        profileBinding.pb4Star.startProgressAnimation();
+                        profileBinding.pb3Star.startProgressAnimation();
+                        profileBinding.pb2Star.startProgressAnimation();
+                        profileBinding.pb1Star.startProgressAnimation();
+
+                        StringBuilder commaSeparate = new StringBuilder();
+                        List<String> missing = analiticsGroup.getProfilePercentAnalitics().getMissingList();
+                        for (int i = 0; i < missing.size(); i++) {
+                            if (i < missing.size()-1) {
+                                commaSeparate.append(missing.get(i)).append(" \n");
+                            }else{
+                                commaSeparate.append(missing.get(i));
+                            }
+                        }
+                        profileBinding.tvMissingList.setText(commaSeparate.toString());
+
+                        profileBinding.tvPlaceRating.setText(String.valueOf(analiticsGroup.getRentPositionAnalitics().getPlaceRating()));
+                        profileBinding.tvPlaceViews.setText(String.valueOf(analiticsGroup.getRentPositionAnalitics().getPlaceViews()));
+                    }
+                }, throwable -> {
+                    Timber.e(throwable);
+                    if (throwable instanceof ConnectException) {
+                        profileBinding.tvMsg.setText("Sin conexion");
+                    } else {
+                        profileBinding.tvMsg.setText("Ooops!! un error a ocurrido");
+                    }
+                    resetAllViews();
+                });
         compositeDisposable.add(disposable);
     }
 
-    private void updateViews(List<RentAnalitics> rentAnaliticsList) {
-        if(rentAnaliticsList.size() > 1){
-            profileBinding.tvRentName.setVisibility(View.GONE);
-            String[] arrEntries = new String[rentAnaliticsList.size()];
-            for (int i = 0; i < rentAnaliticsList.size(); i++) {
-                arrEntries[i] = rentAnaliticsList.get(i).getRentName();
-            }
-            profileBinding.setItems(arrEntries);
-            profileBinding.setShowSelect(true);
-            profileBinding.spinnerRents.post(() -> {
-                int height = profileBinding.spinnerRents.getHeight();
-                profileBinding.spinnerRents.setDropDownVerticalOffset(height);
-            });
-            profileBinding.spinnerRents.setAdapter(new SpinnerAdapter(getActivity(),R.layout.spinner_profile_text_layout,arrEntries));
-            profileBinding.spinnerRents.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    updateParamsView(rentAnaliticsList.get(position));
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
-        }else{
-            profileBinding.tvRentName.setVisibility(View.VISIBLE);
-            updateParamsView(rentAnaliticsList.get(0));
-        }
-
-
+    private void resetAllViews() {
+        //------- Profile percent
+        profileBinding.pbDetailPercent.setProgress(0f);
+        //------- Emotion
+        profileBinding.tvTerribleCount.setText(getString(R.string.empty_short_text));
+        profileBinding.tvBadCount.setText(getString(R.string.empty_short_text));
+        profileBinding.tvOkCount.setText(getString(R.string.empty_short_text));
+        profileBinding.tvGoodCount.setText(getString(R.string.empty_short_text));
+        profileBinding.tvExcelentCount.setText(getString(R.string.empty_short_text));
+        //------- Star
+        profileBinding.srScaleRating.setRating(0f);
+        profileBinding.pb5Star.setProgress(0f);
+        profileBinding.pb4Star.setProgress(0f);
+        profileBinding.pb3Star.setProgress(0f);
+        profileBinding.pb2Star.setProgress(0f);
+        profileBinding.pb1Star.setProgress(0f);
+        //------- Number
+        profileBinding.tvVisitCount.setText(getString(R.string.empty_short_text));
+        profileBinding.tvTotalComments.setText(getString(R.string.empty_short_text));
+        profileBinding.tvTotalListWish.setText(getString(R.string.empty_short_text));
+        //-------- Missing List
+        profileBinding.tvMissingList.setText(R.string.empty_text);
+        //-------- Position
+        profileBinding.tvPlaceRating.setText(R.string.empty_short_text);
+        profileBinding.tvPlaceViews.setText(R.string.empty_short_text);
     }
 
-    private void updateParamsView(RentAnalitics rentAnalitics) {
-        profileBinding.setIsLoading(false);
-        profileBinding.srScaleRating.setRating(rentAnalitics.getRating());
-        profileBinding.tvRentName.setText(rentAnalitics.getRentName());
-        profileBinding.pbDetailPercent.setEndProgress(rentAnalitics.getRentDetailPercent());
-
-        ValueAnimator tvVisitCountAnimator = ValueAnimator.ofInt(0, rentAnalitics.getTotalVisitCount());
-        tvVisitCountAnimator.setDuration(3000);
-        tvVisitCountAnimator.addUpdateListener(animation -> profileBinding.tvVisitCount
-                .setText(animation.getAnimatedValue().toString()));
-
-        ValueAnimator tvCommentAnimator = ValueAnimator.ofInt(0, rentAnalitics.getTotalComments());
-        tvCommentAnimator.setDuration(3000);
-        tvCommentAnimator.addUpdateListener(animation -> profileBinding.tvTotalComments
-                .setText(animation.getAnimatedValue().toString()));
-
-        ValueAnimator tvListWishAnimator = ValueAnimator.ofInt(0, rentAnalitics.getTotalListWish());
-        tvListWishAnimator.setDuration(3000);
-        tvListWishAnimator.addUpdateListener(animation -> profileBinding.tvTotalListWish
-                .setText(animation.getAnimatedValue().toString()));
-
+    private void startNumberAnimation(ValueAnimator... valueAnimator) {
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(tvVisitCountAnimator,tvCommentAnimator,tvListWishAnimator);
+        animatorSet.playTogether(valueAnimator);
         animatorSet.start();
+    }
 
-        int totalVotation = 0;
-        for (int i = 0; i < rentAnalitics.getRatingByStar().length; i++) {
-            totalVotation += rentAnalitics.getRatingByStar()[i];
-        }
 
-        float p5 = ((float) rentAnalitics.getRatingByStar()[0] / (float) totalVotation) * 100;
-        float p4 = ((float) rentAnalitics.getRatingByStar()[1] / (float) totalVotation) * 100;
-        float p3 = ((float) rentAnalitics.getRatingByStar()[2] / (float) totalVotation) * 100;
-        float p2 = ((float) rentAnalitics.getRatingByStar()[3] / (float) totalVotation) * 100;
-        float p1 = ((float) rentAnalitics.getRatingByStar()[4] / (float) totalVotation) * 100;
-
-        profileBinding.pb5Star.setEndProgress(p5);
-        profileBinding.pb4Star.setEndProgress(p4);
-        profileBinding.pb3Star.setEndProgress(p3);
-        profileBinding.pb2Star.setEndProgress(p2);
-        profileBinding.pb1Star.setEndProgress(p1);
-
-        profileBinding.pbDetailPercent.startProgressAnimation();
-        profileBinding.pb5Star.startProgressAnimation();
-        profileBinding.pb4Star.startProgressAnimation();
-        profileBinding.pb3Star.startProgressAnimation();
-        profileBinding.pb2Star.startProgressAnimation();
-        profileBinding.pb1Star.startProgressAnimation();
+    @NonNull
+    private ValueAnimator getAnimatorTextNumber(TextView textView, int number) {
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(0, number);
+        valueAnimator.setDuration(3000);
+        valueAnimator.setInterpolator(new AccelerateInterpolator());
+        valueAnimator.addUpdateListener(animation -> textView.setText(animation.getAnimatedValue().toString()));
+        return valueAnimator;
     }
 
 

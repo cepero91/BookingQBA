@@ -3,7 +3,8 @@ package com.infinitum.bookingqba.model.repository.rent;
 import java.util.List;
 import java.util.Map;
 
-import static com.infinitum.bookingqba.model.repository.dbcommonsop.DBCommonOperationRepoImpl.SEPARATOR;
+import static com.infinitum.bookingqba.util.StringUtils.convertListToCommaSeparated;
+
 
 public class FilterRepositoryUtil {
     public static final String RENTMODE = "RentMode";
@@ -150,15 +151,5 @@ public class FilterRepositoryUtil {
                     "BETWEEN " + min + " AND " + max + " ORDER BY " + alias + ".rating DESC";
         }
         return stringQuery;
-    }
-
-    private static String convertListToCommaSeparated(List<String> ids) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < ids.size(); i++) {
-            stringBuilder.append("'").append(ids.get(i)).append("'");
-            if (i < ids.size() - 1)
-                stringBuilder.append(SEPARATOR);
-        }
-        return stringBuilder.toString();
     }
 }

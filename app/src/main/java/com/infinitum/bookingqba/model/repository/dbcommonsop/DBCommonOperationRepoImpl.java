@@ -12,6 +12,7 @@ import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.DatabaseUpdate;
 import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
 import com.infinitum.bookingqba.util.DateUtils;
+import com.infinitum.bookingqba.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class DBCommonOperationRepoImpl implements DBCommonOperationRepository {
 
     private Retrofit retrofit;
     private BookingQBADao qbaDao;
-    public static final String SEPARATOR = ",";
+
 
     @Inject
     public DBCommonOperationRepoImpl(Retrofit retrofit, BookingQBADao qbaDao) {
@@ -114,7 +115,7 @@ public class DBCommonOperationRepoImpl implements DBCommonOperationRepository {
               simpleSQLiteQueries.addAll(sqLiteQueriesForRentManyToMany(removedList.getItems()));
             }
             String stringQuery = String.format("DELETE FROM %s WHERE id IN (%s)", removedList.getEntity()
-                    , convertListToCommaSeparated(removedList.getItems()));
+                    , StringUtils.convertListToCommaSeparated(removedList.getItems()));
             simpleSQLiteQueries.add(new SimpleSQLiteQuery(stringQuery));
         }
         return simpleSQLiteQueries;
@@ -123,25 +124,15 @@ public class DBCommonOperationRepoImpl implements DBCommonOperationRepository {
     private List<SimpleSQLiteQuery> sqLiteQueriesForRentManyToMany(List<String> ids){
         List<SimpleSQLiteQuery> simpleSQLiteQueries = new ArrayList<>();
         String stringQueryRentAmenities = String.format("DELETE FROM %s WHERE rentId IN (%s)", "RentAmenities"
-                , convertListToCommaSeparated(ids));
+                , StringUtils.convertListToCommaSeparated(ids));
         simpleSQLiteQueries.add(new SimpleSQLiteQuery(stringQueryRentAmenities));
         String stringQueryRentPoi = String.format("DELETE FROM %s WHERE rentId IN (%s)", "RentPoi"
-                , convertListToCommaSeparated(ids));
+                , StringUtils.convertListToCommaSeparated(ids));
         simpleSQLiteQueries.add(new SimpleSQLiteQuery(stringQueryRentPoi));
         String stringQueryRentDrawType = String.format("DELETE FROM %s WHERE rentId IN (%s)", "RentDrawType"
-                , convertListToCommaSeparated(ids));
+                , StringUtils.convertListToCommaSeparated(ids));
         simpleSQLiteQueries.add(new SimpleSQLiteQuery(stringQueryRentDrawType));
         return simpleSQLiteQueries;
-    }
-
-    private String convertListToCommaSeparated(List<String> ids) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < ids.size(); i++) {
-            stringBuilder.append("'").append(ids.get(i)).append("'");
-            if (i < ids.size() - 1)
-                stringBuilder.append(SEPARATOR);
-        }
-        return stringBuilder.toString();
     }
 
 

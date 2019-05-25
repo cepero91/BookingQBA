@@ -110,6 +110,7 @@ import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 import static com.infinitum.bookingqba.util.Constants.PERIODICAL_WORK_NAME;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID_DEFAULT;
+import static com.infinitum.bookingqba.util.Constants.USER_AVATAR;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
@@ -218,9 +219,12 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 new PeriodicWorkRequest.Builder(SendDataWorker.class, 20, TimeUnit.MINUTES)
                         .setConstraints(myConstraints)
                         .build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork(PERIODICAL_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest);
+        WorkManager.getInstance().enqueueUniquePeriodicWork(PERIODICAL_WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
     }
 
+    /**
+     * BUSCAR UNA BIBLIOTECA QUE LA ANIMACION NO LA HAGA TAN LENTA
+     */
     private void initDrawerLayout() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, homeBinding.drawerLayout, homeBinding.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -237,9 +241,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         homeBinding.navViewNotification.setLayoutParams(params);
 
         homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
-        homeBinding.drawerLayout.setViewScale(Gravity.START, 0.9f);
-        homeBinding.drawerLayout.setRadius(Gravity.START, 35);
-        homeBinding.drawerLayout.setViewElevation(Gravity.START, 20);
+//        homeBinding.drawerLayout.setViewScale(Gravity.START, 0.9f);
+//        homeBinding.drawerLayout.setRadius(Gravity.START, 25);
+//        homeBinding.drawerLayout.setViewElevation(Gravity.START, 15);
     }
 
     // ---------------------- LOCATION METHOD ------------------------ //
@@ -623,7 +627,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
                 removeAppBarShadow();
 
-            }, 300);
+            }, 700);
 
             return true;
         } else {
@@ -658,7 +662,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             return;
         }
         if (mFragment instanceof HomeFragment) {
-            AlertUtils.showInfoAlertAndFinishApp(this, sharedPreferences);
+            AlertUtils.showInfoAlertAndFinishApp(this);
         } else {
             MenuItem menuItem = homeBinding.navView.getMenu().findItem(R.id.nav_home);
             onNavigationItemSelected(menuItem);
@@ -672,6 +676,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         editor.putString(USER_TOKEN, user.getToken());
         editor.putString(USER_NAME, user.getUsername());
         editor.putString(USER_ID, user.getUserid());
+        editor.putString(USER_AVATAR, user.getAvatar());
         editor.putStringSet(USER_RENTS, new HashSet<>(user.getRentsId()));
         editor.apply();
         invalidateOptionsMenu();

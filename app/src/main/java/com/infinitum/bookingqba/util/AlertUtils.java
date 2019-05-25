@@ -161,7 +161,7 @@ public class AlertUtils {
         sweetAlertDialog.show();
     }
 
-    public static void showInfoAlertAndFinishApp(Context context, SharedPreferences sharedPreferences) {
+    public static void showInfoAlertAndFinishApp(Context context) {
         new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE)
                 .setTitleText("Aviso!")
                 .setContentText("Esta seguro que desea salir")
@@ -169,14 +169,6 @@ public class AlertUtils {
                 .setConfirmClickListener(sweetAlertDialog -> {
                     sweetAlertDialog.dismissWithAnimation();
                     new Handler().postDelayed(() -> {
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putBoolean(USER_IS_AUTH,false);
-                        editor.putString(USER_NAME,"");
-                        editor.putString(USER_ID,"");
-                        editor.putString(USER_TOKEN,"");
-                        editor.putStringSet(USER_RENTS,null);
-                        editor.putBoolean(IS_PROFILE_ACTIVE,false);
-                        editor.commit();
                         ((Activity) context).finish();
                     }, 400);
                 })

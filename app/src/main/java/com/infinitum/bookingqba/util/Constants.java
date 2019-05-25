@@ -3,7 +3,7 @@ package com.infinitum.bookingqba.util;
 public final class Constants {
 
     //API
-    public static final String BASIC_URL_API = "http://192.168.137.1:8000";
+    public static final String BASE_URL_API = "http://192.168.137.1:8000";
 
     public static final String PERIODICAL_WORK_NAME = "MyPeriodicalWork";
 
@@ -63,6 +63,7 @@ public final class Constants {
     public static final String USER_ID = "userId";
     public static final String USER_TOKEN = "userToken";
     public static final String USER_RENTS = "userRents";
+    public static final String USER_AVATAR = "userAvatar";
 
     public static final String MAP_PATH = "mapDir";
 

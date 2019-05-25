@@ -8,8 +8,6 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.infinitum.bookingqba.util.NetworkHelper;
-import com.liulishuo.filedownloader.FileDownloader;
-import com.liulishuo.filedownloader.connection.FileDownloadUrlConnection;
 
 import javax.inject.Singleton;
 
@@ -21,7 +19,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.infinitum.bookingqba.util.Constants.BASIC_URL_API;
+import static com.infinitum.bookingqba.util.Constants.BASE_URL_API;
 
 
 @Module
@@ -56,7 +54,7 @@ public class NetModule {
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .baseUrl(BASIC_URL_API)
+                .baseUrl(BASE_URL_API)
                 .client(okHttpClient)
                 .build();
     }

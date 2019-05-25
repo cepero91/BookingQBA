@@ -16,8 +16,8 @@ import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RentNewItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
-import com.infinitum.bookingqba.view.adapters.items.spinneritem.ProvinceSpinnerList;
-import com.infinitum.bookingqba.view.adapters.items.spinneritem.SpinnerProvinceItem;
+import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
+import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
 
     //----------------------------------- GET METHOD ------------------------------------------//
 
-    public Flowable<Resource<ProvinceSpinnerList>> getProvinces() {
+    public Flowable<Resource<CommonSpinnerList>> getProvinces() {
         return provinceRepository
                 .allProvinces()
                 .map(this::transformProvinces)
@@ -159,14 +159,14 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         }
     }
 
-    private ProvinceSpinnerList transformProvinces(Resource<List<ProvinceEntity>> listResource) {
-        List<SpinnerProvinceItem> spinnerProvinceItemList =  new ArrayList<>();
-        ProvinceSpinnerList provinceSpinnerList = new ProvinceSpinnerList(spinnerProvinceItemList);
+    private CommonSpinnerList transformProvinces(Resource<List<ProvinceEntity>> listResource) {
+        List<CommonSpinnerItem> spinnerProvinceItemList =  new ArrayList<>();
+        CommonSpinnerList provinceSpinnerList = new CommonSpinnerList(spinnerProvinceItemList);
         if(listResource.data!= null && listResource.data.size()>0){
            for(ProvinceEntity entity: listResource.data){
-               spinnerProvinceItemList.add(new SpinnerProvinceItem(entity.getId(),entity.getName()));
+               spinnerProvinceItemList.add(new CommonSpinnerItem(entity.getId(),entity.getName()));
            }
-           provinceSpinnerList = new ProvinceSpinnerList(spinnerProvinceItemList);
+           provinceSpinnerList = new CommonSpinnerList(spinnerProvinceItemList);
         }
         return provinceSpinnerList;
     }

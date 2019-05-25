@@ -1,4 +1,4 @@
-package com.infinitum.bookingqba.model.remote;
+package com.infinitum.bookingqba.model.remote.errors;
 
 public class ResponseResultException extends RuntimeException {
 

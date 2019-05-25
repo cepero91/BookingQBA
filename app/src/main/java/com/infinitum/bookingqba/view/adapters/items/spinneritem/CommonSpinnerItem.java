@@ -1,11 +1,11 @@
 package com.infinitum.bookingqba.view.adapters.items.spinneritem;
 
-public class SpinnerProvinceItem {
+public class CommonSpinnerItem {
 
     private String uuid;
     private String name;
 
-    public SpinnerProvinceItem(String uuid, String name) {
+    public CommonSpinnerItem(String uuid, String name) {
         this.uuid = uuid;
         this.name = name;
     }

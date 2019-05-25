@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.usertrace;
 
+import android.arch.persistence.room.EmptyResultSetException;
 import android.content.SharedPreferences;
 
 import com.infinitum.bookingqba.model.OperationResult;
@@ -9,6 +10,7 @@ import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentVisitCountEntity;
+import com.infinitum.bookingqba.model.local.tconverter.CommentEmotion;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.CommentGroup;
@@ -18,7 +20,7 @@ import com.infinitum.bookingqba.model.remote.pojo.RentVisitCount;
 import com.infinitum.bookingqba.model.remote.pojo.RentVisitCountGroup;
 import com.infinitum.bookingqba.model.remote.pojo.RentWished;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
-import com.infinitum.bookingqba.model.remote.ResponseResultException;
+import com.infinitum.bookingqba.model.remote.errors.ResponseResultException;
 import com.infinitum.bookingqba.util.DateUtils;
 
 import java.util.List;
@@ -53,10 +55,10 @@ public class UserTraceImpl implements UserTraceRepository {
                 .map(this::tranformEntityToRentWished)
                 .flatMap(this::sendWishedToServer)
                 .map(responseResultResource -> {
-                    if(responseResultResource.data.getCode()==200){
+                    if(responseResultResource.data!=null && responseResultResource.data.getCode()==200){
                         return OperationResult.success();
                     }else{
-                        return OperationResult.error(responseResultResource.data.getMsg());
+                        return OperationResult.error(responseResultResource.message);
                     }
                 })
                 .onErrorReturn(OperationResult::error);
@@ -92,9 +94,13 @@ public class UserTraceImpl implements UserTraceRepository {
                 .subscribeOn(Schedulers.io())
                 .map(this::tranformEntityToRatingVoteGroup)
                 .flatMap(this::sendRatingVoteToServer)
-                .onErrorReturn(Resource::error)
-                .flatMapCompletable(this::removeRatingVotes)
-                .toSingle(OperationResult::success)
+                .map(responseResultResource -> {
+                    if(responseResultResource.data.getCode()==200){
+                        return OperationResult.success();
+                    }else{
+                        return OperationResult.error(responseResultResource.message);
+                    }
+                })
                 .onErrorReturn(OperationResult::error);
     }
 
@@ -139,7 +145,7 @@ public class UserTraceImpl implements UserTraceRepository {
                     .map(Resource::success)
                     .onErrorReturn(Resource::error);
         } else {
-            return Single.just(Resource.error("No hay nada que enviar"));
+            return Single.just(Resource.error(rentWishedResource.message));
         }
     }
 
@@ -150,7 +156,7 @@ public class UserTraceImpl implements UserTraceRepository {
                     .map(Resource::success)
                     .onErrorReturn(Resource::error);
         } else {
-            return Single.just(Resource.error("No hay nada que enviar"));
+            return Single.just(Resource.error(ratingVoteGroupResource.message));
         }
     }
 
@@ -162,7 +168,7 @@ public class UserTraceImpl implements UserTraceRepository {
                     .map(Resource::success)
                     .onErrorReturn(Resource::error);
         } else {
-            return Single.just(Resource.error("No hay nada que enviar"));
+            return Single.just(Resource.error(commentGroupResource.message));
         }
     }
 
@@ -174,7 +180,7 @@ public class UserTraceImpl implements UserTraceRepository {
                     .map(Resource::success)
                     .onErrorReturn(Resource::error);
         } else {
-            return Single.just(Resource.error("No hay nada que enviar"));
+            return Single.just(Resource.error(rentVisitCountGroupResource.message));
         }
     }
 
@@ -191,7 +197,7 @@ public class UserTraceImpl implements UserTraceRepository {
                 }
                 return Resource.success(rentVisitCountGroup);
             } else {
-                return Resource.error("Lista vacia");
+                return Resource.error(new EmptyResultSetException("Datos nulos o vacios"));
             }
         }
 
@@ -210,7 +216,7 @@ public class UserTraceImpl implements UserTraceRepository {
                 }
                 return Resource.success(rentWished);
             } else {
-                return Resource.error("Lista vacia");
+                return Resource.error(new EmptyResultSetException("Datos nulos o vacios"));
             }
         }
 
@@ -229,7 +235,7 @@ public class UserTraceImpl implements UserTraceRepository {
                 }
                 return Resource.success(ratingVoteGroup);
             } else {
-                return Resource.error("Lista vacia");
+                return Resource.error(new EmptyResultSetException("Datos nulos o vacios"));
             }
         }
     }
@@ -249,13 +255,14 @@ public class UserTraceImpl implements UserTraceRepository {
                     comment.setCreated(DateUtils.parseDateToString(entity.getCreated()));
                     comment.setAvatar("");
                     comment.setActive(false);
+                    comment.setEmotion(CommentEmotion.fromEmotion(entity.getEmotion()));
                     comment.setIs_owner(entity.isOwner());
                     commentGroup.addComment(comment);
                     Timber.e("COMMENT to send ====> rent %s, name %s", entity.getUsername(), entity.getDescription());
                 }
                 return Resource.success(commentGroup);
             } else {
-                return Resource.error("Lista vacia");
+                return Resource.error(new EmptyResultSetException("Datos nulos o vacios"));
             }
         }
 

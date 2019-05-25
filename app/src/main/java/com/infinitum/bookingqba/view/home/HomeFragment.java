@@ -40,7 +40,7 @@ import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RentNewItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
-import com.infinitum.bookingqba.view.adapters.items.spinneritem.ProvinceSpinnerList;
+import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.HomeViewModel;
@@ -73,7 +73,7 @@ public class HomeFragment extends BaseNavigationFragment {
     private HomeViewModel homeViewModel;
     private Disposable disposable;
 
-    private ProvinceSpinnerList spinnerList;
+    private CommonSpinnerList spinnerList;
     private SpinnerAdapter adapter;
 
     @Inject
@@ -132,7 +132,7 @@ public class HomeFragment extends BaseNavigationFragment {
     }
 
 
-    private void onProvinceLoad(Resource<ProvinceSpinnerList> listResource) {
+    private void onProvinceLoad(Resource<CommonSpinnerList> listResource) {
         int provinceIndex = sharedPreferences.getInt(PROVINCE_SPINNER_INDEX, 0);
         this.spinnerList = listResource.data;
         if (adapter == null) {

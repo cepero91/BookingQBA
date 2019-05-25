@@ -9,6 +9,9 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.bumptech.glide.request.transition.DrawableCrossFadeTransition;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.google.android.flexbox.FlexboxLayout;
 import com.infinitum.bookingqba.R;

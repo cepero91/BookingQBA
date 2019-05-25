@@ -1,6 +1,5 @@
-package com.infinitum.bookingqba.model.remote;
+package com.infinitum.bookingqba.model.remote.errors;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import retrofit2.Response;

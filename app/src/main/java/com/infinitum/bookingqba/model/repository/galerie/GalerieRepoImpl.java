@@ -15,13 +15,11 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.SingleSource;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 
-import static com.infinitum.bookingqba.util.Constants.BASIC_URL_API;
+import static com.infinitum.bookingqba.util.Constants.BASE_URL_API;
 
 public class GalerieRepoImpl implements GalerieRepository {
 
@@ -61,7 +59,7 @@ public class GalerieRepoImpl implements GalerieRepository {
         ArrayList<GalerieEntity> listEntity = new ArrayList<>();
         GalerieEntity entity;
         for (Galerie item : gsonList) {
-            entity = new GalerieEntity(item.getId(), BASIC_URL_API + "/" + item.getImage(), null, item.getRent(),1);
+            entity = new GalerieEntity(item.getId(), BASE_URL_API + "/" + item.getImage(), null, item.getRent(),1);
             listEntity.add(entity);
         }
         return listEntity;

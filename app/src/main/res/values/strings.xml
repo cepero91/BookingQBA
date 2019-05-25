@@ -72,4 +72,19 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="detail">Detalles</string>
     <string name="comment">Comentarios</string>
     <string name="offer">Ofertas</string>
+    <string name="empty_text">--------</string>
+    <string name="nivel_de_detalle">Nivel de detalle</string>
+    <string name="empty_short_text">--</string>
+    <string name="visitas">Visitas</string>
+    <string name="comentarios">Comentarios</string>
+    <string name="en_deseo">En Deseo</string>
+    <string name="sugerencia">Para lograr una informacion detallada, te sugerimos llenar:</string>
+    <string name="emociones_en_comentarios">Emociones en comentarios</string>
+    <string name="votaciones">Votaciones</string>
+    <string name="_5">5</string>
+    <string name="_4">4</string>
+    <string name="_3">3</string>
+    <string name="_2">2</string>
+    <string name="_1">1</string>
+    <string name="sugerencias_de_mejoras">Sugerencias de mejoras</string>
 </resources>
