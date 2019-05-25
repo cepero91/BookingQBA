@@ -41,14 +41,17 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
@@ -93,8 +96,10 @@ public class RentDetailActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidInjection.inject(this);
+
         rentDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_rent_detail);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
+
         rentDetailBinding.setIsLoading(true);
         rentDetailBinding.fabComment.setOnClickListener(this);
         compositeDisposable = new CompositeDisposable();
@@ -110,10 +115,6 @@ public class RentDetailActivity extends AppCompatActivity implements
         if (rentUuid.length() > 1) {
             loadRentDetail();
         }
-
-        //Configurations
-//        rentDetailBinding.nested.setOnScrollChangeListener(this);
-        imageViewHeight = getResources().getDimensionPixelSize(R.dimen.rent_detail_img_dimen);
         setupToolbar();
     }
 
@@ -158,39 +159,15 @@ public class RentDetailActivity extends AppCompatActivity implements
 
     private void setupViewPager(RentItem rentItem) {
         if (rentItem.getCommentItems().size() > 0 && rentItem.getOfferItems().size() == 0) {
-//            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
             setupViewPagerWithNav(getFragmentList(rentItem, HAS_COMMENT_ONLY));
         } else if (rentItem.getOfferItems().size() > 0 && rentItem.getCommentItems().size() == 0) {
-//            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
             setupViewPagerWithNav(getFragmentList(rentItem, HAS_OFFER_ONLY));
         } else if (rentItem.getOfferItems().size() > 0 && rentItem.getCommentItems().size() > 0) {
-//            rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
             setupViewPagerWithNav(getFragmentList(rentItem, HAS_COMMENT_OFFER));
         } else {
             setupViewPagerWithNav(getFragmentList(rentItem, HAS_DETAIL_ONLY));
         }
     }
-
-//    private void changeNavTabVisibility(int type) {
-//        switch (type) {
-//            case HAS_COMMENT_ONLY:
-//                rentDetailBinding.flSingle.setVisibility(View.GONE);
-//                rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
-//                rentDetailBinding.lItemComment.setVisibility(View.VISIBLE);
-//                break;
-//            case HAS_OFFER_ONLY:
-//                rentDetailBinding.flSingle.setVisibility(View.GONE);
-//                rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
-//                rentDetailBinding.lItemOffer.setVisibility(View.VISIBLE);
-//                break;
-//            case HAS_COMMENT_OFFER:
-//                rentDetailBinding.flSingle.setVisibility(View.GONE);
-//                rentDetailBinding.clComposite.setVisibility(View.VISIBLE);
-//                rentDetailBinding.lItemComment.setVisibility(View.VISIBLE);
-//                rentDetailBinding.lItemOffer.setVisibility(View.VISIBLE);
-//                break;
-//        }
-//    }
 
     @NonNull
     private Pair<List<Fragment>,List<String>> getFragmentList(RentItem rentItem, int type) {
@@ -233,8 +210,10 @@ public class RentDetailActivity extends AppCompatActivity implements
     }
 
     private void setupViewPagerWithNav(Pair<List<Fragment>,List<String>> pair) {
+        rentDetailBinding.setIsLoading(false);
         innerViewPagerAdapter = new InnerViewPagerAdapter(getSupportFragmentManager(),pair.first,pair.second);
         rentDetailBinding.viewpager.setAdapter(innerViewPagerAdapter);
+        OverScrollDecoratorHelper.setUpOverScroll(rentDetailBinding.viewpager);
         rentDetailBinding.tlTab.setViewPager(rentDetailBinding.viewpager);
     }
 

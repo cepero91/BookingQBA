@@ -30,6 +30,11 @@ public class BindingAdapters {
         view.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
+    @BindingAdapter("visibleByLength")
+    public static void visibleByLength(View view, String text) {
+        view.setVisibility(text.length()>0 ? View.VISIBLE : View.GONE);
+    }
+
     @BindingAdapter("discreteVisibility")
     public static void discreteVisibility(View view, boolean show) {
         view.setVisibility(show ? View.VISIBLE : View.INVISIBLE);

@@ -27,7 +27,7 @@
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
                 app:contentScrim="@color/colorPrimary"
-                app:title=""
+                app:titleEnabled="false"
                 app:layout_scrollFlags="scroll|enterAlways|snap">
 
                 <android.support.v7.widget.AppCompatImageView
@@ -39,6 +39,16 @@
                     android:focusableInTouchMode="true"
                     android:scaleType="centerCrop"
                     app:srcCompat="@drawable/bedroom" />
+
+                <ProgressBar
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:minHeight="16dp"
+                    android:indeterminate="true"
+                    android:layout_marginTop="?actionBarSize"
+                    android:layout_marginEnd="10dp"
+                    android:layout_gravity="end|top"
+                    app:visibleGone="@{safeUnbox(isLoading)}"/>
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
@@ -69,8 +79,8 @@
             android:id="@+id/viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:visibleGone="@{!safeUnbox(isLoading)}"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_comment"
