@@ -95,7 +95,7 @@ public class UserTraceImpl implements UserTraceRepository {
                 .map(this::tranformEntityToRatingVoteGroup)
                 .flatMap(this::sendRatingVoteToServer)
                 .map(responseResultResource -> {
-                    if(responseResultResource.data.getCode()==200){
+                    if(responseResultResource.data!=null && responseResultResource.data.getCode()==200){
                         return OperationResult.success();
                     }else{
                         return OperationResult.error(responseResultResource.message);

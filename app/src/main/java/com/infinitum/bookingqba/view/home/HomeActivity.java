@@ -312,6 +312,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                         case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                             Timber.e("Location settings are inadequate");
                             mRequestingLocationUpdates = false;
+                            AlertUtils.showErrorToast(HomeActivity.this, "Imposible ser localizado");
+                            invalidateOptionsMenu();
+                            break;
                     }
                 });
     }
@@ -521,6 +524,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         logout.setVisible(loginVisibility);
         menu.findItem(R.id.action_filter_panel).setVisible(mFragment instanceof RentListFragment);
         menu.findItem(R.id.action_gps).setVisible(mFragment instanceof MapFragment);
+        menu.findItem(R.id.action_refresh).setVisible(mFragment instanceof ProfileFragment);
         homeBinding.navView.getMenu().setGroupVisible(R.id.group_2, isProfileActive);
     }
 
@@ -537,9 +541,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 fragmentManager.beginTransaction().replace(R.id.filter_container, filterFragment).commit();
                 homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
                 homeBinding.drawerLayout.postDelayed(() -> homeBinding.drawerLayout.openDrawer(Gravity.END), 200);
-                break;
+                return true;
             case R.id.action_login:
-                if(!loginIsClicked) {
+                if (!loginIsClicked) {
                     loginIsClicked = true;
                     showLoginDialog();
                 }
@@ -561,11 +565,10 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         if (checkSinglePermission(locationPerm, LOCATION_REQUEST_CODE)) {
             if (!mRequestingLocationUpdates) {
                 mRequestingLocationUpdates = true;
-                startLocationUpdates();
                 changeMenuIcon(item);
+                startLocationUpdates();
             } else {
                 stopLocationUpdates();
-                changeMenuIcon(item);
             }
         }
     }
@@ -625,8 +628,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.frame_container, mFragment).commit();
 
-                removeAppBarShadow();
-
             }, 700);
 
             return true;
@@ -634,20 +635,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
         }
         return false;
-    }
-
-    private void removeAppBarShadow() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (mFragment instanceof ProfileFragment) {
-                StateListAnimator stateListAnimator = new StateListAnimator();
-                stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(homeBinding.appBar, "elevation", 0f));
-                homeBinding.appBar.setStateListAnimator(stateListAnimator);
-            } else {
-                StateListAnimator stateListAnimator = new StateListAnimator();
-                stateListAnimator.addState(new int[0], ObjectAnimator.ofFloat(homeBinding.appBar, "elevation", 3f));
-                homeBinding.appBar.setStateListAnimator(stateListAnimator);
-            }
-        }
     }
 
     @Override

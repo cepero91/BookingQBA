@@ -122,6 +122,8 @@ public class InfoFragment extends BaseNavigationFragment implements View.OnClick
                 TimeAgoMessages messages = new TimeAgoMessages.Builder().withLocale(new Locale("es", "ES")).build();
                 String dateRelative = TimeAgo.using(resource.data.getLastDateUpdateEntity().getTime(), messages);
                 dateString.add(dateRelative);
+            }else{
+                dateString.add("No disponible");
             }
         }
         return dateString;

@@ -31,11 +31,6 @@
             android:layout_height="wrap_content"
             tools:context=".view.profile.ProfileFragment">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@color/colorPrimary" />
-
             <com.mikhaellopez.circularimageview.CircularImageView
                 android:id="@+id/user_avatar"
                 android:layout_width="80dp"
@@ -55,7 +50,7 @@
                 android:layout_centerHorizontal="true"
                 android:fontFamily="@font/poppinsbold"
                 android:text="@string/empty_text"
-                android:textColor="@color/White_100"
+                android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="16sp" />
 
             <LinearLayout

@@ -89,4 +89,8 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="sugerencias_de_mejoras">Sugerencias de mejoras</string>
     <string name="descripcion">Descripcion</string>
     <string name="comentario">Comentario</string>
+    <string name="facilidades">Facilidades</string>
+    <string name="lugares_cercanos">Lugares Cercanos</string>
+    <string name="imagenes">Imagenes</string>
+    <string name="reglas">Reglas</string>
 </resources>

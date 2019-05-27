@@ -343,7 +343,7 @@ public class RentDetailActivity extends AppCompatActivity implements
         String rentId = rentUuid;
         disposable = viewModel.addRating(rating, comment, rentId).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> AlertUtils.showSuccessToast(this, "RatingEmbeded guardado"), Timber::e);
+                .subscribe(() -> AlertUtils.showSuccessToast(this, "Votacion exitosa"), Timber::e);
         compositeDisposable.add(disposable);
     }
 

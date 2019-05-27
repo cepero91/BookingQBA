@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -66,6 +67,10 @@ public class ProfileFragment extends Fragment {
     private Disposable disposable;
     private CompositeDisposable compositeDisposable;
 
+    private CommonSpinnerList commonSpinnerList;
+    private String[] rentSelect;
+    private int lastPosSelected;
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -95,6 +100,8 @@ public class ProfileFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         profileBinding.setShowSelect(false);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentAnaliticsViewModel.class);
@@ -120,14 +127,18 @@ public class ProfileFragment extends Fragment {
 
     private void loadRentAnalitics() {
         Set<String> stringSet = sharedPreferences.getStringSet(USER_RENTS, null);
-        String[] rentSelect = stringSet.toArray(new String[stringSet.size()]);
-        if (rentSelect != null && rentSelect.length > 1) {
+        rentSelect = stringSet.toArray(new String[stringSet.size()]);
+        if (rentSelect.length > 0) {
             profileBinding.tvRentName.setVisibility(View.GONE);
             disposable = viewModel.getRentSpinnerList(Arrays.asList(rentSelect))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(commonSpinnerList -> {
-                        updateSpinnerView(commonSpinnerList);
+                        if(commonSpinnerList.getArrayNames().length > 1) {
+                            updateSpinnerView(commonSpinnerList);
+                        }else if(commonSpinnerList.getArrayNames().length==1){
+                            updateSingleView(commonSpinnerList);
+                        }
                     }, Timber::e);
             compositeDisposable.add(disposable);
         }
@@ -143,7 +154,17 @@ public class ProfileFragment extends Fragment {
         profileBinding.tvUsername.setText(sharedPreferences.getString(USER_NAME, getString(R.string.empty_text)));
     }
 
+    private void updateSingleView(CommonSpinnerList commonSpinnerList) {
+        this.commonSpinnerList = commonSpinnerList;
+        profileBinding.setShowSelect(false);
+        profileBinding.tvRentName.setVisibility(View.VISIBLE);
+        profileBinding.tvRentName.setText(commonSpinnerList.getArrayNames()[0]);
+        profileBinding.tvMsg.setText("");
+        fetchRentAnalitic(commonSpinnerList.getUuidOnPos(0));
+    }
+
     private void updateSpinnerView(CommonSpinnerList commonSpinnerList) {
+        this.commonSpinnerList = commonSpinnerList;
         String[] arrNames = commonSpinnerList.getArrayNames();
         profileBinding.setItems(arrNames);
         profileBinding.setShowSelect(true);
@@ -156,6 +177,7 @@ public class ProfileFragment extends Fragment {
         profileBinding.spinnerRents.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                lastPosSelected = position;
                 String uuid = commonSpinnerList.getUuidOnPos(position);
                 profileBinding.setIsLoading(true);
                 profileBinding.tvMsg.setText("");
@@ -216,16 +238,22 @@ public class ProfileFragment extends Fragment {
                         profileBinding.pb2Star.startProgressAnimation();
                         profileBinding.pb1Star.startProgressAnimation();
 
-                        StringBuilder commaSeparate = new StringBuilder();
+
                         List<String> missing = analiticsGroup.getProfilePercentAnalitics().getMissingList();
-                        for (int i = 0; i < missing.size(); i++) {
-                            if (i < missing.size()-1) {
-                                commaSeparate.append(missing.get(i)).append(" \n");
-                            }else{
-                                commaSeparate.append(missing.get(i));
+                        if(missing.size()>0) {
+                            profileBinding.llContentProfile.setVisibility(View.VISIBLE);
+                            StringBuilder commaSeparate = new StringBuilder();
+                            for (int i = 0; i < missing.size(); i++) {
+                                if (i < missing.size() - 1) {
+                                    commaSeparate.append(missing.get(i)).append(" \n");
+                                } else {
+                                    commaSeparate.append(missing.get(i));
+                                }
                             }
+                            profileBinding.tvMissingList.setText(commaSeparate.toString());
+                        }else{
+                            profileBinding.llContentProfile.setVisibility(View.GONE);
                         }
-                        profileBinding.tvMissingList.setText(commaSeparate.toString());
 
                         profileBinding.tvPlaceRating.setText(String.valueOf(analiticsGroup.getRentPositionAnalitics().getPlaceRating()));
                         profileBinding.tvPlaceViews.setText(String.valueOf(analiticsGroup.getRentPositionAnalitics().getPlaceViews()));
@@ -275,7 +303,6 @@ public class ProfileFragment extends Fragment {
         animatorSet.start();
     }
 
-
     @NonNull
     private ValueAnimator getAnimatorTextNumber(TextView textView, int number) {
         ValueAnimator valueAnimator = ValueAnimator.ofInt(0, number);
@@ -285,5 +312,20 @@ public class ProfileFragment extends Fragment {
         return valueAnimator;
     }
 
+    //------------------------------- MENU --------------------------
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_refresh:
+                if(rentSelect.length > 1){
+                    fetchRentAnalitic(commonSpinnerList.getUuidOnPos(lastPosSelected));
+                }else if (rentSelect.length == 0){
+                    fetchRentAnalitic(commonSpinnerList.getUuidOnPos(0));
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

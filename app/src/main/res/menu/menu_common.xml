@@ -4,15 +4,15 @@
 
     <item
         android:id="@+id/action_login"
-        android:icon="@drawable/ic_sign_in"
+        android:icon="@drawable/ic_user_alt"
         android:title="Login"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_logout"
-        android:icon="@drawable/ic_sign_out"
-        android:visible="false"
+        android:icon="@drawable/ic_user_alt_accent"
         android:title="Logout"
+        android:visible="false"
         app:showAsAction="always" />
 
     <item
@@ -24,7 +24,13 @@
     <item
         android:id="@+id/action_gps"
         android:icon="@drawable/ic_crosshairs"
-        android:title="Filter"
+        android:title="Gps"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_sync_alt"
+        android:title="Gps"
         app:showAsAction="always" />
 
 </menu>

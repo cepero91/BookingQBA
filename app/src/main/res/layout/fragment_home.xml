@@ -39,7 +39,7 @@
                     android:layout_marginEnd="20dp"
                     android:layout_marginStart="20dp">
 
-                    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                    <com.infinitum.bookingqba.view.widgets.SearchableSpinner
                         android:id="@+id/spinner_provinces"
                         android:layout_width="match_parent"
                         android:layout_height="42dp"

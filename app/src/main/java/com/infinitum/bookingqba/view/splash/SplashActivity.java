@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.view.splash;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Bundle;
 
@@ -43,12 +44,11 @@ public class SplashActivity extends DaggerAppCompatActivity {
                 Intent intent = new Intent(SplashActivity.this, TutorialActivity.class);
                 startActivity(intent);
                 SplashActivity.this.finish();
-            }else if(!firstOpen && !downloadDateExist) {
+            } else if (!firstOpen && !downloadDateExist) {
                 Intent intent = new Intent(SplashActivity.this, SyncActivity.class);
                 startActivity(intent);
                 SplashActivity.this.finish();
-            }
-            else {
+            } else {
                 Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
                 startActivity(intent);
                 SplashActivity.this.finish();

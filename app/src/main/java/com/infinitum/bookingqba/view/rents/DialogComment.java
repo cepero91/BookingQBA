@@ -19,6 +19,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.hsalf.smilerating.BaseRating;
 import com.infinitum.bookingqba.R;
@@ -130,16 +132,21 @@ public class DialogComment extends DialogFragment implements View.OnClickListene
         switch (v.getId()) {
             case R.id.login:
                 addComment();
-                dismiss();
+                break;
         }
     }
 
     private void addComment() {
         if (validateInputs()) {
+            commentBinding.tvError.setVisibility(View.INVISIBLE);
             int emotionLevel = commentBinding.ratingView.getRating();
             String decription = commentBinding.etComment.getText().toString();
             Comment comment = createComment(emotionLevel, decription);
             commentInteraction.sendComment(comment);
+            dismiss();
+        }else{
+            commentBinding.tvError.setVisibility(View.VISIBLE);
+            commentBinding.tvError.setText("Llene los campos requeridos");
         }
     }
 
@@ -157,7 +164,18 @@ public class DialogComment extends DialogFragment implements View.OnClickListene
     }
 
     private boolean validateInputs() {
-        return true;
+        boolean isValid = true;
+        if(commentBinding.ratingView.getRating() == 0){
+            isValid = false;
+            Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.shake_animation);
+            commentBinding.ratingView.startAnimation(animation);
+        }
+        if(commentBinding.etComment.getText().toString().length()==0){
+            isValid = false;
+            Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.shake_animation);
+            commentBinding.etComment.startAnimation(animation);
+        }
+        return isValid;
     }
 
     public interface CommentInteraction{

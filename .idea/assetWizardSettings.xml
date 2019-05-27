@@ -31,10 +31,10 @@
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
                             <entry key="height" value="512" />
-                            <entry key="outputName" value="ic_lightbulb" />
+                            <entry key="outputName" value="ic_user_slash" />
                             <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/fontawesome-free-5.7.2-desktop/svgs/regular/lightbulb.svg" />
-                            <entry key="width" value="352" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/fontawesome-free-5.7.2-desktop/svgs/solid/user-slash.svg" />
+                            <entry key="width" value="640" />
                           </map>
                         </option>
                       </PersistentState>

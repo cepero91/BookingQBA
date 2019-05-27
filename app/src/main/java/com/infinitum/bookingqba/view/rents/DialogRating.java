@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.hsalf.smilerating.BaseRating;
 import com.infinitum.bookingqba.R;
@@ -105,10 +107,31 @@ public class DialogRating extends DialogFragment implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.fb_vote:
-                performRating();
-                dismiss();
+                if(validateInputs()) {
+                    ratingBinding.tvError.setVisibility(View.INVISIBLE);
+                    performRating();
+                    dismiss();
+                }else{
+                    ratingBinding.tvError.setVisibility(View.VISIBLE);
+                    ratingBinding.tvError.setText("Llene los campos requeridos");
+                }
                 break;
         }
+    }
+
+    private boolean validateInputs() {
+        boolean isValid = true;
+        if(ratingBinding.srScaleRating.getRating() == 0){
+            isValid = false;
+            Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.shake_animation);
+            ratingBinding.srScaleRating.startAnimation(animation);
+        }
+        if(ratingBinding.etComment.getText().toString().length()==0){
+            isValid = false;
+            Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.shake_animation);
+            ratingBinding.etComment.startAnimation(animation);
+        }
+        return isValid;
     }
 
     private void performRating() {
