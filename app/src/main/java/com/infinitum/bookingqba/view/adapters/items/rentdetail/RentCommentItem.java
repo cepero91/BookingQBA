@@ -14,14 +14,16 @@ public class RentCommentItem implements ViewModel, Parcelable {
     private String description;
     private byte[] avatar;
     private boolean owner;
+    private int emotion;
     private Date created;
 
-    public RentCommentItem(String id, String username, String description, byte[] avatar, boolean owner, Date created) {
+    public RentCommentItem(String id, String username, String description, byte[] avatar, boolean owner, int emotion, Date created) {
         this.id = id;
         this.username = username;
         this.description = description;
         this.avatar = avatar;
         this.owner = owner;
+        this.emotion = emotion;
         this.created = created;
     }
 
@@ -65,6 +67,14 @@ public class RentCommentItem implements ViewModel, Parcelable {
         this.owner = owner;
     }
 
+    public int getEmotion() {
+        return emotion;
+    }
+
+    public void setEmotion(int emotion) {
+        this.emotion = emotion;
+    }
+
     public Date getCreated() {
         return created;
     }
@@ -72,7 +82,6 @@ public class RentCommentItem implements ViewModel, Parcelable {
     public void setCreated(Date created) {
         this.created = created;
     }
-
 
     @Override
     public int describeContents() {
@@ -86,6 +95,7 @@ public class RentCommentItem implements ViewModel, Parcelable {
         dest.writeString(this.description);
         dest.writeByteArray(this.avatar);
         dest.writeByte(this.owner ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.emotion);
         dest.writeLong(this.created != null ? this.created.getTime() : -1);
     }
 
@@ -95,11 +105,12 @@ public class RentCommentItem implements ViewModel, Parcelable {
         this.description = in.readString();
         this.avatar = in.createByteArray();
         this.owner = in.readByte() != 0;
+        this.emotion = in.readInt();
         long tmpCreated = in.readLong();
         this.created = tmpCreated == -1 ? null : new Date(tmpCreated);
     }
 
-    public static final Parcelable.Creator<RentCommentItem> CREATOR = new Parcelable.Creator<RentCommentItem>() {
+    public static final Creator<RentCommentItem> CREATOR = new Creator<RentCommentItem>() {
         @Override
         public RentCommentItem createFromParcel(Parcel source) {
             return new RentCommentItem(source);

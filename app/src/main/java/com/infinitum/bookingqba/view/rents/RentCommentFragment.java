@@ -2,10 +2,12 @@ package com.infinitum.bookingqba.view.rents;
 
 
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentInnerCommentBinding;
+import com.infinitum.bookingqba.util.ColorUtil;
 import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentCommentItem;
 
@@ -62,7 +65,7 @@ RentCommentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        innerCommentBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_inner_comment, container, false);
+        innerCommentBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_inner_comment, container, false);
         return innerCommentBinding.getRoot();
     }
 
@@ -81,11 +84,11 @@ RentCommentFragment extends Fragment {
     }
 
     private void setupCommentAdapter(ArrayList<RentCommentItem> argComment) {
-        if(argComment!=null && argComment.size()>0) {
+        if (argComment != null && argComment.size() > 0) {
             RendererRecyclerViewAdapter adapter = new RendererRecyclerViewAdapter();
             adapter.registerRenderer(getCommentBinder());
             adapter.setItems(argComment);
-            innerCommentBinding.rvComment.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
+            innerCommentBinding.rvComment.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
             innerCommentBinding.rvComment.setAdapter(adapter);
             innerCommentBinding.rvComment.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         }
@@ -96,7 +99,17 @@ RentCommentFragment extends Fragment {
                 R.layout.recycler_comment_item,
                 RentCommentItem.class,
                 (model, finder, payloads) -> finder
-                        .find(R.id.tv_username, (ViewProvider<TextView>) view -> view.setText(model.getUsername()))
+                        .find(R.id.tv_username, (ViewProvider<TextView>) view -> {
+                            if (model.isOwner()) {
+                                view.setTextColor(Color.parseColor("#FFC400"));
+                                view.setText("El Anfitrion");
+                            } else {
+                                view.setText(model.getUsername());
+                            }
+                        })
+                        .find(R.id.iv_emotion,(ViewProvider<AppCompatImageView>) view -> {
+                            view.setImageResource(getEmotionDrawableId(model.getEmotion()));
+                        })
                         .find(R.id.tv_description, (ViewProvider<TextView>) view -> view.setText(model.getDescription()))
                         .find(R.id.tv_relative_date, (ViewProvider<TextView>) view -> {
                             TimeAgoMessages messages = new TimeAgoMessages.Builder().withLocale(locale).build();
@@ -105,5 +118,27 @@ RentCommentFragment extends Fragment {
                         })
                         .find(R.id.siv_avatar, (ViewProvider<CircularImageView>) view -> GlideApp.with(getView()).load(model.getAvatar()).into(view))
         );
+    }
+
+    public int getEmotionDrawableId(int emotionLevel){
+        int id = -1;
+        switch (emotionLevel){
+            case 1:
+                id = R.drawable.ic_angry_emotion;
+                break;
+            case 2:
+                id = R.drawable.ic_frown_emotion;
+                break;
+            case 3:
+                id = R.drawable.ic_meh_emotion;
+                break;
+            case 4:
+                id = R.drawable.ic_grin_emotion;
+                break;
+            case 5:
+                id = R.drawable.ic_laugh_emotion;
+                break;
+        }
+        return id;
     }
 }

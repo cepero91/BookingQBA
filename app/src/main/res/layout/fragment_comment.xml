@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="5dp"
             android:fontFamily="@font/poppinsbold"
             android:text="@string/comentario"
             android:textSize="18sp" />
@@ -36,13 +36,16 @@
         <EditText
             android:id="@+id/et_comment"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="120dp"
             android:layout_marginTop="5dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:background="@drawable/shape_comment_dialog"
             android:fontFamily="@font/poppinsregular"
             android:gravity="top"
             android:inputType="text|textMultiLine"
-            android:padding="15dp"
+            android:padding="10dp"
+            android:textSize="12sp"
             android:textColor="@color/material_color_blue_grey_500" />
 
         <TextView

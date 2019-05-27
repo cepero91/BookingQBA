@@ -313,7 +313,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private ArrayList<RentCommentItem> convertCommentPojoToParcel(List<CommentEntity> commentEntities) {
         ArrayList<RentCommentItem> detailCommentItems = new ArrayList<>();
         for (CommentEntity item : commentEntities) {
-            detailCommentItems.add(new RentCommentItem(item.getId(), item.getUsername(), item.getDescription(), item.getAvatar(), item.isOwner(), item.getCreated()));
+            detailCommentItems.add(new RentCommentItem(item.getId(), item.getUsername(), item.getDescription(), item.getAvatar(), item.isOwner(), CommentEmotion.fromEmotion(item.getEmotion()),item.getCreated()));
         }
         return detailCommentItems;
     }

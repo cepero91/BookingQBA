@@ -57,6 +57,7 @@ import timber.log.Timber;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
+import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 
 //NestedScrollView.OnScrollChangeListener,
@@ -86,8 +87,6 @@ public class RentDetailActivity extends AppCompatActivity implements
 
     private Disposable disposable;
     private CompositeDisposable compositeDisposable;
-    private FragmentManager fragmentManager;
-    private List<WeakReference<Fragment>> weakReferenceList;
     Fragment innerDetail;
     Fragment commentDetail;
     Fragment offerDetail;
@@ -98,9 +97,11 @@ public class RentDetailActivity extends AppCompatActivity implements
         AndroidInjection.inject(this);
 
         rentDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_rent_detail);
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
 
         rentDetailBinding.setIsLoading(true);
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
+
         rentDetailBinding.fabComment.setOnClickListener(this);
         compositeDisposable = new CompositeDisposable();
 
@@ -234,10 +235,11 @@ public class RentDetailActivity extends AppCompatActivity implements
     }
 
     private void showDialogComment() {
+        boolean isAuth = sharedPreferences.getBoolean(USER_IS_AUTH, false);
         String username = sharedPreferences.getString(USER_NAME, "");
         String userid = sharedPreferences.getString(USER_ID, "");
         String rentId = rentUuid;
-        if (username.equals("") && userid.equals("")) {
+        if (!isAuth) {
             AlertUtils.showErrorAlert(this, "Debe estar autenticado para comentar");
         } else {
             DialogComment lf = DialogComment.newInstance(username, userid, rentId);

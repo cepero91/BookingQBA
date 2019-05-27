@@ -71,7 +71,8 @@
                 app:stl_indicatorCornerRadius="1.5dp"
                 app:stl_indicatorInterpolation="smart"
                 app:stl_indicatorThickness="3dp"
-                app:stl_underlineColor="@android:color/transparent" />
+                app:stl_underlineColor="@android:color/transparent"
+                app:visibleGone="@{!safeUnbox(isLoading)}"/>
 
         </android.support.design.widget.AppBarLayout>
 
