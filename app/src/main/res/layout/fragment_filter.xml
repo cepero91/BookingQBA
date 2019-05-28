@@ -19,41 +19,41 @@
         android:background="@color/White_100"
         tools:context=".view.filter.FilterFragment">
 
-        <FrameLayout
-            android:id="@+id/ll_bar"
-            android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="@color/material_color_grey_200"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/poppinsregular"
-                android:includeFontPadding="false"
-                android:text="Busqueda avanzada"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="18sp" />
-
-        </FrameLayout>
-
         <com.xw.repo.widget.BounceScrollView
+            android:id="@+id/bv_filter_params"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="60dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toTopOf="@+id/ll_btn_content"
-            app:layout_constraintTop_toBottomOf="@+id/ll_bar">
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/ll_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?actionBarSize"
+                    android:background="@color/material_color_grey_200"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/poppinsregular"
+                        android:includeFontPadding="false"
+                        android:text="Busqueda avanzada"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="18sp" />
+
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -83,8 +83,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:nestedScrollingEnabled="false"
-                            android:paddingStart="10dp"
                             android:paddingEnd="10dp"
+                            android:paddingStart="10dp"
                             app:visibleGone="@{!safeUnbox(isLoading)}" />
 
                     </FrameLayout>
@@ -118,8 +118,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:nestedScrollingEnabled="false"
-                            android:paddingStart="10dp"
                             android:paddingEnd="10dp"
+                            android:paddingStart="10dp"
                             app:visibleGone="@{!safeUnbox(isLoading)}" />
 
                     </FrameLayout>
@@ -152,8 +152,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:nestedScrollingEnabled="false"
-                            android:paddingStart="10dp"
                             android:paddingEnd="10dp"
+                            android:paddingStart="10dp"
                             app:visibleGone="@{!safeUnbox(isLoading)}" />
 
                     </FrameLayout>
@@ -185,8 +185,8 @@
                             android:id="@+id/price_seek"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="15dp"
                             android:layout_marginEnd="15dp"
+                            android:layout_marginStart="15dp"
                             custom:backgroundColor="@color/material_color_grey_300"
                             custom:backgroundHeight="10dp"
                             custom:currentMax="0"
@@ -221,40 +221,41 @@
         <LinearLayout
             android:id="@+id/ll_btn_content"
             android:layout_width="match_parent"
-            android:background="@color/material_color_grey_200"
             android:layout_height="?actionBarSize"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/bv_filter_params"
+            android:background="@color/material_color_grey_200"
             android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="2"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/btn_filter"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:scaleType="center"
-                app:srcCompat="@drawable/ic_filter"
                 android:tint="@color/colorPrimary"
-                android:layout_weight="1"/>
+                app:srcCompat="@drawable/ic_filter" />
 
             <View
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
                 android:background="@color/material_color_blue_grey_100" />
 
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/btn_clean"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:scaleType="center"
                 android:tint="@color/material_color_red_500"
-                app:srcCompat="@drawable/ic_eraser"
-                android:layout_weight="1"
-                />
+                app:srcCompat="@drawable/ic_eraser" />
 
 
         </LinearLayout>

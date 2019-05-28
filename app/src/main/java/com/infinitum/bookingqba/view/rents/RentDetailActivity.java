@@ -16,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.gauravk.bubblenavigation.listener.BubbleNavigationChangeListener;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityRentDetailBinding;
 import com.infinitum.bookingqba.model.Resource;

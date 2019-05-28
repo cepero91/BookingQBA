@@ -29,6 +29,7 @@ import com.infinitum.bookingqba.model.remote.pojo.User;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -89,6 +90,9 @@ public interface ApiInterface {
 
     @GET("/api/statistic/")
     Single<AnaliticsGroup> rentAnalitics(@Query("value") String uuid);
+
+    @GET("/api/statistic/")
+    Observable<AnaliticsGroup> rentAnaliticsObservable(@Query("value") String uuid);
 
     //------------------- PROVINCIAS ---------------------//
     /**

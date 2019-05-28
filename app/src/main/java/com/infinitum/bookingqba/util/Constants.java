@@ -4,6 +4,10 @@ public final class Constants {
 
     //API
     public static final String BASE_URL_API = "http://192.168.137.1:8000";
+    public static final int API_CACHE_SIZE = 10 * 1024 * 1024;
+    public static final long CONNECT_TIMEOUT = 30000;
+    public static final long READ_TIMEOUT = 30000;
+    public static final long WRITE_TIMEOUT = 30000;
 
     public static final String PERIODICAL_WORK_NAME = "MyPeriodicalWork";
 
