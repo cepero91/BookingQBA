@@ -221,6 +221,17 @@ public abstract class BookingQBADao {
     @Query("SELECT * FROM Amenities")
     public abstract Flowable<List<AmenitiesEntity>> getAllAmenities();
 
+    //Using in AndroidTest
+    @Query("SELECT * FROM Amenities")
+    public abstract Single<List<AmenitiesEntity>> getAllAmenitiesSingle();
+
+    @Query("SELECT * FROM Amenities WHERE id=:uuid")
+    public abstract Single<AmenitiesEntity> getAmenityByIdSingle(String uuid);
+
+    @Delete
+    public abstract void deleteAmenity(AmenitiesEntity... amenitiesEntities);
+
+
 
     //------------------------- TIPO DE LUGAR DE INTERES ---------------------------//
 
@@ -492,6 +503,10 @@ public abstract class BookingQBADao {
     public abstract Single<List<RentEntity>> getRentByStringUuidCommaSeparate(SupportSQLiteQuery query);
 
     //------------------------- RATING ---------------------------//
+
+    //Use in AndroidTest
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public abstract void addRating(RatingEntity ratingEntity);
 
     @Transaction
     @RawQuery(observedEntities = RatingEntity.class)

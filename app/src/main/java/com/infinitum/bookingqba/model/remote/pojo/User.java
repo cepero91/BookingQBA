@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class User {
 
@@ -26,19 +25,19 @@ public class User {
 
     @SerializedName("rents")
     @Expose
-    private ArrayList<String> rentsId;
+    private ArrayList<String> rents;
 
     public User(String token, String username) {
         this.token = token;
         this.username = username;
     }
 
-    public User(String token, String username, String userid, String avatar, ArrayList<String> rentsId) {
+    public User(String token, String username, String userid, String avatar, ArrayList<String> rents) {
         this.token = token;
         this.username = username;
         this.userid = userid;
         this.avatar = avatar;
-        this.rentsId = rentsId;
+        this.rents = rents;
     }
 
     public String getToken() {
@@ -65,12 +64,12 @@ public class User {
         this.avatar = avatar;
     }
 
-    public ArrayList<String> getRentsId() {
-        return rentsId;
+    public ArrayList<String> getRents() {
+        return rents;
     }
 
-    public void setRentsId(ArrayList<String> rentsId) {
-        this.rentsId = rentsId;
+    public void setRents(ArrayList<String> rents) {
+        this.rents = rents;
     }
 
     public String getUserid() {
@@ -79,5 +78,12 @@ public class User {
 
     public void setUserid(String userid) {
         this.userid = userid;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        User otherUser = (User) obj;
+        return this.token.equals(otherUser.getToken()) && this.username.equals(otherUser.getUsername())
+                && this.userid.equals(otherUser.getUserid());
     }
 }

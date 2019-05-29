@@ -92,7 +92,7 @@ public interface ApiInterface {
     Single<AnaliticsGroup> rentAnalitics(@Query("value") String uuid);
 
     @GET("/api/statistic/")
-    Observable<AnaliticsGroup> rentAnaliticsObservable(@Query("value") String uuid);
+    Observable<Response<AnaliticsGroup>> rentAnaliticsObservable(@Query("value") String uuid);
 
     //------------------- PROVINCIAS ---------------------//
     /**

@@ -157,7 +157,7 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
                         if (response.code() == 200 && response.body() != null) {
                             loginBinding.tvError.setText("");
                             interaction.onLogin(response.body());
-                            return new Pair<>(true, response.body().getRentsId());
+                            return new Pair<>(true, response.body().getRents());
                         } else {
                             String errorMsg = ErrorUtils.parseError(response).getMsg();
                             loginBinding.tvError.setText(errorMsg);

@@ -1,8 +1,6 @@
 package com.infinitum.bookingqba.view.home;
 
 import android.Manifest;
-import android.animation.ObjectAnimator;
-import android.animation.StateListAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,7 +19,6 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -664,7 +661,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         editor.putString(USER_NAME, user.getUsername());
         editor.putString(USER_ID, user.getUserid());
         editor.putString(USER_AVATAR, user.getAvatar());
-        editor.putStringSet(USER_RENTS, new HashSet<>(user.getRentsId()));
+        editor.putStringSet(USER_RENTS, new HashSet<>(user.getRents()));
         editor.apply();
         invalidateOptionsMenu();
     }
