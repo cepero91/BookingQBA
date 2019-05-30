@@ -20,12 +20,10 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.bumptech.glide.Glide;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentProfileBinding;
 import com.infinitum.bookingqba.model.remote.pojo.RentAnalitics;
-import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.SpinnerAdapter;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
 import com.infinitum.bookingqba.viewmodel.RentAnaliticsViewModel;
@@ -134,9 +132,9 @@ public class ProfileFragment extends Fragment {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(commonSpinnerList -> {
-                        if(commonSpinnerList.getArrayNames().length > 1) {
+                        if (commonSpinnerList.getArrayNames().length > 1) {
                             updateSpinnerView(commonSpinnerList);
-                        }else if(commonSpinnerList.getArrayNames().length==1){
+                        } else if (commonSpinnerList.getArrayNames().length == 1) {
                             updateSingleView(commonSpinnerList);
                         }
                     }, Timber::e);
@@ -147,8 +145,9 @@ public class ProfileFragment extends Fragment {
     private void loadUserData() {
         String avatar = sharedPreferences.getString(USER_AVATAR, "");
         String url = BASE_URL_API + "/" + avatar;
-        GlideApp.with(getView())
+        Glide.with(getView().getContext())
                 .load(url)
+                .crossFade()
                 .placeholder(R.drawable.user_placeholder)
                 .into(profileBinding.userAvatar);
         profileBinding.tvUsername.setText(sharedPreferences.getString(USER_NAME, getString(R.string.empty_text)));
@@ -240,7 +239,7 @@ public class ProfileFragment extends Fragment {
 
 
                         List<String> missing = analiticsGroup.getProfilePercentAnalitics().getMissingList();
-                        if(missing.size()>0) {
+                        if (missing.size() > 0) {
                             profileBinding.llContentProfile.setVisibility(View.VISIBLE);
                             StringBuilder commaSeparate = new StringBuilder();
                             for (int i = 0; i < missing.size(); i++) {
@@ -251,7 +250,7 @@ public class ProfileFragment extends Fragment {
                                 }
                             }
                             profileBinding.tvMissingList.setText(commaSeparate.toString());
-                        }else{
+                        } else {
                             profileBinding.llContentProfile.setVisibility(View.GONE);
                         }
 
@@ -316,11 +315,11 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_refresh:
-                if(rentSelect.length > 1){
+                if (rentSelect.length > 1) {
                     fetchRentAnalitic(commonSpinnerList.getUuidOnPos(lastPosSelected));
-                }else if (rentSelect.length == 0){
+                } else if (rentSelect.length == 0) {
                     fetchRentAnalitic(commonSpinnerList.getUuidOnPos(0));
                 }
                 return true;

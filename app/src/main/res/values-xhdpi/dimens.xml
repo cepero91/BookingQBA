@@ -41,4 +41,7 @@
     <dimen name="province_bar_height">45dp</dimen>
     <dimen name="rent_new_iv_size">150dp</dimen>
     <dimen name="rent_new_star_size">16dp</dimen>
+    <dimen name="splash_gif_dimen">220dp</dimen>
+
+    <dimen name="overlap_top">40dp</dimen>
 </resources>

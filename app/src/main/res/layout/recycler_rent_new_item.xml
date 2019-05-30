@@ -36,6 +36,7 @@
                     android:id="@+id/iv_rent"
                     android:layout_width="@dimen/rent_new_iv_size"
                     android:layout_height="@dimen/rent_new_iv_size"
+                    android:scaleType="fitCenter"
                     app:siBorderAlpha="0"
                     app:siRadius="15dp" />
 

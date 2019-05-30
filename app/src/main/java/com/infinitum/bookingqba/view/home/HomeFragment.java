@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.view.home;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,8 +19,10 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.github.vivchar.rendererrecyclerviewadapter.CompositeViewHolder;
 import com.github.vivchar.rendererrecyclerviewadapter.CompositeViewState;
@@ -33,7 +36,6 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentHomeBinding;
 import com.infinitum.bookingqba.model.Resource;
-import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.SpinnerAdapter;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.RecyclerViewItem;
 import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
@@ -44,6 +46,7 @@ import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerLis
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.HomeViewModel;
+import com.squareup.picasso.Picasso;
 import com.willy.ratingbar.BaseRatingBar;
 
 import java.lang.reflect.Type;
@@ -60,6 +63,8 @@ import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_SPINNER_INDEX;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
+import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
+import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
 
 
 public class HomeFragment extends BaseNavigationFragment {
@@ -145,7 +150,7 @@ public class HomeFragment extends BaseNavigationFragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String uuid = spinnerList.getUuidOnPos(position);
                 loadData(uuid);
-                saveProvinceToPreference(position,uuid);
+                saveProvinceToPreference(position, uuid);
             }
 
             @Override
@@ -251,7 +256,9 @@ public class HomeFragment extends BaseNavigationFragment {
                 RZoneItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_ref_zone, (ViewProvider<TextView>) view -> view.setText(model.getName()))
-                        .find(R.id.iv_ref_zone, (ViewProvider<AppCompatImageView>) view -> GlideApp.with(getView()).load(model.getImageByte()).into(view))
+                        .find(R.id.iv_ref_zone, (ViewProvider<AppCompatImageView>) view -> {
+                            view.setImageBitmap(BitmapFactory.decodeByteArray(model.getImageByte(), 0, model.getImageByte().length));
+                        })
                         .setOnClickListener(R.id.ll_ref_zone_content, (v -> mListener.onItemClick(v, model)))
         );
     }
@@ -263,12 +270,20 @@ public class HomeFragment extends BaseNavigationFragment {
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getName()))
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
-                        .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %s", String.valueOf(model.getPrice()))))
-                        .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
-                                GlideApp.with(getView()).load(model.getImagePath())
-                                        .placeholder(R.drawable.placeholder)
-                                        .into(view))
-                        .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
+                        .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %.2f", model.getPrice())))
+                        .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view -> {
+                                    String path;
+                                    if (!model.getImagePath().contains("http")) {
+                                        path = "file:" + model.getImagePath();
+                                    } else {
+                                        path = model.getImagePath();
+                                    }
+                                    Picasso.get().load(path)
+                                            .fit()
+                                            .placeholder(R.drawable.placeholder)
+                                            .into(view);
+                                }
+                        ).setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
         );
     }
 
@@ -280,7 +295,19 @@ public class HomeFragment extends BaseNavigationFragment {
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getName()))
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
-                                GlideApp.with(getView()).load(model.getImagePath()).placeholder(R.drawable.placeholder).into(view))
+                        {
+                            String path;
+                            if (!model.getImagePath().contains("http")) {
+                                path = "file:" + model.getImagePath();
+                            } else {
+                                path = model.getImagePath();
+                            }
+                            Picasso.get()
+                                    .load(path)
+                                    .resize(THUMB_WIDTH,THUMB_HEIGHT)
+                                    .placeholder(R.drawable.placeholder)
+                                    .into(view);
+                        })
                         .setOnClickListener(R.id.cl_rent_home_content, (v -> mListener.onItemClick(v, model)))
         );
     }

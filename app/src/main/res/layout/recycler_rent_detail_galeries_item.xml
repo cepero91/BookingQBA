@@ -12,7 +12,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
         android:src="@drawable/bedroom"
         app:siBorderColor="@android:color/transparent"
         app:siBorderAlpha="0"

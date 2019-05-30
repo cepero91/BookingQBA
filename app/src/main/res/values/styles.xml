@@ -12,17 +12,17 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowBackground">@color/White_100</item>
+        <item name="android:windowBackground">@color/material_color_grey_50</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:popupBackground">@color/colorPrimary</item>
-        <item name="android:colorBackground">@color/colorPrimary</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:animateFirstView">true</item>
-        <item name="android:animateLayoutChanges">true</item>
+        <item name="android:popupBackground">@color/White_100</item>
+        <item name="android:colorBackground">@color/White_100</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/poppinsbold</item>
+        <item name="android:textColor">@color/material_color_blue_grey_500</item>
     </style>
 
 

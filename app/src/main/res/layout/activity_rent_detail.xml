@@ -8,6 +8,10 @@
         <variable
             name="isLoading"
             type="Boolean" />
+
+        <variable
+            name="hasTab"
+            type="Boolean" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -19,7 +23,7 @@
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            app:theme="@style/AppTheme.AppBarOverlay">
 
             <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/toolbarCollapse"
@@ -28,7 +32,7 @@
                 android:fitsSystemWindows="true"
                 app:contentScrim="@color/colorPrimary"
                 app:titleEnabled="false"
-                app:layout_scrollFlags="scroll|enterAlways|snap">
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap">
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/iv_rent"
@@ -37,8 +41,7 @@
                     android:layout_gravity="center"
                     android:fitsSystemWindows="true"
                     android:focusableInTouchMode="true"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/bedroom" />
+                    android:scaleType="centerCrop" />
 
                 <ProgressBar
                     android:layout_width="28dp"
@@ -55,6 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
                     app:layout_collapseMode="pin"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"
                     />
 
             </android.support.design.widget.CollapsingToolbarLayout>
@@ -72,7 +76,7 @@
                 app:stl_indicatorInterpolation="smart"
                 app:stl_indicatorThickness="3dp"
                 app:stl_underlineColor="@android:color/transparent"
-                app:visibleGone="@{!safeUnbox(isLoading)}"/>
+                app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; safeUnbox(hasTab)}"/>
 
         </android.support.design.widget.AppBarLayout>
 
@@ -81,18 +85,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:visibleGone="@{!safeUnbox(isLoading)}"/>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_comment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="15dp"
-            app:fabSize="normal"
-            app:layout_anchorGravity="bottom|end"
-            app:layout_behavior="com.infinitum.bookingqba.view.widgets.FabBehavior"
-            app:srcCompat="@drawable/ic_comment" />
+            app:discreteVisibility="@{!safeUnbox(isLoading)}"
+            app:negativeMargin="@{!safeUnbox(hasTab)}"/>
 
 
     </android.support.design.widget.CoordinatorLayout>

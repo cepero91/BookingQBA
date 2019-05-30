@@ -9,6 +9,9 @@ public final class Constants {
     public static final long READ_TIMEOUT = 30000;
     public static final long WRITE_TIMEOUT = 30000;
 
+    public static final int THUMB_WIDTH = 480;
+    public static final int THUMB_HEIGHT = 320;
+
     public static final String PERIODICAL_WORK_NAME = "MyPeriodicalWork";
 
     //SHARED PREFERENCES KEY

@@ -46,7 +46,8 @@
     <dimen name="rent_detail_rent_mode_size">12sp</dimen>
 
     <dimen name="province_bar_height">38dp</dimen>
+    <dimen name="splash_gif_dimen">220dp</dimen>
 
-
+    <dimen name="overlap_top">40dp</dimen>
 
 </resources>

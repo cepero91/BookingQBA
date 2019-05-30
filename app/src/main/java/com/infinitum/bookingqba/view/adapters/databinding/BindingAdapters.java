@@ -3,21 +3,23 @@ package com.infinitum.bookingqba.view.adapters.databinding;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.databinding.BindingAdapter;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.AppCompatImageView;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
-import com.bumptech.glide.request.transition.DrawableCrossFadeTransition;
+import com.bumptech.glide.Glide;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.google.android.flexbox.FlexboxLayout;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
-import com.infinitum.bookingqba.util.GlideApp;
 import com.moos.library.HorizontalProgressView;
+import com.squareup.picasso.Picasso;
 import com.willy.ratingbar.BaseRatingBar;
 
 import java.util.List;
@@ -83,7 +85,12 @@ public class BindingAdapters {
 
     @BindingAdapter("setRentDetailImage")
     public static void setRentDetailImage(AppCompatImageView view, String imagePath) {
-        GlideApp.with(view).load(imagePath).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(view);
+        Glide.with(view.getContext())
+                .load(imagePath)
+                .crossFade()
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
+                .into(view);
     }
 
     @BindingAdapter("setMaxRooms")
@@ -112,7 +119,17 @@ public class BindingAdapters {
 
     @BindingAdapter("setRentListImage")
     public static void setRentListImage(RoundedImageView view, String imagePath) {
-        GlideApp.with(view).load(imagePath).placeholder(R.drawable.placeholder).into(view);
+        String path;
+        if (!imagePath.contains("http")) {
+            path = "file:" + imagePath;
+        } else {
+            path = imagePath;
+        }
+        Picasso.get()
+                .load(path)
+                .resize(480,320)
+                .placeholder(R.drawable.placeholder)
+                .into(view);
     }
 
     @BindingAdapter("setFlexBoxItem")
@@ -153,7 +170,11 @@ public class BindingAdapters {
 
     @BindingAdapter("setRoundedImage")
     public static void setRoundedImage(RoundedImageView view, String imagePath) {
-        GlideApp.with(view).load(imagePath).placeholder(R.drawable.placeholder).into(view);
+        Glide.with(view.getContext())
+                .load(imagePath)
+                .crossFade()
+                .placeholder(R.drawable.placeholder)
+                .into(view);
     }
 
     @BindingAdapter("setWished")
@@ -169,6 +190,20 @@ public class BindingAdapters {
     @BindingAdapter("setVotes")
     public static void setVotes(TextView view, int votes) {
         view.setText(String.format("(%s voto%s)",votes,votes>1?"s":""));
+    }
+
+    @BindingAdapter("negativeMargin")
+    public static void negativeMargin(View view, boolean needNegativeMargin) {
+        int overlapTop = view.getResources().getDimensionPixelSize(R.dimen.overlap_top);
+        if(needNegativeMargin) {
+            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+            AppBarLayout.ScrollingViewBehavior behavior = (AppBarLayout.ScrollingViewBehavior) params.getBehavior();
+            behavior.setOverlayTop(overlapTop);
+        }else{
+            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+            AppBarLayout.ScrollingViewBehavior behavior = (AppBarLayout.ScrollingViewBehavior) params.getBehavior();
+            behavior.setOverlayTop(0);
+        }
     }
 
 

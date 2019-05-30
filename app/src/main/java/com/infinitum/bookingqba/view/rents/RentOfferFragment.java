@@ -21,7 +21,6 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentInnerOfferBinding;
-import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentCommentItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentOfferItem;
 

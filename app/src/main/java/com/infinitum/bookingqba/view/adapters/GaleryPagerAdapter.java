@@ -8,10 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.infinitum.bookingqba.R;
-import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentGalerieItem;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -53,8 +54,12 @@ public class GaleryPagerAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         View view = inflater.inflate(R.layout.viewpager_galery_item, container, false);
         RoundedImageView roundedImageView = view.findViewById(R.id.iv_rent);
-        GlideApp.with(context)
-                .load(imagePathList.get(position).getImage())
+        String path = imagePathList.get(position).getImage();
+        if(!path.contains("http")){
+            path = "file:"+path;
+        }
+        Picasso.get()
+                .load(path)
                 .placeholder(R.drawable.placeholder)
                 .into(roundedImageView);
         container.addView(view, 0);

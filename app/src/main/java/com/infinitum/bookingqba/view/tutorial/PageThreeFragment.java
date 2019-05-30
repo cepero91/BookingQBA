@@ -11,9 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentPageThreeBinding;
-import com.infinitum.bookingqba.util.GlideApp;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,13 +42,15 @@ public class PageThreeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        pageThreeBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_page_three, container, false);
+        pageThreeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_page_three, container, false);
         return pageThreeBinding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        GlideApp.with(this).load(R.drawable.destination_use_case).into(pageThreeBinding.ivUseCase);
+        Glide.with(this)
+                .load(R.drawable.destination_use_case)
+                .into(pageThreeBinding.ivUseCase);
     }
 }

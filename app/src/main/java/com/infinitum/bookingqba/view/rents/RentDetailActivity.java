@@ -16,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityRentDetailBinding;
 import com.infinitum.bookingqba.model.Resource;
@@ -23,7 +25,6 @@ import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.ColorUtil;
-import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem;
 import com.infinitum.bookingqba.view.adapters.InnerViewPagerAdapter;
@@ -32,6 +33,7 @@ import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.interaction.InnerDetailInteraction;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
+import com.squareup.picasso.Picasso;
 
 
 import org.oscim.core.GeoPoint;
@@ -62,14 +64,13 @@ import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 //NestedScrollView.OnScrollChangeListener,
 
 public class RentDetailActivity extends AppCompatActivity implements
-        View.OnClickListener, DialogComment.CommentInteraction, DialogRating.RatingInteraction, InnerDetailInteraction {
+        DialogComment.CommentInteraction, DialogRating.RatingInteraction, InnerDetailInteraction {
 
     public static final int HAS_COMMENT_ONLY = 0;
     public static final int HAS_OFFER_ONLY = 1;
     public static final int HAS_COMMENT_OFFER = 2;
     public static final int HAS_DETAIL_ONLY = 3;
     private ActivityRentDetailBinding rentDetailBinding;
-    private int imageViewHeight;
     private InnerViewPagerAdapter innerViewPagerAdapter;
 
     @Inject
@@ -98,18 +99,21 @@ public class RentDetailActivity extends AppCompatActivity implements
         rentDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_rent_detail);
 
         rentDetailBinding.setIsLoading(true);
+        rentDetailBinding.setHasTab(false);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
 
-        rentDetailBinding.fabComment.setOnClickListener(this);
         compositeDisposable = new CompositeDisposable();
 
         if (getIntent().getExtras() != null) {
             rentUuid = getIntent().getExtras().getString("uuid");
             String imageUrlPath = getIntent().getExtras().getString("url");
+            if(!imageUrlPath.contains("http")){
+                imageUrlPath = "file:"+imageUrlPath;
+            }
             isWished = getIntent().getExtras().getInt("wished");
             mirrorWished = isWished;
-            GlideApp.with(this).load(imageUrlPath).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(rentDetailBinding.ivRent);
+            Picasso.get().load(imageUrlPath).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(rentDetailBinding.ivRent);
         }
 
         if (rentUuid.length() > 1) {
@@ -178,26 +182,26 @@ public class RentDetailActivity extends AppCompatActivity implements
         offerDetail = RentOfferFragment.newInstance(rentItem.getOfferItems());
         switch (type) {
             case HAS_DETAIL_ONLY:
-                rentDetailBinding.tlTab.setVisibility(View.GONE);
+                rentDetailBinding.setHasTab(false);
                 fragments.add(innerDetail);
                 titles.add("Detalles");
                 break;
             case HAS_COMMENT_ONLY:
-                rentDetailBinding.tlTab.setVisibility(View.VISIBLE);
+                rentDetailBinding.setHasTab(true);
                 fragments.add(innerDetail);
                 fragments.add(commentDetail);
                 titles.add("Detalles");
                 titles.add("Comentarios");
                 break;
             case HAS_OFFER_ONLY:
-                rentDetailBinding.tlTab.setVisibility(View.VISIBLE);
+                rentDetailBinding.setHasTab(true);
                 fragments.add(innerDetail);
                 fragments.add(offerDetail);
                 titles.add("Detalles");
                 titles.add("Ofertas");
                 break;
             case HAS_COMMENT_OFFER:
-                rentDetailBinding.tlTab.setVisibility(View.VISIBLE);
+                rentDetailBinding.setHasTab(true);
                 fragments.add(innerDetail);
                 fragments.add(commentDetail);
                 fragments.add(offerDetail);
@@ -222,15 +226,6 @@ public class RentDetailActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         compositeDisposable.clear();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.fab_comment:
-                showDialogComment();
-                break;
-        }
     }
 
     private void showDialogComment() {
@@ -286,6 +281,9 @@ public class RentDetailActivity extends AppCompatActivity implements
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.action_comment:
+                showDialogComment();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -318,17 +316,6 @@ public class RentDetailActivity extends AppCompatActivity implements
             setResult(FROM_DETAIL_REFRESH, intent);
             this.finish();
         }
-    }
-
-//    @Override
-//    public void onScrollChange(NestedScrollView nestedScrollView, int i, int i1, int i2, int i3) {
-//        changeToolbarBackground(i1);
-//    }
-
-    private void changeToolbarBackground(float i1) {
-        int baseColor = getResources().getColor(R.color.colorPrimary);
-        float alpha = Math.min(1, i1 / imageViewHeight);
-        rentDetailBinding.toolbar.setBackgroundColor(ColorUtil.getColorWithAlpha(alpha, baseColor));
     }
 
     @Override

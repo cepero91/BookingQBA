@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.view.rents;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
@@ -21,25 +23,27 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentInnerDetailBinding;
-import com.infinitum.bookingqba.model.local.entity.RentEntity;
-import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentAmenitieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentGalerieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentInnerDetail;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
 import com.infinitum.bookingqba.view.interaction.InnerDetailInteraction;
+import com.squareup.picasso.Picasso;
 
 import org.oscim.core.GeoPoint;
 
 import java.util.ArrayList;
+
+import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
+import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link InnerDetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class InnerDetailFragment extends Fragment implements View.OnClickListener{
+public class InnerDetailFragment extends Fragment implements View.OnClickListener {
 
     FragmentInnerDetailBinding innerDetailBinding;
 
@@ -97,7 +101,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof InnerDetailInteraction){
+        if (context instanceof InnerDetailInteraction) {
             this.innerDetailInteraction = (InnerDetailInteraction) context;
         }
     }
@@ -109,18 +113,21 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
             adapter.setItems(argPois);
             innerDetailBinding.rvPois.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
             innerDetailBinding.setPois(adapter);
-            ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvPois,false);
+            ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvPois, false);
         }
     }
 
     private void setupAmenitiesAdapter(ArrayList<RentAmenitieItem> argAmenities) {
         if (argAmenities != null && argAmenities.size() > 0) {
-            RendererRecyclerViewAdapter adapter = new RendererRecyclerViewAdapter();
-            adapter.registerRenderer(getAmenitiesVinder());
-            adapter.setItems(argAmenities);
-            innerDetailBinding.rvAmenities.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-            innerDetailBinding.setAmenities(adapter);
-            ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvAmenities,false);
+            innerDetailBinding.fbAmenities.removeAllViews();
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            for(RentAmenitieItem rentAmenitieItem: argAmenities){
+                TextView textView = (TextView) getLayoutInflater().inflate(R.layout.recycler_rent_detail_amenities_item,null);
+                textView.setText(rentAmenitieItem.getmName());
+                params.setMargins(5,5,5,5);
+                textView.setLayoutParams(params);
+                innerDetailBinding.fbAmenities.addView(textView);
+            }
         }
     }
 
@@ -131,7 +138,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
             adapter.setItems(argGaleries);
             innerDetailBinding.rvGaleries.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
             innerDetailBinding.setGaleries(adapter);
-            ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvGaleries,false);
+            ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvGaleries, false);
         }
     }
 
@@ -141,26 +148,30 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
                 RentPoiItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-                        .find(R.id.iv_icon, (ViewProvider<AppCompatImageView>) view -> GlideApp.with(getView()).load(model.getIconByte()).into(view))
-        );
+                        .find(R.id.iv_icon, (ViewProvider<AppCompatImageView>) view -> {
+                            view.setImageBitmap(BitmapFactory.decodeByteArray(model.getIconByte(),0,model.getIconByte().length));
+                        }));
     }
 
-    private ViewBinder<?> getAmenitiesVinder() {
-        return new ViewBinder<>(
-                R.layout.recycler_rent_detail_amenities_item,
-                RentAmenitieItem.class,
-                (model, finder, payloads) -> finder
-                        .find(R.id.tv_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-        );
-    }
 
     private ViewBinder<?> getGalerieVinder() {
         return new ViewBinder<>(
                 R.layout.recycler_rent_detail_galeries_item,
                 RentGalerieItem.class,
                 (model, finder, payloads) -> finder
-                        .find(R.id.iv_galerie, (ViewProvider<RoundedImageView>) view -> GlideApp.with(getView()).load(model.getImage()).placeholder(R.drawable.placeholder).into(view))
-                        .setOnClickListener(v -> {
+                        .find(R.id.iv_galerie, (ViewProvider<RoundedImageView>) view -> {
+                            String path;
+                            if (!model.getImage().contains("http")) {
+                                path = "file:" + model.getImage();
+                            } else {
+                                path = model.getImage();
+                            }
+                            Picasso.get()
+                                    .load(path)
+                                    .resize(THUMB_WIDTH,THUMB_HEIGHT)
+                                    .placeholder(R.drawable.placeholder)
+                                    .into(view);
+                        }).setOnClickListener(v -> {
                             innerDetailInteraction.onGaleryClick(model.getId());
                         })
         );
@@ -168,7 +179,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.ll_content_address:
                 createGeoRent();
         }

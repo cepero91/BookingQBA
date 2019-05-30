@@ -9,23 +9,9 @@
         android:background="@color/material_color_grey_50"
         tools:context=".view.splash.SplashActivity">
 
-        <!--<android.support.v7.widget.AppCompatImageView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:scaleType="centerCrop"-->
-            <!--app:srcCompat="@drawable/shape_gradient_bg_splash"/>-->
-
-
-        <!--<android.support.v7.widget.AppCompatImageView-->
-            <!--android:layout_width="250dp"-->
-            <!--android:layout_height="250dp"-->
-            <!--app:srcCompat="@drawable/logotipo"-->
-            <!--android:scaleType="fitCenter"-->
-            <!--android:layout_centerInParent="true"/>-->
-
         <pl.droidsonroids.gif.GifImageView
-            android:layout_width="220dp"
-            android:layout_height="220dp"
+            android:layout_width="@dimen/splash_gif_dimen"
+            android:layout_height="@dimen/splash_gif_dimen"
             android:src="@drawable/splash"
             android:layout_centerInParent="true"
             />

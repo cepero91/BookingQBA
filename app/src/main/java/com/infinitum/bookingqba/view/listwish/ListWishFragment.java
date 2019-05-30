@@ -12,13 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentListWishBinding;
-import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
@@ -126,7 +126,11 @@ public class ListWishFragment extends BaseNavigationFragment {
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %s", String.valueOf(model.getPrice()))))
                         .find(R.id.siv_rent_image, (ViewProvider<RoundedImageView>) view ->
-                                GlideApp.with(getView()).load(model.getImagePath()).placeholder(R.drawable.placeholder).into(view))
+                                Glide.with(getView().getContext())
+                                        .load(model.getImagePath())
+                                        .crossFade()
+                                        .placeholder(R.drawable.placeholder)
+                                        .into(view))
                         .setOnClickListener(R.id.cv_rent_content, (v -> mListener.onItemClick(v, model)))
         );
     }

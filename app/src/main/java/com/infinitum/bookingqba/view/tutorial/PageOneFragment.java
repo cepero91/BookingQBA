@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentPageOneBinding;
-import com.infinitum.bookingqba.util.GlideApp;
+
 
 
 import timber.log.Timber;

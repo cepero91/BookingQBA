@@ -12,7 +12,13 @@
         android:id="@+id/action_vote"
         android:icon="@drawable/ic_star_white"
         android:title="Votar"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_comment"
+        android:icon="@drawable/ic_comment"
+        android:title="Comentar"
+        app:showAsAction="never" />
 
 
 </menu>

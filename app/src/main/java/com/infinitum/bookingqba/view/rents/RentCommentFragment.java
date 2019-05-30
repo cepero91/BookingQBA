@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.view.rents;
 
 
 import android.databinding.DataBindingUtil;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.github.marlonlom.utilities.timeago.TimeAgoMessages;
 import com.github.siyamed.shapeimageview.CircularImageView;
@@ -24,8 +26,8 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentInnerCommentBinding;
 import com.infinitum.bookingqba.util.ColorUtil;
-import com.infinitum.bookingqba.util.GlideApp;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentCommentItem;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -107,7 +109,7 @@ RentCommentFragment extends Fragment {
                                 view.setText(model.getUsername());
                             }
                         })
-                        .find(R.id.iv_emotion,(ViewProvider<AppCompatImageView>) view -> {
+                        .find(R.id.iv_emotion, (ViewProvider<AppCompatImageView>) view -> {
                             view.setImageResource(getEmotionDrawableId(model.getEmotion()));
                         })
                         .find(R.id.tv_description, (ViewProvider<TextView>) view -> view.setText(model.getDescription()))
@@ -116,13 +118,14 @@ RentCommentFragment extends Fragment {
                             String dateRelative = TimeAgo.using(model.getCreated().getTime(), messages);
                             view.setText(dateRelative);
                         })
-                        .find(R.id.siv_avatar, (ViewProvider<CircularImageView>) view -> GlideApp.with(getView()).load(model.getAvatar()).into(view))
-        );
+                        .find(R.id.siv_avatar, (ViewProvider<CircularImageView>) view -> {
+                            view.setImageBitmap(BitmapFactory.decodeByteArray(model.getAvatar(), 0, model.getAvatar().length));
+                        }));
     }
 
-    public int getEmotionDrawableId(int emotionLevel){
+    public int getEmotionDrawableId(int emotionLevel) {
         int id = -1;
-        switch (emotionLevel){
+        switch (emotionLevel) {
             case 1:
                 id = R.drawable.ic_angry_emotion;
                 break;
