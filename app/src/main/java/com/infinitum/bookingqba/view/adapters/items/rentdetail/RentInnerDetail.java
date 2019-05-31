@@ -11,6 +11,9 @@ public class RentInnerDetail implements Parcelable {
     private String name;
     private String description;
     private String address;
+    private String email;
+    private String homePhone;
+    private String personalPhone;
     private double price;
     private float rating;
     private int votes;
@@ -60,6 +63,30 @@ public class RentInnerDetail implements Parcelable {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getHomePhone() {
+        return homePhone;
+    }
+
+    public void setHomePhone(String homePhone) {
+        this.homePhone = homePhone;
+    }
+
+    public String getPersonalPhone() {
+        return personalPhone;
+    }
+
+    public void setPersonalPhone(String personalPhone) {
+        this.personalPhone = personalPhone;
     }
 
     public double getPrice() {
@@ -202,6 +229,9 @@ public class RentInnerDetail implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.description);
         dest.writeString(this.address);
+        dest.writeString(this.email);
+        dest.writeString(this.homePhone);
+        dest.writeString(this.personalPhone);
         dest.writeDouble(this.price);
         dest.writeFloat(this.rating);
         dest.writeInt(this.votes);
@@ -224,6 +254,9 @@ public class RentInnerDetail implements Parcelable {
         this.name = in.readString();
         this.description = in.readString();
         this.address = in.readString();
+        this.email = in.readString();
+        this.homePhone = in.readString();
+        this.personalPhone = in.readString();
         this.price = in.readDouble();
         this.rating = in.readFloat();
         this.votes = in.readInt();

@@ -93,4 +93,6 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="lugares_cercanos">Lugares Cercanos</string>
     <string name="imagenes">Imagenes</string>
     <string name="reglas">Reglas</string>
+
+    <string name="icon_call">&#xf095;</string>
 </resources>

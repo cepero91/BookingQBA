@@ -34,7 +34,11 @@ public class BindingAdapters {
 
     @BindingAdapter("visibleByLength")
     public static void visibleByLength(View view, String text) {
-        view.setVisibility(text.length()>0 ? View.VISIBLE : View.GONE);
+        if(text!=null) {
+            view.setVisibility(text.length() > 0 ? View.VISIBLE : View.GONE);
+        }else{
+            view.setVisibility(View.GONE);
+        }
     }
 
     @BindingAdapter("discreteVisibility")

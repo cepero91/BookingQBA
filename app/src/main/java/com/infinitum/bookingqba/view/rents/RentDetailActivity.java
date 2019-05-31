@@ -319,8 +319,8 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
                 disposable = viewModel.getLastRentVote(rentUuid)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(aFloat -> {
-                            DialogRating lf = DialogRating.newInstance(aFloat);
+                        .subscribe(pair -> {
+                            DialogRating lf = DialogRating.newInstance(pair.first,pair.second);
                             lf.show(getSupportFragmentManager(), "RatingDialog");
                         }, Timber::e);
                 compositeDisposable.add(disposable);

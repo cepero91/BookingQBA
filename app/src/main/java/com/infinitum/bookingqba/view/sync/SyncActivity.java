@@ -472,7 +472,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
             } else {
                 queueSet = new FileDownloadQueueSet(getDownloaderListener());
                 queueSet.disableCallbackProgressTimes();
-                queueSet.downloadSequentially(taskList);
+                queueSet.downloadTogether(taskList);
                 queueSet.start();
             }
         } else {

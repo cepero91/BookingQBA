@@ -32,16 +32,19 @@ public class DialogRating extends DialogFragment implements View.OnClickListener
     private RatingInteraction ratingInteraction;
     private FragmentRatingBinding ratingBinding;
     public static final String LAST_RATING = "lastRating";
+    public static final String LAST_COMMENT = "lastComment";
     private float argLastRating;
+    private String argLastComment;
 
     public DialogRating() {
         // Required empty public constructor
     }
 
-    public static DialogRating newInstance(float argLastRating) {
+    public static DialogRating newInstance(float argLastRating, String argLastComment) {
         DialogRating dialogComment = new DialogRating();
         Bundle args = new Bundle();
         args.putFloat(LAST_RATING,argLastRating);
+        args.putString(LAST_COMMENT,argLastComment);
         dialogComment.setArguments(args);
         return dialogComment;
     }
@@ -68,9 +71,11 @@ public class DialogRating extends DialogFragment implements View.OnClickListener
 
         if(getArguments()!=null){
             argLastRating = getArguments().getFloat(LAST_RATING);
+            argLastComment = getArguments().getString(LAST_COMMENT);
         }
 
         ratingBinding.srScaleRating.setRating(argLastRating);
+        ratingBinding.etComment.setText(argLastComment);
         ratingBinding.fbVote.setOnClickListener(this);
 
         int width = getResources().getDimensionPixelSize(R.dimen.dialog_login_width);

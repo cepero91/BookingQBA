@@ -6,6 +6,7 @@ import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.support.annotation.NonNull;
+import android.util.Pair;
 
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.model.Resource;
@@ -193,6 +194,9 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         innerDetail.setId(rentEntity.getId());
         innerDetail.setName(rentEntity.getName());
         innerDetail.setAddress(rentEntity.getAddress());
+        innerDetail.setPersonalPhone(rentEntity.getPhoneNumber());
+        innerDetail.setHomePhone(rentEntity.getPhoneHomeNumber());
+        innerDetail.setEmail(rentEntity.getEmail());
         innerDetail.setDescription(rentEntity.getDescription());
         innerDetail.setPrice(rentEntity.getPrice());
         innerDetail.setRating(rentEntity.getRating());
@@ -238,18 +242,18 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return rentRepository.addOrUpdateRating(entity);
     }
 
-    public Single<Float> getLastRentVote(String rent) {
+    public Single<Pair<Float,String>> getLastRentVote(String rent) {
         return rentRepository.getLastRentVote(rent)
                 .subscribeOn(Schedulers.io())
                 .map(entity -> {
                     if (entity != null) {
-                        return entity.getRating();
+                        return new Pair<>(entity.getRating(), entity.getComment());
                     } else {
-                        return 0f;
+                        return new Pair<>(0f, "");
                     }
                 }).onErrorReturn(throwable -> {
                     Timber.e(throwable);
-                    return 0f;
+                    return new Pair<>(0f, "");
                 });
     }
 
