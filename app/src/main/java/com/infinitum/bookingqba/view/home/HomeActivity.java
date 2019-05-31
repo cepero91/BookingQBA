@@ -100,9 +100,15 @@ import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.ALTERNATIVE_SYNC;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
+import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH_SHOW_GROUP;
+import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_SHOW_GROUP;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
+import static com.infinitum.bookingqba.util.Constants.LOGIN_TAG;
+import static com.infinitum.bookingqba.util.Constants.MY_REQUEST_CODE;
+import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_DEFAULT;
+import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_ID;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 import static com.infinitum.bookingqba.util.Constants.PERIODICAL_WORK_NAME;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
@@ -120,9 +126,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         InfoInteraction, DialogFeedback.FeedbackInteraction {
 
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
-    private static final String NOTIFICATION_DEFAULT = "default";
-    private static final int NOTIFICATION_ID = 1;
-    private static final int MY_REQUEST_CODE = 4;
     private ActivityHomeBinding homeBinding;
     private FragmentManager fragmentManager;
     private Fragment mFragment;
@@ -150,7 +153,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     private static final int READ_PHONE_REQUEST_CODE = 1241;
 
     //-------------------------- LOGING FRAGMENT ------------------------------//
-    private static final String LOGIN_TAG = "login";
     private boolean loginIsClicked = false;
 
     @Inject
@@ -433,9 +435,16 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                         }
                         break;
                     case FROM_DETAIL_REFRESH:
-                        boolean refreshList = data.getBooleanExtra("refresh", false);
                         if (mFragment instanceof RentListFragment)
-                            ((RentListFragment) mFragment).needToRefresh(refreshList);
+                            ((RentListFragment) mFragment).needToRefresh(data.getBooleanExtra("refresh", false));
+                        break;
+                    case FROM_DETAIL_REFRESH_SHOW_GROUP:
+                        invalidateOptionsMenu();
+                        if (mFragment instanceof RentListFragment)
+                            ((RentListFragment) mFragment).needToRefresh(data.getBooleanExtra("refresh", false));
+                        break;
+                    case FROM_DETAIL_SHOW_GROUP:
+                        invalidateOptionsMenu();
                         break;
                 }
                 break;
@@ -697,6 +706,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         }
 
         Intent notificationIntent = new Intent(this, SyncActivity.class);
+        notificationIntent.putExtra(ALTERNATIVE_SYNC, true);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext(), NOTIFICATION_DEFAULT)

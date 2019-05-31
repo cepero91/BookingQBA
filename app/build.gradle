@@ -55,6 +55,7 @@ dependencies {
     implementation "com.android.support:support-v4:$supportLibVersion"
     //Si quito estas dos dependencias la de support da error
     implementation "com.android.support:animated-vector-drawable:$supportLibVersion"
+    implementation "com.android.support:exifinterface:$supportLibVersion"
     implementation "com.android.support:support-dynamic-animation:$supportLibVersion"
 
     // Unit test dependencies
@@ -67,6 +68,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
     testImplementation 'org.mockito:mockito-core:2.7.6'
 
+    //Bounce views
     implementation 'com.github.woxingxiao:BounceScrollView:1.3'
     implementation 'me.everything:overscroll-decor-android:1.0.4'
 
@@ -106,7 +108,7 @@ dependencies {
 
     //Glide
     implementation "com.github.bumptech.glide:glide:$glide"
-//    annotationProcessor "com.github.bumptech.glide:compiler:$glide"
+    // annotationProcessor "com.github.bumptech.glide:compiler:$glide"
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     //VTM-MAP
@@ -139,6 +141,7 @@ dependencies {
 
     //Material Progress
     implementation 'com.moos:Material-ProgressView:1.0.6'
+    implementation "com.github.VaibhavLakhera:Circular-Progress-View:0.1.2"
 
     //GPS
     implementation 'com.google.android.gms:play-services-location:16.0.0'
@@ -217,7 +220,7 @@ dependencies {
     implementation 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3' // viejita
     implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3' //viejita
 
-//    chart
+    //chart
     implementation 'com.lalongooo:rings:1.0.0'
     implementation 'com.github.razerdp:AnimatedPieView:1.2.5'
     implementation 'com.github.dyguests:FlameBarChart:0.62'

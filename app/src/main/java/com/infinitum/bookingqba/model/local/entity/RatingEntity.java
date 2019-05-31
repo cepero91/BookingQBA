@@ -38,11 +38,14 @@ public class RatingEntity {
     @NonNull
     private String rent;
 
-    public RatingEntity(@NonNull String id, float rating, String comment, @NonNull String rent) {
+    private int version;
+
+    public RatingEntity(@NonNull String id, float rating, String comment, @NonNull String rent, int version) {
         this.id = id;
         this.rating = rating;
         this.comment = comment;
         this.rent = rent;
+        this.version = version;
     }
 
     @NonNull
@@ -77,5 +80,13 @@ public class RatingEntity {
 
     public void setRent(@NonNull String rent) {
         this.rent = rent;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

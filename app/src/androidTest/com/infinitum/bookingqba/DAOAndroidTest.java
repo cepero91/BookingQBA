@@ -45,7 +45,7 @@ public class DAOAndroidTest {
 
     @Test
     public void basics() {
-        //size of RatingEntity Table with 0 rows
+        //size of AmenitieEntity Table with 0 rows
         assertList(0);
 
         //Creating AmenityEntity

@@ -279,7 +279,7 @@ public class HomeFragment extends BaseNavigationFragment {
                                         path = model.getImagePath();
                                     }
                                     Picasso.get().load(path)
-                                            .fit()
+                                            .resize(THUMB_WIDTH, THUMB_HEIGHT)
                                             .placeholder(R.drawable.placeholder)
                                             .into(view);
                                 }

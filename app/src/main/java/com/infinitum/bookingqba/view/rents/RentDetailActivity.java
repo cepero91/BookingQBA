@@ -1,12 +1,20 @@
 package com.infinitum.bookingqba.view.rents;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +31,7 @@ import com.infinitum.bookingqba.databinding.ActivityRentDetailBinding;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
+import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.ColorUtil;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
@@ -31,6 +40,11 @@ import com.infinitum.bookingqba.view.adapters.InnerViewPagerAdapter;
 import com.infinitum.bookingqba.view.galery.GaleryActivity;
 import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.interaction.InnerDetailInteraction;
+import com.infinitum.bookingqba.view.interaction.LoginInteraction;
+import com.infinitum.bookingqba.view.map.MapFragment;
+import com.infinitum.bookingqba.view.profile.LoginFragment;
+import com.infinitum.bookingqba.view.profile.ProfileFragment;
+import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.squareup.picasso.Picasso;
@@ -40,6 +54,7 @@ import org.oscim.core.GeoPoint;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +62,10 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.DaggerAppCompatActivity;
+import dagger.android.support.HasSupportFragmentInjector;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -55,16 +74,27 @@ import io.reactivex.schedulers.Schedulers;
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
 
+import static com.infinitum.bookingqba.util.Constants.ALTERNATIVE_SYNC;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
+import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH_SHOW_GROUP;
+import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_SHOW_GROUP;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
+import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
+import static com.infinitum.bookingqba.util.Constants.LOGIN_TAG;
+import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_DEFAULT;
+import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_ID;
+import static com.infinitum.bookingqba.util.Constants.USER_AVATAR;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
+import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
+import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
 //NestedScrollView.OnScrollChangeListener,
 
-public class RentDetailActivity extends AppCompatActivity implements
-        DialogComment.CommentInteraction, DialogRating.RatingInteraction, InnerDetailInteraction {
+public class RentDetailActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector,
+        DialogComment.CommentInteraction, DialogRating.RatingInteraction,
+        InnerDetailInteraction, LoginInteraction {
 
     public static final int HAS_COMMENT_ONLY = 0;
     public static final int HAS_OFFER_ONLY = 1;
@@ -72,6 +102,9 @@ public class RentDetailActivity extends AppCompatActivity implements
     public static final int HAS_DETAIL_ONLY = 3;
     private ActivityRentDetailBinding rentDetailBinding;
     private InnerViewPagerAdapter innerViewPagerAdapter;
+
+    @Inject
+    DispatchingAndroidInjector<Fragment> fragmentDispatchingAndroidInjector;
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -90,6 +123,8 @@ public class RentDetailActivity extends AppCompatActivity implements
     Fragment innerDetail;
     Fragment commentDetail;
     Fragment offerDetail;
+    private boolean loginIsClicked = false;
+    private boolean showMenuGroup = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,8 +143,8 @@ public class RentDetailActivity extends AppCompatActivity implements
         if (getIntent().getExtras() != null) {
             rentUuid = getIntent().getExtras().getString("uuid");
             String imageUrlPath = getIntent().getExtras().getString("url");
-            if(!imageUrlPath.contains("http")){
-                imageUrlPath = "file:"+imageUrlPath;
+            if (!imageUrlPath.contains("http")) {
+                imageUrlPath = "file:" + imageUrlPath;
             }
             isWished = getIntent().getExtras().getInt("wished");
             mirrorWished = isWished;
@@ -120,6 +155,11 @@ public class RentDetailActivity extends AppCompatActivity implements
             loadRentDetail();
         }
         setupToolbar();
+    }
+
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return fragmentDispatchingAndroidInjector;
     }
 
     private void addOrUpdateRentVisitCount(String uuid) {
@@ -174,7 +214,7 @@ public class RentDetailActivity extends AppCompatActivity implements
     }
 
     @NonNull
-    private Pair<List<Fragment>,List<String>> getFragmentList(RentItem rentItem, int type) {
+    private Pair<List<Fragment>, List<String>> getFragmentList(RentItem rentItem, int type) {
         List<Fragment> fragments = new ArrayList<>();
         List<String> titles = new ArrayList<>();
         innerDetail = InnerDetailFragment.newInstance(rentItem.getRentInnerDetail());
@@ -210,12 +250,12 @@ public class RentDetailActivity extends AppCompatActivity implements
                 titles.add("Ofertas");
                 break;
         }
-        return new Pair<>(fragments,titles);
+        return new Pair<>(fragments, titles);
     }
 
-    private void setupViewPagerWithNav(Pair<List<Fragment>,List<String>> pair) {
+    private void setupViewPagerWithNav(Pair<List<Fragment>, List<String>> pair) {
         rentDetailBinding.setIsLoading(false);
-        innerViewPagerAdapter = new InnerViewPagerAdapter(getSupportFragmentManager(),pair.first,pair.second);
+        innerViewPagerAdapter = new InnerViewPagerAdapter(getSupportFragmentManager(), pair.first, pair.second);
         rentDetailBinding.viewpager.setAdapter(innerViewPagerAdapter);
         OverScrollDecoratorHelper.setUpOverScroll(rentDetailBinding.viewpager);
         rentDetailBinding.tlTab.setViewPager(rentDetailBinding.viewpager);
@@ -250,6 +290,7 @@ public class RentDetailActivity extends AppCompatActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        checkMenuItemsVisibility(menu);
         checkIsWished(menu);
         return super.onPrepareOptionsMenu(menu);
     }
@@ -260,6 +301,12 @@ public class RentDetailActivity extends AppCompatActivity implements
         } else if (isWished == 0) {
             menu.findItem(R.id.action_list_wish).setIcon(R.drawable.ic_bookmark_white);
         }
+    }
+
+    public void checkMenuItemsVisibility(Menu menu) {
+        boolean loginVisibility = sharedPreferences.getBoolean(USER_IS_AUTH, false);
+        MenuItem login = menu.findItem(R.id.action_login);
+        login.setVisible(!loginVisibility);
     }
 
     @Override
@@ -283,6 +330,12 @@ public class RentDetailActivity extends AppCompatActivity implements
                 return true;
             case R.id.action_comment:
                 showDialogComment();
+                return true;
+            case R.id.action_login:
+                if (!loginIsClicked) {
+                    loginIsClicked = true;
+                    showLoginDialog();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -308,12 +361,24 @@ public class RentDetailActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (isWished == mirrorWished) {
+        if (isWished == mirrorWished && !showMenuGroup) {
             super.onBackPressed();
-        } else {
+        } else if (isWished != mirrorWished && showMenuGroup) {
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.putExtra("refresh", true);
+            intent.putExtra("group", true);
+            setResult(FROM_DETAIL_REFRESH_SHOW_GROUP, intent);
+            this.finish();
+        } else if (isWished != mirrorWished) {
             Intent intent = new Intent(this, HomeActivity.class);
             intent.putExtra("refresh", true);
             setResult(FROM_DETAIL_REFRESH, intent);
+            this.finish();
+        } else {
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.putExtra("refresh", true);
+            intent.putExtra("group", true);
+            setResult(FROM_DETAIL_SHOW_GROUP, intent);
             this.finish();
         }
     }
@@ -350,6 +415,76 @@ public class RentDetailActivity extends AppCompatActivity implements
         setResult(FROM_DETAIL_TO_MAP, intent);
         this.finish();
     }
+
+    //------------------------------------- Login -------------------------------------//
+    void showLoginDialog() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag(LOGIN_TAG);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        LoginFragment loginFragment = LoginFragment.newInstance();
+        loginFragment.show(ft, LOGIN_TAG);
+    }
+
+
+    @Override
+    public void onLogin(User user) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(USER_IS_AUTH, true);
+        editor.putString(USER_TOKEN, user.getToken());
+        editor.putString(USER_NAME, user.getUsername());
+        editor.putString(USER_ID, user.getUserid());
+        editor.putString(USER_AVATAR, user.getAvatar());
+        editor.putStringSet(USER_RENTS, new HashSet<>(user.getRents()));
+        editor.apply();
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void showNotificationToUpdate(String msg) {
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
+        notificationManager.cancel(NOTIFICATION_ID);
+
+        //If on Oreo then notification required a notification channel.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_DEFAULT, "Default", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        Intent notificationIntent = new Intent(this, SyncActivity.class);
+        notificationIntent.putExtra(ALTERNATIVE_SYNC, true);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext(), NOTIFICATION_DEFAULT)
+                .setContentTitle("BookingQBA")
+                .setContentText(msg)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setContentIntent(contentIntent)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setAutoCancel(true);
+
+        notificationManager.notify(NOTIFICATION_ID, notification.build());
+    }
+
+    @Override
+    public void showGroupMenuProfile(boolean show) {
+        showMenuGroup = show;
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(IS_PROFILE_ACTIVE, show);
+        editor.apply();
+    }
+
+    @Override
+    public void dismissDialog() {
+        loginIsClicked = false;
+    }
+
 
 }
 

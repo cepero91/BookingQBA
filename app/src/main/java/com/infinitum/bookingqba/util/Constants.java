@@ -12,6 +12,12 @@ public final class Constants {
     public static final int THUMB_WIDTH = 480;
     public static final int THUMB_HEIGHT = 320;
 
+    public static final String LOGIN_TAG = "login";
+
+    public static final String NOTIFICATION_DEFAULT = "default";
+    public static final int NOTIFICATION_ID = 1;
+    public static final int MY_REQUEST_CODE = 4;
+
     public static final String PERIODICAL_WORK_NAME = "MyPeriodicalWork";
 
     //SHARED PREFERENCES KEY
@@ -62,6 +68,8 @@ public final class Constants {
     public static final char ORDER_TYPE_NEW = 'c'; // Represent attrib created
     public static final int FROM_DETAIL_TO_MAP = 6;
     public static final int FROM_DETAIL_REFRESH = 12;
+    public static final int FROM_DETAIL_REFRESH_SHOW_GROUP = 18;
+    public static final int FROM_DETAIL_SHOW_GROUP = 24;
 
     //USER LOGIN
     public static final String USER_IS_AUTH = "userIsAuth";

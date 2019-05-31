@@ -9,8 +9,7 @@
             android:descendantFocusability="blocksDescendants"
             android:layout_marginEnd="12dp"
             android:layout_marginStart="12dp"
-            android:orientation="vertical"
-            android:paddingBottom="80dp">
+            android:orientation="vertical">
 
 
             <android.support.v7.widget.RecyclerView

@@ -369,6 +369,10 @@ public abstract class BookingQBADao {
     @Query("DELETE FROM Rating")
     public abstract void deleteAllRatingVotes();
 
+    @Transaction
+    @Query("UPDATE Rating SET version = 1")
+    public abstract void updateAllRatingVersionToOne();
+
     //------------------------- RENTAS ---------------------------//
 
     @Transaction
@@ -433,7 +437,7 @@ public abstract class BookingQBADao {
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.id = :province ORDER BY Rent.rating DESC LIMIT 3")
+            "Province.id = :province ORDER BY Rent.rating DESC, Rent.ratingCount DESC LIMIT 3")
     public abstract Flowable<List<RentAndGalery>> getFivePopRents(String province);
 
     @Transaction
@@ -454,7 +458,7 @@ public abstract class BookingQBADao {
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.id = :province ORDER BY Rent.rating DESC")
+            "Province.id = :province ORDER BY Rent.rating DESC, Rent.ratingCount DESC")
     public abstract DataSource.Factory<Integer, RentAndGalery> getAllPopRent(String province);
 
     @Transaction
@@ -517,7 +521,7 @@ public abstract class BookingQBADao {
     public abstract Single<RatingEntity> getLastRentVote(String rent);
 
     @Transaction
-    @Query("SELECT * FROM Rating")
+    @Query("SELECT * FROM Rating WHERE version=0")
     public abstract Single<List<RatingEntity>> getAllRating();
 
 

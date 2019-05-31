@@ -102,7 +102,6 @@ public class InfoFragment extends BaseNavigationFragment implements View.OnClick
         }
     }
 
-
     private void loadData() {
         disposable = Flowable.combineLatest(informationViewModel.lastLocalDatabaseUpdate(),
                 informationViewModel.lastRemoteDatabaseUpdate(),
@@ -134,6 +133,8 @@ public class InfoFragment extends BaseNavigationFragment implements View.OnClick
         if (local.data != null && remote.data != null) {
             if (local.data.getLastDateUpdateEntity().before(remote.data.getLastDateUpdateEntity())) {
                 canSync = true;
+            }else{
+                canSync = false;
             }
         }
         List<Resource<DatabaseUpdateEntity>> listCombine = new ArrayList<>();

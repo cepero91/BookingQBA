@@ -133,20 +133,31 @@
                             android:textColor="@color/material_color_blue_grey_500"
                             android:textSize="18sp" />
 
-                        <com.willy.ratingbar.BaseRatingBar
-                            android:id="@+id/sr_scale_rating"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            app:srb_clickable="false"
-                            app:srb_drawableEmpty="@drawable/ic_star_o"
-                            app:srb_drawableFilled="@drawable/ic_star"
-                            app:srb_rating="0"
-                            app:srb_scrollable="false"
-                            app:srb_starHeight="16dp"
-                            app:srb_starPadding="3dp"
-                            app:srb_starWidth="16dp"
-                            app:srb_stepSize="0.5" />
+                       <LinearLayout
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_gravity="end"
+                           android:paddingStart="3dp"
+                           android:paddingEnd="3dp"
+                           android:orientation="horizontal">
+
+                           <android.support.v7.widget.AppCompatImageView
+                               android:layout_width="wrap_content"
+                               android:layout_height="wrap_content"
+                               android:padding="3dp"
+                               app:srcCompat="@drawable/ic_star"/>
+
+                           <TextView
+                               android:id="@+id/tv_rating"
+                               android:layout_width="wrap_content"
+                               android:layout_height="wrap_content"
+                               android:includeFontPadding="false"
+                               android:fontFamily="@font/poppinsbold"
+                               android:textSize="14sp"
+                               android:layout_gravity="center"
+                               android:text="4.5"/>
+
+                       </LinearLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -161,20 +172,27 @@
 
                     </LinearLayout>
 
-                    <com.moos.library.CircleProgressView
+                    <com.vaibhavlakhera.circularprogressview.CircularProgressView
                         android:id="@+id/pb_detail_percent"
-                        android:layout_width="65dp"
-                        android:layout_height="65dp"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
                         android:layout_marginStart="5dp"
-                        app:animateType="AccelerateDecelerateInterpolator"
-                        app:end_color="@color/colorPrimaryDark"
-                        app:isFilled="false"
-                        app:isTracked="true"
-                        app:progressTextColor="@color/material_color_blue_grey_500"
+                        android:layout_marginEnd="5dp"
+                        app:animate="true"
+                        app:animateDuration="500"
+                        app:fillColor="@color/White_100"
+                        app:progressColor="@color/colorPrimary"
+                        app:progressInterpolator="@android:anim/accelerate_decelerate_interpolator"
+                        app:progressRoundCap="true"
+                        app:progressTextColor="@color/colorPrimary"
+                        app:progressTextEnabled="true"
                         app:progressTextSize="14sp"
-                        app:start_color="@color/colorPrimary"
-                        app:trackColor="@color/material_color_grey_300"
-                        app:track_width="8dp" />
+                        app:progressTextType="percent"
+                        app:progressWidth="5dp"
+                        app:startAngle="270"
+                        app:totalValue="100"
+                        app:totalColor="@color/material_color_grey_300"
+                        app:totalWidth="12dp" />
 
                 </LinearLayout>
 
@@ -488,20 +506,17 @@
                         android:tint="@color/material_color_blue_grey_200"
                         app:srcCompat="@drawable/ic_star" />
 
-                    <com.moos.library.HorizontalProgressView
+                    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
                         android:id="@+id/pb_5_star"
                         android:layout_width="220dp"
-                        android:layout_height="35dp"
-                        app:corner_radius="5dp"
-                        app:end_color="@color/colorPrimaryDark"
-                        app:end_progress="100"
-                        app:isTracked="true"
-                        app:progressTextColor="#696969"
-                        app:progressTextVisibility="true"
-                        app:start_color="@color/colorPrimary"
-                        app:text_padding_bottom="5dp"
-                        app:trackColor="@color/material_color_grey_300"
-                        app:track_width="8dp" />
+                        android:layout_height="20dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginTop="3dp"
+                        app:rcBackgroundColor="@color/material_color_grey_300"
+                        app:rcBackgroundPadding="2dp"
+                        app:rcMax="100"
+                        app:rcProgressColor="@color/colorPrimary"
+                        app:rcRadius="5dp" />
 
                 </LinearLayout>
 
@@ -529,20 +544,17 @@
                         android:tint="@color/material_color_blue_grey_200"
                         app:srcCompat="@drawable/ic_star" />
 
-                    <com.moos.library.HorizontalProgressView
+                    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
                         android:id="@+id/pb_4_star"
                         android:layout_width="220dp"
-                        android:layout_height="35dp"
-                        app:corner_radius="5dp"
-                        app:end_color="@color/colorPrimaryDark"
-                        app:end_progress="100"
-                        app:isTracked="true"
-                        app:progressTextColor="#696969"
-                        app:progressTextVisibility="true"
-                        app:start_color="@color/colorPrimary"
-                        app:text_padding_bottom="5dp"
-                        app:trackColor="@color/material_color_grey_300"
-                        app:track_width="8dp" />
+                        android:layout_height="20dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginTop="3dp"
+                        app:rcBackgroundColor="@color/material_color_grey_300"
+                        app:rcBackgroundPadding="2dp"
+                        app:rcMax="100"
+                        app:rcProgressColor="@color/colorPrimary"
+                        app:rcRadius="5dp" />
 
                 </LinearLayout>
 
@@ -570,20 +582,17 @@
                         android:tint="@color/material_color_blue_grey_200"
                         app:srcCompat="@drawable/ic_star" />
 
-                    <com.moos.library.HorizontalProgressView
+                    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
                         android:id="@+id/pb_3_star"
                         android:layout_width="220dp"
-                        android:layout_height="35dp"
-                        app:corner_radius="5dp"
-                        app:end_color="@color/colorPrimaryDark"
-                        app:end_progress="100"
-                        app:isTracked="true"
-                        app:progressTextColor="#696969"
-                        app:progressTextVisibility="true"
-                        app:start_color="@color/colorPrimary"
-                        app:text_padding_bottom="5dp"
-                        app:trackColor="@color/material_color_grey_300"
-                        app:track_width="8dp" />
+                        android:layout_height="20dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginTop="3dp"
+                        app:rcBackgroundColor="@color/material_color_grey_300"
+                        app:rcBackgroundPadding="2dp"
+                        app:rcMax="100"
+                        app:rcProgressColor="@color/colorPrimary"
+                        app:rcRadius="5dp" />
 
                 </LinearLayout>
 
@@ -611,20 +620,17 @@
                         android:tint="@color/material_color_blue_grey_200"
                         app:srcCompat="@drawable/ic_star" />
 
-                    <com.moos.library.HorizontalProgressView
+                    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
                         android:id="@+id/pb_2_star"
                         android:layout_width="220dp"
-                        android:layout_height="35dp"
-                        app:corner_radius="5dp"
-                        app:end_color="@color/colorPrimaryDark"
-                        app:end_progress="100"
-                        app:isTracked="true"
-                        app:progressTextColor="#696969"
-                        app:progressTextVisibility="true"
-                        app:start_color="@color/colorPrimary"
-                        app:text_padding_bottom="5dp"
-                        app:trackColor="@color/material_color_grey_300"
-                        app:track_width="8dp" />
+                        android:layout_height="20dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginTop="3dp"
+                        app:rcBackgroundColor="@color/material_color_grey_300"
+                        app:rcBackgroundPadding="2dp"
+                        app:rcMax="100"
+                        app:rcProgressColor="@color/colorPrimary"
+                        app:rcRadius="5dp" />
 
                 </LinearLayout>
 
@@ -652,20 +658,17 @@
                         android:tint="@color/material_color_blue_grey_200"
                         app:srcCompat="@drawable/ic_star" />
 
-                    <com.moos.library.HorizontalProgressView
+                    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
                         android:id="@+id/pb_1_star"
                         android:layout_width="220dp"
-                        android:layout_height="35dp"
-                        app:corner_radius="5dp"
-                        app:end_color="@color/material_color_red_700"
-                        app:end_progress="100"
-                        app:isTracked="true"
-                        app:progressTextColor="#696969"
-                        app:progressTextVisibility="true"
-                        app:start_color="@color/material_color_red_300"
-                        app:text_padding_bottom="5dp"
-                        app:trackColor="@color/material_color_grey_300"
-                        app:track_width="8dp" />
+                        android:layout_height="20dp"
+                        android:layout_marginBottom="3dp"
+                        android:layout_marginTop="3dp"
+                        app:rcBackgroundColor="@color/material_color_grey_300"
+                        app:rcBackgroundPadding="2dp"
+                        app:rcMax="100"
+                        app:rcProgressColor="@color/material_color_red_500"
+                        app:rcRadius="5dp" />
 
                 </LinearLayout>
 

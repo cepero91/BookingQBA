@@ -94,13 +94,9 @@ public class UserTraceImpl implements UserTraceRepository {
                 .subscribeOn(Schedulers.io())
                 .map(this::tranformEntityToRatingVoteGroup)
                 .flatMap(this::sendRatingVoteToServer)
-                .map(responseResultResource -> {
-                    if(responseResultResource.data!=null && responseResultResource.data.getCode()==200){
-                        return OperationResult.success();
-                    }else{
-                        return OperationResult.error(responseResultResource.message);
-                    }
-                })
+                .onErrorReturn(Resource::error)
+                .flatMapCompletable(this::updateRatingVotes)
+                .toSingle(OperationResult::success)
                 .onErrorReturn(OperationResult::error);
     }
 
@@ -112,9 +108,9 @@ public class UserTraceImpl implements UserTraceRepository {
         }
     }
 
-    private Completable removeRatingVotes(Resource<ResponseResult> resultResource){
+    private Completable updateRatingVotes(Resource<ResponseResult> resultResource){
         if(resultResource.data!= null && resultResource.data.getCode()==200) {
-            return Completable.fromAction(() -> qbaDao.deleteAllRatingVotes());
+            return Completable.fromAction(() -> qbaDao.updateAllRatingVersionToOne());
         }else {
             return Completable.error(new ResponseResultException(resultResource.message));
         }

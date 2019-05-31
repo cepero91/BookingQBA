@@ -20,5 +20,11 @@
         android:title="Comentar"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_login"
+        android:icon="@drawable/ic_user_alt"
+        android:title="Iniciar Sesion"
+        app:showAsAction="never" />
+
 
 </menu>

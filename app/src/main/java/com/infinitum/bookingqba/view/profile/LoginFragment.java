@@ -124,13 +124,13 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
 
     @Override
     public void onDestroyView() {
-        interaction = null;
-        compositeDisposable.clear();
         super.onDestroyView();
     }
 
     @Override
     public void onDetach() {
+        interaction = null;
+        compositeDisposable.clear();
         super.onDetach();
     }
 

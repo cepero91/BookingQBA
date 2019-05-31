@@ -28,6 +28,7 @@ import com.infinitum.bookingqba.view.adapters.SpinnerAdapter;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
 import com.infinitum.bookingqba.viewmodel.RentAnaliticsViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
+import com.squareup.picasso.Picasso;
 
 import java.net.ConnectException;
 import java.util.Arrays;
@@ -145,9 +146,8 @@ public class ProfileFragment extends Fragment {
     private void loadUserData() {
         String avatar = sharedPreferences.getString(USER_AVATAR, "");
         String url = BASE_URL_API + "/" + avatar;
-        Glide.with(getView().getContext())
+        Picasso.get()
                 .load(url)
-                .crossFade()
                 .placeholder(R.drawable.user_placeholder)
                 .into(profileBinding.userAvatar);
         profileBinding.tvUsername.setText(sharedPreferences.getString(USER_NAME, getString(R.string.empty_text)));
@@ -197,26 +197,25 @@ public class ProfileFragment extends Fragment {
                 .subscribe(analiticsGroup -> {
                     if (analiticsGroup != null) {
                         profileBinding.setIsLoading(false);
-                        profileBinding.srScaleRating.setRating(analiticsGroup.getRatingStarAnalitics().getRatingAverage());
-                        profileBinding.pbDetailPercent.setEndProgress(analiticsGroup.getProfilePercentAnalitics().getPercent());
-                        profileBinding.pbDetailPercent.startProgressAnimation();
+                        profileBinding.tvRating.setText(String.format("%.1f",analiticsGroup.getRatingStarAnalitics().getRatingAverage()));
+                        profileBinding.pbDetailPercent.setProgress(((int)analiticsGroup.getProfilePercentAnalitics().getPercent()),true);
 
                         ValueAnimator visitAnimator = getAnimatorTextNumber(profileBinding.tvVisitCount, analiticsGroup.getVisitAnalitics().getTotalVisit());
                         ValueAnimator commentAnimator = getAnimatorTextNumber(profileBinding.tvTotalComments, analiticsGroup.getGeneralCommentAnalitics().getTotalComment());
                         ValueAnimator wishAnimator = getAnimatorTextNumber(profileBinding.tvTotalListWish, analiticsGroup.getWishAnalitics().getTotalWish());
-                        ValueAnimator terribleAnimator = getAnimatorTextNumber(profileBinding.tvTerribleCount,
-                                analiticsGroup.getCommentsEmotionAnalitics().getTerribleCount());
-                        ValueAnimator badAnimator = getAnimatorTextNumber(profileBinding.tvBadCount,
-                                analiticsGroup.getCommentsEmotionAnalitics().getBadCount());
-                        ValueAnimator okAnimator = getAnimatorTextNumber(profileBinding.tvOkCount,
-                                analiticsGroup.getCommentsEmotionAnalitics().getOkCount());
-                        ValueAnimator goodAnimator = getAnimatorTextNumber(profileBinding.tvGoodCount,
-                                analiticsGroup.getCommentsEmotionAnalitics().getGoodCount());
-                        ValueAnimator excelentAnimator = getAnimatorTextNumber(profileBinding.tvExcelentCount,
-                                analiticsGroup.getCommentsEmotionAnalitics().getExcelentCount());
-                        startNumberAnimation(visitAnimator, commentAnimator, wishAnimator,
-                                terribleAnimator, badAnimator, okAnimator, goodAnimator,
-                                excelentAnimator);
+                        startNumberAnimation(visitAnimator, commentAnimator, wishAnimator);
+
+                        int terrible = analiticsGroup.getCommentsEmotionAnalitics().getTerribleCount();
+                        int bad = analiticsGroup.getCommentsEmotionAnalitics().getBadCount();
+                        int ok = analiticsGroup.getCommentsEmotionAnalitics().getOkCount();
+                        int good = analiticsGroup.getCommentsEmotionAnalitics().getGoodCount();
+                        int excelent = analiticsGroup.getCommentsEmotionAnalitics().getExcelentCount();
+                        profileBinding.tvTerribleCount.setText(String.valueOf(terrible));
+                        profileBinding.tvBadCount.setText(String.valueOf(bad));
+                        profileBinding.tvOkCount.setText(String.valueOf(ok));
+                        profileBinding.tvGoodCount.setText(String.valueOf(good));
+                        profileBinding.tvExcelentCount.setText(String.valueOf(excelent));
+
 
                         int totalVotes = analiticsGroup.getRatingStarAnalitics().getTotalVotes();
                         float percent5 = ((float) analiticsGroup.getRatingStarAnalitics().getFiveStar() / (float) totalVotes) * 100;
@@ -224,19 +223,11 @@ public class ProfileFragment extends Fragment {
                         float percent3 = ((float) analiticsGroup.getRatingStarAnalitics().getThreeStar() / (float) totalVotes) * 100;
                         float percent2 = ((float) analiticsGroup.getRatingStarAnalitics().getTwoStar() / (float) totalVotes) * 100;
                         float percent1 = ((float) analiticsGroup.getRatingStarAnalitics().getOneStar() / (float) totalVotes) * 100;
-
-                        profileBinding.pb5Star.setEndProgress(percent5);
-                        profileBinding.pb4Star.setEndProgress(percent4);
-                        profileBinding.pb3Star.setEndProgress(percent3);
-                        profileBinding.pb2Star.setEndProgress(percent2);
-                        profileBinding.pb1Star.setEndProgress(percent1);
-
-                        profileBinding.pb5Star.startProgressAnimation();
-                        profileBinding.pb4Star.startProgressAnimation();
-                        profileBinding.pb3Star.startProgressAnimation();
-                        profileBinding.pb2Star.startProgressAnimation();
-                        profileBinding.pb1Star.startProgressAnimation();
-
+                        profileBinding.pb5Star.setProgress(percent5);
+                        profileBinding.pb4Star.setProgress(percent4);
+                        profileBinding.pb3Star.setProgress(percent3);
+                        profileBinding.pb2Star.setProgress(percent2);
+                        profileBinding.pb1Star.setProgress(percent1);
 
                         List<String> missing = analiticsGroup.getProfilePercentAnalitics().getMissingList();
                         if (missing.size() > 0) {
@@ -255,7 +246,11 @@ public class ProfileFragment extends Fragment {
                         }
 
                         profileBinding.tvPlaceRating.setText(String.valueOf(analiticsGroup.getRentPositionAnalitics().getPlaceRating()));
-                        profileBinding.tvPlaceViews.setText(String.valueOf(analiticsGroup.getRentPositionAnalitics().getPlaceViews()));
+                        String placeViews = "Sin visitas";
+                        if(analiticsGroup.getRentPositionAnalitics().getPlaceViews()>0){
+                            placeViews = String.valueOf(analiticsGroup.getRentPositionAnalitics().getPlaceViews());
+                        }
+                        profileBinding.tvPlaceViews.setText(placeViews);
                     }
                 }, throwable -> {
                     Timber.e(throwable);
@@ -271,7 +266,7 @@ public class ProfileFragment extends Fragment {
 
     private void resetAllViews() {
         //------- Profile percent
-        profileBinding.pbDetailPercent.setProgress(0f);
+        profileBinding.pbDetailPercent.setProgress(0,true);
         //------- Emotion
         profileBinding.tvTerribleCount.setText(getString(R.string.empty_short_text));
         profileBinding.tvBadCount.setText(getString(R.string.empty_short_text));
@@ -279,7 +274,7 @@ public class ProfileFragment extends Fragment {
         profileBinding.tvGoodCount.setText(getString(R.string.empty_short_text));
         profileBinding.tvExcelentCount.setText(getString(R.string.empty_short_text));
         //------- Star
-        profileBinding.srScaleRating.setRating(0f);
+        profileBinding.tvRating.setText(getString(R.string.empty_short_text));
         profileBinding.pb5Star.setProgress(0f);
         profileBinding.pb4Star.setProgress(0f);
         profileBinding.pb3Star.setProgress(0f);
