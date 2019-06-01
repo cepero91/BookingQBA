@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppinsregular"
-                android:text="@string/lorem_ipsum"
+                android:text="@string/page_three_text"
                 android:textAlignment="center"
                 android:textSize="@dimen/pages_desc_dimen" />
 

@@ -19,6 +19,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentLoginBinding;
@@ -143,57 +145,64 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.login) {
-            loginBinding.setIsLoading(true);
-            v.setEnabled(false);
-            String params1 = loginBinding.etUsername.getText().toString();
-            String params2 = loginBinding.etPassword.getText().toString();
-            String params3 = sharedPreferences.getString(IMEI, "");
-            Oauth oauth = new Oauth(params1, params2, params3);
-            disposable = userViewModel.userLogin(oauth)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .map((Function<Response<User>, Pair<Boolean, ArrayList<String>>>) response -> {
-                        loginBinding.setIsLoading(false);
-                        if (response.code() == 200 && response.body() != null) {
-                            loginBinding.tvError.setText("");
-                            interaction.onLogin(response.body());
-                            return new Pair<>(true, response.body().getRents());
-                        } else {
-                            String errorMsg = ErrorUtils.parseError(response).getMsg();
-                            loginBinding.tvError.setText(errorMsg);
-                            return new Pair<>(false, new ArrayList<>());
-                        }
-                    })
-                    .flatMap(this::checkExist)
-                    .map(booleanStatusPair -> {
-                        if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.HOST_USER_RENT_FOUND) {
-                            interaction.showGroupMenuProfile(true);
-                            return RESULT_DISMISS;
-                        } else if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.HOST_USER_RENT_NOT_FOUND) {
-                            interaction.showNotificationToUpdate(getResources().getString(R.string.notification_sync_msg));
-                            return RESULT_DISMISS;
-                        } else if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.NORMAL_USER) {
-                            return RESULT_DISMISS;
-                        } else {
-                            return RESULT_ERROR;
-                        }
-                    })
-                    .doOnSuccess(integer -> {
-                        if (integer == RESULT_DISMISS) {
-                            dismiss();
-                        } else {
-                            v.setEnabled(true);
-                            loginBinding.setIsLoading(false);
-                        }
-                    })
-                    .onErrorReturn(throwable -> {
-                        onLoginError(v, throwable);
-                        return RESULT_ERROR;
-                    })
-                    .subscribe();
-            compositeDisposable.add(disposable);
-
+            if(validateInputs()) {
+                loginBinding.setIsLoading(true);
+                v.setEnabled(false);
+                String params1 = loginBinding.etUsername.getText().toString();
+                String params2 = loginBinding.etPassword.getText().toString();
+                String params3 = sharedPreferences.getString(IMEI, "");
+                Oauth oauth = new Oauth(params1, params2, params3);
+                startLogin(v, oauth);
+            }else{
+                loginBinding.tvError.setText("Llene los campos requeridos");
+            }
         }
+    }
+
+    private void startLogin(View v, Oauth oauth) {
+        disposable = userViewModel.userLogin(oauth)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map((Function<Response<User>, Pair<Boolean, ArrayList<String>>>) response -> {
+                    loginBinding.setIsLoading(false);
+                    if (response.code() == 200 && response.body() != null) {
+                        loginBinding.tvError.setText("");
+                        interaction.onLogin(response.body());
+                        return new Pair<>(true, response.body().getRents());
+                    } else {
+                        String errorMsg = ErrorUtils.parseError(response).getMsg();
+                        loginBinding.tvError.setText(errorMsg);
+                        return new Pair<>(false, new ArrayList<>());
+                    }
+                })
+                .flatMap(this::checkExist)
+                .map(booleanStatusPair -> {
+                    if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.HOST_USER_RENT_FOUND) {
+                        interaction.showGroupMenuProfile(true);
+                        return RESULT_DISMISS;
+                    } else if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.HOST_USER_RENT_NOT_FOUND) {
+                        interaction.showNotificationToUpdate(getResources().getString(R.string.notification_sync_msg));
+                        return RESULT_DISMISS;
+                    } else if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.NORMAL_USER) {
+                        return RESULT_DISMISS;
+                    } else {
+                        return RESULT_ERROR;
+                    }
+                })
+                .doOnSuccess(integer -> {
+                    if (integer == RESULT_DISMISS) {
+                        dismiss();
+                    } else {
+                        v.setEnabled(true);
+                        loginBinding.setIsLoading(false);
+                    }
+                })
+                .onErrorReturn(throwable -> {
+                    onLoginError(v, throwable);
+                    return RESULT_ERROR;
+                })
+                .subscribe();
+        compositeDisposable.add(disposable);
     }
 
     @Override
@@ -241,8 +250,15 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
         boolean isValid = true;
         String password = loginBinding.etPassword.getText().toString();
         String username = loginBinding.etUsername.getText().toString();
-        if (username.equals("") || password.equals("")) {
+        if (username.equals("")) {
             isValid = false;
+            Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.shake_animation);
+            loginBinding.etUsername.startAnimation(animation);
+        }
+        if (password.equals("")) {
+            isValid = false;
+            Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.shake_animation);
+            loginBinding.etPassword.startAnimation(animation);
         }
         return isValid;
     }

@@ -19,10 +19,8 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.github.vivchar.rendererrecyclerviewadapter.CompositeViewHolder;
 import com.github.vivchar.rendererrecyclerviewadapter.CompositeViewState;
@@ -242,7 +240,7 @@ public class HomeFragment extends BaseNavigationFragment {
 
     private ViewBinder<?> getHeader() {
         return new ViewBinder<>(
-                R.layout.recycler_header_popular,
+                R.layout.recycler_header_home,
                 HeaderItem.class,
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_header_title, (ViewProvider<TextView>) view -> view.setText(model.getName()))

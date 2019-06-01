@@ -28,6 +28,8 @@ import javax.inject.Inject;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.infinitum.bookingqba.util.Constants.HEADER_NEW;
+import static com.infinitum.bookingqba.util.Constants.HEADER_POP;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_NEW;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 
@@ -93,9 +95,9 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         List<ViewModel> allItems = new ArrayList<>();
         if (listResource.data != null && listResource2.data != null && listResource3.data != null) {
             allItems.addAll(listResource.data);
-            allItems.add(new HeaderItem(UUID.randomUUID().toString(), "Lo más popular", ORDER_TYPE_POPULAR));
+            allItems.add(new HeaderItem(UUID.randomUUID().toString(), HEADER_POP, ORDER_TYPE_POPULAR));
             allItems.addAll(listResource2.data);
-            allItems.add(new HeaderItem(UUID.randomUUID().toString(), "Lo más nuevo", ORDER_TYPE_NEW));
+            allItems.add(new HeaderItem(UUID.randomUUID().toString(), HEADER_NEW, ORDER_TYPE_NEW));
             allItems.addAll(listResource3.data);
         }
         return allItems;

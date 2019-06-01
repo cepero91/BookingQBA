@@ -477,7 +477,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
             }
         } else {
             syncBinding.pbGalery.startProgressAnimation();
-            new Handler().postDelayed(() -> notifyDownloadEnds(),1200);
+            new Handler().postDelayed(this::notifyDownloadEnds,1200);
 
         }
 

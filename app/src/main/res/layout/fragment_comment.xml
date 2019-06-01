@@ -58,14 +58,11 @@
             android:animateLayoutChanges="true"
             android:fontFamily="@font/poppinsitalic"
             android:textColor="@color/material_color_red_500"
-            android:textSize="12sp"
-            android:drawableLeft="@drawable/ic_exclamation_triangle_20dp"
-            android:drawablePadding="5dp"
-            android:drawableTint="@color/material_color_red_500" />
+            android:textSize="12sp" />
 
 
         <mehdi.sakout.fancybuttons.FancyButton
-            android:id="@+id/login"
+            android:id="@+id/btn_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

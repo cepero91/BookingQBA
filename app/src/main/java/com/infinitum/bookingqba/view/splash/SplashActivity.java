@@ -53,7 +53,7 @@ public class SplashActivity extends DaggerAppCompatActivity {
                 startActivity(intent);
                 SplashActivity.this.finish();
             }
-        }, 2800);
+        }, 2600);
 
     }
 

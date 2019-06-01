@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/poppinsregular"
-                android:text="Lorem ipsum dolor ipsum dolor, ipsum dolor ipsum dolor ipsum dolor ipsum dolor."
+                android:text="@string/page_one_text"
                 android:textAlignment="center"
                 android:textSize="@dimen/pages_desc_dimen" />
 

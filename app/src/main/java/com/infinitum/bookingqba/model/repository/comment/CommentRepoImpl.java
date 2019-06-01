@@ -58,7 +58,8 @@ public class CommentRepoImpl implements CommentRepository {
 
     @Override
     public Completable insert(List<CommentEntity> entities) {
-        return Completable.fromAction(() -> qbaDao.upsertComment(entities)).subscribeOn(Schedulers.io());
+        return Completable.fromAction(() -> qbaDao.upsertComment(entities))
+                .subscribeOn(Schedulers.io());
     }
 
     @Override

@@ -161,6 +161,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal"
@@ -194,7 +196,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginBottom="5dp"
                     android:layout_marginTop="5dp"
-                    android:background="@color/material_color_grey_300" />
+                    android:background="@color/Black_5" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -286,8 +288,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
-                android:layout_marginStart="15dp"
-                android:fontFamily="@font/poppinsmedium"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/poppinsbold"
                 android:text="@string/facilidades"
                 android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="14sp" />
@@ -298,8 +301,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginStart="5dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginStart="12dp"
                 android:layout_marginTop="5dp"
                 app:alignContent="center"
                 app:flexWrap="wrap" />
@@ -307,8 +310,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:fontFamily="@font/poppinsmedium"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/poppinsbold"
                 android:text="@string/descripcion"
                 android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="14sp"
@@ -318,17 +322,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="10dp"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginTop="5dp"
                 android:fontFamily="@font/poppinsregular"
                 android:text="@{detail.getDescription()}"
+                android:textColor="@color/material_color_grey_500"
                 app:visibleByLength="@{detail.getDescription()}" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="15dp"
-                android:fontFamily="@font/poppinsmedium"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/poppinsbold"
                 android:text="@string/lugares_cercanos"
                 android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="14sp"
@@ -340,7 +347,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginTop="5dp"
                 android:adapter="@{pois}"
                 app:visibleGone="@{detail.getRentPoiItems().size()>0}" />
@@ -348,8 +356,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="15dp"
-                android:fontFamily="@font/poppinsmedium"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/poppinsbold"
                 android:text="@string/imagenes"
                 android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="14sp"
@@ -361,7 +370,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginTop="5dp"
                 android:adapter="@{galeries}"
                 app:setGalerieVisibility="@{detail.galerieSize()}" />
@@ -369,8 +379,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="15dp"
-                android:fontFamily="@font/poppinsmedium"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/poppinsbold"
                 android:text="@string/reglas"
                 android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="14sp" />
@@ -379,26 +390,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="10dp"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginTop="5dp"
                 android:fontFamily="@font/poppinsregular"
                 android:text="@{detail.getRules()}"
-                android:textColor="@color/material_color_blue_grey_500" />
+                android:textColor="@color/material_color_grey_500" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:fontFamily="@font/poppinsmedium"
-                android:text="Contactos"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/poppinsbold"
+                android:text="@string/contactos"
                 android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="14sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:layout_marginStart="12dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/rounded_rect_grey"
                 android:baselineAligned="true"

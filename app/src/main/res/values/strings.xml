@@ -87,12 +87,16 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="_2">2</string>
     <string name="_1">1</string>
     <string name="sugerencias_de_mejoras">Sugerencias de mejoras</string>
-    <string name="descripcion">Descripcion</string>
+    <string name="descripcion">Descripción</string>
     <string name="comentario">Comentario</string>
     <string name="facilidades">Facilidades</string>
     <string name="lugares_cercanos">Lugares Cercanos</string>
-    <string name="imagenes">Imagenes</string>
+    <string name="imagenes">Imágenes</string>
     <string name="reglas">Reglas</string>
 
     <string name="icon_call">&#xf095;</string>
+    <string name="page_one_text">Hola viajero!, andas en busca de un Hospedaje?. No te preocupes, te ofrecemos un montón de opciones </string>
+    <string name="page_two_text">Te brindamos información detallada que te permite, comparar y escoger la casa ideal.</string>
+    <string name="page_three_text">No tienes internet!, no importa, nuestro mapa te indica tu destino sin necesidad de conexión</string>
+    <string name="contactos">Contactos</string>
 </resources>

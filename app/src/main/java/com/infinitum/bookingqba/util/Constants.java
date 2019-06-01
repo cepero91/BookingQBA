@@ -9,16 +9,26 @@ public final class Constants {
     public static final long READ_TIMEOUT = 30000;
     public static final long WRITE_TIMEOUT = 30000;
 
+    //IMAGE RESIZE
     public static final int THUMB_WIDTH = 480;
     public static final int THUMB_HEIGHT = 320;
 
+    //LOGIN TAG
     public static final String LOGIN_TAG = "login";
 
+    //NOTIFICATION
     public static final String NOTIFICATION_DEFAULT = "default";
     public static final int NOTIFICATION_ID = 1;
+
+    //REQUEST ACTIVITY FOR RESULT
     public static final int MY_REQUEST_CODE = 4;
 
+    //WORK SERVICES
     public static final String PERIODICAL_WORK_NAME = "MyPeriodicalWork";
+
+    //HEADER TITLE HOME
+    public static final String HEADER_POP = "Lo más popular";
+    public static final String HEADER_NEW = "Lo más nuevo";
 
     //SHARED PREFERENCES KEY
     public static final String PREF_ENTITY_DOWNLOAD_INDEX = "dbDownloadLevel";

@@ -300,7 +300,7 @@ public class ProfileFragment extends Fragment {
     @NonNull
     private ValueAnimator getAnimatorTextNumber(TextView textView, int number) {
         ValueAnimator valueAnimator = ValueAnimator.ofInt(0, number);
-        valueAnimator.setDuration(3000);
+        valueAnimator.setDuration(500);
         valueAnimator.setInterpolator(new AccelerateInterpolator());
         valueAnimator.addUpdateListener(animation -> textView.setText(animation.getAnimatedValue().toString()));
         return valueAnimator;
@@ -314,7 +314,7 @@ public class ProfileFragment extends Fragment {
             case R.id.action_refresh:
                 if (rentSelect.length > 1) {
                     fetchRentAnalitic(commonSpinnerList.getUuidOnPos(lastPosSelected));
-                } else if (rentSelect.length == 0) {
+                } else if (rentSelect.length == 1) {
                     fetchRentAnalitic(commonSpinnerList.getUuidOnPos(0));
                 }
                 return true;

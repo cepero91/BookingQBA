@@ -162,6 +162,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     SharedPreferences sharedPreferences;
 
     private TelephonyManager telephonyManager;
+    private String deviceID = "";
 
 
     @Override
@@ -169,6 +170,8 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         super.onCreate(savedInstanceState);
         homeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
         AndroidInjection.inject(this);
+
+        deviceID = sharedPreferences.getString(IMEI,"");
 
         setupToolbar();
 
@@ -240,9 +243,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         homeBinding.navViewNotification.setLayoutParams(params);
 
         homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
-//        homeBinding.drawerLayout.setViewScale(Gravity.START, 0.9f);
-//        homeBinding.drawerLayout.setRadius(Gravity.START, 25);
-//        homeBinding.drawerLayout.setViewElevation(Gravity.START, 15);
     }
 
     // ---------------------- LOCATION METHOD ------------------------ //
@@ -356,16 +356,19 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 checkPermissionResult(permissions, LOCATION_REQUEST_CODE, "Localizacion");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 mRequestingLocationUpdates = true;
-                invalidateOptionsMenu();
+                MenuItem menuItem = homeBinding.toolbar.getMenu().findItem(R.id.action_gps);
+                if (menuItem != null) {
+                    changeMenuIcon(menuItem);
+                }
                 startLocationUpdates();
             }
         } else if (requestCode == READ_PHONE_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 checkPermissionResult(permissions, READ_PHONE_REQUEST_CODE, "Estado del Telefono");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permiso otorgado", Toast.LENGTH_SHORT).show();
                 if (sharedPreferences.getString(IMEI, "").equals("")) {
-                    sharedPreferences.edit().putString(getDeviceUniversalID(), "").apply();
+                    deviceID = getDeviceUniversalID();
+                    sharedPreferences.edit().putString(IMEI, deviceID).apply();
                 }
             }
         }
@@ -676,16 +679,21 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     }
 
     void showLoginDialog() {
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        Fragment prev = fragmentManager.findFragmentByTag(LOGIN_TAG);
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
+        if (!deviceID.equals("")) {
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            Fragment prev = fragmentManager.findFragmentByTag(LOGIN_TAG);
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
 
-        // Create and show the dialog.
-        LoginFragment loginFragment = LoginFragment.newInstance();
-        loginFragment.show(ft, LOGIN_TAG);
+            // Create and show the dialog.
+            LoginFragment loginFragment = LoginFragment.newInstance();
+            loginFragment.show(ft, LOGIN_TAG);
+        } else {
+            loginIsClicked = false;
+            AlertUtils.showErrorAlert(this,"Esta operación no se puede efectuar");
+        }
     }
 
     @Override

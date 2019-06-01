@@ -51,6 +51,7 @@ import com.squareup.picasso.Picasso;
 
 
 import org.oscim.core.GeoPoint;
+import org.reactivestreams.Subscription;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
@@ -79,6 +81,7 @@ import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH_SHOW_GROUP;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_SHOW_GROUP;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
+import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
 import static com.infinitum.bookingqba.util.Constants.LOGIN_TAG;
 import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_DEFAULT;
@@ -102,6 +105,7 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
     public static final int HAS_DETAIL_ONLY = 3;
     private ActivityRentDetailBinding rentDetailBinding;
     private InnerViewPagerAdapter innerViewPagerAdapter;
+    private String deviceID = "";
 
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentDispatchingAndroidInjector;
@@ -129,9 +133,12 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.e("onCreate");
         AndroidInjection.inject(this);
 
         rentDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_rent_detail);
+
+        deviceID = sharedPreferences.getString(IMEI,"");
 
         rentDetailBinding.setIsLoading(true);
         rentDetailBinding.setHasTab(false);
@@ -152,10 +159,21 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
         }
 
         if (rentUuid.length() > 1) {
+            addOrUpdateRentVisitCount(rentUuid);
             loadRentDetail();
         }
         setupToolbar();
     }
+
+    //------------------------------------ LIVECYCLE -------------------------------------//
+
+    @Override
+    protected void onDestroy() {
+        compositeDisposable.clear();
+        super.onDestroy();
+    }
+
+    //------------------------------------------------------------------------------------
 
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
@@ -163,7 +181,8 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
     }
 
     private void addOrUpdateRentVisitCount(String uuid) {
-        disposable = viewModel.addOrUpdateRentVisitCount(UUID.randomUUID().toString(), uuid).subscribeOn(Schedulers.io())
+        disposable = viewModel.addOrUpdateRentVisitCount(UUID.randomUUID().toString(), uuid)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> Timber.e("Exito contador de visitas"), Timber::e);
         compositeDisposable.add(disposable);
@@ -173,18 +192,13 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
         disposable = viewModel.getRentDetailById(rentUuid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(this::onSuccess)
-                .doAfterNext(rentDetailItemResource -> {
-                    if (rentDetailItemResource.data != null) {
-                        addOrUpdateRentVisitCount(rentItem.getRentInnerDetail().getId());
-                    }
-                })
-                .subscribe();
+                .subscribe(this::onSuccess,Timber::e);
         compositeDisposable.add(disposable);
     }
 
 
     private void onSuccess(Resource<RentItem> rentDetailResource) {
+        Timber.e("Entro OnSuccess");
         rentItem = rentDetailResource.data;
         setupViewPager(rentDetailResource.data);
     }
@@ -259,13 +273,6 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
         rentDetailBinding.viewpager.setAdapter(innerViewPagerAdapter);
         OverScrollDecoratorHelper.setUpOverScroll(rentDetailBinding.viewpager);
         rentDetailBinding.tlTab.setViewPager(rentDetailBinding.viewpager);
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        compositeDisposable.clear();
     }
 
     private void showDialogComment() {
@@ -385,7 +392,8 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
 
     @Override
     public void sendComment(Comment comment) {
-        disposable = viewModel.addComment(comment).subscribeOn(Schedulers.io())
+        disposable = viewModel.addComment(comment)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> AlertUtils.showSuccessToast(this, "Comentario guardado"), Timber::e);
         compositeDisposable.add(disposable);
@@ -394,7 +402,8 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
     @Override
     public void sendRating(float rating, String comment) {
         String rentId = rentUuid;
-        disposable = viewModel.addRating(rating, comment, rentId).subscribeOn(Schedulers.io())
+        disposable = viewModel.addRating(rating, comment, rentId)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> AlertUtils.showSuccessToast(this, "Votacion exitosa"), Timber::e);
         compositeDisposable.add(disposable);
@@ -418,16 +427,21 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
 
     //------------------------------------- Login -------------------------------------//
     void showLoginDialog() {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        Fragment prev = getSupportFragmentManager().findFragmentByTag(LOGIN_TAG);
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
+        if (!deviceID.equals("")) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            Fragment prev = getSupportFragmentManager().findFragmentByTag(LOGIN_TAG);
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
 
-        // Create and show the dialog.
-        LoginFragment loginFragment = LoginFragment.newInstance();
-        loginFragment.show(ft, LOGIN_TAG);
+            // Create and show the dialog.
+            LoginFragment loginFragment = LoginFragment.newInstance();
+            loginFragment.show(ft, LOGIN_TAG);
+        } else {
+            loginIsClicked = false;
+            AlertUtils.showErrorAlert(this,"Esta operación no se puede efectuar");
+        }
     }
 
 
@@ -484,6 +498,7 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
     public void dismissDialog() {
         loginIsClicked = false;
     }
+
 
 
 }

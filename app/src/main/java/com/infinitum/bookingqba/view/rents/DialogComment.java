@@ -101,7 +101,7 @@ public class DialogComment extends DialogFragment implements View.OnClickListene
         commentBinding.ratingView.setNameForSmile(BaseRating.GOOD, "Bueno");
         commentBinding.ratingView.setNameForSmile(BaseRating.GREAT, "Excelente");
         commentBinding.ratingView.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.poppinsbold));
-        commentBinding.login.setOnClickListener(this);
+        commentBinding.btnComment.setOnClickListener(this);
     }
 
     @NonNull
@@ -123,14 +123,14 @@ public class DialogComment extends DialogFragment implements View.OnClickListene
 
     @Override
     public void onDetach() {
-        super.onDetach();
         commentInteraction = null;
+        super.onDetach();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.login:
+            case R.id.btn_comment:
                 addComment();
                 break;
         }

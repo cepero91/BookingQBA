@@ -104,8 +104,8 @@ public class DialogRating extends DialogFragment implements View.OnClickListener
 
     @Override
     public void onDetach() {
-        super.onDetach();
         ratingInteraction = null;
+        super.onDetach();
     }
 
     @Override

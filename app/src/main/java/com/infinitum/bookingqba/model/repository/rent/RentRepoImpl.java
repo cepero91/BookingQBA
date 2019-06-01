@@ -162,7 +162,8 @@ public class RentRepoImpl implements RentRepository {
     @Override
     public Completable addOrUpdateRating(RatingEntity entity) {
         SupportSQLiteQuery query = new SimpleSQLiteQuery("INSERT OR REPLACE INTO Rating VALUES ('" + entity.getId() + "','" + entity.getRating() + "', '" + entity.getComment() + "', '" + entity.getRent() + "','"+entity.getVersion()+"')");
-        return Completable.fromAction(() -> qbaDao.addOrUpdateRating(query)).subscribeOn(Schedulers.io());
+        return Completable.fromAction(() -> qbaDao.addOrUpdateRating(query))
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
