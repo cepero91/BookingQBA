@@ -32,6 +32,7 @@ import com.liulishuo.filedownloader.FileDownloader;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.net.ConnectException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -215,7 +216,14 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
                     } else {
                         AlertUtils.showInfoAlertAndGoHome(this, getResources().getString(R.string.no_need_update));
                     }
-                }, Timber::e);
+                }, throwable -> {
+                    Timber.e(throwable);
+                    String msg = "Opps!!, un error ha ocurrido";
+                    if (throwable instanceof ConnectException) {
+                        msg = "Opps!!, error al conectarse";
+                    }
+                    onDownloadError(msg);
+                });
         compositeDisposable.add(entityDisposable);
     }
 
@@ -226,7 +234,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
      * @return
      */
     private String checkLocalDate(Resource<DatabaseUpdateEntity> localResource) {
-        if (localResource.status != Resource.Status.EMPTY) {
+        if (localResource.status == Resource.Status.SUCCESS && localResource.data != null) {
             SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new Locale("es", "ES"));
             return parser.format(localResource.data.getLastDateUpdateEntity());
         } else {
@@ -477,7 +485,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
             }
         } else {
             syncBinding.pbGalery.startProgressAnimation();
-            new Handler().postDelayed(this::notifyDownloadEnds,1200);
+            new Handler().postDelayed(this::notifyDownloadEnds, 1200);
 
         }
 
@@ -525,7 +533,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
     public void onDownloadError(String message) {
         Timber.e("Error on index ===> %s, with message ===> %s", entityProgress, message);
-        AlertUtils.showErrorAlert(this);
+        AlertUtils.showErrorAlert(this, message);
         syncBinding.fbDownload.setEnabled(true);
         if (syncBinding.fbDownload.getTag().equals(LEVEL_ENTITY)) {
             syncBinding.swDownload.setEnabled(true);

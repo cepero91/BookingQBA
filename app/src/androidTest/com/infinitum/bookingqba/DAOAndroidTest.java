@@ -119,7 +119,6 @@ public class DAOAndroidTest {
         amenityTestObserver.assertValue(amenitiesEntity -> amenitiesEntity != null);
         AmenitiesEntity amenitiesEntityById = amenityTestObserver.values().get(0);
         assertTrue(areIdentical(amenitiesEntityFirst, amenitiesEntityById));
-
     }
 
     /**

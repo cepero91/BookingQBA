@@ -66,8 +66,8 @@ public class APIUnitTest {
         String username = "cepero";
         String password = "qwertyuiop";
         String imei = "357091099552455";
-
-        User user = new User("dac72e30cc532c02e7aa8d8d2c957bdfa0691904", "Jose Manuel");
+        User user = new User("dac72e30cc532c02e7aa8d8d2c957bdfa0691904"
+                , "Jose Manuel");
         user.setAvatar("static/users/client-face2_kJQQYi2_9QrXNtz.png");
         String[] rent = new String[]{
                 "4488add4-7513-4e0a-ad67-c3c75383ebd4",
@@ -76,19 +76,13 @@ public class APIUnitTest {
                 "8a2203b4-9105-404e-8b18-31c19decb388",
                 "2755ed13-c65c-4dc6-849f-768ad6e3baf2"
         };
-        ArrayList<String> strings = new ArrayList<>();
-        for(String uuid : rent){
-            strings.add(uuid);
-        }
+        ArrayList<String> strings = new ArrayList<>(Arrays.asList(rent));
         user.setUserid("1");
         user.setRents(strings);
-
         TestObserver<User> testObserver = new TestObserver<>();
-
         apiInterface.login(username,password,imei)
                 .map(response -> response.body())
                 .subscribe(testObserver);
-
         testObserver.assertValue(user);
         testObserver.assertNoErrors();
         testObserver.assertComplete();
