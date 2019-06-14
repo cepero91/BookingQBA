@@ -39,6 +39,14 @@ public class SplashActivity extends DaggerAppCompatActivity {
         boolean firstOpen = sharedPreferences.getBoolean(PREF_FIRST_OPEN, true);
         boolean downloadDateExist = !sharedPreferences.getString(PREF_LAST_DOWNLOAD_DATE, "").equals("");
 
+        afterSplash(firstOpen, downloadDateExist);
+
+//        Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
+//        startActivity(intent);
+//        SplashActivity.this.finish();
+    }
+
+    private void afterSplash(boolean firstOpen, boolean downloadDateExist) {
         new Handler().postDelayed(() -> {
             if (firstOpen) {
                 Intent intent = new Intent(SplashActivity.this, TutorialActivity.class);
@@ -54,7 +62,6 @@ public class SplashActivity extends DaggerAppCompatActivity {
                 SplashActivity.this.finish();
             }
         }, 2600);
-
     }
 
     private void paraProbarLeaks() {

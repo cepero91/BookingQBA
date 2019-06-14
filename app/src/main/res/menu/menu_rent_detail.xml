@@ -5,25 +5,25 @@
     <item
         android:id="@+id/action_list_wish"
         android:icon="@drawable/ic_bookmark_white"
-        android:title="Deseada"
+        android:title="@string/deseada"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_vote"
         android:icon="@drawable/ic_star_white"
-        android:title="Votar"
+        android:title="@string/votar"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_comment"
         android:icon="@drawable/ic_comment"
-        android:title="Comentar"
+        android:title="@string/comentar"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_login"
         android:icon="@drawable/ic_user_alt"
-        android:title="Iniciar Sesion"
+        android:title="@string/iniciar_sesion"
         app:showAsAction="never" />
 
 

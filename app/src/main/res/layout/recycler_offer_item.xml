@@ -47,7 +47,7 @@
                 android:includeFontPadding="false"
                 android:layout_marginEnd="8dp"
                 android:fontFamily="@font/poppinsregular"
-                android:text="precio minimo"
+                android:text="@string/precio_minimo"
                 android:textSize="12sp" />
 
             <TextView

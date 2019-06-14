@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/poppinsbold"
-            android:text="Votacion"
+            android:text="@string/votacion"
             android:textSize="18sp" />
 
         <com.willy.ratingbar.BaseRatingBar

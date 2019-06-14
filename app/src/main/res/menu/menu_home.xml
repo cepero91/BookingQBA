@@ -5,31 +5,31 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home"
-            android:title="Inicio" />
+            android:title="@string/inicio" />
         <item
             android:id="@+id/nav_list"
             android:icon="@drawable/ic_th_list"
-            android:title="Rentas" />
+            android:title="@string/rentas" />
         <item
             android:id="@+id/nav_wish_list"
             android:icon="@drawable/ic_scroll"
-            android:title="Lista de Deseo" />
+            android:title="@string/lista_de_deseo" />
         <item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_map_marked"
-            android:title="Mapa" />
+            android:title="@string/mapa" />
 
         <item
             android:id="@+id/nav_info"
             android:icon="@drawable/ic_info"
-            android:title="Informacion" />
+            android:title="@string/informacion" />
     </group>
 
     <group android:id="@+id/group_2" android:checkableBehavior="single" android:visible="false">
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_user_alt"
-            android:title="Perfil" />
+            android:title="@string/perfil" />
     </group>
 
 </menu>

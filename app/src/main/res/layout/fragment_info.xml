@@ -31,7 +31,7 @@
             android:fontFamily="@font/poppinsbold"
             android:paddingBottom="5dp"
             android:paddingTop="5dp"
-            android:text="Base de Datos"
+            android:text="@string/base_de_datos"
             android:textAlignment="center"
             android:textColor="@color/material_color_blue_grey_500"
             android:textSize="14sp" />
@@ -41,7 +41,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:orientation="horizontal"
-            android:weightSum="6">
+            android:weightSum="6"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -58,7 +59,7 @@
                     android:fontFamily="@font/poppinsregular"
                     android:paddingBottom="5dp"
                     android:paddingTop="5dp"
-                    android:text="Sincronzar"
+                    android:text="@string/sincronizar"
                     android:textAllCaps="false"
                     android:textColor="@color/material_color_blue_grey_500" />
 
@@ -145,7 +146,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:fontFamily="@font/poppinsregular"
-                    android:text="Desarrollo y Diseño: "
+                    android:text="@string/desarrollo_y_dise_o"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="12sp" />
 
@@ -155,7 +156,7 @@
                     android:layout_gravity="end"
                     android:layout_marginEnd="15dp"
                     android:fontFamily="@font/poppinsitalic"
-                    android:text="Tec. Inf. Jose Manuel Cepero"
+                    android:text="@string/tec_inf_jose_manuel_cepero"
                     android:textColor="@color/material_color_blue_grey_300"
                     android:textSize="12sp" />
 
@@ -164,7 +165,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:fontFamily="@font/poppinsregular"
-                    android:text="Version: "
+                    android:text="@string/version"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="12sp" />
 
@@ -195,7 +196,7 @@
                     android:fontFamily="@font/poppinsregular"
                     android:paddingBottom="5dp"
                     android:paddingTop="5dp"
-                    android:text="Politicas"
+                    android:text="@string/politicas"
                     android:textAllCaps="false"
                     android:textColor="@color/material_color_blue_grey_500" />
 

@@ -62,13 +62,13 @@ Natoque augue bibendum etiam aliquet fames vestibulum in justo libero elementum,
 
 In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor sollicitudin justo at mauris tempor sapien gravida feugiat, cum euismod orci mollis dapibus dictumst venenatis tempus. Ridiculus primis egestas cubilia fusce fermentum imperdiet mollis feugiat lectus a metus, ut id nostra pretium leo ultrices proin rhoncus montes laoreet donec, penatibus vivamus consequat quis urna faucibus elementum turpis enim aliquet. Sollicitudin leo ultrices sed nostra curabitur in ad lacus, pretium eu sociis donec erat primis magna metus montes, molestie diam interdum sem taciti nec aliquet. Vestibulum enim himenaeos massa conubia dictum luctus posuere diam faucibus odio, litora justo senectus nunc class fringilla urna risus augue vel lectus, mauris potenti nisi consequat ultricies curae torquent mus imperdiet.
     </string>
-    <string name="txt_feedback">Si te ha ayudado la aplicacion y deseas sugerirnos una idea para mejorar, por favor escribenos. Lo tomaremos en cuenta</string>
+    <string name="txt_feedback">Si te ha ayudado la aplicación y deseas sugerirnos una idea para mejorar, por favor escríbenos. Lo tomaremos en cuenta</string>
     <string name="sugerir">Sugerir</string>
-    <string name="ayudanos_a_mejorar">Ayudanos a mejorar</string>
+    <string name="ayudanos_a_mejorar">Ayúdanos a mejorar</string>
     <string name="propiedad_intelectual">Propiedad Intelectual</string>
-    <string name="actualizacion_disponible">Actualizacion Disponible</string>
+    <string name="actualizacion_disponible">Actualización Disponible</string>
     <string name="hace_mas_de_un_mes">Hace mas de un mes</string>
-    <string name="ultima_actualizacion">Ultima actualizacion</string>
+    <string name="ultima_actualizacion">Última actualización</string>
     <string name="detail">Detalles</string>
     <string name="comment">Comentarios</string>
     <string name="offer">Ofertas</string>
@@ -99,4 +99,30 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="page_two_text">Te brindamos información detallada que te permite, comparar y escoger la casa ideal.</string>
     <string name="page_three_text">No tienes internet!, no importa, nuestro mapa te indica tu destino sin necesidad de conexión</string>
     <string name="contactos">Contactos</string>
+    <string name="inicio">Inicio</string>
+    <string name="rentas">Rentas</string>
+    <string name="lista_de_deseo">Lista de Deseo</string>
+    <string name="mapa">Mapa</string>
+    <string name="informacion">Información</string>
+    <string name="perfil">Perfil</string>
+    <string name="base_de_datos">Base de Datos</string>
+    <string name="sincronizar">Sincronizar</string>
+    <string name="version">Versión:</string>
+    <string name="tec_inf_jose_manuel_cepero">Tec. Inf. Jose Manuel Cepero</string>
+    <string name="desarrollo_y_dise_o">Desarrollo y Diseño:</string>
+    <string name="politicas">Políticas</string>
+    <string name="precio_minimo">precio mínimo</string>
+    <string name="deseada">Deseada</string>
+    <string name="votar">Votar</string>
+    <string name="comentar">Comentar</string>
+    <string name="iniciar_sesion">Iniciar Sesión</string>
+    <string name="busqueda_avanzada">Búsqueda avanzada</string>
+    <string name="votacion">Votación</string>
+    <string name="email">Email</string>
+    <string name="casa">Casa</string>
+    <string name="movil">Celular</string>
+    <string name="sms">SMS</string>
+    <string name="usuario">Usuario</string>
+    <string name="contrase_a">Contraseña</string>
+    <string name="entrar"> Entrar</string>
 </resources>

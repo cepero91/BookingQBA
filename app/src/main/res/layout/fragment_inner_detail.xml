@@ -439,7 +439,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppinsregular"
-                        android:text="SMS"
+                        android:text="@string/sms"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="12sp" />
 
@@ -470,7 +470,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppinsregular"
-                        android:text="Movil"
+                        android:text="@string/movil"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="12sp" />
 
@@ -501,7 +501,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppinsregular"
-                        android:text="Casa"
+                        android:text="@string/casa"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="12sp" />
 
@@ -532,7 +532,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppinsregular"
-                        android:text="Email"
+                        android:text="@string/email"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="12sp" />
 

@@ -49,7 +49,7 @@
                         android:layout_gravity="center"
                         android:fontFamily="@font/poppinsregular"
                         android:includeFontPadding="false"
-                        android:text="Busqueda avanzada"
+                        android:text="@string/busqueda_avanzada"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="18sp" />
 
