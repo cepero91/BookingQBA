@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -289,13 +290,8 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     }
 
     private void showViews() {
-        mapBinding.vOverlap.bringToFront();
         mapBinding.setIsLoading(false);
-        mapBinding.mapview.map().postDelayed(() -> mapBinding.vOverlap.animate()
-                .alpha(0)
-                .setInterpolator(new DecelerateInterpolator())
-                .setDuration(100)
-                .start(), 500);
+        mapBinding.progressPvLinear.stop();
     }
 
     @Override

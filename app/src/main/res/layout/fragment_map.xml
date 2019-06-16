@@ -26,13 +26,12 @@
                 android:id="@+id/mapview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:visibleGone="@{!safeUnbox(isLoading)}" />
+                app:discreteVisibility="@{!safeUnbox(isLoading)}" />
 
             <View
                 android:id="@+id/v_overlap"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/White_100"
                 />
 
             <FrameLayout
@@ -45,16 +44,20 @@
 
         </FrameLayout>
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginTop="-8dp"
-            android:indeterminate="true"
-            android:minHeight="16dp"
-            app:visibleGone="@{safeUnbox(isLoading)}" />
+            android:layout_gravity="top">
+
+            <com.rey.material.widget.ProgressView
+                android:id="@+id/progress_pv_linear"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_gravity="center"
+                app:pv_autostart="true"
+                app:v_styleId="@array/pv_linear_query"/>
+
+        </FrameLayout>
 
     </RelativeLayout>
 

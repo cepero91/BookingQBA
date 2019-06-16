@@ -203,12 +203,13 @@ public class HomeFragment extends BaseNavigationFragment {
     }
 
     public void setItemsAdapter(List<ViewModel> rendererViewModelList) {
-        fragmentHomeBinding.setIsLoading(false);
         recyclerViewAdapter = new RendererRecyclerViewAdapter();
         recyclerViewAdapter.registerRenderer(getHeader());
         recyclerViewAdapter.registerRenderer(getCompositeBinder());
         recyclerViewAdapter.setItems(rendererViewModelList);
         OverScrollDecoratorHelper.setUpOverScroll(fragmentHomeBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+        fragmentHomeBinding.setIsLoading(false);
+        fragmentHomeBinding.progressPvLinear.stop();
         fragmentHomeBinding.recyclerView.setAdapter(recyclerViewAdapter);
         LayoutAnimationController animationController = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_anim_fall_down);
         fragmentHomeBinding.recyclerView.setLayoutAnimation(animationController);

@@ -2,7 +2,12 @@ package com.infinitum.bookingqba.model;
 
 import android.support.annotation.NonNull;
 
+import com.infinitum.bookingqba.model.remote.errors.ResponseResultException;
+
 import org.jetbrains.annotations.Nullable;
+
+import java.net.ConnectException;
+import java.net.SocketException;
 
 public class OperationResult {
 
@@ -17,24 +22,33 @@ public class OperationResult {
         this.message = message;
     }
 
-    public static OperationResult success(String message){
-        return new OperationResult(Result.SUCCESS,message);
+    public static OperationResult success(String message) {
+        return new OperationResult(Result.SUCCESS, message);
     }
 
-    public static OperationResult success(){
-        return new OperationResult(Result.SUCCESS,null);
+    public static OperationResult success() {
+        return new OperationResult(Result.SUCCESS, null);
     }
 
-    public static OperationResult error(String message){
-        return new OperationResult(Result.ERROR,message);
+    public static OperationResult error(String message) {
+        return new OperationResult(Result.ERROR, message);
     }
 
-    public static OperationResult error(Throwable throwable){
-        return new OperationResult(Result.ERROR,throwable.getMessage());
+    public static OperationResult error(Throwable throwable) {
+        if (throwable instanceof ConnectException) {
+            return new OperationResult(Result.ERROR, "Error al conectarse");
+        } else if (throwable instanceof SocketException) {
+            return new OperationResult(Result.ERROR, "Error al conectarse");
+        }else if (throwable instanceof ResponseResultException) {
+            return new OperationResult(Result.ERROR, throwable.getMessage());
+        } else {
+            return new OperationResult(Result.ERROR, "Un error ha ocurrido");
+        }
+
     }
 
-    public static OperationResult empty(String message){
-        return new OperationResult(Result.EMPTY,message);
+    public static OperationResult empty(String message) {
+        return new OperationResult(Result.EMPTY, message);
     }
 
     @NonNull
@@ -48,10 +62,10 @@ public class OperationResult {
 
     @Override
     public String toString() {
-        return result == Result.SUCCESS?"SUCCESS "+message:"ERROR "+message;
+        return result == Result.SUCCESS ? "SUCCESS " + message : "ERROR " + message;
     }
 
-    public enum Result{
+    public enum Result {
         SUCCESS,
         ERROR,
         EMPTY

@@ -9,6 +9,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.infinitum.bookingqba.di.AppComponent;
 import com.infinitum.bookingqba.di.DaggerAppComponent;
 import com.infinitum.bookingqba.service.SendDataWorker;
+import com.rey.material.app.ThemeManager;
 import com.squareup.leakcanary.LeakCanary;
 
 import java.util.concurrent.TimeUnit;
@@ -34,6 +35,7 @@ public class BookingQBApp extends DaggerApplication{
     public void onCreate() {
         super.onCreate();
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        ThemeManager.init(this, 1, 0, null);
 
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="switches">
+        <item>@style/LightSwitch</item>
+    </array>
+
+    <array name="pv_circular">
+        <item>@style/LightCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_colors">
+        <item>@style/LightColorCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_in">
+        <item>@style/LightInCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_in_colors">
+        <item>@style/LightInColorCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_determinate">
+        <item>@style/LightDeterminateCircularProgressView</item>
+    </array>
+
+    <array name="pv_circular_determinate_in">
+        <item>@style/LightDeterminateInCircularProgressView</item>
+    </array>
+
+    <array name="pv_linear">
+        <item>@style/LightLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_color">
+        <item>@style/LightColorLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_determinate">
+        <item>@style/LightDeterminateLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_query">
+        <item>@style/LightQueryLinearProgressView</item>
+    </array>
+
+    <array name="pv_linear_buffer">
+        <item>@style/LightBufferLinearProgressView</item>
+    </array>
+
+</resources>

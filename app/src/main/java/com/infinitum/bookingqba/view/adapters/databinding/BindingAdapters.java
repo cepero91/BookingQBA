@@ -174,9 +174,15 @@ public class BindingAdapters {
 
     @BindingAdapter("setRoundedImage")
     public static void setRoundedImage(RoundedImageView view, String imagePath) {
-        Glide.with(view.getContext())
-                .load(imagePath)
-                .crossFade()
+        String path;
+        if (!imagePath.contains("http")) {
+            path = "file:" + imagePath;
+        } else {
+            path = imagePath;
+        }
+        Picasso.get()
+                .load(path)
+                .resize(480,320)
                 .placeholder(R.drawable.placeholder)
                 .into(view);
     }

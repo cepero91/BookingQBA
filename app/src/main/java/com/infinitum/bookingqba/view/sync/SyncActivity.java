@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.net.ConnectException;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +63,7 @@ import static com.infinitum.bookingqba.util.Constants.PROGRESS_ERROR;
 import static com.infinitum.bookingqba.util.Constants.PROGRESS_SUCCESS;
 import static com.infinitum.bookingqba.util.Constants.ROOT_GALERY_FOLDER_NAME;
 
-public class SyncActivity extends DaggerAppCompatActivity implements View.OnClickListener, Switch.OnCheckedChangeListener {
+public class SyncActivity extends DaggerAppCompatActivity implements View.OnClickListener, com.rey.material.widget.Switch.OnCheckedChangeListener {
     private ActivitySyncBinding syncBinding;
 
     private SyncViewModel syncViewModel;
@@ -137,8 +138,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
             syncBinding.swDownload.setChecked(true);
             syncBinding.swDownload.setEnabled(false);
             changeVisibilityProgressGalery(true);
-            syncBinding.pbEntities.setEndProgress(100);
-            syncBinding.pbEntities.startProgressAnimation();
+            syncBinding.pbEntities.setProgress(100,true);
         }
     }
 
@@ -401,7 +401,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         entityProgress++;
         float percent = ((float) entityProgress / 17) * 100;
         saveEntityDownloadIndex(entityProgress);
-        syncBinding.pbEntities.setProgress(percent);
+        syncBinding.pbEntities.setProgress((int)percent,false);
         if (entityProgress < 17) {
             startSyncOnLevel(entityProgress);
         } else if (entityProgress == 17 && !downloadImages) {
@@ -438,7 +438,6 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private List<BaseDownloadTask> prepareLinksForDownload(List<GalerieEntity> galerieEntities) {
         sizeGalerieList = galerieEntities.size();
-        syncBinding.pbGalery.setEndProgress(100);
         List<BaseDownloadTask> tasks = new ArrayList<>();
         String fileRootName = getPathFilesRoot();
         for (GalerieEntity entity : galerieEntities) {
@@ -480,11 +479,11 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
             } else {
                 queueSet = new FileDownloadQueueSet(getDownloaderListener());
                 queueSet.disableCallbackProgressTimes();
-                queueSet.downloadTogether(taskList);
+                queueSet.downloadSequentially(taskList);
                 queueSet.start();
             }
         } else {
-            syncBinding.pbGalery.startProgressAnimation();
+            syncBinding.pbGalery.setProgress(100,true);
             new Handler().postDelayed(this::notifyDownloadEnds, 1200);
 
         }
@@ -493,7 +492,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private void updateUIWithProgress() {
         final int progress = getDownloadProgress();
-        syncBinding.pbGalery.setProgress(progress);
+        syncBinding.pbGalery.setProgress(progress,false);
         if (sizeGalerieList == progressGalery) {
             disposeAllDisposable();
             updateAllGaleryDownloaded();
@@ -521,14 +520,18 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
     public void onDownloadError(Throwable throwable) {
         Timber.e("Error with message ===> %s", throwable.getMessage());
-        AlertUtils.showErrorAlert(this);
-        syncBinding.fbDownload.setEnabled(true);
+        if(throwable instanceof ConnectException || throwable instanceof SocketException) {
+            AlertUtils.showErrorAlert(this, "Error al conectarse");
+        }else{
+            AlertUtils.showErrorAlert(this);
+        }
         if (syncBinding.fbDownload.getTag().equals(LEVEL_ENTITY)) {
             syncBinding.swDownload.setEnabled(true);
             changeProgressColor(LEVEL_PROGRESS_ENTITY, PROGRESS_ERROR);
         } else if (syncBinding.fbDownload.getTag().equals(LEVEL_GALERY) || syncBinding.fbDownload.getTag().equals(LEVEL_GALERY_PAUSED)) {
             changeProgressColor(LEVEL_PROGRESS_GALERY, PROGRESS_ERROR);
         }
+        syncBinding.fbDownload.setEnabled(true);
     }
 
     public void onDownloadError(String message) {
@@ -546,20 +549,16 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     private void changeProgressColor(int progressLevel, int errorType) {
         switch (progressLevel + errorType) {
             case 3:
-                syncBinding.pbEntities.setEndColor(Color.RED);
-                syncBinding.pbEntities.setStartColor(Color.RED);
+                syncBinding.pbEntities.setProgressColor(Color.RED);
                 break;
             case 4:
-                syncBinding.pbGalery.setEndColor(Color.RED);
-                syncBinding.pbGalery.setStartColor(Color.RED);
+                syncBinding.pbGalery.setProgressColor(Color.RED);
                 break;
             case 5:
-                syncBinding.pbEntities.setEndColor(Color.parseColor("#009689"));
-                syncBinding.pbEntities.setStartColor(Color.parseColor("#64FFDA"));
+                syncBinding.pbEntities.setProgressColor(Color.parseColor("#009689"));
                 break;
             case 6:
-                syncBinding.pbGalery.setEndColor(Color.parseColor("#009689"));
-                syncBinding.pbGalery.setStartColor(Color.parseColor("#64FFDA"));
+                syncBinding.pbGalery.setProgressColor(Color.parseColor("#009689"));
                 break;
         }
     }
@@ -637,7 +636,6 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
             @Override
             protected void error(BaseDownloadTask task, Throwable e) {
-                FileDownloader.getImpl().pause(getDownloaderListener());
                 syncBinding.fbDownload.setTag(LEVEL_GALERY_PAUSED);
                 if (!uniqueDownloadErrorAlert) {
                     uniqueDownloadErrorAlert = true;
@@ -692,13 +690,10 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         }
     }
 
+
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked) {
-            downloadImages = true;
-        } else {
-            downloadImages = false;
-        }
+    public void onCheckedChanged(com.rey.material.widget.Switch view, boolean checked) {
+        downloadImages = checked;
         changeVisibilityProgressGalery(downloadImages);
     }
 }

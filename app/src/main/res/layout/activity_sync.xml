@@ -62,7 +62,7 @@
                     android:layout_gravity="center"
                     android:layout_marginBottom="@dimen/pages_title_margin_bottom"
                     android:fontFamily="@font/poppinsbold"
-                    android:text="Sincronizacion"
+                    android:text="@string/sincronizacion"
                     android:textAlignment="center"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="18sp" />
@@ -74,12 +74,12 @@
                     android:gravity="center"
                     android:orientation="horizontal">
 
-                    <android.support.v7.widget.SwitchCompat
+                    <com.rey.material.widget.Switch
                         android:id="@+id/sw_download"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:theme="@style/switchStyle"
+                        app:v_styleId="@array/switches"
                         android:checked="true"
                         android:paddingEnd="3dp"
                         android:paddingStart="3dp"/>
@@ -89,7 +89,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppinsregular"
-                        android:text="Descargar Imagenes"
+                        android:text="@string/descargar_imagenes"
                         android:textAlignment="center"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -110,27 +110,36 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <com.moos.library.CircleProgressView
+                        <com.vaibhavlakhera.circularprogressview.CircularProgressView
                             android:id="@+id/pb_entities"
                             android:layout_width="85dp"
                             android:layout_height="85dp"
-                            app:end_color="@color/colorPrimary"
-                            app:isTracked="true"
-                            app:progressTextColor="#696969"
-                            app:progressTextSize="18sp"
-                            app:start_color="#64FFDA"
-                            app:trackColor="@color/material_color_grey_200"
-                            app:track_width="10dp" />
+                            android:layout_marginStart="5dp"
+                            android:layout_marginEnd="5dp"
+                            app:animate="true"
+                            app:animateDuration="300"
+                            app:fillColor="@color/White_100"
+                            app:progressColor="@color/colorPrimary"
+                            app:progressInterpolator="@android:anim/accelerate_decelerate_interpolator"
+                            app:progressRoundCap="false"
+                            app:progressTextColor="@color/colorPrimary"
+                            app:progressTextEnabled="true"
+                            app:progressTextSize="16sp"
+                            app:progressTextType="percent"
+                            app:progressWidth="10dp"
+                            app:startAngle="270"
+                            app:totalValue="100"
+                            app:totalColor="@color/material_color_grey_300"
+                            app:totalWidth="6dp" />
 
                         <TextView
                             android:id="@+id/tv_entities"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="-10dp"
                             android:layout_gravity="center"
                             android:layout_marginBottom="@dimen/pages_title_margin_bottom"
                             android:fontFamily="@font/poppinsregular"
-                            android:text="Rentas"
+                            android:text="@string/rentas"
                             android:textAlignment="center"
                             android:textSize="12sp" />
 
@@ -143,28 +152,36 @@
                         android:layout_marginStart="10dp"
                         android:orientation="vertical">
 
-                        <com.moos.library.CircleProgressView
+                        <com.vaibhavlakhera.circularprogressview.CircularProgressView
                             android:id="@+id/pb_galery"
                             android:layout_width="85dp"
                             android:layout_height="85dp"
-                            app:end_color="@color/colorPrimary"
-                            app:isTracked="true"
-                            app:progressTextColor="#696969"
-                            app:progressTextSize="18sp"
-                            app:setProgress="@{percent}"
-                            app:start_color="#64FFDA"
-                            app:trackColor="@color/material_color_grey_200"
-                            app:track_width="10dp" />
+                            android:layout_marginStart="5dp"
+                            android:layout_marginEnd="5dp"
+                            app:animate="true"
+                            app:animateDuration="300"
+                            app:fillColor="@color/White_100"
+                            app:progressColor="@color/colorPrimary"
+                            app:progressInterpolator="@android:anim/accelerate_decelerate_interpolator"
+                            app:progressRoundCap="false"
+                            app:progressTextColor="@color/colorPrimary"
+                            app:progressTextEnabled="true"
+                            app:progressTextSize="16sp"
+                            app:progressTextType="percent"
+                            app:progressWidth="10dp"
+                            app:startAngle="270"
+                            app:totalValue="100"
+                            app:totalColor="@color/material_color_grey_300"
+                            app:totalWidth="6dp" />
 
                         <TextView
                             android:id="@+id/tv_galerie"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="-10dp"
                             android:layout_gravity="center"
                             android:layout_marginBottom="@dimen/pages_title_margin_bottom"
                             android:fontFamily="@font/poppinsregular"
-                            android:text="Imagenes"
+                            android:text="@string/imagenes"
                             android:textAlignment="center"
                             android:textSize="12sp" />
 
