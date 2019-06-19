@@ -130,9 +130,11 @@ public class RentListFragment extends BaseNavigationFragment {
             OverScrollDecoratorHelper.setUpOverScroll(rentListBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
             rentListBinding.setIsLoading(false);
             rentListBinding.setIsEmpty(false);
+            rentListBinding.progressPvLinear.stop();
         }else{
             rentListBinding.setIsLoading(false);
             rentListBinding.setIsEmpty(true);
+            rentListBinding.progressPvLinear.stop();
         }
     }
 

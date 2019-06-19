@@ -15,16 +15,16 @@ public class GeneralCommentAnalitics {
 
     @SerializedName("total_month")
     @Expose
-    private int totalMont;
+    private int totalMonth;
 
     @SerializedName("total_day")
     @Expose
     private int totalDay;
 
-    public GeneralCommentAnalitics(int totalComment, int totalYear, int totalMont, int totalDay) {
+    public GeneralCommentAnalitics(int totalComment, int totalYear, int totalMonth, int totalDay) {
         this.totalComment = totalComment;
         this.totalYear = totalYear;
-        this.totalMont = totalMont;
+        this.totalMonth = totalMonth;
         this.totalDay = totalDay;
     }
 
@@ -44,12 +44,12 @@ public class GeneralCommentAnalitics {
         this.totalYear = totalYear;
     }
 
-    public int getTotalMont() {
-        return totalMont;
+    public int getTotalMonth() {
+        return totalMonth;
     }
 
-    public void setTotalMont(int totalMont) {
-        this.totalMont = totalMont;
+    public void setTotalMonth(int totalMonth) {
+        this.totalMonth = totalMonth;
     }
 
     public int getTotalDay() {

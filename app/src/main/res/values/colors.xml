@@ -10,4 +10,6 @@
     <color name="colorSwitchThumbNormal">#FF78909C</color>
     <color name="colorControlNormalHalf">#9078909C</color>
     <color name="colorControlActivatedHalf">#9003A9F4</color>
+    <color name="colorControlNormal">#FF78909C</color>
+    <color name="colorPrimaryHalf">#9003A9F4</color>
 </resources>

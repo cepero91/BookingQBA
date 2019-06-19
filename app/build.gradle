@@ -225,4 +225,7 @@ dependencies {
     implementation 'com.github.razerdp:AnimatedPieView:1.2.5'
     implementation 'com.github.dyguests:FlameBarChart:0.62'
     implementation 'devlight.io:arcprogressstackview:1.0.4'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'//PROBLEMAS CON EL ZOOM
+    implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'//Marca de agua fula y lento al cargar ademas provoca leak
+    implementation 'com.openxu.viewlib:OXViewLib:1.0.2'
 }

@@ -127,4 +127,17 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="entrar"> Entrar</string>
     <string name="descargar_imagenes">Descargar Imágenes</string>
     <string name="sincronizacion">Sincronización</string>
+    <string name="hola_invitado">Hola Invitado!</string>
+    <string name="total_de_votos">Total de votos:</string>
+    <string name="promedio">Promedio:</string>
+    <string name="total_este_a_o">Este año:</string>
+    <string name="total_este_mes">Este mes:</string>
+    <string name="hoy">Hoy:</string>
+    <string name="dash">-</string>
+    <string name="posicionamiento">Posicionamiento</string>
+    <string name="popularidad">Popularidad</string>
+    <string name="vistas">Vistas</string>
+    <string name="total_provincial">Total Provincial</string>
+    <string name="total_nacional">Total Nacional</string>
+    <string name="bienvenido_anfitri_n">Bienvenido Anfitrión</string>
 </resources>

@@ -19,10 +19,11 @@
     </data>
 
 
-    <ScrollView
+    <com.xw.repo.widget.BounceScrollView
         android:id="@+id/nested"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/material_color_grey_200"
         android:clipToPadding="false"
         android:overScrollMode="always">
 
@@ -49,7 +50,7 @@
                 android:layout_below="@+id/user_avatar"
                 android:layout_centerHorizontal="true"
                 android:fontFamily="@font/poppinsbold"
-                android:text="@string/empty_text"
+                android:text="@string/bienvenido_anfitri_n"
                 android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="16sp" />
 
@@ -59,40 +60,51 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
                 android:layout_margin="8dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@+id/user_avatar"
                 android:animateLayoutChanges="true"
-                android:gravity="center"
+                android:gravity="center|end"
                 android:orientation="horizontal">
-
-                <ProgressBar
-                    android:id="@+id/pb_loading"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_marginEnd="5dp"
-                    android:indeterminate="true"
-                    app:visibleGone="@{safeUnbox(isLoading)}" />
 
                 <TextView
                     android:id="@+id/tv_msg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginStart="5dp"
                     android:fontFamily="@font/poppinsregular"
                     android:gravity="center"
                     android:includeFontPadding="false"
                     android:textColor="@color/colorAccent"
                     android:textSize="12sp" />
 
+                <FrameLayout
+                    android:layout_width="26dp"
+                    android:layout_height="26dp">
+
+                    <com.rey.material.widget.ProgressView
+                        android:id="@+id/progress_pv_circular_inout"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        app:pv_autostart="true"
+                        app:v_styleId="@array/pv_circular_in" />
+
+                </FrameLayout>
+
             </LinearLayout>
 
-            <Spinner
+            <com.rey.material.widget.Spinner
                 android:id="@+id/spinner_rents"
-                style="@style/MySpinnerStyle"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"
+                android:layout_width="190dp"
+                android:layout_height="50dp"
                 android:layout_below="@+id/tv_username"
                 android:layout_centerHorizontal="true"
-                android:spinnerMode="dropdown"
-                app:visibleGone="@{safeUnbox(showSelect)}" />
+                android:minWidth="190dp"
+                app:spn_label="Seleccione"
+                app:v_styleId="@array/spinner_no_arrow"
+                app:visibleGone="@{safeUnbox(showSelect)}"/>
 
 
             <RelativeLayout
@@ -103,7 +115,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_rect_grey"
+                android:background="@drawable/rounded_rect_white_r15"
                 android:paddingBottom="10dp">
 
                 <LinearLayout
@@ -115,84 +127,17 @@
                     android:gravity="center"
                     android:orientation="horizontal">
 
-
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/tv_rent_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tv_rent_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            android:fontFamily="@font/poppinsmedium"
-                            android:paddingEnd="3dp"
-                            android:paddingStart="3dp"
-                            android:text="@string/empty_text"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="18sp" />
-
-                       <LinearLayout
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:layout_gravity="end"
-                           android:paddingStart="3dp"
-                           android:paddingEnd="3dp"
-                           android:orientation="horizontal">
-
-                           <android.support.v7.widget.AppCompatImageView
-                               android:layout_width="wrap_content"
-                               android:layout_height="wrap_content"
-                               android:padding="3dp"
-                               app:srcCompat="@drawable/ic_star"/>
-
-                           <TextView
-                               android:id="@+id/tv_rating"
-                               android:layout_width="wrap_content"
-                               android:layout_height="wrap_content"
-                               android:includeFontPadding="false"
-                               android:fontFamily="@font/poppinsbold"
-                               android:textSize="14sp"
-                               android:layout_gravity="center"
-                               android:text="4.5"/>
-
-                       </LinearLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            android:fontFamily="@font/poppinsregular"
-                            android:paddingEnd="3dp"
-                            android:paddingStart="3dp"
-                            android:text="@string/nivel_de_detalle"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                    <com.vaibhavlakhera.circularprogressview.CircularProgressView
-                        android:id="@+id/pb_detail_percent"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
-                        app:animate="true"
-                        app:animateDuration="500"
-                        app:fillColor="@color/White_100"
-                        app:progressColor="@color/colorPrimary"
-                        app:progressInterpolator="@android:anim/accelerate_decelerate_interpolator"
-                        app:progressRoundCap="true"
-                        app:progressTextColor="@color/colorPrimary"
-                        app:progressTextEnabled="true"
-                        app:progressTextSize="14sp"
-                        app:progressTextType="percent"
-                        app:progressWidth="5dp"
-                        app:startAngle="270"
-                        app:totalValue="100"
-                        app:totalColor="@color/material_color_grey_300"
-                        app:totalWidth="12dp" />
+                        android:layout_gravity="end"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:paddingEnd="3dp"
+                        android:paddingStart="3dp"
+                        android:text="@string/empty_text"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="18sp" />
 
                 </LinearLayout>
 
@@ -203,7 +148,7 @@
                     android:layout_below="@+id/ll_rent_title_content"
                     android:layout_marginTop="5dp"
                     android:orientation="horizontal"
-                    android:weightSum="3">
+                    android:weightSum="2">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -229,43 +174,6 @@
                             android:paddingEnd="5dp"
                             android:paddingStart="5dp"
                             android:text="@string/visitas"
-                            android:textAlignment="center"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginTop="5dp"
-                        android:background="@color/material_color_blue_grey_100" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tv_total_comments"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center|top"
-                            android:fontFamily="@font/poppinsbold"
-                            android:text="@string/empty_short_text"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center|bottom"
-                            android:fontFamily="@font/poppinsregular"
-                            android:paddingEnd="5dp"
-                            android:paddingStart="5dp"
-                            android:text="@string/comentarios"
                             android:textAlignment="center"
                             android:textColor="@color/material_color_blue_grey_500"
                             android:textSize="12sp" />
@@ -315,147 +223,103 @@
             </RelativeLayout>
 
             <LinearLayout
-                android:id="@+id/ll_content_emotion"
+                android:id="@+id/ll_content_comment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/rl_content_params"
+                android:layout_marginBottom="12sp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_rect_grey"
+                android:background="@drawable/rounded_rect_white_r15"
                 android:orientation="vertical"
                 android:paddingBottom="8dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
                 android:paddingTop="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:drawablePadding="8dp"
                     android:fontFamily="@font/poppinsbold"
-                    android:text="@string/emociones_en_comentarios"
+                    android:text="@string/comentarios"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="14sp" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal"
-                    android:weightSum="5">
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/total_este_a_o"
+                        android:textSize="12sp" />
 
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            app:srcCompat="@drawable/ic_angry_emotion" />
-
-                        <TextView
-                            android:id="@+id/tv_terrible_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsbold"
-                            android:text="@string/empty_short_text" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:id="@+id/tv_total_year_comment"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/poppinsbold"
+                        android:textSize="12sp" />
 
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            app:srcCompat="@drawable/ic_frown_emotion" />
+                    <Space
+                        android:layout_width="15dp"
+                        android:layout_height="0dp" />
 
-                        <TextView
-                            android:id="@+id/tv_bad_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsbold"
-                            android:text="@string/empty_short_text" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/total_este_mes"
+                        android:textSize="12sp" />
 
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            app:srcCompat="@drawable/ic_meh_emotion" />
-
-                        <TextView
-                            android:id="@+id/tv_ok_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsbold"
-                            android:text="@string/empty_short_text" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:id="@+id/tv_total_month_comment"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/poppinsbold"
+                        android:textSize="12sp" />
 
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            app:srcCompat="@drawable/ic_grin_emotion" />
+                    <Space
+                        android:layout_width="15dp"
+                        android:layout_height="0dp" />
 
-                        <TextView
-                            android:id="@+id/tv_good_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsbold"
-                            android:text="@string/empty_short_text" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/hoy"
+                        android:textSize="12sp" />
 
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            app:srcCompat="@drawable/ic_laugh_emotion" />
-
-                        <TextView
-                            android:id="@+id/tv_excelent_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsbold"
-                            android:text="@string/empty_short_text" />
-
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/tv_total_today_comment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/poppinsbold"
+                        android:textSize="12sp" />
 
 
                 </LinearLayout>
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/pie_emotion"
+                    android:layout_width="match_parent"
+                    android:layout_height="170dp" />
 
             </LinearLayout>
 
@@ -463,20 +327,24 @@
                 android:id="@+id/ll_content_star"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/ll_content_emotion"
+                android:layout_below="@+id/ll_content_comment"
+                android:layout_marginBottom="12sp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_rect_grey"
+                android:background="@drawable/rounded_rect_white_r15"
                 android:orientation="vertical"
                 android:paddingBottom="8dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
                 android:paddingTop="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="5dp"
+                    android:drawablePadding="8dp"
                     android:fontFamily="@font/poppinsbold"
                     android:text="@string/votaciones"
                     android:textColor="@color/material_color_blue_grey_500"
@@ -486,192 +354,54 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginBottom="8dp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:includeFontPadding="false"
-                        android:paddingEnd="5dp"
-                        android:paddingStart="5dp"
-                        android:text="@string/_5"
-                        android:textSize="14sp" />
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/total_de_votos"
+                        android:textSize="12sp" />
 
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
+                    <TextView
+                        android:id="@+id/tv_total_votes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:tint="@color/material_color_blue_grey_200"
-                        app:srcCompat="@drawable/ic_star" />
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/poppinsbold"
+                        android:textSize="12sp" />
 
-                    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                        android:id="@+id/pb_5_star"
-                        android:layout_width="220dp"
-                        android:layout_height="20dp"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginTop="3dp"
-                        app:rcBackgroundColor="@color/material_color_grey_300"
-                        app:rcBackgroundPadding="2dp"
-                        app:rcMax="100"
-                        app:rcProgressColor="@color/colorPrimary"
-                        app:rcRadius="5dp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    <Space
+                        android:layout_width="20dp"
+                        android:layout_height="0dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:includeFontPadding="false"
-                        android:paddingEnd="5dp"
-                        android:paddingStart="5dp"
-                        android:text="@string/_4"
-                        android:textSize="14sp" />
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginEnd="5dp"
-                        android:tint="@color/material_color_blue_grey_200"
-                        app:srcCompat="@drawable/ic_star" />
-
-                    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                        android:id="@+id/pb_4_star"
-                        android:layout_width="220dp"
-                        android:layout_height="20dp"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginTop="3dp"
-                        app:rcBackgroundColor="@color/material_color_grey_300"
-                        app:rcBackgroundPadding="2dp"
-                        app:rcMax="100"
-                        app:rcProgressColor="@color/colorPrimary"
-                        app:rcRadius="5dp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="@string/promedio"
+                        android:textSize="12sp" />
 
                     <TextView
+                        android:id="@+id/tv_votes_average"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:includeFontPadding="false"
-                        android:paddingEnd="5dp"
-                        android:paddingStart="5dp"
-                        android:text="@string/_3"
-                        android:textSize="14sp" />
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
                         android:layout_marginEnd="5dp"
-                        android:tint="@color/material_color_blue_grey_200"
-                        app:srcCompat="@drawable/ic_star" />
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/poppinsbold"
+                        android:textSize="12sp" />
 
-                    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                        android:id="@+id/pb_3_star"
-                        android:layout_width="220dp"
-                        android:layout_height="20dp"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginTop="3dp"
-                        app:rcBackgroundColor="@color/material_color_grey_300"
-                        app:rcBackgroundPadding="2dp"
-                        app:rcMax="100"
-                        app:rcProgressColor="@color/colorPrimary"
-                        app:rcRadius="5dp" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:includeFontPadding="false"
-                        android:paddingEnd="5dp"
-                        android:paddingStart="5dp"
-                        android:text="@string/_2"
-                        android:textSize="14sp" />
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginEnd="5dp"
-                        android:tint="@color/material_color_blue_grey_200"
-                        app:srcCompat="@drawable/ic_star" />
-
-                    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                        android:id="@+id/pb_2_star"
-                        android:layout_width="220dp"
-                        android:layout_height="20dp"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginTop="3dp"
-                        app:rcBackgroundColor="@color/material_color_grey_300"
-                        app:rcBackgroundPadding="2dp"
-                        app:rcMax="100"
-                        app:rcProgressColor="@color/colorPrimary"
-                        app:rcRadius="5dp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:includeFontPadding="false"
-                        android:paddingEnd="5dp"
-                        android:paddingStart="5dp"
-                        android:text="@string/_1"
-                        android:textSize="14sp" />
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginEnd="5dp"
-                        android:tint="@color/material_color_blue_grey_200"
-                        app:srcCompat="@drawable/ic_star" />
-
-                    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                        android:id="@+id/pb_1_star"
-                        android:layout_width="220dp"
-                        android:layout_height="20dp"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginTop="3dp"
-                        app:rcBackgroundColor="@color/material_color_grey_300"
-                        app:rcBackgroundPadding="2dp"
-                        app:rcMax="100"
-                        app:rcProgressColor="@color/material_color_red_500"
-                        app:rcRadius="5dp" />
-
-                </LinearLayout>
-
+                <com.github.mikephil.charting.charts.HorizontalBarChart
+                    android:id="@+id/chart_rating"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:background="@android:color/white"/>
 
             </LinearLayout>
 
@@ -682,46 +412,97 @@
                 android:layout_below="@+id/ll_content_star"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_rect_grey"
-                android:orientation="vertical"
-                android:paddingBottom="8dp"
-                android:paddingEnd="10dp"
-                android:paddingStart="10dp"
-                android:paddingTop="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="5dp"
-                    android:drawablePadding="8dp"
-                    android:drawableStart="@drawable/ic_lightbulb"
-                    android:fontFamily="@font/poppinsbold"
-                    android:text="@string/sugerencias_de_mejoras"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="14sp" />
+                android:background="@drawable/rounded_rect_white_r15"
+                android:orientation="horizontal"
+                android:weightSum="4"
+                android:baselineAligned="false">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_gravity="center">
+
+                    <com.vaibhavlakhera.circularprogressview.CircularProgressView
+                        android:id="@+id/pb_detail_percent"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        app:animate="true"
+                        app:animateDuration="500"
+                        app:fillColor="@color/White_100"
+                        app:progressColor="@color/colorPrimary"
+                        app:progressInterpolator="@android:anim/accelerate_decelerate_interpolator"
+                        app:progressRoundCap="false"
+                        app:progressTextColor="@color/colorPrimary"
+                        app:progressTextEnabled="true"
+                        app:progressTextSize="12sp"
+                        app:progressTextType="percent"
+                        app:progressValue="50"
+                        app:progressWidth="10dp"
+                        app:startAngle="270"
+                        app:totalColor="@color/material_color_grey_300"
+                        app:totalValue="100"
+                        app:totalWidth="6dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:fontFamily="@font/poppinsregular"
-                        android:text="@string/sugerencia" />
+                        android:textSize="12sp"
+                        android:textAlignment="center"
+                        android:text="Nivel de detalle"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_content_sugestion"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="3"
+                    android:orientation="vertical"
+                    android:paddingBottom="8dp"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingTop="8dp">
 
                     <TextView
-                        android:id="@+id/tv_missing_list"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="5dp"
-                        android:fontFamily="@font/poppinsitalic"
-                        android:text="@string/empty_text" />
+                        android:layout_gravity="start"
+                        android:layout_marginBottom="5dp"
+                        android:drawablePadding="8dp"
+                        android:drawableStart="@drawable/ic_lightbulb"
+                        android:fontFamily="@font/poppinsbold"
+                        android:text="@string/sugerencias_de_mejoras"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppinsregular"
+                            android:text="@string/sugerencia" />
+
+                        <TextView
+                            android:id="@+id/tv_missing_list"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="5dp"
+                            android:fontFamily="@font/poppinsitalic"
+                            android:text="@string/empty_text" />
+
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -732,11 +513,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/ll_content_profile"
+                android:layout_marginBottom="12sp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="12sp"
-                android:background="@drawable/rounded_rect_grey"
+                android:background="@drawable/rounded_rect_white_r15"
                 android:orientation="vertical"
                 android:paddingBottom="8dp"
                 android:paddingEnd="10dp"
@@ -748,68 +529,84 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginBottom="5dp"
-                    android:drawablePadding="8dp"
                     android:fontFamily="@font/poppinsbold"
-                    android:text="Posicionamiento"
+                    android:text="@string/posicionamiento"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="14sp" />
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="2">
+                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_gravity="start"
+                        android:drawablePadding="5dp"
+                        android:drawableStart="@drawable/ic_star_small"
+                        android:fontFamily="@font/poppinsbold"
+                        android:text="@string/popularidad"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
 
-                        <TextView
-                            android:id="@+id/tv_place_rating"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsbold"
-                            android:text="@string/empty_short_text" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="5dp"
-                            android:fontFamily="@font/poppinsregular"
-                            android:text="Popularidad" />
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="@color/material_color_grey_300"/>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:id="@+id/tv_place_national_rating"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_gravity="start"
+                        android:fontFamily="@font/poppinsregular"
+                        android:padding="3dp"
+                        android:text="@string/empty_text"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="12sp" />
 
-                        <TextView
-                            android:id="@+id/tv_place_views"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsbold"
-                            android:text="@string/empty_short_text" />
+                    <TextView
+                        android:id="@+id/tv_place_province_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:fontFamily="@font/poppinsregular"
+                        android:padding="3dp"
+                        android:text="@string/empty_text"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="12sp" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="5dp"
-                            android:fontFamily="@font/poppinsregular"
-                            android:text="Vistas" />
-                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginTop="8dp"
+                        android:drawablePadding="5dp"
+                        android:drawableStart="@drawable/ic_eye_small"
+                        android:fontFamily="@font/poppinsbold"
+                        android:text="@string/vistas"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tv_place_national_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:fontFamily="@font/poppinsregular"
+                        android:padding="3dp"
+                        android:text="@string/empty_text"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tv_place_province_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:fontFamily="@font/poppinsregular"
+                        android:padding="3dp"
+                        android:text="@string/empty_text"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="12sp" />
+
 
                 </LinearLayout>
 
@@ -817,6 +614,6 @@
 
         </RelativeLayout>
 
-    </ScrollView>
+    </com.xw.repo.widget.BounceScrollView>
 
 </layout>

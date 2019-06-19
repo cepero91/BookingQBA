@@ -19,6 +19,7 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -40,9 +41,13 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.github.florent37.shapeofview.shapes.CutCornerView;
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -78,6 +83,8 @@ import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
+import com.mikhaellopez.circularimageview.CircularImageView;
+import com.squareup.picasso.Picasso;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -91,6 +98,7 @@ import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
@@ -98,7 +106,9 @@ import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
 import timber.log.Timber;
 
+import static android.view.Gravity.CENTER;
 import static com.infinitum.bookingqba.util.Constants.ALTERNATIVE_SYNC;
+import static com.infinitum.bookingqba.util.Constants.BASE_URL_API;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH_SHOW_GROUP;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_SHOW_GROUP;
@@ -171,7 +181,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         homeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
         AndroidInjection.inject(this);
 
-        deviceID = sharedPreferences.getString(IMEI,"");
+        deviceID = sharedPreferences.getString(IMEI, "");
 
         setupToolbar();
 
@@ -535,6 +545,13 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         menu.findItem(R.id.action_gps).setVisible(mFragment instanceof MapFragment);
         menu.findItem(R.id.action_refresh).setVisible(mFragment instanceof ProfileFragment);
         homeBinding.navView.getMenu().setGroupVisible(R.id.group_2, isProfileActive);
+        if (loginVisibility) {
+            updateNavHeader(sharedPreferences.getString(USER_NAME, getString(R.string.hola_invitado)),
+                    sharedPreferences.getString(USER_AVATAR, null));
+        } else {
+            updateNavHeader(getString(R.string.hola_invitado),
+                    null);
+        }
     }
 
 
@@ -558,10 +575,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 }
                 return true;
             case R.id.action_logout:
-                if (mFragment instanceof ProfileFragment) {
-                    onNavigationItemSelected(homeBinding.navView.getMenu().findItem(R.id.nav_home));
-                }
-                logoutPetition();
+                confirmLogout();
                 return true;
             case R.id.action_gps:
                 initLocation(item);
@@ -590,7 +604,29 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         }
     }
 
+    private void confirmLogout() {
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("Aviso!")
+                .setContentText("Esta seguro que desea finalizar la sesión")
+                .hideConfirmButton()
+                .setCancelText("Si, lo deseo")
+                .setCancelClickListener(sweetAlertDialog1 -> {
+                    sweetAlertDialog1.dismissWithAnimation();
+                    new Handler().postDelayed(HomeActivity.this::logoutPetition, 400);
+                });
+        sweetAlertDialog.setOnShowListener(dialog -> {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.gravity = CENTER;
+            sweetAlertDialog.getButton(SweetAlertDialog.BUTTON_CANCEL).setLayoutParams(params);
+            sweetAlertDialog.getButton(SweetAlertDialog.BUTTON_CANCEL).setPadding(15, 15, 15, 15);
+        });
+        sweetAlertDialog.show();
+    }
+
     private void logoutPetition() {
+        if (mFragment instanceof ProfileFragment) {
+            onNavigationItemSelected(homeBinding.navView.getMenu().findItem(R.id.nav_home));
+        }
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(USER_IS_AUTH, false);
         editor.apply();
@@ -678,6 +714,20 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         invalidateOptionsMenu();
     }
 
+    private void updateNavHeader(String username, @Nullable String avatar) {
+        String url = null;
+        if (avatar != null)
+            url = BASE_URL_API + "/" + avatar;
+        CutCornerView headerView = (CutCornerView) homeBinding.navView.getHeaderView(0);
+        CircularImageView circularImageView = headerView.findViewById(R.id.user_avatar);
+        TextView tvUsername = headerView.findViewById(R.id.tv_username);
+        Picasso.get()
+                .load(url)
+                .placeholder(R.drawable.user_placeholder)
+                .into(circularImageView);
+        tvUsername.setText(String.format("Hola %s", username));
+    }
+
     void showLoginDialog() {
         if (!deviceID.equals("")) {
             FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -692,7 +742,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             loginFragment.show(ft, LOGIN_TAG);
         } else {
             loginIsClicked = false;
-            AlertUtils.showErrorAlert(this,"Esta operación no se puede efectuar");
+            AlertUtils.showErrorAlert(this, "Esta operación no se puede efectuar");
         }
     }
 

@@ -110,9 +110,11 @@ public class ListWishFragment extends BaseNavigationFragment {
             OverScrollDecoratorHelper.setUpOverScroll(wishBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
             wishBinding.setIsLoading(false);
             wishBinding.setIsEmpty(false);
+            wishBinding.progressPvLinear.stop();
         } else {
             wishBinding.setIsLoading(false);
             wishBinding.setIsEmpty(true);
+            wishBinding.progressPvLinear.stop();
         }
     }
 

@@ -40,7 +40,10 @@ public class RentAnaliticsRepoImpl implements RentAnaliticsRepository{
 
     @Override
     public Single<AnaliticsGroup> rentAnalitics(String uuid) {
-        return retrofit.create(ApiInterface.class).rentAnalitics(uuid);
+        return retrofit.create(ApiInterface.class)
+                .rentAnalitics(uuid)
+                .subscribeOn(Schedulers.io())
+                .delay(1000,TimeUnit.MILLISECONDS);
     }
 
     @Override

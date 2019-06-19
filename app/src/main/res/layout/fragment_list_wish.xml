@@ -28,15 +28,20 @@
             app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; !safeUnbox(isEmpty)}"
             />
 
-        <ProgressBar
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="16dp"
-            android:layout_marginTop="-8dp"
-            android:indeterminate="true"
-            android:layout_gravity="top"
-            style="?android:attr/progressBarStyleHorizontal"
-            app:visibleGone="@{safeUnbox(isLoading)}" />
+            android:layout_gravity="top">
+
+            <com.rey.material.widget.ProgressView
+                android:id="@+id/progress_pv_linear"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_gravity="center"
+                app:pv_autostart="true"
+                app:v_styleId="@array/pv_linear_query"/>
+
+        </FrameLayout>
 
         <com.airbnb.lottie.LottieAnimationView
             android:layout_width="250dp"

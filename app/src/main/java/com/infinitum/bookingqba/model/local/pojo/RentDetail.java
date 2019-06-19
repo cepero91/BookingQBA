@@ -12,6 +12,9 @@ import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -93,6 +96,7 @@ public class RentDetail {
                 commentActives.add(entity);
             }
         }
+        Collections.sort(commentActives, (o1, o2) -> o2.getCreated().compareTo(o1.getCreated()));
         return commentActives;
     }
 

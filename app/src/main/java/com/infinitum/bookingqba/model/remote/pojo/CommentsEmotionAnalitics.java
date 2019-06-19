@@ -25,17 +25,17 @@ public class CommentsEmotionAnalitics {
     @Expose
     private int goodCount;
 
-    @SerializedName("excelent")
+    @SerializedName("excellent")
     @Expose
-    private int excelentCount;
+    private int excellentCount;
 
-    public CommentsEmotionAnalitics(float emotionAverage, int terribleCount, int badCount, int okCount, int goodCount, int excelentCount) {
+    public CommentsEmotionAnalitics(float emotionAverage, int terribleCount, int badCount, int okCount, int goodCount, int excellentCount) {
         this.emotionAverage = emotionAverage;
         this.terribleCount = terribleCount;
         this.badCount = badCount;
         this.okCount = okCount;
         this.goodCount = goodCount;
-        this.excelentCount = excelentCount;
+        this.excellentCount = excellentCount;
     }
 
     public float getEmotionAverage() {
@@ -78,11 +78,11 @@ public class CommentsEmotionAnalitics {
         this.goodCount = goodCount;
     }
 
-    public int getExcelentCount() {
-        return excelentCount;
+    public int getExcellentCount() {
+        return excellentCount;
     }
 
-    public void setExcelentCount(int excelentCount) {
-        this.excelentCount = excelentCount;
+    public void setExcellentCount(int excellentCount) {
+        this.excellentCount = excellentCount;
     }
 }
