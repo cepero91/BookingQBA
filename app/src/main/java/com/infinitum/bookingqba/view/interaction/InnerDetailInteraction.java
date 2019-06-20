@@ -11,4 +11,14 @@ public interface InnerDetailInteraction {
 
     void onAddressClick(ArrayList<GeoRent> geoRentList);
 
+    void phoneCallClick(String phone);
+
+    void phoneSMSClick(String phone);
+
+    void phoneHomeClick(String phone);
+
+    void phoneEmailClick(String email);
+
+
+
 }

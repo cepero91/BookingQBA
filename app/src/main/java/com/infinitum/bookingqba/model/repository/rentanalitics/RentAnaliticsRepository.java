@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.rentanalitics;
 
+import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.remote.pojo.AnaliticsGroup;
 import com.infinitum.bookingqba.model.remote.pojo.RentAnalitics;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
@@ -16,5 +17,7 @@ public interface RentAnaliticsRepository {
     Single<AnaliticsGroup> rentAnalitics(String uuid);
 
     Single<CommonSpinnerList> rentByUuidCommaSeparate(List<String> uuid);
+
+    Single<List<RentAndGalery>> rentByUuidList(List<String> uuid);
 
 }

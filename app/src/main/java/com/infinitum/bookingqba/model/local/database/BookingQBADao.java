@@ -34,10 +34,6 @@ import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
-import com.infinitum.bookingqba.model.remote.pojo.Comment;
-import com.infinitum.bookingqba.model.remote.pojo.Rent;
-
-import org.oscim.core.GeoPoint;
 
 import java.util.List;
 
@@ -505,6 +501,10 @@ public abstract class BookingQBADao {
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
     public abstract Single<List<RentEntity>> getRentByStringUuidCommaSeparate(SupportSQLiteQuery query);
+
+    @Transaction
+    @RawQuery(observedEntities = RentEntity.class)
+    public abstract Single<List<RentAndGalery>> getRentByUuidList(SupportSQLiteQuery query);
 
     //------------------------- RATING ---------------------------//
 

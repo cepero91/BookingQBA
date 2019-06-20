@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.view.rents;
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -7,14 +8,18 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -129,6 +134,8 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
     Fragment offerDetail;
     private boolean loginIsClicked = false;
     private boolean showMenuGroup = false;
+    private final static int REQUEST_PHONE_CALL = 1044;
+    private final static int REQUEST_PHONE_SMS = 1045;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -423,6 +430,44 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
         intent.putParcelableArrayListExtra("geoRents", geoRents);
         setResult(FROM_DETAIL_TO_MAP, intent);
         this.finish();
+    }
+
+    @Override
+    public void phoneCallClick(String phone) {
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phone));
+        if (ContextCompat.checkSelfPermission(RentDetailActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(RentDetailActivity.this, new String[]{Manifest.permission.CALL_PHONE},REQUEST_PHONE_CALL);
+        } else {
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void phoneSMSClick(String phone) {
+        Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse("sms:"+phone));
+        if (ContextCompat.checkSelfPermission(RentDetailActivity.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(RentDetailActivity.this, new String[]{Manifest.permission.SEND_SMS},REQUEST_PHONE_SMS);
+        } else {
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void phoneHomeClick(String phone) {
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phone));
+        if (ContextCompat.checkSelfPermission(RentDetailActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(RentDetailActivity.this, new String[]{Manifest.permission.SEND_SMS},REQUEST_PHONE_CALL);
+        } else {
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void phoneEmailClick(String email) {
+        Intent mailIntent = new Intent(Intent.ACTION_VIEW);
+        Uri data = Uri.parse("mailto:"+email);
+        mailIntent.setData(data);
+        startActivity(Intent.createChooser(mailIntent, "Send mail..."));
     }
 
     //------------------------------------- Login -------------------------------------//

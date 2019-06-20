@@ -15,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -29,6 +30,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
@@ -61,8 +63,10 @@ import com.infinitum.bookingqba.model.remote.pojo.CommentsEmotionAnalitics;
 import com.infinitum.bookingqba.model.remote.pojo.GeneralCommentAnalitics;
 import com.infinitum.bookingqba.model.remote.pojo.RatingStarAnalitics;
 import com.infinitum.bookingqba.model.remote.pojo.RentPositionAnalitics;
+import com.infinitum.bookingqba.view.adapters.HorizontalScrollAdapter;
 import com.infinitum.bookingqba.view.adapters.SpinnerAdapter;
 import com.infinitum.bookingqba.view.adapters.items.chart.PieBean;
+import com.infinitum.bookingqba.view.adapters.items.horizontal.HorizontalItem;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
 import com.infinitum.bookingqba.viewmodel.RentAnaliticsViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
@@ -72,12 +76,18 @@ import com.openxu.cview.chart.piechart.PieChartLayout;
 import com.openxu.utils.DensityUtil;
 import com.rey.material.widget.Spinner;
 import com.squareup.picasso.Picasso;
+import com.techdew.lib.HorizontalWheel.AbstractWheel;
+import com.techdew.lib.HorizontalWheel.ArrayWheelAdapter;
+import com.techdew.lib.HorizontalWheel.OnWheelScrollListener;
+import com.yarolegovich.discretescrollview.DiscreteScrollView;
+import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 
 import javax.inject.Inject;
@@ -96,7 +106,8 @@ import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
 
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements DiscreteScrollView.OnItemChangedListener<HorizontalScrollAdapter.ViewHolder>,
+        DiscreteScrollView.ScrollStateChangeListener<HorizontalScrollAdapter.ViewHolder> {
 
     private FragmentProfileBinding profileBinding;
 
@@ -114,7 +125,8 @@ public class ProfileFragment extends Fragment {
     private Disposable disposable;
     private CompositeDisposable compositeDisposable;
 
-    private CommonSpinnerList commonSpinnerList;
+    private HorizontalScrollAdapter horizontalScrollAdapter;
+    private HorizontalItem singleHorizontalItem;
     private String[] rentSelect;
     private int lastPosSelected;
 
@@ -157,8 +169,6 @@ public class ProfileFragment extends Fragment {
 
         profileBinding.chartRating.setNoDataText("Cargando datos");
 
-        loadUserData();
-
         loadRentAnalitics();
 
     }
@@ -181,58 +191,74 @@ public class ProfileFragment extends Fragment {
         rentSelect = stringSet.toArray(new String[stringSet.size()]);
         if (rentSelect.length > 0) {
             profileBinding.tvRentName.setVisibility(View.GONE);
-            disposable = viewModel.getRentSpinnerList(Arrays.asList(rentSelect))
+//            disposable = viewModel.getRentSpinnerList(Arrays.asList(rentSelect))
+//                    .subscribeOn(Schedulers.io())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(commonSpinnerList -> {
+//                        if (commonSpinnerList.getArrayNames().length > 1) {
+//                            updateSpinnerView(commonSpinnerList);
+//                        } else if (commonSpinnerList.getArrayNames().length == 1) {
+//                            updateSingleView(commonSpinnerList);
+//                        }
+//                    }, Timber::e);
+//            compositeDisposable.add(disposable);
+            disposable = viewModel.getRentByUuidList(Arrays.asList(rentSelect))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(commonSpinnerList -> {
-                        if (commonSpinnerList.getArrayNames().length > 1) {
-                            updateSpinnerView(commonSpinnerList);
-                        } else if (commonSpinnerList.getArrayNames().length == 1) {
-                            updateSingleView(commonSpinnerList);
+                    .subscribe(rentAndGaleries -> {
+                        if (rentAndGaleries.size() > 1) {
+                            updateSpinnerView(rentAndGaleries);
+                        } else if (rentAndGaleries.size() == 1) {
+                            updateSingleView(rentAndGaleries);
                         }
                     }, Timber::e);
             compositeDisposable.add(disposable);
         }
     }
 
-    private void loadUserData() {
-        String avatar = sharedPreferences.getString(USER_AVATAR, "");
-        String url = BASE_URL_API + "/" + avatar;
-        Picasso.get()
-                .load(url)
-                .placeholder(R.drawable.user_placeholder)
-                .into(profileBinding.userAvatar);
-    }
-
-    private void updateSingleView(CommonSpinnerList commonSpinnerList) {
-        this.commonSpinnerList = commonSpinnerList;
+    private void updateSingleView(ArrayList<HorizontalItem> horizontalItems) {
+        this.singleHorizontalItem = horizontalItems.get(0);
         profileBinding.setShowSelect(false);
         profileBinding.tvRentName.setVisibility(View.VISIBLE);
-        profileBinding.tvRentName.setText(commonSpinnerList.getArrayNames()[0]);
+        profileBinding.tvRentName.setText(singleHorizontalItem.getRentName());
         profileBinding.tvMsg.setText("");
-        fetchRentAnalitic(commonSpinnerList.getUuidOnPos(0));
+        fetchRentAnalitic(singleHorizontalItem.getUuid());
     }
 
-    private void updateSpinnerView(CommonSpinnerList commonSpinnerList) {
-        this.commonSpinnerList = commonSpinnerList;
-        String[] arrNames = commonSpinnerList.getArrayNames();
-        profileBinding.setItems(arrNames);
-        profileBinding.setShowSelect(true);
-//        profileBinding.spinnerRents.post(() -> {
-//            int height = profileBinding.spinnerRents.getHeight();
-//            profileBinding.spinnerRents.setDropDownVerticalOffset(height);
-//        });
-        profileBinding.spinnerRents.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spinner_profile_text_layout, arrNames));
-        profileBinding.spinnerRents.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(Spinner parent, View view, int position, long id) {
-                lastPosSelected = position;
-                String uuid = commonSpinnerList.getUuidOnPos(position);
-                profileBinding.tvMsg.setText("");
-                fetchRentAnalitic(uuid);
-            }
-        });
+    private void updateSpinnerView(ArrayList<HorizontalItem> horizontalItems) {
+        horizontalScrollAdapter = new HorizontalScrollAdapter(horizontalItems);
+        profileBinding.discreteScroll.setSlideOnFling(true);
+        profileBinding.discreteScroll.setAdapter(horizontalScrollAdapter);
+        profileBinding.discreteScroll.addOnItemChangedListener(this);
+        profileBinding.discreteScroll.addScrollStateChangeListener(this);
+        profileBinding.discreteScroll.setItemTransitionTimeMillis(300);
+        profileBinding.discreteScroll.setItemTransformer(new ScaleTransformer.Builder().setMinScale(0.8f).build());
     }
+
+    //------------------------------------- HORIZONTAL SCROLL VIEW INTERFACES -------------------
+
+    @Override
+    public void onCurrentItemChanged(@Nullable HorizontalScrollAdapter.ViewHolder viewHolder, int adapterPosition) {
+        viewHolder.showText();
+        Toast.makeText(getActivity(), "Scrolled " + horizontalScrollAdapter.getItem(adapterPosition), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onScrollStart(@NonNull HorizontalScrollAdapter.ViewHolder currentItemHolder, int adapterPosition) {
+        currentItemHolder.hideText();
+    }
+
+    @Override
+    public void onScrollEnd(@NonNull HorizontalScrollAdapter.ViewHolder currentItemHolder, int adapterPosition) {
+
+    }
+
+    @Override
+    public void onScroll(float scrollPosition, int currentPosition, int newPosition, @Nullable HorizontalScrollAdapter.ViewHolder currentHolder, @Nullable HorizontalScrollAdapter.ViewHolder newCurrent) {
+
+    }
+
+    //-------------------------------------
 
     private void fetchRentAnalitic(String uuid) {
         profileBinding.setIsLoading(true);

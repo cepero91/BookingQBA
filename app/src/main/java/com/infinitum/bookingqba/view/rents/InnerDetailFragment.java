@@ -87,6 +87,10 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
         setHasOptionsMenu(false);
 
         innerDetailBinding.llContentAddress.setOnClickListener(this);
+        innerDetailBinding.llBtnMovile.setOnClickListener(this);
+        innerDetailBinding.llBtnSms.setOnClickListener(this);
+        innerDetailBinding.llBtnHome.setOnClickListener(this);
+        innerDetailBinding.llBtnEmail.setOnClickListener(this);
     }
 
     @Override
@@ -182,6 +186,19 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
         switch (v.getId()) {
             case R.id.ll_content_address:
                 createGeoRent();
+                break;
+            case R.id.ll_btn_movile:
+                innerDetailInteraction.phoneCallClick(rentInnerDetail.getPersonalPhone());
+                break;
+            case R.id.ll_btn_sms:
+                innerDetailInteraction.phoneSMSClick(rentInnerDetail.getPersonalPhone());
+                break;
+            case R.id.ll_btn_home:
+                innerDetailInteraction.phoneHomeClick(rentInnerDetail.getHomePhone());
+                break;
+            case R.id.ll_btn_email:
+                innerDetailInteraction.phoneEmailClick(rentInnerDetail.getEmail());
+                break;
         }
     }
 

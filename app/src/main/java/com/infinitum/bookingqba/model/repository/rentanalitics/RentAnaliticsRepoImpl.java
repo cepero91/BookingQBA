@@ -4,6 +4,7 @@ import android.arch.persistence.db.SimpleSQLiteQuery;
 
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
+import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.AnaliticsGroup;
 import com.infinitum.bookingqba.model.remote.pojo.RentAnalitics;
@@ -49,10 +50,24 @@ public class RentAnaliticsRepoImpl implements RentAnaliticsRepository{
     @Override
     public Single<CommonSpinnerList> rentByUuidCommaSeparate(List<String> uuids) {
         String comma = StringUtils.convertListToCommaSeparated(uuids);
+        String testSqlStatement = "SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
+                "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
+                "WHERE Rent.id IN(%s)";
         SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(String.format("SELECT * FROM Rent WHERE Rent.id IN(%s)",comma));
         return qbaDao.getRentByStringUuidCommaSeparate(simpleSQLiteQuery)
                 .subscribeOn(Schedulers.io())
                 .map(this::transformToSpinnerList);
+    }
+
+    @Override
+    public Single<List<RentAndGalery>> rentByUuidList(List<String> uuids) {
+        String comma = StringUtils.convertListToCommaSeparated(uuids);
+        String testSqlStatement = "SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
+                "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
+                "WHERE Rent.id IN(%s)";
+        SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(String.format(testSqlStatement,comma));
+        return qbaDao.getRentByUuidList(simpleSQLiteQuery)
+                .subscribeOn(Schedulers.io());
     }
 
     private CommonSpinnerList transformToSpinnerList(List<RentEntity> rentEntityList) {
