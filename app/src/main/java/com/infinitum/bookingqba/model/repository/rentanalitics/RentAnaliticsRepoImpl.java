@@ -11,7 +11,6 @@ import com.infinitum.bookingqba.model.remote.pojo.RentAnalitics;
 import com.infinitum.bookingqba.util.StringUtils;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerItem;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
-import com.infinitum.bookingqba.view.profile.DataGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +31,6 @@ public class RentAnaliticsRepoImpl implements RentAnaliticsRepository{
     public RentAnaliticsRepoImpl(Retrofit retrofit, BookingQBADao qbaDao) {
         this.retrofit = retrofit;
         this.qbaDao = qbaDao;
-    }
-
-    @Override
-    public Single<List<RentAnalitics>> getRentAnalitics(List<String> uuids) {
-        return Single.just(DataGenerator.getRentAnalitic()).subscribeOn(Schedulers.io()).delay(2000, TimeUnit.MILLISECONDS);
     }
 
     @Override

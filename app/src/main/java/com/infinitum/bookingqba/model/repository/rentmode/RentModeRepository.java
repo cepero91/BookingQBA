@@ -10,9 +10,7 @@ import io.reactivex.Single;
 
 public interface RentModeRepository {
 
-    Single<List<RentModeEntity>> fetchRemoteAndTransform(String dateValue);
-
     Completable insert(List<RentModeEntity> entities);
 
-    Single<OperationResult> syncronizeRentMode(String dateValue);
+    Single<OperationResult> syncronizeRentMode(String token, String dateValue);
 }

@@ -33,8 +33,8 @@ public class DrawTypeRepoImpl implements DrawTypeRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<DrawType>> fetchDrawsType(String dateValue) {
-        return retrofit.create(ApiInterface.class).getDrawsType(dateValue);
+    private Single<List<DrawType>> fetchDrawsType(String token, String dateValue) {
+        return retrofit.create(ApiInterface.class).getDrawsType(token, dateValue);
     }
 
     /**
@@ -52,9 +52,8 @@ public class DrawTypeRepoImpl implements DrawTypeRepository {
         return listEntity;
     }
 
-    @Override
-    public Single<List<DrawTypeEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchDrawsType(dateValue)
+    public Single<List<DrawTypeEntity>> fetchRemoteAndTransform(String token, String dateValue) {
+        return fetchDrawsType(token, dateValue)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -66,8 +65,8 @@ public class DrawTypeRepoImpl implements DrawTypeRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizeDrawType(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizeDrawType(String token, String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

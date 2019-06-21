@@ -14,8 +14,6 @@ import okhttp3.ResponseBody;
 
 public interface GalerieRepository {
 
-    Single<List<GalerieEntity>> fetchRemoteAndTransform(String dateValue);
-
     Single<ResponseBody> fetchImage(String url);
 
     Flowable<List<GalerieEntity>> allGaleries();
@@ -28,6 +26,6 @@ public interface GalerieRepository {
 
     Completable insert(List<GalerieEntity> entities);
 
-    Single<OperationResult> syncronizeGaleries(String dateValue);
+    Single<OperationResult> syncronizeGaleries(String token, String dateValue);
 
 }

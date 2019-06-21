@@ -9,10 +9,7 @@ import io.reactivex.Completable;
 import io.reactivex.Single;
 
 public interface DrawTypeRepository {
-
-    Single<List<DrawTypeEntity>> fetchRemoteAndTransform(String dateValue);
-
     Completable insert(List<DrawTypeEntity> entities);
 
-    Single<OperationResult> syncronizeDrawType(String dateValue);
+    Single<OperationResult> syncronizeDrawType(String token, String dateValue);
 }

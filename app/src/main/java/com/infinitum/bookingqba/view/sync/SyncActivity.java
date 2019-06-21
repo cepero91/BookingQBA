@@ -257,7 +257,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeReferencesZone(String dateValue) {
-        entityDisposable = syncViewModel.syncReferenceZone(dateValue)
+        entityDisposable = syncViewModel.syncReferenceZone(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -273,7 +273,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeMunicipalities(String dateValue) {
-        entityDisposable = syncViewModel.syncMunicipalities(dateValue)
+        entityDisposable = syncViewModel.syncMunicipalities(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -281,7 +281,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeAmenities(String dateValue) {
-        entityDisposable = syncViewModel.syncAmenities(dateValue)
+        entityDisposable = syncViewModel.syncAmenities(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -289,7 +289,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizePoiTypes(String dateValue) {
-        entityDisposable = syncViewModel.syncPoiTypes(dateValue)
+        entityDisposable = syncViewModel.syncPoiTypes(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -297,7 +297,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizePois(String dateValue) {
-        entityDisposable = syncViewModel.syncPois(dateValue)
+        entityDisposable = syncViewModel.syncPois(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -305,7 +305,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeRentsMode(String dateValue) {
-        entityDisposable = syncViewModel.syncRentsMode(dateValue)
+        entityDisposable = syncViewModel.syncRentsMode(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -313,7 +313,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeDrawTypes(String dateValue) {
-        entityDisposable = syncViewModel.syncDrawTypes(dateValue)
+        entityDisposable = syncViewModel.syncDrawTypes(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -321,7 +321,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeRents(String dateValue) {
-        entityDisposable = syncViewModel.syncRents(dateValue)
+        entityDisposable = syncViewModel.syncRents(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -329,7 +329,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeRentAmenities(String dateValue) {
-        entityDisposable = syncViewModel.syncRentAmenities(dateValue)
+        entityDisposable = syncViewModel.syncRentAmenities(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -337,7 +337,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeRentPois(String dateValue) {
-        entityDisposable = syncViewModel.syncRentPois(dateValue)
+        entityDisposable = syncViewModel.syncRentPois(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -345,7 +345,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeRentDrawTypes(String dateValue) {
-        entityDisposable = syncViewModel.syncRentDrawType(dateValue)
+        entityDisposable = syncViewModel.syncRentDrawType(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -353,7 +353,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeOffers(String dateValue) {
-        entityDisposable = syncViewModel.syncOffers(dateValue)
+        entityDisposable = syncViewModel.syncOffers(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -361,7 +361,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeGaleries(String dateValue) {
-        entityDisposable = syncViewModel.syncGaleries(dateValue)
+        entityDisposable = syncViewModel.syncGaleries(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);
@@ -369,7 +369,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeCommet(String dateValue) {
-        entityDisposable = syncViewModel.syncComment(dateValue)
+        entityDisposable = syncViewModel.syncComment(apiTokenAuthorization, dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);

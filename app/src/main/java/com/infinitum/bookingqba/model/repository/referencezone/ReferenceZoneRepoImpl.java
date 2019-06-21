@@ -41,9 +41,8 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
      * Prepara la peticion al API
      * @return
      */
-    private Single<List<ReferenceZone>> fetchReferencesZone(String value) {
-        Timber.e("Sync fetchReferencesZone");
-        return retrofit.create(ApiInterface.class).getReferencesZone(value);
+    private Single<List<ReferenceZone>> fetchReferencesZone(String token, String value) {
+        return retrofit.create(ApiInterface.class).getReferencesZone(token, value);
     }
 
     /**
@@ -61,9 +60,9 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
         return listEntity;
     }
 
-    @Override
-    public Single<List<ReferenceZoneEntity>> fetchRemoteAndTransform(String value) {
-        return fetchReferencesZone(value)
+
+    public Single<List<ReferenceZoneEntity>> fetchRemoteAndTransform(String token, String value) {
+        return fetchReferencesZone(token, value)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -82,8 +81,8 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizeReferenceZone(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizeReferenceZone(String token,String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

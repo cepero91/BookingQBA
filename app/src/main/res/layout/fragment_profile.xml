@@ -113,19 +113,33 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/tv_rent_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
+                        android:layout_gravity="center"
                         android:fontFamily="@font/poppinsmedium"
                         android:paddingEnd="3dp"
                         android:paddingStart="3dp"
                         android:text="@string/empty_text"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="18sp" />
+
+                    <com.willy.ratingbar.BaseRatingBar
+                        android:id="@+id/sr_scale_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        app:srb_clickable="false"
+                        app:srb_drawableEmpty="@drawable/ic_star_o"
+                        app:srb_drawableFilled="@drawable/ic_star"
+                        app:srb_scrollable="false"
+                        app:srb_starHeight="12dp"
+                        app:srb_starPadding="2dp"
+                        app:srb_starWidth="12dp"
+                        app:srb_stepSize="0.5" />
 
                 </LinearLayout>
 
@@ -215,7 +229,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/rl_content_params"
-                android:layout_marginBottom="12sp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
@@ -224,7 +237,8 @@
                 android:paddingBottom="8dp"
                 android:paddingEnd="10dp"
                 android:paddingStart="10dp"
-                android:paddingTop="8dp">
+                android:paddingTop="8dp"
+                android:animateLayoutChanges="true">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -310,7 +324,8 @@
                 <com.github.mikephil.charting.charts.PieChart
                     android:id="@+id/pie_emotion"
                     android:layout_width="match_parent"
-                    android:layout_height="170dp" />
+                    android:layout_height="170dp"
+                    android:visibility="gone"/>
 
             </LinearLayout>
 
@@ -319,7 +334,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/ll_content_comment"
-                android:layout_marginBottom="12sp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
@@ -328,7 +342,8 @@
                 android:paddingBottom="8dp"
                 android:paddingEnd="10dp"
                 android:paddingStart="10dp"
-                android:paddingTop="8dp">
+                android:paddingTop="8dp"
+                android:animateLayoutChanges="true">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -394,7 +409,8 @@
                     android:id="@+id/chart_rating"
                     android:layout_width="match_parent"
                     android:layout_height="220dp"
-                    android:background="@android:color/white" />
+                    android:background="@android:color/white"
+                    android:visibility="gone"/>
 
             </LinearLayout>
 
@@ -402,13 +418,14 @@
                 android:id="@+id/fl_content_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_below="@+id/ll_content_star">
 
                 <LinearLayout
                     android:id="@+id/ll_content_profile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="15dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:background="@drawable/rounded_rect_white_r15"

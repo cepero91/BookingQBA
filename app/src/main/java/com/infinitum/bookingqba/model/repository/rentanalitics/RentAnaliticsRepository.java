@@ -11,9 +11,6 @@ import io.reactivex.Single;
 
 public interface RentAnaliticsRepository {
 
-    Single<List<RentAnalitics>> getRentAnalitics(List<String> uuids);
-
-
     Single<AnaliticsGroup> rentAnalitics(String uuid);
 
     Single<CommonSpinnerList> rentByUuidCommaSeparate(List<String> uuid);

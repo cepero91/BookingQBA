@@ -35,8 +35,8 @@ public class RentDrawTypeRepoImpl implements RentDrawTypeRepository {
      *
      * @return
      */
-    private Single<List<RentDrawType>> fetchRentDrawTypes(String dateValue) {
-        return retrofit.create(ApiInterface.class).getRentsDrawType(dateValue);
+    private Single<List<RentDrawType>> fetchRentDrawTypes(String token, String dateValue) {
+        return retrofit.create(ApiInterface.class).getRentsDrawType(token, dateValue);
     }
 
     /**
@@ -55,9 +55,9 @@ public class RentDrawTypeRepoImpl implements RentDrawTypeRepository {
         return listEntity;
     }
 
-    @Override
-    public Single<List<RentDrawTypeEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchRentDrawTypes(dateValue)
+
+    public Single<List<RentDrawTypeEntity>> fetchRemoteAndTransform(String token, String dateValue) {
+        return fetchRentDrawTypes(token, dateValue)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -69,8 +69,8 @@ public class RentDrawTypeRepoImpl implements RentDrawTypeRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizeRentDrawType(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizeRentDrawType(String token, String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

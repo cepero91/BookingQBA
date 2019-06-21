@@ -35,8 +35,8 @@ public class PoiTypeRepoImpl implements PoiTypeRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<PoiType>> fetchPoiTypes(String dateValue) {
-        return retrofit.create(ApiInterface.class).getPoiTypes(dateValue);
+    private Single<List<PoiType>> fetchPoiTypes(String token, String dateValue) {
+        return retrofit.create(ApiInterface.class).getPoiTypes(token, dateValue);
     }
 
     /**
@@ -54,12 +54,8 @@ public class PoiTypeRepoImpl implements PoiTypeRepository {
         return listEntity;
     }
 
-    @Override
-    public Single<List<PoiTypeEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchPoiTypes(dateValue).flatMap((Function<List<PoiType>, SingleSource<? extends List<PoiTypeEntity>>>) poiTypes -> {
-            ArrayList<PoiTypeEntity> listEntity = new ArrayList<>(parseGsonToEntity(poiTypes));
-            return Single.just(listEntity);
-        }).subscribeOn(Schedulers.io());
+    public Single<List<PoiTypeEntity>> fetchRemoteAndTransform(String token, String dateValue) {
+        return fetchPoiTypes(token, dateValue).map(this::parseGsonToEntity).subscribeOn(Schedulers.io());
     }
 
     @Override
@@ -69,8 +65,8 @@ public class PoiTypeRepoImpl implements PoiTypeRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizePoiTypes(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizePoiTypes(String token, String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

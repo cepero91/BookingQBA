@@ -37,8 +37,8 @@ public class GalerieRepoImpl implements GalerieRepository {
      *
      * @return
      */
-    private Single<List<Galerie>> fetchGaleries(String dateValue) {
-        return retrofit.create(ApiInterface.class).getGaleries(dateValue);
+    private Single<List<Galerie>> fetchGaleries(String token, String dateValue) {
+        return retrofit.create(ApiInterface.class).getGaleries(token, dateValue);
     }
 
     @Override
@@ -65,9 +65,8 @@ public class GalerieRepoImpl implements GalerieRepository {
         return listEntity;
     }
 
-    @Override
-    public Single<List<GalerieEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchGaleries(dateValue)
+    public Single<List<GalerieEntity>> fetchRemoteAndTransform(String token, String dateValue) {
+        return fetchGaleries(token, dateValue)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -104,8 +103,8 @@ public class GalerieRepoImpl implements GalerieRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizeGaleries(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizeGaleries(String token, String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

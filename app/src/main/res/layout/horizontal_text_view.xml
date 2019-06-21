@@ -38,8 +38,6 @@
                 android:id="@+id/sr_scale_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:srb_clickable="false"
                 app:srb_drawableEmpty="@drawable/ic_star_o"
                 app:srb_drawableFilled="@drawable/ic_star"

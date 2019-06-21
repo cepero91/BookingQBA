@@ -13,11 +13,9 @@ import io.reactivex.Single;
 
 public interface MunicipalityRepository {
 
-    Single<List<MunicipalityEntity>> fetchRemoteAndTransform(String dateValue);
-
     Completable insert(List<MunicipalityEntity> entities);
 
-    Single<OperationResult> syncronizeMunicipalities(String dateValue);
+    Single<OperationResult> syncronizeMunicipalities(String token, String dateValue);
 
     Flowable<Resource<List<MunicipalityEntity>>> allMunicipalities();
 

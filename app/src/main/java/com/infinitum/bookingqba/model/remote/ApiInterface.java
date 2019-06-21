@@ -105,53 +105,53 @@ public interface ApiInterface {
     //------------------- MUNICIPIOS ---------------------//
 
     @GET("/api/municipalities")
-    Single<List<Municipality>> getMunicipality(@Query("value") String value);
+    Single<List<Municipality>> getMunicipality(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- FACILIDADES ---------------------//
 
     @GET("/api/amenities")
-    Single<List<Amenities>> getAmenities(@Query("value") String value);
+    Single<List<Amenities>> getAmenities(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- TIPO DE LUGAR DE INTERES ---------------------//
 
     @GET("/api/poiTypes")
-    Single<List<PoiType>> getPoiTypes(@Query("value") String value);
+    Single<List<PoiType>> getPoiTypes(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- LUGAR DE INTERES ---------------------//
 
     @GET("/api/pois")
-    Single<List<Poi>> getPois(@Query("value") String value);
+    Single<List<Poi>> getPois(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- RENTAS ---------------------//
 
     @GET("/api/rents")
-    Single<List<Rent>> getRents(@Query("value") String value);
+    Single<List<Rent>> getRents(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- COMMENT ---------------------//
 
     @GET("/api/comments")
-    Single<List<Comment>> getComment(@Query("value") String value);
+    Single<List<Comment>> getComment(@Header("Authorization") String token, @Query("value") String value);
 
 
     //------------------- MODO DE RENTA ---------------------//
 
     @GET("/api/rentsMode")
-    Single<List<RentMode>> getRentsMode(@Query("value") String value);
+    Single<List<RentMode>> getRentsMode(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- ZONA DE REFERENCIA ---------------------//
 
     @GET("/api/referenceZones")
-    Single<List<ReferenceZone>> getReferencesZone(@Query("value") String value);
+    Single<List<ReferenceZone>> getReferencesZone(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- TIPO DE MONEDA ---------------------//
 
     @GET("/api/drawTypes")
-    Single<List<DrawType>> getDrawsType(@Query("value") String value);
+    Single<List<DrawType>> getDrawsType(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- GALERIA ---------------------//
 
     @GET("/api/galeries")
-    Single<List<Galerie>> getGaleries(@Query("value") String value);
+    Single<List<Galerie>> getGaleries(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- IMAGEN ---------------------//
 
@@ -161,21 +161,21 @@ public interface ApiInterface {
     //------------------- OFERTA ---------------------//
 
     @GET("/api/offers")
-    Single<List<Offer>> getOffers(@Query("value") String value);
+    Single<List<Offer>> getOffers(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- RENTA_FACILIDAD ---------------------//
 
     @GET("/api/rent/amenities")
-    Single<List<RentAmenities>> getRentsAmenities(@Query("value") String value);
+    Single<List<RentAmenities>> getRentsAmenities(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- RENTA_TIPO_MONEDA ---------------------//
 
     @GET("/api/rent/drawTypes")
-    Single<List<RentDrawType>> getRentsDrawType(@Query("value") String value);
+    Single<List<RentDrawType>> getRentsDrawType(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- RENTA_LUGAR_INTERES ---------------------//
 
     @GET("/api/rent/pois")
-    Single<List<RentPoi>> getRentsPoi(@Query("value") String value);
+    Single<List<RentPoi>> getRentsPoi(@Header("Authorization") String token, @Query("value") String value);
 
 }

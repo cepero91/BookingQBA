@@ -49,8 +49,8 @@ public class RentRepoImpl implements RentRepository {
      *
      * @return
      */
-    private Single<List<Rent>> fetchRents(String dateValue) {
-        return retrofit.create(ApiInterface.class).getRents(dateValue);
+    private Single<List<Rent>> fetchRents(String token, String dateValue) {
+        return retrofit.create(ApiInterface.class).getRents(token, dateValue);
     }
 
     /**
@@ -89,10 +89,8 @@ public class RentRepoImpl implements RentRepository {
         return listEntity;
     }
 
-
-    @Override
-    public Single<List<RentEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchRents(dateValue)
+    private Single<List<RentEntity>> fetchRemoteAndTransform(String token, String dateValue) {
+        return fetchRents(token, dateValue)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -190,8 +188,8 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizeRents(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizeRents(String token, String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

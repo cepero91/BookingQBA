@@ -116,64 +116,64 @@ public class SyncViewModel extends ViewModel {
         return dBCommonOperationRepository.lastDatabaseUpdateRemote();
     }
 
-    public Single<OperationResult> syncReferenceZone(String value){
-        return referenceZoneRepository.syncronizeReferenceZone(value);
+    public Single<OperationResult> syncReferenceZone(String token, String value){
+        return referenceZoneRepository.syncronizeReferenceZone(token, value);
     }
 
     public Single<OperationResult> syncProvinces(String token, String value){
         return provinceRepository.syncronizeProvinces(token, value);
     }
 
-    public Single<OperationResult> syncMunicipalities(String value){
-        return municipalityRepository.syncronizeMunicipalities(value);
+    public Single<OperationResult> syncMunicipalities(String token, String value){
+        return municipalityRepository.syncronizeMunicipalities(token, value);
     }
 
-    public Single<OperationResult> syncAmenities(String value){
-        return amenitiesRepository.syncronizeAmenities(value);
+    public Single<OperationResult> syncAmenities(String token, String value){
+        return amenitiesRepository.syncronizeAmenities(token, value);
     }
 
-    public Single<OperationResult> syncPoiTypes(String value){
-        return poiTypeRepository.syncronizePoiTypes(value);
+    public Single<OperationResult> syncPoiTypes(String token, String value){
+        return poiTypeRepository.syncronizePoiTypes(token, value);
     }
 
-    public Single<OperationResult> syncPois(String value){
-        return poiRepository.syncronizePois(value);
+    public Single<OperationResult> syncPois(String token, String value){
+        return poiRepository.syncronizePois(token, value);
     }
 
-    public Single<OperationResult> syncRentsMode(String value){
-        return rentModeRepository.syncronizeRentMode(value);
+    public Single<OperationResult> syncRentsMode(String token, String value){
+        return rentModeRepository.syncronizeRentMode(token, value);
     }
 
-    public Single<OperationResult> syncDrawTypes(String value){
-        return drawTypeRepository.syncronizeDrawType(value);
+    public Single<OperationResult> syncDrawTypes(String token, String value){
+        return drawTypeRepository.syncronizeDrawType(token, value);
     }
 
-    public Single<OperationResult> syncRents(String value){
-        return rentRepository.syncronizeRents(value);
+    public Single<OperationResult> syncRents(String token, String value){
+        return rentRepository.syncronizeRents(token, value);
     }
 
-    public Single<OperationResult> syncRentAmenities(String value){
-        return rentAmenitiesRepository.syncronizeRentAmenities(value);
+    public Single<OperationResult> syncRentAmenities(String token, String value){
+        return rentAmenitiesRepository.syncronizeRentAmenities(token, value);
     }
 
-    public Single<OperationResult> syncRentPois(String value){
-        return rentPoiRepository.syncronizeRentPoi(value);
+    public Single<OperationResult> syncRentPois(String token, String value){
+        return rentPoiRepository.syncronizeRentPoi(token, value);
     }
 
-    public Single<OperationResult> syncRentDrawType(String value){
-        return rentDrawTypeRepository.syncronizeRentDrawType(value);
+    public Single<OperationResult> syncRentDrawType(String token, String value){
+        return rentDrawTypeRepository.syncronizeRentDrawType(token, value);
     }
 
-    public Single<OperationResult> syncOffers(String value){
-        return offerRepository.syncronizeOffers(value);
+    public Single<OperationResult> syncOffers(String token, String value){
+        return offerRepository.syncronizeOffers(token, value);
     }
 
-    public Single<OperationResult> syncGaleries(String value){
-        return galerieRepository.syncronizeGaleries(value);
+    public Single<OperationResult> syncGaleries(String token, String value){
+        return galerieRepository.syncronizeGaleries(token, value);
     }
 
-    public Single<OperationResult> syncComment(String value){
-        return commentRepository.syncronizeComment(value);
+    public Single<OperationResult> syncComment(String token, String value){
+        return commentRepository.syncronizeComment(token, value);
     }
 
     public Single<OperationResult> removedsItem(String value){

@@ -10,9 +10,7 @@ import io.reactivex.Single;
 
 public interface PoiRepository {
 
-    Single<List<PoiEntity>> fetchRemoteAndTransform(String dateValue);
-
     Completable insert(List<PoiEntity> entities);
 
-    Single<OperationResult> syncronizePois(String dateValue);
+    Single<OperationResult> syncronizePois(String token, String dateValue);
 }

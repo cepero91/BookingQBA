@@ -33,10 +33,9 @@ public class CommentRepoImpl implements CommentRepository {
         this.retrofit = retrofit;
     }
 
-    @Override
-    public Single<List<CommentEntity>> fetchRemoteAndTransform(String dateValue) {
+    public Single<List<CommentEntity>> fetchRemoteAndTransform(String token, String dateValue) {
         return retrofit.create(ApiInterface.class)
-                .getComment(dateValue)
+                .getComment(token, dateValue)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -63,8 +62,8 @@ public class CommentRepoImpl implements CommentRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizeComment(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizeComment(String token, String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

@@ -35,8 +35,8 @@ public class AmenitiesRepoImpl implements AmenitiesRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<Amenities>> fetchAmenities(String dateValue) {
-        return retrofit.create(ApiInterface.class).getAmenities(dateValue);
+    private Single<List<Amenities>> fetchAmenities(String token, String dateValue) {
+        return retrofit.create(ApiInterface.class).getAmenities(token, dateValue);
     }
 
     /**
@@ -54,9 +54,8 @@ public class AmenitiesRepoImpl implements AmenitiesRepository {
         return listEntity;
     }
 
-    @Override
-    public Single<List<AmenitiesEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchAmenities(dateValue)
+    public Single<List<AmenitiesEntity>> fetchRemoteAndTransform(String token, String dateValue) {
+        return fetchAmenities(token, dateValue)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -76,8 +75,8 @@ public class AmenitiesRepoImpl implements AmenitiesRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizeAmenities(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizeAmenities(String token, String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

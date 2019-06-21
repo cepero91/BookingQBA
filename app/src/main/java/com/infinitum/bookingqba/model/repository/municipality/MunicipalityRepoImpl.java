@@ -35,8 +35,8 @@ public class MunicipalityRepoImpl implements MunicipalityRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<Municipality>> fetchMunicipalities(String dateValue) {
-        return retrofit.create(ApiInterface.class).getMunicipality(dateValue);
+    private Single<List<Municipality>> fetchMunicipalities(String token, String dateValue) {
+        return retrofit.create(ApiInterface.class).getMunicipality(token, dateValue);
     }
 
     /**
@@ -54,13 +54,9 @@ public class MunicipalityRepoImpl implements MunicipalityRepository {
         return listEntity;
     }
 
-    /**
-     * Ejecuta la peticion y devuelve resultado transformado
-     * @return
-     */
-    @Override
-    public Single<List<MunicipalityEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchMunicipalities(dateValue)
+
+    private Single<List<MunicipalityEntity>> fetchRemoteAndTransform(String token,String dateValue) {
+        return fetchMunicipalities(token, dateValue)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -77,8 +73,8 @@ public class MunicipalityRepoImpl implements MunicipalityRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizeMunicipalities(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizeMunicipalities(String token, String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

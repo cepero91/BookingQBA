@@ -41,7 +41,8 @@
                     android:layout_gravity="center"
                     android:fitsSystemWindows="true"
                     android:focusableInTouchMode="true"
-                    android:scaleType="centerCrop" />
+                    android:scaleType="centerCrop"
+                    android:foreground="@drawable/shape_shadow_black"/>
 
                 <ProgressBar
                     android:layout_width="28dp"

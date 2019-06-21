@@ -10,10 +10,8 @@ import io.reactivex.Single;
 
 public interface RentPoiRepository {
 
-    Single<List<RentPoiEntity>> fetchRemoteAndTransform(String dateValue);
-
     Completable insert(List<RentPoiEntity> entities);
 
-    Single<OperationResult> syncronizeRentPoi(String dateValue);
+    Single<OperationResult> syncronizeRentPoi(String token, String dateValue);
 
 }

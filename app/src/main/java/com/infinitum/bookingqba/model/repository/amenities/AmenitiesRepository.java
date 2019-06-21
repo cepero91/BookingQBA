@@ -12,12 +12,10 @@ import io.reactivex.Single;
 
 public interface AmenitiesRepository {
 
-    Single<List<AmenitiesEntity>> fetchRemoteAndTransform(String dateValue);
-
     Completable insert(List<AmenitiesEntity> entities);
 
     Flowable<Resource<List<AmenitiesEntity>>> allAmenities();
 
-    Single<OperationResult> syncronizeAmenities(String dateValue);
+    Single<OperationResult> syncronizeAmenities(String token, String dateValue);
 
 }

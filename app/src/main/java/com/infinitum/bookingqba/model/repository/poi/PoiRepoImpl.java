@@ -33,8 +33,8 @@ public class PoiRepoImpl implements PoiRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<Poi>> fetchPois(String dateValue) {
-        return retrofit.create(ApiInterface.class).getPois(dateValue);
+    private Single<List<Poi>> fetchPois(String token, String dateValue) {
+        return retrofit.create(ApiInterface.class).getPois(token, dateValue);
     }
 
     /**
@@ -52,9 +52,8 @@ public class PoiRepoImpl implements PoiRepository {
         return listEntity;
     }
 
-    @Override
-    public Single<List<PoiEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchPois(dateValue)
+    public Single<List<PoiEntity>> fetchRemoteAndTransform(String token, String dateValue) {
+        return fetchPois(token, dateValue)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -66,8 +65,8 @@ public class PoiRepoImpl implements PoiRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizePois(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizePois(String token, String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

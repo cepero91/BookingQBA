@@ -35,8 +35,8 @@ public class RentPoiRepoImpl implements RentPoiRepository {
      * Prepara la peticion del API
      * @return
      */
-    private Single<List<RentPoi>> fetchRentPoi(String dateValue) {
-        return retrofit.create(ApiInterface.class).getRentsPoi(dateValue);
+    private Single<List<RentPoi>> fetchRentPoi(String token, String dateValue) {
+        return retrofit.create(ApiInterface.class).getRentsPoi(token, dateValue);
     }
 
     /**
@@ -54,9 +54,8 @@ public class RentPoiRepoImpl implements RentPoiRepository {
         return rentPoiEntityList;
     }
 
-    @Override
-    public Single<List<RentPoiEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchRentPoi(dateValue)
+    public Single<List<RentPoiEntity>> fetchRemoteAndTransform(String token, String dateValue) {
+        return fetchRentPoi(token, dateValue)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -68,8 +67,8 @@ public class RentPoiRepoImpl implements RentPoiRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizeRentPoi(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizeRentPoi(String token, String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

@@ -34,8 +34,8 @@ public class OfferRepoImpl implements OfferRepository {
      *
      * @return
      */
-    private Single<List<Offer>> fetchOffers(String dateValue) {
-        return retrofit.create(ApiInterface.class).getOffers(dateValue);
+    private Single<List<Offer>> fetchOffers(String token, String dateValue) {
+        return retrofit.create(ApiInterface.class).getOffers(token, dateValue);
     }
 
     /**
@@ -54,9 +54,8 @@ public class OfferRepoImpl implements OfferRepository {
         return listEntity;
     }
 
-    @Override
-    public Single<List<OfferEntity>> fetchRemoteAndTransform(String dateValue) {
-        return fetchOffers(dateValue)
+    public Single<List<OfferEntity>> fetchRemoteAndTransform(String token, String dateValue) {
+        return fetchOffers(token, dateValue)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -68,8 +67,8 @@ public class OfferRepoImpl implements OfferRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizeOffers(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizeOffers(String token, String dateValue) {
+        return fetchRemoteAndTransform(token, dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

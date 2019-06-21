@@ -10,10 +10,8 @@ import io.reactivex.Single;
 
 public interface OfferRepository {
 
-    Single<List<OfferEntity>> fetchRemoteAndTransform(String dateValue);
-
     Completable insert(List<OfferEntity> entities);
 
-    Single<OperationResult> syncronizeOffers(String dateValue);
+    Single<OperationResult> syncronizeOffers(String token, String dateValue);
 
 }

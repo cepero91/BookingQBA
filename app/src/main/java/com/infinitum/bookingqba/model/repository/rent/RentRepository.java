@@ -20,8 +20,6 @@ import io.reactivex.Single;
 
 public interface RentRepository {
 
-    Single<List<RentEntity>> fetchRemoteAndTransform(String dateValue);
-
     Completable insert(List<RentEntity> entities);
 
     Flowable<Resource<List<RentAndGalery>>> allRent();
@@ -48,7 +46,7 @@ public interface RentRepository {
 
     Completable update(RentEntity entity);
 
-    Single<OperationResult> syncronizeRents(String dateValue);
+    Single<OperationResult> syncronizeRents(String token, String dateValue);
 
     Flowable<Resource<List<RentModeEntity>>> allRentMode();
 

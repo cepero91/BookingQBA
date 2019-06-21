@@ -26,10 +26,6 @@ public class RentAnaliticsViewModel extends ViewModel {
         this.rentAnaliticsRepository = rentAnaliticsRepository;
     }
 
-    public Single<List<RentAnalitics>> getRentAnalitics(List<String> uuids) {
-        return rentAnaliticsRepository.getRentAnalitics(uuids);
-    }
-
     public Single<AnaliticsGroup> rentAnalitics(String uuid) {
         return rentAnaliticsRepository.rentAnalitics(uuid);
     }

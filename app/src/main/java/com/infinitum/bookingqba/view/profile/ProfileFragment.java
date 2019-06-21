@@ -59,6 +59,7 @@ import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentProfileBinding;
+import com.infinitum.bookingqba.model.remote.pojo.AnaliticsGroup;
 import com.infinitum.bookingqba.model.remote.pojo.CommentsEmotionAnalitics;
 import com.infinitum.bookingqba.model.remote.pojo.GeneralCommentAnalitics;
 import com.infinitum.bookingqba.model.remote.pojo.RatingStarAnalitics;
@@ -191,13 +192,16 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
     public void onDetach() {
         super.onDetach();
         compositeDisposable.clear();
+        if(!disposable.isDisposed()){
+            disposable.dispose();
+        }
     }
 
     private void loadRentAnalitics() {
         Set<String> stringSet = sharedPreferences.getStringSet(USER_RENTS, null);
         rentSelect = stringSet.toArray(new String[stringSet.size()]);
         if (rentSelect.length > 0) {
-            profileBinding.tvRentName.setVisibility(View.GONE);
+            profileBinding.llRentTitleContent.setVisibility(View.GONE);
             disposable = viewModel.getRentByUuidList(Arrays.asList(rentSelect))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -215,8 +219,9 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
     private void updateSingleView(ArrayList<HorizontalItem> horizontalItems) {
         this.singleHorizontalItem = horizontalItems.get(0);
         profileBinding.setShowSelect(false);
-        profileBinding.tvRentName.setVisibility(View.VISIBLE);
+        profileBinding.llRentTitleContent.setVisibility(View.VISIBLE);
         profileBinding.tvRentName.setText(singleHorizontalItem.getRentName());
+        profileBinding.srScaleRating.setRating(Float.parseFloat(singleHorizontalItem.getRating()));
         fetchRentAnalitic(singleHorizontalItem.getUuid());
     }
 
@@ -282,21 +287,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
                                     analiticsGroup.getCommentsEmotionAnalitics());
                             configureRatingMPChart(analiticsGroup.getRatingStarAnalitics());
 
-                            List<String> missing = analiticsGroup.getProfilePercentAnalitics().getMissingList();
-                            if (missing.size() > 0) {
-                                profileBinding.llContentProfile.setVisibility(View.VISIBLE);
-                                StringBuilder commaSeparate = new StringBuilder();
-                                for (int i = 0; i < missing.size(); i++) {
-                                    if (i < missing.size() - 1) {
-                                        commaSeparate.append(missing.get(i)).append(" \n");
-                                    } else {
-                                        commaSeparate.append(missing.get(i));
-                                    }
-                                }
-                                profileBinding.tvMissingList.setText(commaSeparate.toString());
-                            } else {
-                                profileBinding.llContentProfile.setVisibility(View.GONE);
-                            }
+                            updateRentDetailMissingFields(analiticsGroup);
 
                             updatePositionView(analiticsGroup.getRentPositionAnalitics());
 
@@ -312,7 +303,6 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
                         }
                         resetAllViews();
                     });
-            compositeDisposable.add(disposable);
         } else {
             profileBinding.progressPvCircularInout.stop();
             profileBinding.setNoConnection(true);
@@ -320,6 +310,24 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         }
 
 
+    }
+
+    private void updateRentDetailMissingFields(AnaliticsGroup analiticsGroup) {
+        List<String> missing = analiticsGroup.getProfilePercentAnalitics().getMissingList();
+        if (missing.size() > 0) {
+            profileBinding.llContentProfile.setVisibility(View.VISIBLE);
+            StringBuilder commaSeparate = new StringBuilder();
+            for (int i = 0; i < missing.size(); i++) {
+                if (i < missing.size() - 1) {
+                    commaSeparate.append(missing.get(i)).append(" \n");
+                } else {
+                    commaSeparate.append(missing.get(i));
+                }
+            }
+            profileBinding.tvMissingList.setText(commaSeparate.toString());
+        } else {
+            profileBinding.llContentProfile.setVisibility(View.GONE);
+        }
     }
 
     private void resetAllViews() {
@@ -412,33 +420,44 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
 
 
     private void setRatingChartData(RatingStarAnalitics ratingStarAnalitics) {
-        float barWidth = 8f;
-        ArrayList<BarEntry> values = new ArrayList<>();
-        ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(ColorTemplate.rgb("#F44336"));
-        colors.add(ColorTemplate.rgb("#FF9800"));
-        colors.add(ColorTemplate.rgb("#4CAF50"));
-        colors.add(ColorTemplate.rgb("#00BCD4"));
-        colors.add(ColorTemplate.rgb("#2196F3"));
-        values.add(new BarEntry(0, ratingStarAnalitics.getOneStar()));
-        values.add(new BarEntry(10, ratingStarAnalitics.getTwoStar()));
-        values.add(new BarEntry(20, ratingStarAnalitics.getThreeStar()));
-        values.add(new BarEntry(30, ratingStarAnalitics.getFourStar()));
-        values.add(new BarEntry(40, ratingStarAnalitics.getFiveStar()));
+        int one = ratingStarAnalitics.getOneStar();
+        int two = ratingStarAnalitics.getTwoStar();
+        int three = ratingStarAnalitics.getThreeStar();
+        int four = ratingStarAnalitics.getFourStar();
+        int five = ratingStarAnalitics.getFiveStar();
+        if(one+two+three+four+five>0){
+            profileBinding.chartRating.setVisibility(View.VISIBLE);
+            float barWidth = 8f;
+            ArrayList<BarEntry> values = new ArrayList<>();
+            ArrayList<Integer> colors = new ArrayList<>();
+            colors.add(ColorTemplate.rgb("#F44336"));
+            colors.add(ColorTemplate.rgb("#FF9800"));
+            colors.add(ColorTemplate.rgb("#4CAF50"));
+            colors.add(ColorTemplate.rgb("#00BCD4"));
+            colors.add(ColorTemplate.rgb("#2196F3"));
+            values.add(new BarEntry(0, one));
+            values.add(new BarEntry(10, two));
+            values.add(new BarEntry(20, three));
+            values.add(new BarEntry(30, four));
+            values.add(new BarEntry(40, five));
 
-        BarDataSet set1;
-        set1 = new BarDataSet(values, "Votos efectuados");
-        set1.setColors(colors);
-        set1.setDrawIcons(false);
-        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-        dataSets.add(set1);
-        BarData data = new BarData(dataSets);
-        data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf((int) value));
-        data.setValueTextSize(10f);
-        data.setValueTypeface(tfLight);
-        data.setBarWidth(barWidth);
-        profileBinding.chartRating.setData(data);
-        profileBinding.chartRating.invalidate();
+            BarDataSet set1;
+            set1 = new BarDataSet(values, "Votos efectuados");
+            set1.setColors(colors);
+            set1.setDrawIcons(false);
+            ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+            dataSets.add(set1);
+            BarData data = new BarData(dataSets);
+            data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf((int) value));
+            data.setValueTextSize(10f);
+            data.setValueTypeface(tfLight);
+            data.setBarWidth(barWidth);
+            profileBinding.chartRating.setData(data);
+            profileBinding.chartRating.invalidate();
+        }else{
+            profileBinding.chartRating.setData(new BarData(new BarDataSet(new ArrayList<>(),"")));
+            profileBinding.chartRating.setVisibility(View.GONE);
+        }
     }
 
     private void configureCommentMPChart(GeneralCommentAnalitics generalCommentAnalitics, CommentsEmotionAnalitics commentsEmotionAnalitics) {
@@ -451,6 +470,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
 
         profileBinding.pieEmotion.setCenterTextTypeface(tfLight);
         profileBinding.pieEmotion.setCenterText(generateCenterText());
+        profileBinding.pieEmotion.setCenterTextSize(10);
 
         profileBinding.pieEmotion.setDrawHoleEnabled(true);
         profileBinding.pieEmotion.setHoleColor(Color.WHITE);
@@ -485,44 +505,56 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         setEmotionChartData(commentsEmotionAnalitics);
     }
 
-
     private void setEmotionChartData(CommentsEmotionAnalitics commentsEmotionAnalitics) {
+        int terrible = commentsEmotionAnalitics.getTerribleCount();
+        int bad = commentsEmotionAnalitics.getBadCount();
+        int ok = commentsEmotionAnalitics.getOkCount();
+        int good = commentsEmotionAnalitics.getGoodCount();
+        int excellent = commentsEmotionAnalitics.getExcellentCount();
         ArrayList<PieEntry> entries1 = new ArrayList<>();
         ArrayList<Integer> colors = new ArrayList<>();
 
-        if (commentsEmotionAnalitics.getTerribleCount() > 0) {
-            entries1.add(new PieEntry(commentsEmotionAnalitics.getTerribleCount(), "Terrible "));
-            colors.add(ColorTemplate.rgb("#F44336"));
-        }
-        if (commentsEmotionAnalitics.getBadCount() > 0) {
-            entries1.add(new PieEntry(commentsEmotionAnalitics.getBadCount(), "Malo "));
-            colors.add(ColorTemplate.rgb("#FF9800"));
-        }
-        if (commentsEmotionAnalitics.getOkCount() > 0) {
-            entries1.add(new PieEntry(commentsEmotionAnalitics.getOkCount(), "Mejorable "));
-            colors.add(ColorTemplate.rgb("#4CAF50"));
-        }
-        if (commentsEmotionAnalitics.getGoodCount() > 0) {
-            entries1.add(new PieEntry(commentsEmotionAnalitics.getGoodCount(), "Bueno "));
-            colors.add(ColorTemplate.rgb("#00BCD4"));
-        }
-        if (commentsEmotionAnalitics.getExcellentCount() > 0) {
-            entries1.add(new PieEntry(commentsEmotionAnalitics.getExcellentCount(), "Excelente "));
-            colors.add(ColorTemplate.rgb("#2196F3"));
+        if (terrible + bad + ok + good + excellent > 0) {
+            profileBinding.pieEmotion.setVisibility(View.VISIBLE);
+            if (commentsEmotionAnalitics.getTerribleCount() > 0) {
+                entries1.add(new PieEntry(commentsEmotionAnalitics.getTerribleCount(), "Terrible "));
+                colors.add(ColorTemplate.rgb("#F44336"));
+            }
+            if (commentsEmotionAnalitics.getBadCount() > 0) {
+                entries1.add(new PieEntry(commentsEmotionAnalitics.getBadCount(), "Malo "));
+                colors.add(ColorTemplate.rgb("#FF9800"));
+            }
+            if (commentsEmotionAnalitics.getOkCount() > 0) {
+                entries1.add(new PieEntry(commentsEmotionAnalitics.getOkCount(), "Mejorable "));
+                colors.add(ColorTemplate.rgb("#4CAF50"));
+            }
+            if (commentsEmotionAnalitics.getGoodCount() > 0) {
+                entries1.add(new PieEntry(commentsEmotionAnalitics.getGoodCount(), "Bueno "));
+                colors.add(ColorTemplate.rgb("#00BCD4"));
+            }
+            if (commentsEmotionAnalitics.getExcellentCount() > 0) {
+                entries1.add(new PieEntry(commentsEmotionAnalitics.getExcellentCount(), "Excelente "));
+                colors.add(ColorTemplate.rgb("#2196F3"));
+            }
+
+            PieDataSet ds1 = new PieDataSet(entries1, "");
+            ds1.setColors(colors);
+            ds1.setSliceSpace(2f);
+            ds1.setValueTextColor(Color.WHITE);
+            ds1.setValueTextSize(12f);
+
+            PieData d = new PieData(ds1);
+            d.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf((int) value));
+            d.setValueTypeface(tfLight);
+
+            profileBinding.pieEmotion.setData(d);
+            profileBinding.pieEmotion.invalidate();
+        } else {
+            profileBinding.pieEmotion.setDrawCenterText(false);
+            profileBinding.pieEmotion.setData(new PieData(new PieDataSet(new ArrayList<>(),"")));
+            profileBinding.pieEmotion.setVisibility(View.GONE);
         }
 
-        PieDataSet ds1 = new PieDataSet(entries1, "");
-        ds1.setColors(colors);
-        ds1.setSliceSpace(2f);
-        ds1.setValueTextColor(Color.WHITE);
-        ds1.setValueTextSize(12f);
-
-        PieData d = new PieData(ds1);
-        d.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf((int) value));
-        d.setValueTypeface(tfLight);
-
-        profileBinding.pieEmotion.setData(d);
-        profileBinding.pieEmotion.invalidate();
     }
 
     private SpannableString generateCenterText() {

@@ -12,12 +12,10 @@ import io.reactivex.Single;
 
 public interface ReferenceZoneRepository {
 
-    Single<List<ReferenceZoneEntity>> fetchRemoteAndTransform(String value);
-
     Completable insert(List<ReferenceZoneEntity> entities);
 
     Flowable<Resource<List<ReferenceZoneEntity>>> allReferencesZone(String province);
 
-    Single<OperationResult> syncronizeReferenceZone(String dateValue);
+    Single<OperationResult> syncronizeReferenceZone(String token, String dateValue);
 
 }

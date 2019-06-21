@@ -12,11 +12,9 @@ import io.reactivex.Single;
 
 public interface CommentRepository {
 
-    Single<List<CommentEntity>> fetchRemoteAndTransform(String dateValue);
-
     Completable insert(List<CommentEntity> entities);
 
-    Single<OperationResult> syncronizeComment(String dateValue);
+    Single<OperationResult> syncronizeComment(String token, String dateValue);
 
     Flowable<Resource<List<CommentEntity>>> allComment();
 }
