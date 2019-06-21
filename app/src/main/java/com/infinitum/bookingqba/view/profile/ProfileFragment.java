@@ -63,6 +63,8 @@ import com.infinitum.bookingqba.model.remote.pojo.CommentsEmotionAnalitics;
 import com.infinitum.bookingqba.model.remote.pojo.GeneralCommentAnalitics;
 import com.infinitum.bookingqba.model.remote.pojo.RatingStarAnalitics;
 import com.infinitum.bookingqba.model.remote.pojo.RentPositionAnalitics;
+import com.infinitum.bookingqba.util.AlertUtils;
+import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.view.adapters.HorizontalScrollAdapter;
 import com.infinitum.bookingqba.view.adapters.SpinnerAdapter;
 import com.infinitum.bookingqba.view.adapters.items.chart.PieBean;
@@ -120,6 +122,9 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
     @Inject
     SharedPreferences sharedPreferences;
 
+    @Inject
+    NetworkHelper networkHelper;
+
     private RentAnaliticsViewModel viewModel;
 
     private Disposable disposable;
@@ -128,7 +133,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
     private HorizontalScrollAdapter horizontalScrollAdapter;
     private HorizontalItem singleHorizontalItem;
     private String[] rentSelect;
-    private int lastPosSelected;
+    private int lastPosSelected = -1;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -164,10 +169,12 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         setHasOptionsMenu(true);
 
         profileBinding.setShowSelect(false);
+        profileBinding.setNoConnection(false);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentAnaliticsViewModel.class);
 
         profileBinding.chartRating.setNoDataText("Cargando datos");
+        profileBinding.pieEmotion.setNoDataText("Cargando datos");
 
         loadRentAnalitics();
 
@@ -191,17 +198,6 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         rentSelect = stringSet.toArray(new String[stringSet.size()]);
         if (rentSelect.length > 0) {
             profileBinding.tvRentName.setVisibility(View.GONE);
-//            disposable = viewModel.getRentSpinnerList(Arrays.asList(rentSelect))
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe(commonSpinnerList -> {
-//                        if (commonSpinnerList.getArrayNames().length > 1) {
-//                            updateSpinnerView(commonSpinnerList);
-//                        } else if (commonSpinnerList.getArrayNames().length == 1) {
-//                            updateSingleView(commonSpinnerList);
-//                        }
-//                    }, Timber::e);
-//            compositeDisposable.add(disposable);
             disposable = viewModel.getRentByUuidList(Arrays.asList(rentSelect))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -221,11 +217,11 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         profileBinding.setShowSelect(false);
         profileBinding.tvRentName.setVisibility(View.VISIBLE);
         profileBinding.tvRentName.setText(singleHorizontalItem.getRentName());
-        profileBinding.tvMsg.setText("");
         fetchRentAnalitic(singleHorizontalItem.getUuid());
     }
 
     private void updateSpinnerView(ArrayList<HorizontalItem> horizontalItems) {
+        profileBinding.setShowSelect(true);
         horizontalScrollAdapter = new HorizontalScrollAdapter(horizontalItems);
         profileBinding.discreteScroll.setSlideOnFling(true);
         profileBinding.discreteScroll.setAdapter(horizontalScrollAdapter);
@@ -240,7 +236,10 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
     @Override
     public void onCurrentItemChanged(@Nullable HorizontalScrollAdapter.ViewHolder viewHolder, int adapterPosition) {
         viewHolder.showText();
-        Toast.makeText(getActivity(), "Scrolled " + horizontalScrollAdapter.getItem(adapterPosition), Toast.LENGTH_SHORT).show();
+        if (lastPosSelected != adapterPosition) {
+            lastPosSelected = adapterPosition;
+            fetchRentAnalitic(horizontalScrollAdapter.getItem(adapterPosition).getUuid());
+        }
     }
 
     @Override
@@ -261,55 +260,66 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
     //-------------------------------------
 
     private void fetchRentAnalitic(String uuid) {
-        profileBinding.setIsLoading(true);
         profileBinding.progressPvCircularInout.start();
-        disposable = viewModel.rentAnalitics(uuid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(analiticsGroup -> {
-                    if (analiticsGroup != null) {
-                        profileBinding.setIsLoading(false);
-                        profileBinding.progressPvCircularInout.stop();
+        if (networkHelper.isNetworkAvailable()) {
+            profileBinding.setNoConnection(false);
+            if (!disposable.isDisposed())
+                disposable.dispose();
+            disposable = viewModel.rentAnalitics(uuid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(analiticsGroup -> {
+                        if (analiticsGroup != null) {
+                            profileBinding.progressPvCircularInout.stop();
 
-                        profileBinding.pbDetailPercent.setProgress(((int) analiticsGroup.getProfilePercentAnalitics().getPercent()), true);
+                            profileBinding.pbDetailPercent.setProgress(((int) analiticsGroup.getProfilePercentAnalitics().getPercent()), true);
 
-                        ValueAnimator visitAnimator = getAnimatorTextNumber(profileBinding.tvVisitCount, analiticsGroup.getVisitAnalitics().getTotalVisit());
-                        ValueAnimator wishAnimator = getAnimatorTextNumber(profileBinding.tvTotalListWish, analiticsGroup.getWishAnalitics().getTotalWish());
-                        startNumberAnimation(visitAnimator, wishAnimator);
+                            ValueAnimator visitAnimator = getAnimatorTextNumber(profileBinding.tvVisitCount, analiticsGroup.getVisitAnalitics().getTotalVisit());
+                            ValueAnimator wishAnimator = getAnimatorTextNumber(profileBinding.tvTotalListWish, analiticsGroup.getWishAnalitics().getTotalWish());
+                            startNumberAnimation(visitAnimator, wishAnimator);
 
-                        configureCommentMPChart(analiticsGroup.getGeneralCommentAnalitics(),
-                                analiticsGroup.getCommentsEmotionAnalitics());
-                        configureRatingMPChart(analiticsGroup.getRatingStarAnalitics());
+                            configureCommentMPChart(analiticsGroup.getGeneralCommentAnalitics(),
+                                    analiticsGroup.getCommentsEmotionAnalitics());
+                            configureRatingMPChart(analiticsGroup.getRatingStarAnalitics());
 
-                        List<String> missing = analiticsGroup.getProfilePercentAnalitics().getMissingList();
-                        if (missing.size() > 0) {
-                            profileBinding.llContentProfile.setVisibility(View.VISIBLE);
-                            StringBuilder commaSeparate = new StringBuilder();
-                            for (int i = 0; i < missing.size(); i++) {
-                                if (i < missing.size() - 1) {
-                                    commaSeparate.append(missing.get(i)).append(" \n");
-                                } else {
-                                    commaSeparate.append(missing.get(i));
+                            List<String> missing = analiticsGroup.getProfilePercentAnalitics().getMissingList();
+                            if (missing.size() > 0) {
+                                profileBinding.llContentProfile.setVisibility(View.VISIBLE);
+                                StringBuilder commaSeparate = new StringBuilder();
+                                for (int i = 0; i < missing.size(); i++) {
+                                    if (i < missing.size() - 1) {
+                                        commaSeparate.append(missing.get(i)).append(" \n");
+                                    } else {
+                                        commaSeparate.append(missing.get(i));
+                                    }
                                 }
+                                profileBinding.tvMissingList.setText(commaSeparate.toString());
+                            } else {
+                                profileBinding.llContentProfile.setVisibility(View.GONE);
                             }
-                            profileBinding.tvMissingList.setText(commaSeparate.toString());
-                        } else {
-                            profileBinding.llContentProfile.setVisibility(View.GONE);
+
+                            updatePositionView(analiticsGroup.getRentPositionAnalitics());
+
                         }
+                    }, throwable -> {
+                        Timber.e(throwable);
+                        if (throwable instanceof ConnectException) {
+                            profileBinding.progressPvCircularInout.stop();
+                            profileBinding.setNoConnection(true);
+                            AlertUtils.showErrorAlert(getActivity(), "Sin conexión");
+                        } else {
+                            AlertUtils.showErrorAlert(getActivity(), "Ooops!! un error a ocurrido");
+                        }
+                        resetAllViews();
+                    });
+            compositeDisposable.add(disposable);
+        } else {
+            profileBinding.progressPvCircularInout.stop();
+            profileBinding.setNoConnection(true);
+            AlertUtils.showErrorAlert(getActivity(), "Sin conexión");
+        }
 
-                        updatePositionView(analiticsGroup.getRentPositionAnalitics());
 
-                    }
-                }, throwable -> {
-                    Timber.e(throwable);
-                    if (throwable instanceof ConnectException) {
-                        profileBinding.tvMsg.setText("Sin conexión");
-                    } else {
-                        profileBinding.tvMsg.setText("Ooops!! un error a ocurrido");
-                    }
-                    resetAllViews();
-                });
-        compositeDisposable.add(disposable);
     }
 
     private void resetAllViews() {
@@ -345,9 +355,9 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 if (rentSelect.length > 1) {
-                    fetchRentAnalitic(commonSpinnerList.getUuidOnPos(lastPosSelected));
+                    fetchRentAnalitic(horizontalScrollAdapter.getItem(lastPosSelected).getUuid());
                 } else if (rentSelect.length == 1) {
-                    fetchRentAnalitic(commonSpinnerList.getUuidOnPos(0));
+                    fetchRentAnalitic(singleHorizontalItem.getUuid());
                 }
                 return true;
         }
@@ -439,8 +449,6 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         profileBinding.pieEmotion.getDescription().setEnabled(false);
         profileBinding.pieEmotion.setExtraOffsets(5, 0, 5, 0);
 
-        profileBinding.pieEmotion.setDragDecelerationFrictionCoef(0.95f);
-
         profileBinding.pieEmotion.setCenterTextTypeface(tfLight);
         profileBinding.pieEmotion.setCenterText(generateCenterText());
 
@@ -457,7 +465,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
 
         profileBinding.pieEmotion.setRotationAngle(0);
         // enable rotation of the chart by touch
-        profileBinding.pieEmotion.setRotationEnabled(true);
+        profileBinding.pieEmotion.setRotationEnabled(false);
         profileBinding.pieEmotion.setHighlightPerTapEnabled(true);
 
         profileBinding.pieEmotion.animateY(1400);

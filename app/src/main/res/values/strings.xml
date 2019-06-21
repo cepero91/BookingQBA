@@ -73,12 +73,11 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="comment">Comentarios</string>
     <string name="offer">Ofertas</string>
     <string name="empty_text">--------</string>
-    <string name="nivel_de_detalle">Nivel de detalle</string>
     <string name="empty_short_text">--</string>
     <string name="visitas">Visitas</string>
     <string name="comentarios">Comentarios</string>
     <string name="en_deseo">En Deseo</string>
-    <string name="sugerencia">Para lograr una informacion detallada, te sugerimos llenar:</string>
+    <string name="sugerencia">Logra el 100% completando estos campos:</string>
     <string name="emociones_en_comentarios">Emociones en comentarios</string>
     <string name="votaciones">Votaciones</string>
     <string name="_5">5</string>
@@ -86,7 +85,7 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="_3">3</string>
     <string name="_2">2</string>
     <string name="_1">1</string>
-    <string name="sugerencias_de_mejoras">Sugerencias de mejoras</string>
+    <string name="sugerencias_de_mejoras">Detalle de Renta</string>
     <string name="descripcion">Descripción</string>
     <string name="comentario">Comentario</string>
     <string name="facilidades">Facilidades</string>
@@ -141,4 +140,6 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="total_nacional">Total Nacional</string>
     <string name="bienvenido_anfitri_n">Bienvenido Anfitrión</string>
     <string name="mis_hospedajes">Mis Hospedajes</string>
+    <string name="nivel_de_detalle">Nivel de detalle</string>
+    <string name="device">Token 2d822fb7c8898c81f2f16dfe552b9a2390c86b00</string>
 </resources>

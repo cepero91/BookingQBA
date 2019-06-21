@@ -47,8 +47,8 @@ public class HorizontalScrollAdapter extends RecyclerView.Adapter<HorizontalScro
         return horizontalItems.size();
     }
 
-    public String getItem(int position){
-        return horizontalItems.get(position).getRentName();
+    public HorizontalItem getItem(int position){
+        return horizontalItems.get(position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

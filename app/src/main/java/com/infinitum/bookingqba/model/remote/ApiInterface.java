@@ -100,7 +100,7 @@ public interface ApiInterface {
      * @return lista de provincias
      */
     @GET("/api/provinces")
-    Single<List<Province>> getProvinces(@Query("value") String value);
+    Single<List<Province>> getProvinces(@Header("Authorization") String token, @Query("value") String value);
 
     //------------------- MUNICIPIOS ---------------------//
 

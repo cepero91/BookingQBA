@@ -120,8 +120,8 @@ public class SyncViewModel extends ViewModel {
         return referenceZoneRepository.syncronizeReferenceZone(value);
     }
 
-    public Single<OperationResult> syncProvinces(String value){
-        return provinceRepository.syncronizeProvinces(value);
+    public Single<OperationResult> syncProvinces(String token, String value){
+        return provinceRepository.syncronizeProvinces(token, value);
     }
 
     public Single<OperationResult> syncMunicipalities(String value){

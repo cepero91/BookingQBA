@@ -163,32 +163,9 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
         disposable = userViewModel.userLogin(oauth)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map((Function<Response<User>, Pair<Boolean, ArrayList<String>>>) response -> {
-                    loginBinding.setIsLoading(false);
-                    if (response.code() == 200 && response.body() != null) {
-                        loginBinding.tvError.setText("");
-                        interaction.onLogin(response.body());
-                        return new Pair<>(true, response.body().getRents());
-                    } else {
-                        String errorMsg = ErrorUtils.parseError(response).getMsg();
-                        loginBinding.tvError.setText(errorMsg);
-                        return new Pair<>(false, new ArrayList<>());
-                    }
-                })
+                .map(this::getBooleanArrayListPair)
                 .flatMap(this::checkExist)
-                .map(booleanStatusPair -> {
-                    if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.HOST_USER_RENT_FOUND) {
-                        interaction.showGroupMenuProfile(true);
-                        return RESULT_DISMISS;
-                    } else if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.HOST_USER_RENT_NOT_FOUND) {
-                        interaction.showNotificationToUpdate(getResources().getString(R.string.notification_sync_msg));
-                        return RESULT_DISMISS;
-                    } else if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.NORMAL_USER) {
-                        return RESULT_DISMISS;
-                    } else {
-                        return RESULT_ERROR;
-                    }
-                })
+                .map(this::getIntegerResult)
                 .doOnSuccess(integer -> {
                     if (integer == RESULT_DISMISS) {
                         dismiss();
@@ -203,6 +180,35 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
                 })
                 .subscribe();
         compositeDisposable.add(disposable);
+    }
+
+    @NonNull
+    private Pair<Boolean, ArrayList<String>> getBooleanArrayListPair(Response<User> response) {
+        loginBinding.setIsLoading(false);
+        if (response.code() == 200 && response.body() != null) {
+            loginBinding.tvError.setText("");
+            interaction.onLogin(response.body());
+            return new Pair<>(true, response.body().getRents());
+        } else {
+            String errorMsg = ErrorUtils.parseError(response).getMsg();
+            loginBinding.tvError.setText(errorMsg);
+            return new Pair<>(false, new ArrayList<>());
+        }
+    }
+
+    @NonNull
+    private Integer getIntegerResult(Pair<Boolean, UserStatus> booleanStatusPair) {
+        if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.HOST_USER_RENT_FOUND) {
+            interaction.showGroupMenuProfile(true);
+            return RESULT_DISMISS;
+        } else if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.HOST_USER_RENT_NOT_FOUND) {
+            interaction.showNotificationToUpdate(getResources().getString(R.string.notification_sync_msg));
+            return RESULT_DISMISS;
+        } else if (booleanStatusPair.first && booleanStatusPair.second == UserStatus.NORMAL_USER) {
+            return RESULT_DISMISS;
+        } else {
+            return RESULT_ERROR;
+        }
     }
 
     @Override
@@ -253,12 +259,12 @@ public class LoginFragment extends DialogFragment implements View.OnClickListene
         if (username.equals("")) {
             isValid = false;
             Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.shake_animation);
-            loginBinding.etUsername.startAnimation(animation);
+            loginBinding.tilUsername.startAnimation(animation);
         }
         if (password.equals("")) {
             isValid = false;
             Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.shake_animation);
-            loginBinding.etPassword.startAnimation(animation);
+            loginBinding.tilPassword.startAnimation(animation);
         }
         return isValid;
     }

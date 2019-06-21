@@ -43,8 +43,7 @@ public class RentAnaliticsRepoImpl implements RentAnaliticsRepository{
     public Single<AnaliticsGroup> rentAnalitics(String uuid) {
         return retrofit.create(ApiInterface.class)
                 .rentAnalitics(uuid)
-                .subscribeOn(Schedulers.io())
-                .delay(1000,TimeUnit.MILLISECONDS);
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
@@ -63,7 +62,6 @@ public class RentAnaliticsRepoImpl implements RentAnaliticsRepository{
     public Single<List<RentAndGalery>> rentByUuidList(List<String> uuids) {
         String comma = StringUtils.convertListToCommaSeparated(uuids);
         String testSqlStatement = "SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
-                "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
                 "WHERE Rent.id IN(%s)";
         SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(String.format(testSqlStatement,comma));
         return qbaDao.getRentByUuidList(simpleSQLiteQuery)

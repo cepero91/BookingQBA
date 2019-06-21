@@ -37,9 +37,8 @@ public class ProvinceRepoImpl implements ProvinceRepository {
      * Prepara la peticion al API
      * @return
      */
-    private Single<List<Province>> fetchProvinces(String value) {
-        Timber.e("Sync fetchProvinces");
-        return retrofit.create(ApiInterface.class).getProvinces(value);
+    private Single<List<Province>> fetchProvinces(String token,String value) {
+        return retrofit.create(ApiInterface.class).getProvinces(token,value);
     }
 
     /**
@@ -58,13 +57,8 @@ public class ProvinceRepoImpl implements ProvinceRepository {
     }
 
 
-    /**
-     * Ejecuta la peticion y tranforma los datos
-     * @return
-     */
-    @Override
-    public Single<List<ProvinceEntity>> fetchRemoteAndTransform(String value) {
-        return fetchProvinces(value)
+    private Single<List<ProvinceEntity>> fetchRemoteAndTransform(String token,String value) {
+        return fetchProvinces(token, value)
                 .map(this::parseGsonToEntity)
                 .subscribeOn(Schedulers.io());
     }
@@ -86,8 +80,8 @@ public class ProvinceRepoImpl implements ProvinceRepository {
     }
 
     @Override
-    public Single<OperationResult> syncronizeProvinces(String dateValue) {
-        return fetchRemoteAndTransform(dateValue)
+    public Single<OperationResult> syncronizeProvinces(String token,String dateValue) {
+        return fetchRemoteAndTransform(token,dateValue)
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(this::insert)
                 .toSingle(OperationResult::success)

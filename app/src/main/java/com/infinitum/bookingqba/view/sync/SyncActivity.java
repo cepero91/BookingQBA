@@ -87,6 +87,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     private Disposable galeryDisposable;
 
 
+    private String apiTokenAuthorization;
     private int entityProgress = 0;
     private boolean uniqueDownloadErrorAlert = false;
     private int progressGalery = 0;
@@ -101,6 +102,8 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         AndroidInjection.inject(this);
         syncBinding = DataBindingUtil.setContentView(this, R.layout.activity_sync);
+
+        apiTokenAuthorization = getString(R.string.device);
 
         if (getIntent().hasExtra(ALTERNATIVE_SYNC)) {
             alternativeSync = getIntent().getExtras().getBoolean(ALTERNATIVE_SYNC, false);
@@ -122,13 +125,13 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     @Override
     protected void onPause() {
         super.onPause();
-        syncBinding.ivUseCase.pauseAnimation();
+//        syncBinding.ivUseCase.pauseAnimation();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        syncBinding.ivUseCase.resumeAnimation();
+//        syncBinding.ivUseCase.resumeAnimation();
     }
 
     private void initButtonComponent() {
@@ -262,7 +265,7 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void syncronizeProvinces(String dateValue) {
-        entityDisposable = syncViewModel.syncProvinces(dateValue)
+        entityDisposable = syncViewModel.syncProvinces(apiTokenAuthorization,dateValue)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::checkOperationResult, Timber::e);

@@ -13,16 +13,21 @@ public class ErrorUtils {
         try {
             String errorBody = response.errorBody().string();
             if (errorBody != null) {
+                msg = "Un error ha ocurrido";
                 bodyObj = new JSONObject(errorBody);
-                msg = bodyObj.getJSONArray("msg").getString(0);
+                if (!bodyObj.isNull("msg")){
+                    msg = bodyObj.getJSONArray("msg").getString(0);
+                } else if(!bodyObj.isNull("non_field_errors")){
+                    msg = bodyObj.getJSONArray("non_field_errors").getString(0);
+                }
             } else {
-                msg = "Unable to parse error";
+                msg = "Un error ha ocurrido";
             }
         } catch (Exception e) {
             e.printStackTrace();
-            msg = "Unable to parse error";
+            msg = "Un error ha ocurrido";
         }
 
-        return new APIError(errorCode,msg);
+        return new APIError(errorCode, msg);
     }
 }

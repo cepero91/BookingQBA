@@ -12,12 +12,10 @@ import io.reactivex.Single;
 
 public interface ProvinceRepository {
 
-    Single<List<ProvinceEntity>> fetchRemoteAndTransform(String value);
-
     Completable insert(List<ProvinceEntity> entities);
 
     Flowable<Resource<List<ProvinceEntity>>> allProvinces();
 
-    Single<OperationResult> syncronizeProvinces(String dateValue);
+    Single<OperationResult> syncronizeProvinces(String token,String dateValue);
 
 }
