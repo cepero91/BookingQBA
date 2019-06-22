@@ -68,23 +68,23 @@ public interface ApiInterface {
     //------------------- RENTAS EN LISTA DE DESEO ---------------------------//
 
     @POST("/update-rent-wished/")
-    Single<ResponseResult> updateRentWished(@Body RentWished rentWished);
+    Single<ResponseResult> updateRentWished(@Header("Authorization") String token, @Body RentWished rentWished);
 
     // ------------------ VOTACIONES DE ESTRELLAS DE LOS USUARIOS ------------//
 
     @POST("/update-rent-rating/")
-    Single<ResponseResult> updateRatingVotes(@Body RatingVoteGroup ratingVoteGroup);
+    Single<ResponseResult> updateRatingVotes(@Header("Authorization") String token, @Body RatingVoteGroup ratingVoteGroup);
 
     // ------------------ COMENTARIOS DE USUARIOS ------------//
 
     @POST("/update-rent-comment/")
-    Single<ResponseResult> updateRentComment(@Body CommentGroup commentGroup);
+    Single<ResponseResult> updateRentComment(@Header("Authorization") String token, @Body CommentGroup commentGroup);
 
 
     //------------------- CONTADOR DE VISITAS ---------------------------//
 
     @POST("/update-visit-count/")
-    Single<ResponseResult> updateRentVisitCount(@Body RentVisitCountGroup rentVisitCountGroup);
+    Single<ResponseResult> updateRentVisitCount(@Header("Authorization") String token, @Body RentVisitCountGroup rentVisitCountGroup);
 
     //------------------- ANALITICS ---------------------------//
 

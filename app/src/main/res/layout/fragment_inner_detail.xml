@@ -341,16 +341,17 @@
                 android:textSize="14sp"
                 app:visibleGone="@{detail.getRentPoiItems().size()>0}" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_pois"
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/fb_pois"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginStart="12dp"
                 android:layout_marginTop="5dp"
-                android:adapter="@{pois}"
+                app:alignContent="center"
+                app:flexWrap="wrap"
                 app:visibleGone="@{detail.getRentPoiItems().size()>0}" />
 
             <TextView

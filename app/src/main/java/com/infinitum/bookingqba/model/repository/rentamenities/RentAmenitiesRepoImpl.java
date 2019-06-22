@@ -1,5 +1,8 @@
 package com.infinitum.bookingqba.model.repository.rentamenities;
 
+import android.arch.persistence.db.SimpleSQLiteQuery;
+import android.arch.persistence.db.SupportSQLiteQuery;
+
 import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
@@ -59,10 +62,16 @@ public class RentAmenitiesRepoImpl implements RentAmenitiesRepository {
                 .subscribeOn(Schedulers.io());
     }
 
+    public Completable deleteAllRentAmenities(String uuidRent) {
+        String querySql = "DELETE FROM RentAmenities WHERE rentId = "+uuidRent;
+        SupportSQLiteQuery supportSQLiteQuery = new SimpleSQLiteQuery(querySql);
+        return Completable.fromAction(() -> qbaDao.deleteAllRentAmenities(supportSQLiteQuery))
+                .subscribeOn(Schedulers.io());
+    }
+
     @Override
     public Completable insert(List<RentAmenitiesEntity> entities) {
-        return Completable.fromAction(() -> qbaDao.upsertRentAmenities(entities))
-                .subscribeOn(Schedulers.io());
+        return Completable.fromAction(() -> qbaDao.upsertRentAmenities(entities)).subscribeOn(Schedulers.io());
     }
 
     @Override

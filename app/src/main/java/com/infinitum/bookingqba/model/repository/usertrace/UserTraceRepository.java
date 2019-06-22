@@ -8,13 +8,13 @@ import io.reactivex.Single;
 
 public interface UserTraceRepository {
 
-    Single<OperationResult> traceVisitCountToServer();
+    Single<OperationResult> traceVisitCountToServer(String token);
 
-    Single<OperationResult> traceRentWishedToServer();
+    Single<OperationResult> traceRentWishedToServer(String token);
 
-    Single<OperationResult> traceCommentToServer();
+    Single<OperationResult> traceCommentToServer(String token);
 
-    Single<OperationResult> traceRatingToServer();
+    Single<OperationResult> traceRatingToServer(String token);
 
     Single<OperationResult> removeHistory();
 

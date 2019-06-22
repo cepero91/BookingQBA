@@ -23,6 +23,7 @@ import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.errors.ResponseResultException;
 import com.infinitum.bookingqba.util.DateUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -49,15 +50,15 @@ public class UserTraceImpl implements UserTraceRepository {
     }
 
     @Override
-    public Single<OperationResult> traceRentWishedToServer() {
+    public Single<OperationResult> traceRentWishedToServer(String token) {
         return qbaDao.getAllWishedRents()
                 .subscribeOn(Schedulers.io())
                 .map(this::tranformEntityToRentWished)
-                .flatMap(this::sendWishedToServer)
+                .flatMap(rentWishedResource -> sendWishedToServer(token, rentWishedResource))
                 .map(responseResultResource -> {
-                    if(responseResultResource.data!=null && responseResultResource.data.getCode()==200){
+                    if (responseResultResource.data != null && responseResultResource.data.getCode() == 200) {
                         return OperationResult.success();
-                    }else{
+                    } else {
                         return OperationResult.error(responseResultResource.message);
                     }
                 })
@@ -65,11 +66,11 @@ public class UserTraceImpl implements UserTraceRepository {
     }
 
     @Override
-    public Single<OperationResult> traceVisitCountToServer() {
+    public Single<OperationResult> traceVisitCountToServer(String token) {
         return qbaDao.getAllRentVisitCount()
                 .subscribeOn(Schedulers.io())
                 .map(this::tranformEntityToRentVisitCountGroup)
-                .flatMap(this::sendVisitToServer)
+                .flatMap(rentVisitCountGroupResource -> sendVisitToServer(token, rentVisitCountGroupResource))
                 .onErrorReturn(Resource::error)
                 .flatMapCompletable(this::removeVisitCount)
                 .toSingle(OperationResult::success)
@@ -77,11 +78,11 @@ public class UserTraceImpl implements UserTraceRepository {
     }
 
     @Override
-    public Single<OperationResult> traceCommentToServer() {
+    public Single<OperationResult> traceCommentToServer(String token) {
         return qbaDao.getAllInactiveComment()
                 .subscribeOn(Schedulers.io())
                 .map(this::tranformEntityToCommentGroup)
-                .flatMap(this::sendCommentToServer)
+                .flatMap(commentGroupResource -> sendCommentToServer(token, commentGroupResource))
                 .onErrorReturn(Resource::error)
                 .flatMapCompletable(this::removeInactiveComment)
                 .toSingle(OperationResult::success)
@@ -89,37 +90,37 @@ public class UserTraceImpl implements UserTraceRepository {
     }
 
     @Override
-    public Single<OperationResult> traceRatingToServer() {
+    public Single<OperationResult> traceRatingToServer(String token) {
         return qbaDao.getAllRating()
                 .subscribeOn(Schedulers.io())
                 .map(this::tranformEntityToRatingVoteGroup)
-                .flatMap(this::sendRatingVoteToServer)
+                .flatMap(ratingVoteGroupResource -> sendRatingVoteToServer(token, ratingVoteGroupResource))
                 .onErrorReturn(Resource::error)
                 .flatMapCompletable(this::updateRatingVotes)
                 .toSingle(OperationResult::success)
                 .onErrorReturn(OperationResult::error);
     }
 
-    private Completable removeVisitCount(Resource<ResponseResult> resultResource){
-        if(resultResource.data!= null && resultResource.data.getCode()==200) {
+    private Completable removeVisitCount(Resource<ResponseResult> resultResource) {
+        if (resultResource.data != null && resultResource.data.getCode() == 200) {
             return Completable.fromAction(() -> qbaDao.deleteAllVisitoCount());
-        }else{
+        } else {
             return Completable.error(new ResponseResultException(resultResource.message));
         }
     }
 
-    private Completable updateRatingVotes(Resource<ResponseResult> resultResource){
-        if(resultResource.data!= null && resultResource.data.getCode()==200) {
+    private Completable updateRatingVotes(Resource<ResponseResult> resultResource) {
+        if (resultResource.data != null && resultResource.data.getCode() == 200) {
             return Completable.fromAction(() -> qbaDao.updateAllRatingVersionToOne());
-        }else {
+        } else {
             return Completable.error(new ResponseResultException(resultResource.message));
         }
     }
 
-    private Completable removeInactiveComment(Resource<ResponseResult> resultResource){
-        if(resultResource.data!= null && resultResource.data.getCode()==200) {
+    private Completable removeInactiveComment(Resource<ResponseResult> resultResource) {
+        if (resultResource.data != null && resultResource.data.getCode() == 200) {
             return Completable.fromAction(() -> qbaDao.deleteAllInactiveComment());
-        }else{
+        } else {
             return Completable.error(new ResponseResultException(resultResource.message));
         }
     }
@@ -127,17 +128,17 @@ public class UserTraceImpl implements UserTraceRepository {
     @Override
     public Single<OperationResult> removeHistory() {
         return Completable.fromAction(() -> qbaDao.deleteAllVisitoCount())
-                .andThen(Completable.fromAction(()-> qbaDao.deleteAllInactiveComment()))
-                .andThen(Completable.fromAction(()-> qbaDao.deleteAllRatingVotes()))
+                .andThen(Completable.fromAction(() -> qbaDao.deleteAllInactiveComment()))
+                .andThen(Completable.fromAction(() -> qbaDao.deleteAllRatingVotes()))
                 .subscribeOn(Schedulers.io())
                 .toSingle(OperationResult::success)
                 .onErrorReturn(OperationResult::error);
     }
 
-    private Single<Resource<ResponseResult>> sendWishedToServer(Resource<RentWished> rentWishedResource) {
+    private Single<Resource<ResponseResult>> sendWishedToServer(String token, Resource<RentWished> rentWishedResource) {
         if (rentWishedResource.data != null) {
             return retrofit.create(ApiInterface.class)
-                    .updateRentWished(rentWishedResource.data)
+                    .updateRentWished(token, rentWishedResource.data)
                     .map(Resource::success)
                     .onErrorReturn(Resource::error);
         } else {
@@ -145,10 +146,10 @@ public class UserTraceImpl implements UserTraceRepository {
         }
     }
 
-    private Single<Resource<ResponseResult>> sendRatingVoteToServer(Resource<RatingVoteGroup> ratingVoteGroupResource) {
+    private Single<Resource<ResponseResult>> sendRatingVoteToServer(String token, Resource<RatingVoteGroup> ratingVoteGroupResource) {
         if (ratingVoteGroupResource.data != null) {
             return retrofit.create(ApiInterface.class)
-                    .updateRatingVotes(ratingVoteGroupResource.data)
+                    .updateRatingVotes(token, ratingVoteGroupResource.data)
                     .map(Resource::success)
                     .onErrorReturn(Resource::error);
         } else {
@@ -156,10 +157,10 @@ public class UserTraceImpl implements UserTraceRepository {
         }
     }
 
-    private Single<Resource<ResponseResult>> sendCommentToServer(Resource<CommentGroup> commentGroupResource) {
+    private Single<Resource<ResponseResult>> sendCommentToServer(String token, Resource<CommentGroup> commentGroupResource) {
         if (commentGroupResource.data != null) {
             return retrofit.create(ApiInterface.class)
-                    .updateRentComment(commentGroupResource.data)
+                    .updateRentComment(token, commentGroupResource.data)
                     .subscribeOn(Schedulers.io())
                     .map(Resource::success)
                     .onErrorReturn(Resource::error);
@@ -168,10 +169,10 @@ public class UserTraceImpl implements UserTraceRepository {
         }
     }
 
-    private Single<Resource<ResponseResult>> sendVisitToServer(Resource<RentVisitCountGroup> rentVisitCountGroupResource) {
+    private Single<Resource<ResponseResult>> sendVisitToServer(String token, Resource<RentVisitCountGroup> rentVisitCountGroupResource) {
         if (rentVisitCountGroupResource.data != null) {
             return retrofit.create(ApiInterface.class)
-                    .updateRentVisitCount(rentVisitCountGroupResource.data)
+                    .updateRentVisitCount(token, rentVisitCountGroupResource.data)
                     .subscribeOn(Schedulers.io())
                     .map(Resource::success)
                     .onErrorReturn(Resource::error);
@@ -212,7 +213,8 @@ public class UserTraceImpl implements UserTraceRepository {
                 }
                 return Resource.success(rentWished);
             } else {
-                return Resource.error(new EmptyResultSetException("Datos nulos o vacios"));
+                rentWished.setUuids(new ArrayList<>());
+                return Resource.success(rentWished);
             }
         }
 

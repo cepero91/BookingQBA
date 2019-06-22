@@ -13,7 +13,7 @@
     </data>
 
 
-    <android.support.constraint.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/White_100"
@@ -23,9 +23,8 @@
             android:id="@+id/bv_filter_params"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/ll_btn_content"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_marginBottom="50dp"
+            android:layout_alignParentTop="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -117,7 +116,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:nestedScrollingEnabled="false"
                             android:paddingEnd="10dp"
                             android:paddingStart="10dp"
                             app:visibleGone="@{!safeUnbox(isLoading)}" />
@@ -222,15 +220,11 @@
             android:id="@+id/ll_btn_content"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@id/bv_filter_params"
             android:background="@color/material_color_grey_200"
             android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            android:layout_alignParentBottom="true">
 
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/btn_filter"
@@ -261,6 +255,6 @@
         </LinearLayout>
 
 
-    </android.support.constraint.ConstraintLayout>
+    </RelativeLayout>
 
 </layout>

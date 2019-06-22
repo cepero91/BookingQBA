@@ -5,7 +5,7 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatDelegate;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
+
 import com.infinitum.bookingqba.di.AppComponent;
 import com.infinitum.bookingqba.di.DaggerAppComponent;
 import com.infinitum.bookingqba.service.SendDataWorker;

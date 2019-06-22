@@ -29,6 +29,7 @@ import timber.log.Timber;
 public class SendDataWorker extends RxWorker {
 
     private UserTraceRepository repository;
+    private String token = "Token 6fb3e9a80b58bf0f441f0d9e8030488f36eac0d1";
 
     @Inject
     public SendDataWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams, UserTraceRepository repository) {
@@ -59,19 +60,19 @@ public class SendDataWorker extends RxWorker {
     }
 
     public Single<OperationResult> visitWork() {
-        return repository.traceVisitCountToServer();
+        return repository.traceVisitCountToServer(this.token);
     }
 
     public Single<OperationResult> wishedWork() {
-        return repository.traceRentWishedToServer();
+        return repository.traceRentWishedToServer(this.token);
     }
 
     public Single<OperationResult> ratingWork() {
-        return repository.traceRatingToServer();
+        return repository.traceRatingToServer(this.token);
     }
 
     public Single<OperationResult> commentWork() {
-        return repository.traceCommentToServer();
+        return repository.traceCommentToServer(this.token);
     }
 
     private Single<Result> checkWorkResult(List<OperationResult> operationResults) {

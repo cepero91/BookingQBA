@@ -760,6 +760,9 @@ public abstract class BookingQBADao {
         }
     }
 
+    @Transaction
+    @RawQuery
+    public abstract long deleteAllRentAmenities(SupportSQLiteQuery query);
 
     @Query("SELECT * FROM RentAmenities")
     public abstract Flowable<List<RentAmenitiesEntity>> getAllRentsAmenities();

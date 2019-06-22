@@ -112,12 +112,18 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
 
     private void setupPoisAdapter(ArrayList<RentPoiItem> argPois) {
         if (argPois != null && argPois.size() > 0) {
-            RendererRecyclerViewAdapter adapter = new RendererRecyclerViewAdapter();
-            adapter.registerRenderer(getPoiVinder());
-            adapter.setItems(argPois);
-            innerDetailBinding.rvPois.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-            innerDetailBinding.setPois(adapter);
-            ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvPois, false);
+            innerDetailBinding.fbPois.removeAllViews();
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            for(RentPoiItem rentPoiItem: argPois){
+                LinearLayout linearLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.recycler_rent_detail_pois_item,null);
+                TextView textView = linearLayout.findViewById(R.id.tv_name);
+                AppCompatImageView appCompatImageView = linearLayout.findViewById(R.id.iv_icon);
+                textView.setText(rentPoiItem.getmName());
+                appCompatImageView.setImageBitmap(BitmapFactory.decodeByteArray(rentPoiItem.getIconByte(),0,rentPoiItem.getIconByte().length));
+                params.setMargins(5,5,5,5);
+                linearLayout.setLayoutParams(params);
+                innerDetailBinding.fbPois.addView(linearLayout);
+            }
         }
     }
 

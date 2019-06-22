@@ -68,20 +68,10 @@ import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.view.adapters.HorizontalScrollAdapter;
 import com.infinitum.bookingqba.view.adapters.SpinnerAdapter;
-import com.infinitum.bookingqba.view.adapters.items.chart.PieBean;
 import com.infinitum.bookingqba.view.adapters.items.horizontal.HorizontalItem;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
 import com.infinitum.bookingqba.viewmodel.RentAnaliticsViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
-import com.openxu.cview.chart.bean.BarBean;
-import com.openxu.cview.chart.bean.ChartLable;
-import com.openxu.cview.chart.piechart.PieChartLayout;
-import com.openxu.utils.DensityUtil;
-import com.rey.material.widget.Spinner;
-import com.squareup.picasso.Picasso;
-import com.techdew.lib.HorizontalWheel.AbstractWheel;
-import com.techdew.lib.HorizontalWheel.ArrayWheelAdapter;
-import com.techdew.lib.HorizontalWheel.OnWheelScrollListener;
 import com.yarolegovich.discretescrollview.DiscreteScrollView;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
@@ -221,7 +211,6 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         profileBinding.setShowSelect(false);
         profileBinding.llRentTitleContent.setVisibility(View.VISIBLE);
         profileBinding.tvRentName.setText(singleHorizontalItem.getRentName());
-        profileBinding.srScaleRating.setRating(Float.parseFloat(singleHorizontalItem.getRating()));
         fetchRentAnalitic(singleHorizontalItem.getUuid());
     }
 
@@ -276,6 +265,8 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
                     .subscribe(analiticsGroup -> {
                         if (analiticsGroup != null) {
                             profileBinding.progressPvCircularInout.stop();
+
+                            profileBinding.srScaleRating.setRating(analiticsGroup.getRatingStarAnalitics().getRatingAverage());
 
                             profileBinding.pbDetailPercent.setProgress(((int) analiticsGroup.getProfilePercentAnalitics().getPercent()), true);
 
@@ -338,6 +329,13 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         profileBinding.tvTotalListWish.setText(getString(R.string.empty_short_text));
         //-------- Missing List
         profileBinding.tvMissingList.setText(R.string.empty_text);
+
+        profileBinding.tvTotalYearComment.setText(getString(R.string.empty_short_text));
+        profileBinding.tvTotalMonthComment.setText(getString(R.string.empty_short_text));
+        profileBinding.tvTotalTodayComment.setText(getString(R.string.empty_short_text));
+
+        profileBinding.tvTotalVotes.setText(getString(R.string.empty_short_text));
+        profileBinding.tvVotesAverage.setText(getString(R.string.empty_short_text));
 
     }
 
@@ -455,7 +453,6 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
             profileBinding.chartRating.setData(data);
             profileBinding.chartRating.invalidate();
         }else{
-            profileBinding.chartRating.setData(new BarData(new BarDataSet(new ArrayList<>(),"")));
             profileBinding.chartRating.setVisibility(View.GONE);
         }
     }
@@ -551,7 +548,6 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
             profileBinding.pieEmotion.invalidate();
         } else {
             profileBinding.pieEmotion.setDrawCenterText(false);
-            profileBinding.pieEmotion.setData(new PieData(new PieDataSet(new ArrayList<>(),"")));
             profileBinding.pieEmotion.setVisibility(View.GONE);
         }
 
