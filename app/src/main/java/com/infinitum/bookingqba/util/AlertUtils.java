@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.util;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -28,6 +29,8 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static android.view.Gravity.CENTER;
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
+import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_DEFAULT;
+import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
@@ -179,6 +182,28 @@ public class AlertUtils {
                     }, 400);
                 })
                 .show();
+    }
+
+    public static void notifyPendingProfileActivate(Application application, String msg) {
+        NotificationManager notificationManager = (NotificationManager) application.getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
+        notificationManager.cancel(NOTIFICATION_ID);
+
+        //If on Oreo then notification required a notification channel.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_DEFAULT, "Default", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(application.getApplicationContext(), NOTIFICATION_DEFAULT)
+                .setContentTitle("BookingQBA")
+                .setContentText(msg)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setLargeIcon(BitmapFactory.decodeResource(application.getResources(), R.mipmap.ic_launcher))
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setAutoCancel(true);
+
+        notificationManager.notify(NOTIFICATION_ID, notification.build());
     }
 
 

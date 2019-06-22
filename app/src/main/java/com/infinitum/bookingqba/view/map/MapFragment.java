@@ -309,19 +309,6 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_gps:
-                startTracking(item);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void startTracking(MenuItem item) {
-
-    }
-
-    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentMapInteraction) {
@@ -437,7 +424,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     }
 
     public void updateUserTracking(double lati, double longi) {
-        Completable.fromAction(() -> findAndRemoveLastUserTrack())
+        Completable.fromAction(this::findAndRemoveLastUserTrack)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .andThen(Completable.fromAction(() -> addUserMarkerToMap(lati, longi)))
@@ -445,11 +432,12 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     }
 
     private void addUserMarkerToMap(double lati, double longi) {
-        Bitmap bitmapUser = drawableToBitmap(getResources().getDrawable(R.drawable.ic_map_user_marker));
+        Bitmap bitmapUser = drawableToBitmap(getResources().getDrawable(R.drawable.ic_male));
         userMarker = new MarkerSymbol(bitmapUser, MarkerSymbol.HotspotPlace.BOTTOM_CENTER);
         MarkerItem item = new MarkerItem(USER_GPS, "User", new GeoPoint(lati, longi));
         item.setMarker(userMarker);
         mMarkerLayer.addItem(item);
+        mapBinding.mapview.map().animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 16), Easing.Type.SINE_IN);
     }
 
     private void findAndRemoveLastUserTrack() {

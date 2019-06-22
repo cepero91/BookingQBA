@@ -28,7 +28,7 @@
     <group android:id="@+id/group_2" android:checkableBehavior="single" android:visible="false">
         <item
             android:id="@+id/nav_profile"
-            android:icon="@drawable/ic_user_alt"
+            android:icon="@drawable/ic_chart_bar"
             android:title="@string/perfil" />
     </group>
 

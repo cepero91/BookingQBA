@@ -125,7 +125,23 @@
         <item name="colorControlActivated">#009688</item>
     </style>
 
+    <style name="DialogStyle" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:textSize">14sp</item>
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:textColor">@color/material_color_blue_grey_500</item>
+        <item name="android:textColorPrimary">@color/material_color_blue_grey_500</item>
+        <item name="android:textColorSecondary">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/poppinsregular</item>
+        <item name="android:windowBackground">@color/White_100</item>
+        <item name="android:background">@color/White_100</item>
+        <item name="android:padding">2dp</item>
+        <item name="borderlessButtonStyle">@style/MyButtonBarStyle</item>
+    </style>
 
+    <style name="MyButtonBarStyle" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:padding">8dp</item>
+    </style>
 
 
 </resources>

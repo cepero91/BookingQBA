@@ -607,7 +607,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     private void confirmLogout() {
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
                 .setTitleText("Aviso!")
-                .setContentText("Esta seguro que desea finalizar la sesión")
+                .setContentText("Dfesea finalizar la sesión")
                 .hideConfirmButton()
                 .setCancelText("Si, lo deseo")
                 .setCancelClickListener(sweetAlertDialog1 -> {
@@ -753,30 +753,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     @Override
     public void showNotificationToUpdate(String msg) {
-        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        assert notificationManager != null;
-        notificationManager.cancel(NOTIFICATION_ID);
-
-        //If on Oreo then notification required a notification channel.
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(NOTIFICATION_DEFAULT, "Default", NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        Intent notificationIntent = new Intent(this, SyncActivity.class);
-        notificationIntent.putExtra(ALTERNATIVE_SYNC, true);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext(), NOTIFICATION_DEFAULT)
-                .setContentTitle("BookingQBA")
-                .setContentText(msg)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .setContentIntent(contentIntent)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setAutoCancel(true);
-
-        notificationManager.notify(NOTIFICATION_ID, notification.build());
+        AlertUtils.notifyPendingProfileActivate(getApplication(),msg);
     }
 
     @Override

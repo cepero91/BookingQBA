@@ -6,9 +6,11 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivitySplashBinding;
+import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.infinitum.bookingqba.view.tutorial.TutorialActivity;
@@ -41,9 +43,9 @@ public class SplashActivity extends DaggerAppCompatActivity {
 
         afterSplash(firstOpen, downloadDateExist);
 
-//        Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
-//        startActivity(intent);
-//        SplashActivity.this.finish();
+        //METODO QUE PROVOCA ERROR PARA ENVIAR REPORTE DE FALLO
+//        String nullString = null;
+//        Toast.makeText(this, "jaja" + nullString.length(), Toast.LENGTH_SHORT).show();
     }
 
     private void afterSplash(boolean firstOpen, boolean downloadDateExist) {

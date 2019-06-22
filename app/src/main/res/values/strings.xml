@@ -32,9 +32,9 @@
     <string name="default_sync_date">2018-01-01T00:00:00</string>
     <string name="no_need_update">Base de Datos actualizada!!</string>
     <string name="location_title">Aviso!!</string>
-    <string name="location_mess">Su obtener su ubicacion, por favor active Localizacion del dispositivo</string>
+    <string name="location_mess">Para obtener su ubicación, por favor active Localización del dispositivo</string>
 
-    <string name="notification_sync_msg">Para visualizar el perfil de propietario debes actualizar la base de datos</string>
+    <string name="notification_sync_msg">Perfil de propietario pendiente de aprobación</string>
 
 
     <string name="latitude_label">Latitude</string>
@@ -103,11 +103,11 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="lista_de_deseo">Lista de Deseo</string>
     <string name="mapa">Mapa</string>
     <string name="informacion">Información</string>
-    <string name="perfil">Perfil</string>
+    <string name="perfil">Mis Hospedajes</string>
     <string name="base_de_datos">Base de Datos</string>
     <string name="sincronizar">Sincronizar</string>
     <string name="version">Versión:</string>
-    <string name="tec_inf_jose_manuel_cepero">Tec. Inf. Jose Manuel Cepero</string>
+    <string name="tec_inf_jose_manuel_cepero">Tec. Inf. José Manuel Cepero</string>
     <string name="desarrollo_y_dise_o">Desarrollo y Diseño:</string>
     <string name="politicas">Políticas</string>
     <string name="precio_minimo">precio mínimo</string>
@@ -142,4 +142,6 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="mis_hospedajes">Mis Hospedajes</string>
     <string name="nivel_de_detalle">Nivel de detalle</string>
     <string name="device">Token 6fb3e9a80b58bf0f441f0d9e8030488f36eac0d1</string>
+    <string name="dialog_acra_comment">Escriba un comentario aquí</string>
+    <string name="dialog_acra_text">La aplicación se ha cerrado inesperadamente. Se enviará un email con la causa del error. Ayudanos a mejorar !!</string>
 </resources>

@@ -2,6 +2,9 @@ package com.infinitum.bookingqba.util;
 
 public final class Constants {
 
+    //CRASH REPORT
+    public static final String ACRA_MAIL_TO_REPORT = "bookingqba.error@gmail.com";
+
     //API
     public static final String BASE_URL_API = "http://192.168.137.1:8000";
     public static final int API_CACHE_SIZE = 10 * 1024 * 1024;
