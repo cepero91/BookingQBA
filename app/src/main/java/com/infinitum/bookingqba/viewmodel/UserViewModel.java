@@ -8,6 +8,7 @@ import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.model.repository.user.UserRepository;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -36,6 +37,10 @@ public class UserViewModel extends ViewModel{
 
     public Single<Boolean> checkIfRentExists(List<String> uuids){
         return userRepository.checkIfRentOwnerExist(uuids).subscribeOn(Schedulers.io());
+    }
+
+    public Single<Response<User>> login(Map<String, String> map){
+        return userRepository.login(map);
     }
 
 }

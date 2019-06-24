@@ -25,11 +25,16 @@
             android:title="@string/informacion" />
     </group>
 
-    <group android:id="@+id/group_2" android:checkableBehavior="single" android:visible="false">
+    <group android:id="@+id/group_2" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_auth"
+            android:icon="@drawable/ic_user_alt"
+            android:title="@string/iniciar_sesion" />
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_chart_bar"
-            android:title="@string/perfil" />
+            android:title="@string/perfil"
+            android:visible="false"/>
     </group>
 
 </menu>

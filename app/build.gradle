@@ -12,7 +12,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
 
-        sourceSets{
+        sourceSets {
             main { java.srcDirs = ['src/main/java'] }
             test { java.srcDirs = ['src/test'] }
             androidTest { java.srcDirs = ['src/androidTest'] }
@@ -60,6 +60,7 @@ dependencies {
 
     // Unit test dependencies
     implementation 'junit:junit:4.12'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -207,14 +208,15 @@ dependencies {
     implementation 'com.github.rey5137:material:1.2.5'
 
     //chart
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'//PROBLEMAS CON EL ZOOM esta es la resuelta
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+//PROBLEMAS CON EL ZOOM esta es la resuelta
 
     //horizontal scrollview
     implementation "com.yarolegovich:discrete-scrollview:1.4.9"
 
     //Reporte de Fallos
-    implementation "ch.acra:acra-core:$acraVersion"
-    implementation "ch.acra:acra-mail:$acraVersion"
-    implementation "ch.acra:acra-dialog:$acraVersion"
-    implementation "ch.acra:acra-toast:$acraVersion"
+//    implementation "ch.acra:acra-core:$acraVersion"
+//    implementation "ch.acra:acra-mail:$acraVersion"
+//    implementation "ch.acra:acra-dialog:$acraVersion"
+//    implementation "ch.acra:acra-toast:$acraVersion"
 }

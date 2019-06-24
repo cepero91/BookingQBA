@@ -1,5 +1,6 @@
 package com.infinitum.bookingqba.model.repository.user;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.Oauth;
@@ -7,6 +8,7 @@ import com.infinitum.bookingqba.model.remote.pojo.User;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -32,9 +34,8 @@ public class UserRepoImp implements UserRepository {
     @Override
     public Single<Response<User>> login(Oauth oauth) {
         return retrofit.create(ApiInterface.class)
-                .login(oauth.getParam1(), oauth.getParam2(),oauth.getParam3())
-                .subscribeOn(Schedulers.io())
-                .delay(2000,TimeUnit.MILLISECONDS);
+                .login(oauth.getParam1(), oauth.getParam2(), oauth.getParam3())
+                .subscribeOn(Schedulers.io());
     }
 
     //Fake Oauth
@@ -51,6 +52,42 @@ public class UserRepoImp implements UserRepository {
     @Override
     public Single<Boolean> checkIfRentOwnerExist(List<String> uuids) {
         return Single.fromCallable(() -> uuids.size() > 0 && qbaDao.existRents(uuids))
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<Response<User>> login(Map<String, String> map) {
+        return retrofit.create(ApiInterface.class)
+                .login(map)
+                .subscribeOn(Schedulers.io());
+
+    }
+
+    @Override
+    public Single<OperationResult> register(Map<String, String> map) {
+        return retrofit.create(ApiInterface.class)
+                .register(map)
+                .map(responseResult -> {
+                    if (responseResult.getCode() == 200) {
+                        return OperationResult.success(responseResult.getMsg());
+                    } else {
+                        return OperationResult.error(responseResult.getMsg());
+                    }
+                })
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<OperationResult> activationUser(Map<String, String> map) {
+        return retrofit.create(ApiInterface.class)
+                .activeUser(map)
+                .map(responseResult -> {
+                    if (responseResult.getCode() == 200) {
+                        return OperationResult.success(responseResult.getMsg());
+                    } else {
+                        return OperationResult.error(responseResult.getMsg());
+                    }
+                })
                 .subscribeOn(Schedulers.io());
     }
 

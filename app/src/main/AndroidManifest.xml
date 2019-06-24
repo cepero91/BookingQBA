@@ -43,13 +43,13 @@
         <activity
             android:name=".view.home.HomeActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.rents.RentDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".view.galery.GaleryActivity"
+        <activity
+            android:name=".view.galery.GaleryActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -58,6 +58,8 @@
             android:authorities="${applicationId}.workmanager-init"
             android:exported="false"
             tools:node="remove" />
+
+        <activity android:name=".view.profile.AuthActivity"></activity>
     </application>
 
 </manifest>

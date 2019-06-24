@@ -144,4 +144,7 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="device">Token 6fb3e9a80b58bf0f441f0d9e8030488f36eac0d1</string>
     <string name="dialog_acra_comment">Escriba un comentario aquí</string>
     <string name="dialog_acra_text">La aplicación se ha cerrado inesperadamente. Se enviará un email con la causa del error. Ayudanos a mejorar !!</string>
+    <string name="primer_nombre">Primer Nombre</string>
+    <string name="confirme_contrase_a">Confirme Contraseña</string>
+    <string name="codigo_de_activacion">Codigo de Activacion</string>
 </resources>

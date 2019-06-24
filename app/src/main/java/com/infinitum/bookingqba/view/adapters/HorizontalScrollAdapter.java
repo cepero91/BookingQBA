@@ -68,6 +68,10 @@ public class HorizontalScrollAdapter extends RecyclerView.Adapter<HorizontalScro
             this.tvRentName.setText(item.getRentName());
         }
 
+        public void updateRating(float rating){
+            this.baseRatingBar.setRating(rating);
+        }
+
         public void showText(){
             this.linearLayout.animate()
                     .alpha(1f)

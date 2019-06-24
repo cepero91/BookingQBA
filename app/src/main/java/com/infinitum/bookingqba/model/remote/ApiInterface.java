@@ -27,6 +27,7 @@ import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -36,6 +37,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
+import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -60,6 +62,18 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("/api-login/")
     Single<Response<User>> login(@Field("param1")String param1, @Field("param2")String param2, @Field("param3")String param3);
+
+    @FormUrlEncoded
+    @POST("/api-login/")
+    Single<Response<User>> login(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("/api-register-user/")
+    Single<ResponseResult> register(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("/api-register-user/")
+    Single<ResponseResult> activeUser(@FieldMap Map<String, String> map);
 
     @GET("secret")
     Call<String> getSecret(@Header("Authorization") String token);

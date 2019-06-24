@@ -78,6 +78,7 @@ import com.infinitum.bookingqba.view.interaction.InfoInteraction;
 import com.infinitum.bookingqba.view.interaction.LoginInteraction;
 import com.infinitum.bookingqba.view.listwish.ListWishFragment;
 import com.infinitum.bookingqba.view.map.MapFragment;
+import com.infinitum.bookingqba.view.profile.AuthFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
@@ -544,10 +545,16 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         menu.findItem(R.id.action_filter_panel).setVisible(mFragment instanceof RentListFragment);
         menu.findItem(R.id.action_gps).setVisible(mFragment instanceof MapFragment);
         menu.findItem(R.id.action_refresh).setVisible(mFragment instanceof ProfileFragment);
-        homeBinding.navView.getMenu().setGroupVisible(R.id.group_2, isProfileActive);
+        homeBinding.navView.getMenu().findItem(R.id.nav_profile).setVisible(isProfileActive);
         if (loginVisibility) {
-            updateNavHeader(sharedPreferences.getString(USER_NAME, getString(R.string.hola_invitado)),
-                    sharedPreferences.getString(USER_AVATAR, null));
+            String username = sharedPreferences.getString(USER_NAME, "");
+            if (username.length() > 1){
+                updateNavHeader(username,
+                        sharedPreferences.getString(USER_AVATAR, null));
+            }else{
+                updateNavHeader(getString(R.string.hola_invitado),
+                        null);
+            }
         } else {
             updateNavHeader(getString(R.string.hola_invitado),
                     null);
@@ -629,9 +636,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         }
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(USER_IS_AUTH, false);
+        editor.putBoolean(IS_PROFILE_ACTIVE, false);
         editor.apply();
         invalidateOptionsMenu();
-        showGroupMenuProfile(false);
     }
 
     @Override
@@ -656,6 +663,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             sameFragment = false;
         } else if (id == R.id.nav_info && !(mFragment instanceof InfoFragment)) {
             mFragment = InfoFragment.newInstance();
+            sameFragment = false;
+        } else if (id == R.id.nav_auth && !(mFragment instanceof AuthFragment)) {
+            mFragment = AuthFragment.newInstance();
             sameFragment = false;
         }
         if (mFragment != null && !sameFragment) {
@@ -725,7 +735,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 .load(url)
                 .placeholder(R.drawable.user_placeholder)
                 .into(circularImageView);
-        tvUsername.setText(String.format("Hola %s", username));
+        tvUsername.setText(String.format(username));
     }
 
     void showLoginDialog() {
@@ -753,7 +763,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     @Override
     public void showNotificationToUpdate(String msg) {
-        AlertUtils.notifyPendingProfileActivate(getApplication(),msg);
+        AlertUtils.notifyPendingProfileActivate(getApplication(), msg);
     }
 
     @Override
@@ -809,7 +819,11 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     @Override
     public void showPoliticsDialog() {
-
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse("http://192.168.137.1:8000/infocuba/6"));
+        startActivity(intent);
     }
 
     @Override
@@ -857,6 +871,17 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             Timber.e("onDestroy removeLocationUpdates %s", e.getMessage());
         }
         super.onDestroy();
+    }
+
+
+    private void showAuthFragment() {
+        homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
+        homeBinding.drawerLayout.postDelayed(() -> {
+            // Inflate the new Fragment with the new RecyclerView and a new Adapter
+            AuthFragment authFragment = AuthFragment.newInstance();
+            fragmentManager.beginTransaction().replace(R.id.frame_container,
+                    authFragment).commit();
+        }, 700);
     }
 
 }

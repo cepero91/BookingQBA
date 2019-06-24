@@ -182,7 +182,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
     public void onDetach() {
         super.onDetach();
         compositeDisposable.clear();
-        if(!disposable.isDisposed()){
+        if (!disposable.isDisposed()) {
             disposable.dispose();
         }
     }
@@ -211,7 +211,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         profileBinding.setShowSelect(false);
         profileBinding.llRentTitleContent.setVisibility(View.VISIBLE);
         profileBinding.tvRentName.setText(singleHorizontalItem.getRentName());
-        fetchRentAnalitic(singleHorizontalItem.getUuid());
+        fetchRentAnalitic(singleHorizontalItem.getUuid(), null);
     }
 
     private void updateSpinnerView(ArrayList<HorizontalItem> horizontalItems) {
@@ -232,7 +232,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         viewHolder.showText();
         if (lastPosSelected != adapterPosition) {
             lastPosSelected = adapterPosition;
-            fetchRentAnalitic(horizontalScrollAdapter.getItem(adapterPosition).getUuid());
+            fetchRentAnalitic(horizontalScrollAdapter.getItem(adapterPosition).getUuid(),viewHolder);
         }
     }
 
@@ -253,7 +253,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
 
     //-------------------------------------
 
-    private void fetchRentAnalitic(String uuid) {
+    private void fetchRentAnalitic(String uuid, @Nullable HorizontalScrollAdapter.ViewHolder currentItemHolder) {
         profileBinding.progressPvCircularInout.start();
         if (networkHelper.isNetworkAvailable()) {
             profileBinding.setNoConnection(false);
@@ -266,7 +266,11 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
                         if (analiticsGroup != null) {
                             profileBinding.progressPvCircularInout.stop();
 
-                            profileBinding.srScaleRating.setRating(analiticsGroup.getRatingStarAnalitics().getRatingAverage());
+                            if(currentItemHolder!=null)
+                                currentItemHolder.updateRating(analiticsGroup.getRatingStarAnalitics().getRatingAverage());
+
+                            if (singleHorizontalItem != null)
+                                profileBinding.srScaleRating.setRating(analiticsGroup.getRatingStarAnalitics().getRatingAverage());
 
                             profileBinding.pbDetailPercent.setProgress(((int) analiticsGroup.getProfilePercentAnalitics().getPercent()), true);
 
@@ -361,9 +365,10 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 if (rentSelect.length > 1) {
-                    fetchRentAnalitic(horizontalScrollAdapter.getItem(lastPosSelected).getUuid());
+                    profileBinding.discreteScroll.scrollToPosition(lastPosSelected);
+//                    fetchRentAnalitic(horizontalScrollAdapter.getItem(lastPosSelected).getUuid());
                 } else if (rentSelect.length == 1) {
-                    fetchRentAnalitic(singleHorizontalItem.getUuid());
+                    fetchRentAnalitic(singleHorizontalItem.getUuid(), null);
                 }
                 return true;
         }
@@ -423,7 +428,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         int three = ratingStarAnalitics.getThreeStar();
         int four = ratingStarAnalitics.getFourStar();
         int five = ratingStarAnalitics.getFiveStar();
-        if(one+two+three+four+five>0){
+        if (one + two + three + four + five > 0) {
             profileBinding.chartRating.setVisibility(View.VISIBLE);
             float barWidth = 8f;
             ArrayList<BarEntry> values = new ArrayList<>();
@@ -452,7 +457,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
             data.setBarWidth(barWidth);
             profileBinding.chartRating.setData(data);
             profileBinding.chartRating.invalidate();
-        }else{
+        } else {
             profileBinding.chartRating.setVisibility(View.GONE);
         }
     }
