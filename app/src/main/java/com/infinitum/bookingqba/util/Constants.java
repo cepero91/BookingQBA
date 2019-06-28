@@ -106,4 +106,9 @@ public final class Constants {
     public static final String GPS_ACTIVE = "gpsActive";
     public static final String USER_GPS = "user_gps";
 
+    public static final int LOCATION_REQUEST_CODE = 1240;
+    public static final int READ_PHONE_REQUEST_CODE = 1241;
+
+    public static final int REQUEST_CHECK_SETTINGS = 0x1;
+
 }

@@ -147,4 +147,6 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="primer_nombre">Primer Nombre</string>
     <string name="confirme_contrase_a">Confirme Contraseña</string>
     <string name="codigo_de_activacion">Codigo de Activacion</string>
+    <string name="d_nde_est_su_casa">Dónde está su casa?</string>
+    <string name="pulse_prolongadamente_o_marque_opcion_gps">Pulse prolongadamente, o marque opcion GPS</string>
 </resources>

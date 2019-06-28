@@ -2,13 +2,16 @@ package com.infinitum.bookingqba.di.module;
 
 import com.infinitum.bookingqba.view.filter.FilterFragment;
 import com.infinitum.bookingqba.view.home.HomeFragment;
-import com.infinitum.bookingqba.view.base.BasePageFragment;
 import com.infinitum.bookingqba.view.info.InfoFragment;
 import com.infinitum.bookingqba.view.listwish.ListWishFragment;
 import com.infinitum.bookingqba.view.map.MapFragment;
 import com.infinitum.bookingqba.view.profile.AuthFragment;
+import com.infinitum.bookingqba.view.profile.FirstStepFragment;
+import com.infinitum.bookingqba.view.profile.FourStepFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
+import com.infinitum.bookingqba.view.profile.SecondStepFragment;
+import com.infinitum.bookingqba.view.profile.ThreeStepFragment;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 
 
@@ -17,9 +20,6 @@ import dagger.android.ContributesAndroidInjector;
 
 @Module
 public interface FragmentModule {
-
-    @ContributesAndroidInjector
-    BasePageFragment bindBasePageFragment();
 
     @ContributesAndroidInjector
     HomeFragment bindHomeFragment();
@@ -47,6 +47,18 @@ public interface FragmentModule {
 
     @ContributesAndroidInjector
     AuthFragment bindAuthFragment();
+
+    @ContributesAndroidInjector
+    FirstStepFragment bindFirstStepFragment();
+
+    @ContributesAndroidInjector
+    SecondStepFragment bindSecondStepFragment();
+
+    @ContributesAndroidInjector
+    ThreeStepFragment bindThreeStepFragment();
+
+    @ContributesAndroidInjector
+    FourStepFragment bindFourStepFragment();
 
 
 }

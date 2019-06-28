@@ -16,7 +16,6 @@ import com.infinitum.bookingqba.databinding.ActivityTutorialBinding;
 import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.view.adapters.TutorialPagerAdapter;
 import com.infinitum.bookingqba.view.home.HomeActivity;
-import com.infinitum.bookingqba.view.interaction.PageFourInteraction;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 
 import java.lang.ref.WeakReference;

@@ -1,9 +1,10 @@
 package com.infinitum.bookingqba.viewmodel;
 
 import android.arch.lifecycle.ViewModel;
-import android.widget.Toast;
 
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.remote.Oauth;
+import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.model.repository.user.UserRepository;
 
@@ -14,8 +15,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class UserViewModel extends ViewModel{
@@ -41,6 +40,18 @@ public class UserViewModel extends ViewModel{
 
     public Single<Response<User>> login(Map<String, String> map){
         return userRepository.login(map);
+    }
+
+    public Single<Resource<ResponseResult>> register(Map<String, String> map){
+        return userRepository.register(map);
+    }
+
+    public Single<Resource<ResponseResult>> activate(Map<String, String> map){
+        return userRepository.activationUser(map);
+    }
+
+    public Single<Resource<ResponseResult>> resendCode(Map<String, String> map){
+        return userRepository.resendActivationUser(map);
     }
 
 }

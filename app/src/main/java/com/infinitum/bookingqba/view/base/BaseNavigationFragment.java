@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
-import com.infinitum.bookingqba.view.interaction.PageFourInteraction;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;

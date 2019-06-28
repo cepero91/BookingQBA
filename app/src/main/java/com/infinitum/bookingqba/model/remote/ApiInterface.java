@@ -72,8 +72,12 @@ public interface ApiInterface {
     Single<ResponseResult> register(@FieldMap Map<String, String> map);
 
     @FormUrlEncoded
-    @POST("/api-register-user/")
+    @POST("/api-user-activation/")
     Single<ResponseResult> activeUser(@FieldMap Map<String, String> map);
+
+    @FormUrlEncoded
+    @POST("/api-activation-resend/")
+    Single<ResponseResult> resendActivationCode(@FieldMap Map<String, String> map);
 
     @GET("secret")
     Call<String> getSecret(@Header("Authorization") String token);

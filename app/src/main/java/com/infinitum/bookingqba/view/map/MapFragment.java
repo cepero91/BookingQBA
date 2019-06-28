@@ -3,14 +3,11 @@ package com.infinitum.bookingqba.view.map;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.CafeBarMapMarkerBinding;
@@ -33,6 +29,7 @@ import com.wshunli.assets.CopyListener;
 
 import org.oscim.backend.CanvasAdapter;
 import org.oscim.backend.canvas.Bitmap;
+import org.oscim.backend.canvas.Color;
 import org.oscim.core.GeoPoint;
 import org.oscim.core.MapPosition;
 import org.oscim.layers.marker.ItemizedLayer;
@@ -42,6 +39,7 @@ import org.oscim.layers.tile.buildings.BuildingLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
 import org.oscim.layers.tile.vector.labeling.LabelLayer;
 import org.oscim.renderer.GLViewport;
+import org.oscim.renderer.MapRenderer;
 import org.oscim.scalebar.DefaultMapScaleBar;
 import org.oscim.scalebar.MapScaleBar;
 import org.oscim.scalebar.MapScaleBarLayer;
@@ -50,7 +48,6 @@ import org.oscim.tiling.source.mapfile.MapFileTileSource;
 import org.oscim.utils.animation.Easing;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +62,6 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 
-import static com.infinitum.bookingqba.util.Constants.GPS_ACTIVE;
 import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
 import static com.infinitum.bookingqba.util.Constants.USER_GPS;
 import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
@@ -152,12 +148,12 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
 
         mapFilePath = sharedPreferences.getString(MAP_PATH, "");
 
-        setupCafeBar();
+        setupMarkerView();
 
         initializeMap();
     }
 
-    private void setupCafeBar() {
+    private void setupMarkerView() {
         cafeBarMapMarkerBinding = DataBindingUtil.inflate(getActivity().getLayoutInflater(), R.layout.cafe_bar_map_marker, mapBinding.flContentMap, false);
         cafeBarMapMarkerBinding.contentCafebar.setOnClickListener(v -> {
             if (mListener != null) {
@@ -176,11 +172,8 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
                     .doOnComplete(this::showViews).subscribe();
             compositeDisposable.add(disposable);
         } else {
-            disposable = Completable.fromAction(this::setupMapView)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnComplete(this::showViews).subscribe();
-            compositeDisposable.add(disposable);
+            setupMapView();
+            showViews();
         }
     }
 
@@ -195,14 +188,12 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
 
                     @Override
                     public void progress(CopyCreator copyCreator, File currentFile, int copyProgress) {
-                        Timber.e("progress copy files %s", copyProgress);
                     }
 
                     @Override
                     public void completed(CopyCreator copyCreator, java.util.Map<File, Boolean> results) {
-                        Timber.i("File copy completed");
                         SharedPreferences.Editor edit = sharedPreferences.edit();
-                        edit.putString(((File) results.keySet().toArray()[0]).getAbsolutePath(), "");
+                        edit.putString(MAP_PATH,((File) results.keySet().toArray()[0]).getAbsolutePath());
                         edit.apply();
                         mapFilePath = ((File) results.keySet().toArray()[0]).getAbsolutePath();
                     }
@@ -216,6 +207,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     }
 
     public void setupMapView() {
+        MapRenderer.setBackgroundColor(Color.WHITE);
         MapFileTileSource tileSource = new MapFileTileSource();
         String mapPath = new File(mapFilePath).getAbsolutePath();
         if (tileSource.setMapFile(mapPath)) {
@@ -251,7 +243,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
                 mapPosition.setZoomLevel(16);
                 mapBinding.mapview.map().setMapPosition(mapPosition);
                 mMarkerLayer.getItemList().get(0).setMarker(mFocusMarker);
-                showCafeBar(0);
+                showMarkerView(0);
             } else {
                 // Position Habana
                 mapBinding.mapview.map().setMapPosition(23.1165, -82.3882, 2 << 12);
@@ -340,12 +332,12 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
                 lastMarkerFocus = index;
                 item.setMarker(mFocusMarker);
                 mapBinding.mapview.map().animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 16), Easing.Type.SINE_IN);
-                showCafeBar(index);
+                showMarkerView(index);
             } else {
                 item.setMarker(null);
                 lastMarkerFocus = -1;
                 mapBinding.mapview.map().animator().animateTo(500, getMapPositionWithZoom(item.getPoint(), 14), Easing.Type.SINE_IN);
-                hideCafeBar();
+                hideMarkerView();
             }
         }
         return true;
@@ -390,7 +382,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         }
     }
 
-    private void showCafeBar(int markerIndex) {
+    private void showMarkerView(int markerIndex) {
         if (geoRentArrayList != null && geoRentArrayList.size() > 0) {
             GeoRent geoRent = geoRentArrayList.get(markerIndex);
             cafeBarMapMarkerBinding.setItem(geoRent);
@@ -408,7 +400,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         }
     }
 
-    private void hideCafeBar() {
+    private void hideMarkerView() {
         currentMarkerIndex = -1;
         ObjectAnimator markerAnimator = ObjectAnimator.ofFloat(mapBinding.flMarker, "translationY", 0f, 150f);
         markerAnimator.setDuration(500);

@@ -48,7 +48,11 @@ public class AlertUtils {
     }
 
     public static void showErrorTopToast(Context context, String message) {
-        StyleableToast.makeText(context, message, Toast.LENGTH_LONG, R.style.myErrorToast).show();
+        StyleableToast.makeText(context, message, Toast.LENGTH_LONG, R.style.myErrorTopToast).show();
+    }
+
+    public static void showInfoTopToast(Context context, String message) {
+        StyleableToast.makeText(context, message, R.style.myInfoTopToast).show();
     }
 
     public static void showSuccessToast(Context context) {

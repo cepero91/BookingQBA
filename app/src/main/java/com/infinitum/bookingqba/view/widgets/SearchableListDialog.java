@@ -18,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 
+import com.infinitum.bookingqba.R;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -87,7 +89,7 @@ public class SearchableListDialog extends DialogFragment implements
         }
         // Change End
 
-        View rootView = inflater.inflate(com.toptoche.searchablespinnerlibrary.R.layout.searchable_list_dialog, null);
+        View rootView = inflater.inflate(R.layout.searchable_list_dialog, null);
         setData(rootView);
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
@@ -140,7 +142,7 @@ public class SearchableListDialog extends DialogFragment implements
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context
                 .SEARCH_SERVICE);
 
-        _searchView = (SearchView) rootView.findViewById(com.toptoche.searchablespinnerlibrary.R.id.search);
+        _searchView = (SearchView) rootView.findViewById(R.id.search);
         _searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName
                 ()));
         _searchView.setIconifiedByDefault(false);
@@ -154,10 +156,10 @@ public class SearchableListDialog extends DialogFragment implements
 
         List items = (List) getArguments().getSerializable(ITEMS);
 
-        _listViewItems = (ListView) rootView.findViewById(com.toptoche.searchablespinnerlibrary.R.id.listItems);
+        _listViewItems = (ListView) rootView.findViewById(R.id.listItems);
 
         //create the adapter by passing your ArrayList data
-        listAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1,
+        listAdapter = new ArrayAdapter(getActivity(), R.layout.list_custom_item,
                 items);
         //attach the adapter to the list
         _listViewItems.setAdapter(listAdapter);

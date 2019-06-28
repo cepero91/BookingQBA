@@ -31,9 +31,13 @@
             android:icon="@drawable/ic_user_alt"
             android:title="@string/iniciar_sesion" />
         <item
+            android:id="@+id/nav_my_rents"
+            android:icon="@drawable/ic_folder"
+            android:title="Mis Rentas" />
+        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_chart_bar"
-            android:title="@string/perfil"
+            android:title="Analitica"
             android:visible="false"/>
     </group>
 

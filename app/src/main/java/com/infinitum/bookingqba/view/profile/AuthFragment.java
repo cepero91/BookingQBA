@@ -5,22 +5,36 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentAuthBinding;
+import com.infinitum.bookingqba.model.OperationResult;
+import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
+import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.viewmodel.UserViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+import de.mateware.snacky.Snacky;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class AuthFragment extends Fragment implements View.OnClickListener {
 
@@ -37,6 +51,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
 
     private Disposable disposable;
     private CompositeDisposable compositeDisposable;
+    private String email;
 
     public AuthFragment() {
 
@@ -69,6 +84,8 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         fragmentAuthBinding.btnSignin.setOnClickListener(this);
         fragmentAuthBinding.btnSignup.setOnClickListener(this);
         fragmentAuthBinding.send.setOnClickListener(this);
+        fragmentAuthBinding.cancel.setOnClickListener(this);
+        fragmentAuthBinding.tvResendActivationCode.setOnClickListener(this);
 
         setHasOptionsMenu(true);
 
@@ -114,24 +131,121 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.send:
                 if (v.getTag().equals(SIGNUP)) {
-                    fragmentAuthBinding.send.setTag(CODE);
-                    fragmentAuthBinding.setIsCode(true);
-                    fragmentAuthBinding.send.setText("Cancelar Activacion");
-                    fragmentAuthBinding.send.setBackgroundColor(Color.parseColor("#F44336"));
-                    fragmentAuthBinding.send.setIconResource("\uf00d");
-                    fragmentAuthBinding.btnSignin.setEnabled(false);
+                    sendUserRegister();
                 } else if (v.getTag().equals(CODE)) {
-                    fragmentAuthBinding.send.setTag(SIGNUP);
-                    fragmentAuthBinding.setIsSignup(true);
-                    fragmentAuthBinding.setIsCode(false);
-                    fragmentAuthBinding.send.setText("Enviar");
-                    fragmentAuthBinding.send.setBackgroundColor(Color.parseColor("#009689"));
-                    fragmentAuthBinding.send.setIconResource("\uf00c");
-                    fragmentAuthBinding.btnSignin.setEnabled(true);
-                } else if(v.getTag().equals(SIGNIN)){
+                    sendUserActivationCode();
+//                    fragmentAuthBinding.send.setTag(SIGNUP);
+//                    fragmentAuthBinding.setIsSignup(true);
+//                    fragmentAuthBinding.setIsCode(false);
+//                    fragmentAuthBinding.send.setText("Enviar");
+//                    fragmentAuthBinding.send.setBackgroundColor(Color.parseColor("#009689"));
+//                    fragmentAuthBinding.send.setIconResource("\uf00c");
+//                    fragmentAuthBinding.btnSignin.setEnabled(true);
+                } else if (v.getTag().equals(SIGNIN)) {
                     //do something
                 }
                 break;
+            case R.id.cancel:
+                fragmentAuthBinding.setIsSignup(true);
+                fragmentAuthBinding.setIsCode(false);
+                fragmentAuthBinding.btnSignin.setEnabled(true);
+                break;
+            case R.id.tv_resend_activation_code:
+                resendActivationCode();
+                break;
         }
+    }
+
+    private void resendActivationCode() {
+        Map<String, String> map = new HashMap<>();
+        map.put("email", email);
+        disposable = userViewModel.resendCode(map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resultResource -> {
+                    if (resultResource.status == Resource.Status.SUCCESS) {
+                        Snacky.builder()
+                                .setActivity(getActivity())
+                                .setText("Codigo reeviado con exito")
+                                .success()
+                                .show();
+//                        AlertUtils.showSuccessAlert(getActivity(),"Codigo Reenviado");
+                    } else {
+                        //showErrorMessage()
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void sendUserActivationCode() {
+        String activationCode = fragmentAuthBinding.etActivationCode.getText().toString();
+        Map<String, String> map = new HashMap<>();
+        map.put("activationCode", activationCode);
+        map.put("email", email);
+        disposable = userViewModel.activate(map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resultResource -> {
+                    if (resultResource.status == Resource.Status.SUCCESS) {
+                        AlertUtils.showSuccessAlert(getActivity(), "Usuario Activado");
+                    } else {
+                        //showErrorMessage()
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void sendUserRegister() {
+        Map<String, String> map = getUserMap();
+        disposable = userViewModel.register(map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resource -> {
+                    if (resource.status == Resource.Status.SUCCESS) {
+                        verifyUserStatus(resource.data);
+                    } else {
+                        // showMessageError()
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void verifyUserStatus(ResponseResult data) {
+        if (data != null && data.getCode() == 200) {
+            setRegisterUserToActivateCount(data.getMsg());
+        } else if (data != null && data.getCode() == 500) {
+            // showMessageError()
+        }
+    }
+
+    private void setRegisterUserToActivateCount(@Nullable String message) {
+        AlertUtils.showSuccessAlert(getActivity(), message);
+        fragmentAuthBinding.send.setTag(CODE);
+        fragmentAuthBinding.setIsCode(true);
+        fragmentAuthBinding.btnSignin.setEnabled(false);
+    }
+
+    @NonNull
+    private Map<String, String> getUserMap() {
+        String username = fragmentAuthBinding.etUsername.getText().toString();
+        String firstName = fragmentAuthBinding.etFirstName.getText().toString();
+        String secondName = fragmentAuthBinding.etSecondName.getText().toString();
+        email = fragmentAuthBinding.etEmail.getText().toString();
+        String password = fragmentAuthBinding.etPassword.getText().toString();
+        Map<String, String> map = new HashMap<>();
+        map.put("username", username);
+        map.put("first_name", firstName);
+        map.put("last_name", secondName);
+        map.put("email", email);
+        map.put("password", password);
+        return map;
+    }
+
+    private void resetRegisterForm() {
+        fragmentAuthBinding.etUsername.setText("");
+        fragmentAuthBinding.etFirstName.setText("");
+        fragmentAuthBinding.etSecondName.setText("");
+        fragmentAuthBinding.etEmail.setText("");
+        fragmentAuthBinding.etPassword.setText("");
     }
 }

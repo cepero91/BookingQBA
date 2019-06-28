@@ -59,11 +59,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.util.AlertUtils;
+import com.infinitum.bookingqba.util.LocationHelpers;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
@@ -78,8 +80,10 @@ import com.infinitum.bookingqba.view.interaction.InfoInteraction;
 import com.infinitum.bookingqba.view.interaction.LoginInteraction;
 import com.infinitum.bookingqba.view.listwish.ListWishFragment;
 import com.infinitum.bookingqba.view.map.MapFragment;
+import com.infinitum.bookingqba.view.profile.AddRentActivity;
 import com.infinitum.bookingqba.view.profile.AuthFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
+import com.infinitum.bookingqba.view.profile.MyRentsFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
@@ -116,6 +120,7 @@ import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_SHOW_GROUP;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
+import static com.infinitum.bookingqba.util.Constants.LOCATION_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.LOGIN_TAG;
 import static com.infinitum.bookingqba.util.Constants.MY_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_DEFAULT;
@@ -124,6 +129,8 @@ import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 import static com.infinitum.bookingqba.util.Constants.PERIODICAL_WORK_NAME;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID_DEFAULT;
+import static com.infinitum.bookingqba.util.Constants.READ_PHONE_REQUEST_CODE;
+import static com.infinitum.bookingqba.util.Constants.REQUEST_CHECK_SETTINGS;
 import static com.infinitum.bookingqba.util.Constants.USER_AVATAR;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
@@ -134,7 +141,7 @@ import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 public class HomeActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector,
         FragmentNavInteraction, NavigationView.OnNavigationItemSelectedListener,
         FilterInteraction, LoginInteraction, MapFragment.OnFragmentMapInteraction,
-        InfoInteraction, DialogFeedback.FeedbackInteraction {
+        InfoInteraction, DialogFeedback.FeedbackInteraction, MyRentsFragment.AddRentClick {
 
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
     private ActivityHomeBinding homeBinding;
@@ -143,25 +150,15 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     private FilterFragment filterFragment;
 
     //------------------------- LOCATION VAR --------------------------//
-    private static final int REQUEST_CHECK_SETTINGS = 0x1;
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
-            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-
-    private FusedLocationProviderClient mFusedLocationClient;
-    private SettingsClient mSettingsClient;
-    private LocationRequest mLocationRequest;
-    private LocationSettingsRequest mLocationSettingsRequest;
-    private LocationReference locationReference;
-    private LocationCallback locationCallback;
     private Location mCurrentLocation;
     private Boolean mRequestingLocationUpdates;
+
+    private LocationHelpers locationHelper;
 
     //-------------------------- PERMISSION VAR --------------------------------//
     private String locationPerm = Manifest.permission.ACCESS_FINE_LOCATION;
     private String readPhonePerm = Manifest.permission.READ_PHONE_STATE;
-    private static final int LOCATION_REQUEST_CODE = 1240;
-    private static final int READ_PHONE_REQUEST_CODE = 1241;
+
 
     //-------------------------- LOGING FRAGMENT ------------------------------//
     private boolean loginIsClicked = false;
@@ -260,23 +257,15 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     private void setupLocationApi() {
         mRequestingLocationUpdates = false;
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mSettingsClient = LocationServices.getSettingsClient(this);
-        createLocationCallback();
-        createLocationRequest();
-        buildLocationSettingsRequest();
-    }
-
-    private void createLocationCallback() {
-        locationCallback = new LocationCallback() {
+        locationHelper = new LocationHelpers(this);
+        locationHelper.setLocationCallback(new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
                 mCurrentLocation = locationResult.getLastLocation();
                 updateMapLocation(mCurrentLocation);
             }
-        };
-        locationReference = new LocationReference(locationCallback);
+        });
     }
 
     private void updateMapLocation(Location mCurrentLocation) {
@@ -285,76 +274,32 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         }
     }
 
-    private void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
-    private void buildLocationSettingsRequest() {
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(mLocationRequest);
-        mLocationSettingsRequest = builder.build();
-    }
-
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
-        // Begin by checking if the device has the necessary location settings.
-        mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
-                .addOnSuccessListener(this, locationSettingsResponse -> {
-                    //noinspection MissingPermission
-                    mFusedLocationClient.requestLocationUpdates(mLocationRequest,
-                            locationReference, Looper.myLooper());
-
-                })
-                .addOnFailureListener(this, e -> {
-                    int statusCode = ((ApiException) e).getStatusCode();
-                    switch (statusCode) {
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            try {
-                                ResolvableApiException rae = (ResolvableApiException) e;
-                                rae.startResolutionForResult(HomeActivity.this, REQUEST_CHECK_SETTINGS);
-                            } catch (IntentSender.SendIntentException sie) {
-                                Timber.e(sie);
-                            }
-                            break;
-                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            Timber.e("Location settings are inadequate");
-                            mRequestingLocationUpdates = false;
-                            AlertUtils.showErrorToast(HomeActivity.this, "Imposible ser localizado");
-                            invalidateOptionsMenu();
-                            break;
+        locationHelper.startLocationUpdate(e -> {
+            int statusCode = ((ApiException) e).getStatusCode();
+            switch (statusCode) {
+                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                    try {
+                        ResolvableApiException rae = (ResolvableApiException) e;
+                        rae.startResolutionForResult(HomeActivity.this, REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sie) {
+                        Timber.e(sie);
                     }
-                });
+                    break;
+                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                    mRequestingLocationUpdates = false;
+                    AlertUtils.showErrorToast(HomeActivity.this, "Imposible ser localizado");
+                    invalidateOptionsMenu();
+                    break;
+            }
+        });
     }
 
     private void stopLocationUpdates() {
-        mFusedLocationClient.removeLocationUpdates(locationReference)
-                .addOnCompleteListener(this, task -> {
-                    Timber.e("Location Callback removed");
-                    mRequestingLocationUpdates = false;
-                });
+        locationHelper.stopLocationUpdates();
         mRequestingLocationUpdates = false;
         invalidateOptionsMenu();
-    }
-
-    //-------------- CLASE WRAPER EVITA LEAKS CON EL LOCATION CALLBACKS ---------------//
-
-    private static class LocationReference extends LocationCallback {
-        private WeakReference<LocationCallback> locationWeakReference;
-
-        public LocationReference(LocationCallback locationCallback) {
-            this.locationWeakReference = new WeakReference<>(locationCallback);
-        }
-
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            super.onLocationResult(locationResult);
-            if (locationWeakReference != null && locationWeakReference.get() != null) {
-                locationWeakReference.get().onLocationResult(locationResult);
-            }
-        }
     }
 
     // ------------------------- PERMISSION -------------------------------- //
@@ -397,14 +342,14 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     private void checkPermissionResult(String[] permissions, int requestCode, String permCodeName) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
-            String msg = String.format("Permiso de %s requerido, por favor otorguelo.", permCodeName);
+            String msg = String.format("Permiso de %s requerido, por favor otórguelo.", permCodeName);
             showDialog(msg, "Otorgar",
                     (dialog, which) -> {
                         dialog.dismiss();
                         checkSinglePermission(permissions[0], requestCode);
                     }, "No, cerrar", (dialog, which) -> dialog.dismiss(), false);
         } else {
-            String msg = "Has negado permanentemente el permiso requerido. Puede que la aplicacion no funcione correctamente. Dirijase a SETTING ==> APLICATION y otorguelo.";
+            String msg = "Has negado permanentemente el permiso requerido. Puede que la aplicación no funcione correctamente.";
             showDialog(msg, "Ir",
                     (dialog, which) -> {
                         dialog.dismiss();
@@ -548,10 +493,10 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         homeBinding.navView.getMenu().findItem(R.id.nav_profile).setVisible(isProfileActive);
         if (loginVisibility) {
             String username = sharedPreferences.getString(USER_NAME, "");
-            if (username.length() > 1){
+            if (username.length() > 1) {
                 updateNavHeader(username,
                         sharedPreferences.getString(USER_AVATAR, null));
-            }else{
+            } else {
                 updateNavHeader(getString(R.string.hola_invitado),
                         null);
             }
@@ -614,7 +559,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     private void confirmLogout() {
         SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
                 .setTitleText("Aviso!")
-                .setContentText("Dfesea finalizar la sesión")
+                .setContentText("Desea finalizar la sesión")
                 .hideConfirmButton()
                 .setCancelText("Si, lo deseo")
                 .setCancelClickListener(sweetAlertDialog1 -> {
@@ -667,13 +612,16 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         } else if (id == R.id.nav_auth && !(mFragment instanceof AuthFragment)) {
             mFragment = AuthFragment.newInstance();
             sameFragment = false;
+        } else if (id == R.id.nav_my_rents && !(mFragment instanceof MyRentsFragment)) {
+            mFragment = MyRentsFragment.newInstance();
+            sameFragment = false;
         }
         if (mFragment != null && !sameFragment) {
             // Highlight the selected item has been done by NavigationView
             menuItem.setChecked(true);
 
             if (mRequestingLocationUpdates) {
-                mFusedLocationClient.removeLocationUpdates(locationReference);
+                locationHelper.stopLocationUpdates();
                 mRequestingLocationUpdates = false;
             }
             // Close drawer
@@ -785,7 +733,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     // -------------------------- FILTER --------------------------------------------- //
 
-
     @Override
     public void closeFilter() {
         if (homeBinding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
@@ -866,7 +813,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     @Override
     protected void onDestroy() {
         try {
-            mFusedLocationClient.removeLocationUpdates(locationReference);
+            locationHelper.stopLocationUpdates();
         } catch (Exception e) {
             Timber.e("onDestroy removeLocationUpdates %s", e.getMessage());
         }
@@ -884,4 +831,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         }, 700);
     }
 
+    @Override
+    public void onAddRentClick() {
+        Intent intent = new Intent(this, AddRentActivity.class);
+        startActivity(intent);
+    }
 }

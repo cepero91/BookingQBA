@@ -103,6 +103,13 @@
         <item name="stGravity">top</item>
     </style>
 
+    <style name="myInfoTopToast" parent="myToast">
+        <item name="stColorBackground">@color/colorPrimary</item>
+        <item name="stIconStart">@drawable/ic_info_nav_white</item>
+        <item name="stGravity">top</item>
+        <item name="stLength">LONG</item>
+    </style>
+
     <style name="MySpinnerStyle">
         <item name="android:background">@drawable/selector_custom_spinner</item>
     </style>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="isLoading"
+            type="Boolean" />
+    </data>
+
+    <com.xw.repo.widget.BounceScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/material_color_grey_200"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/poppinsbold"
+                android:text="Datos detallados"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_rect_white_r15"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/rounded_rect_grey">
+
+                    <com.infinitum.bookingqba.view.widgets.SearchableSpinner
+                        android:id="@+id/spinner_municipalities"
+                        android:layout_width="match_parent"
+                        android:layout_height="42dp"
+                        android:gravity="start"
+                        app:hintText="Municipio"/>
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/rounded_rect_grey">
+
+                    <com.infinitum.bookingqba.view.widgets.SearchableSpinner
+                        android:id="@+id/spinner_reference_zone"
+                        android:layout_width="match_parent"
+                        android:layout_height="42dp"
+                        android:gravity="start"
+                        app:hintText="Zona de Referencia"/>
+
+                </FrameLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:background="@drawable/rounded_rect_grey">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Facilidades"
+                        android:fontFamily="@font/poppinsregular"
+                        android:textSize="16sp"
+                        android:layout_marginEnd="14dp"
+                        android:layout_marginStart="14dp"
+                        android:layout_centerVertical="true"/>
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginEnd="14dp"
+                        android:layout_marginStart="14dp"
+                        app:srcCompat="@drawable/ic_plus"
+                        android:layout_alignParentEnd="true"
+                        android:tint="@color/material_color_grey_700"
+                        android:layout_centerVertical="true"/>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.xw.repo.widget.BounceScrollView>
+
+
+</layout>

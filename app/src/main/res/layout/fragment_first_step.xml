@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="isLoading"
+            type="Boolean" />
+
+    </data>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.map.MapFragment">
+
+        <FrameLayout
+            android:id="@+id/fl_content_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <org.oscim.android.MapView
+                android:id="@+id/mapview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:discreteVisibility="@{!safeUnbox(isLoading)}" />
+
+            <View
+                android:id="@+id/v_overlap"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <RelativeLayout
+                android:id="@+id/rl_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@drawable/rounded_top_rect_white"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
+
+                <TextView
+                    android:id="@+id/tv_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/poppinsbold"
+                    android:text="@string/d_nde_est_su_casa"/>
+
+                <LinearLayout
+                    android:layout_below="@+id/tv_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:layout_centerHorizontal="true"
+                    android:weightSum="5">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:fontFamily="@font/poppinsregular"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
+                        android:layout_gravity="center"
+                        android:text="@string/pulse_prolongadamente_o_marque_opcion_gps" />
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/iv_location"
+                        android:layout_width="0dp"
+                        android:layout_height="26dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="12dp"
+                        android:layout_gravity="center"
+                        app:srcCompat="@drawable/ic_crosshairs_grey" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top">
+
+            <com.rey.material.widget.ProgressView
+                android:id="@+id/progress_pv_linear"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_gravity="center"
+                app:pv_autostart="true"
+                app:v_styleId="@array/pv_linear_query" />
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+
+</layout>

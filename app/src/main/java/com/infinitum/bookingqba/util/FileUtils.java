@@ -1,11 +1,19 @@
 package com.infinitum.bookingqba.util;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
+
+import com.wshunli.assets.CopyAssets;
+import com.wshunli.assets.CopyCreator;
+import com.wshunli.assets.CopyListener;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -40,5 +48,12 @@ public class FileUtils {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void copyFromAsset(Activity activity, CopyListener copyListener, String dirName){
+        CopyAssets.with(activity)
+                .from(dirName)
+                .setListener(copyListener)
+                .copy();
     }
 }

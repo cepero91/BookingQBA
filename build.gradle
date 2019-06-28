@@ -27,7 +27,7 @@ ext {
     firebaseCore = "16.0.6"
     firebaseCM = "17.3.3"
 
-    vtm_map="0.11.0"
+    vtm_map="0.11.1"
 }
 buildscript {
     

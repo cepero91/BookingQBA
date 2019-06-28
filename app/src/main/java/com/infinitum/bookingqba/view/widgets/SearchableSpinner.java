@@ -15,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 
+import com.infinitum.bookingqba.R;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -51,11 +52,11 @@ public class SearchableSpinner extends android.support.v7.widget.AppCompatSpinne
     public SearchableSpinner(Context context, AttributeSet attrs) {
         super(context, attrs);
         this._context = new WeakReference<>(context);
-        TypedArray a = context.obtainStyledAttributes(attrs, com.toptoche.searchablespinnerlibrary.R.styleable.SearchableSpinner);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SearchableSpinner);
         final int N = a.getIndexCount();
         for (int i = 0; i < N; ++i) {
             int attr = a.getIndex(i);
-            if (attr == com.toptoche.searchablespinnerlibrary.R.styleable.SearchableSpinner_hintText) {
+            if (attr == R.styleable.SearchableSpinner_hintText) {
                 _strHintText = a.getString(attr);
             }
         }
@@ -76,8 +77,7 @@ public class SearchableSpinner extends android.support.v7.widget.AppCompatSpinne
 
         _arrayAdapter = (ArrayAdapter) getAdapter();
         if (!TextUtils.isEmpty(_strHintText)) {
-            ArrayAdapter arrayAdapter = new ArrayAdapter(_context.get(), android.R.layout
-                    .simple_list_item_1, new String[]{_strHintText});
+            ArrayAdapter arrayAdapter = new ArrayAdapter(_context.get(), R.layout.list_custom_item, new String[]{_strHintText});
             _isFromInit = true;
             setAdapter(arrayAdapter);
         }
@@ -118,8 +118,7 @@ public class SearchableSpinner extends android.support.v7.widget.AppCompatSpinne
         if (!_isFromInit) {
             _arrayAdapter = (ArrayAdapter) adapter;
             if (!TextUtils.isEmpty(_strHintText) && !_isDirty) {
-                ArrayAdapter arrayAdapter = new ArrayAdapter(_context.get(), android.R.layout
-                        .simple_list_item_1, new String[]{_strHintText});
+                ArrayAdapter arrayAdapter = new ArrayAdapter(_context.get(), R.layout.list_custom_item, new String[]{_strHintText});
                 super.setAdapter(arrayAdapter);
             } else {
                 super.setAdapter(adapter);
