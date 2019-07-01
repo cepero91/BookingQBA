@@ -67,11 +67,19 @@ public class AmenitiesRepoImpl implements AmenitiesRepository {
     }
 
     @Override
-    public Flowable<Resource<List<AmenitiesEntity>>> allAmenities() {
+    public Flowable<Resource<List<AmenitiesEntity>>> allLocalAmenities() {
         return qbaDao.getAllAmenities()
                 .map(Resource::success)
                 .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<Resource<List<Amenities>>> allRemoteAmenities(String token) {
+        return retrofit.create(ApiInterface.class)
+                .getAllAmenities(token)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
     }
 
     @Override

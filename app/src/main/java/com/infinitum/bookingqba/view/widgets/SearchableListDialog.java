@@ -159,8 +159,7 @@ public class SearchableListDialog extends DialogFragment implements
         _listViewItems = (ListView) rootView.findViewById(R.id.listItems);
 
         //create the adapter by passing your ArrayList data
-        listAdapter = new ArrayAdapter(getActivity(), R.layout.list_custom_item,
-                items);
+        listAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_custom_item, items);
         //attach the adapter to the list
         _listViewItems.setAdapter(listAdapter);
 

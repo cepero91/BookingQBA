@@ -29,6 +29,8 @@ public class FragmentStepAdapter extends AbstractFragmentStepAdapter {
                 return ThreeStepFragment.newInstance();
             case 3:
                 return FourStepFragment.newInstance();
+            case 4:
+                return FiveStepFragment.newInstance();
             default:
                 return FirstStepFragment.newInstance();
         }
@@ -36,7 +38,7 @@ public class FragmentStepAdapter extends AbstractFragmentStepAdapter {
 
     @Override
     public int getCount() {
-        return 4;
+        return 5;
     }
 
     @NonNull
@@ -56,6 +58,10 @@ public class FragmentStepAdapter extends AbstractFragmentStepAdapter {
                 builder.setBackButtonLabel("Atras");
                 break;
             case 3:
+                builder.setEndButtonLabel("Siguiente");
+                builder.setBackButtonLabel("Atras");
+                break;
+            case 4:
                 builder.setEndButtonLabel("Terminar");
                 builder.setBackButtonLabel("Atras");
         }

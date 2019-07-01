@@ -76,6 +76,7 @@ public class SearchableSpinner extends android.support.v7.widget.AppCompatSpinne
         setOnTouchListener(this);
 
         _arrayAdapter = (ArrayAdapter) getAdapter();
+
         if (!TextUtils.isEmpty(_strHintText)) {
             ArrayAdapter arrayAdapter = new ArrayAdapter(_context.get(), R.layout.list_custom_item, new String[]{_strHintText});
             _isFromInit = true;
@@ -118,7 +119,7 @@ public class SearchableSpinner extends android.support.v7.widget.AppCompatSpinne
         if (!_isFromInit) {
             _arrayAdapter = (ArrayAdapter) adapter;
             if (!TextUtils.isEmpty(_strHintText) && !_isDirty) {
-                ArrayAdapter arrayAdapter = new ArrayAdapter(_context.get(), R.layout.list_custom_item, new String[]{_strHintText});
+                ArrayAdapter arrayAdapter = new ArrayAdapter<>(_context.get(), R.layout.list_custom_item , new String[]{_strHintText});
                 super.setAdapter(arrayAdapter);
             } else {
                 super.setAdapter(adapter);

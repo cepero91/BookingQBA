@@ -125,10 +125,16 @@ public interface ApiInterface {
     @GET("/api/municipalities")
     Single<List<Municipality>> getMunicipality(@Header("Authorization") String token, @Query("value") String value);
 
+    @GET("/api/municipalities-all")
+    Single<List<Municipality>> getAllMunicipality(@Header("Authorization") String token);
+
     //------------------- FACILIDADES ---------------------//
 
     @GET("/api/amenities")
     Single<List<Amenities>> getAmenities(@Header("Authorization") String token, @Query("value") String value);
+
+    @GET("/api/amenities-all")
+    Single<List<Amenities>> getAllAmenities(@Header("Authorization") String token);
 
     //------------------- TIPO DE LUGAR DE INTERES ---------------------//
 
@@ -160,6 +166,9 @@ public interface ApiInterface {
 
     @GET("/api/referenceZones")
     Single<List<ReferenceZone>> getReferencesZone(@Header("Authorization") String token, @Query("value") String value);
+
+    @GET("/api/referenceZones-all")
+    Single<List<ReferenceZone>> getAllReferencesZone(@Header("Authorization") String token);
 
     //------------------- TIPO DE MONEDA ---------------------//
 

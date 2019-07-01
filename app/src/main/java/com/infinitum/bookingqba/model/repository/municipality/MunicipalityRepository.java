@@ -17,7 +17,9 @@ public interface MunicipalityRepository {
 
     Single<OperationResult> syncronizeMunicipalities(String token, String dateValue);
 
-    Flowable<Resource<List<MunicipalityEntity>>> allMunicipalities();
+    Flowable<Resource<List<MunicipalityEntity>>> allLocalMunicipalities();
+
+    Single<Resource<List<Municipality>>> allRemoteMunicipalities(String token);
 
     Flowable<Resource<List<MunicipalityEntity>>> allMunicipalitiesByProvince(String province);
 

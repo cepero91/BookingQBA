@@ -22,7 +22,6 @@ import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerIte
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -62,7 +61,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
 
 
     public Flowable<Resource<List<ViewModel>>> getReferencesZone(String province) {
-        return referenceZoneRepository.allReferencesZone(province)
+        return referenceZoneRepository.allLocalReferencesZone(province)
                 .map(this::transformRZoneEntity)
                 .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());

@@ -98,11 +98,22 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
     private static final boolean USE_CACHE = false;
     private TileCache mCache;
 
+    private double argLatitude;
+    private double argLongitude;
+
+
     public FirstStepFragment() {
     }
 
     public static FirstStepFragment newInstance() {
-        return new FirstStepFragment();
+        FirstStepFragment firstStepFragment = new FirstStepFragment();
+        return firstStepFragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
     }
 
     @Nullable
@@ -121,7 +132,6 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
         binding.ivLocation.setOnClickListener(this);
 
         mapFilePath = sharedPreferences.getString(MAP_PATH, "");
-        isLocationEmpty = true;
 
         initializeMap();
 
@@ -160,8 +170,6 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
     @Override
     public void onDestroyView() {
-        if (mCache != null)
-            mCache.dispose();
         binding.mapview.onDestroy();
         super.onDestroyView();
     }
@@ -176,8 +184,13 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
                     .doOnComplete(this::showViews).subscribe();
             compositeDisposable.add(disposable);
         } else {
-            setupMapView();
-            showViews();
+            disposable = Completable.fromAction(this::setupMapView)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnComplete(this::showViews).subscribe();
+            compositeDisposable.add(disposable);
+//            setupMapView();
+//            showViews();
         }
     }
 
@@ -227,7 +240,7 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
             binding.mapview.map().layers().add(new LabelLayer(binding.mapview.map(), tileLayer));
 
             // Render theme
-            binding.mapview.map().setTheme(VtmThemes.OSMAGRAY);
+            binding.mapview.map().setTheme(VtmThemes.OSMARENDER);
 
             // Scale bar
             MapScaleBar mapScaleBar = new DefaultMapScaleBar(binding.mapview.map());
@@ -239,13 +252,12 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
             mMarkerLayer = new ItemizedLayer<>(binding.mapview.map(), new ArrayList<>(), userMarker, this);
             binding.mapview.map().layers().add(mMarkerLayer);
 
-            binding.mapview.map().setMapPosition(23.1165, -82.3882, 2 << 12);
-
         }
     }
 
     private void showViews() {
         binding.setIsLoading(false);
+        binding.mapview.map().setMapPosition(23.1165, -82.3882, 2 << 12);
         binding.progressPvLinear.stop();
     }
 
@@ -278,11 +290,16 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
 
     public void setGeoPointLocation(double latitude, double longitude) {
-        this.geoPointLocation = new GeoPoint(latitude, longitude);
-        this.isLocationEmpty = false;
+        this.geoPointLocation = new GeoPoint(latitude,longitude);
         onStepFormEnd.barNavigationEnabled(true);
         updateUserTracking(latitude, longitude);
         onStepFormEnd.onLocationCatch(latitude, longitude);
+    }
+
+    public void setPasiveGeoPointLocation(double latitude, double longitude) {
+        this.geoPointLocation = new GeoPoint(latitude,longitude);
+        updateUserTracking(latitude, longitude);
+        onStepFormEnd.barNavigationEnabled(true);
     }
 
     public void changeIconColor(boolean locationEnabled) {
@@ -341,8 +358,7 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
     @Override
     public void onSelected() {
-        if (isLocationEmpty)
-            onStepFormEnd.barNavigationEnabled(false);
+        onStepFormEnd.barNavigationEnabled(false);
     }
 
     @Override

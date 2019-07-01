@@ -5,10 +5,10 @@ import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
+import android.arch.persistence.room.EmptyResultSetException;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
-import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.CommentEntity;
@@ -26,8 +26,10 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
 import com.infinitum.bookingqba.model.local.tconverter.CommentEmotion;
+import com.infinitum.bookingqba.model.remote.pojo.Amenities;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
-import com.infinitum.bookingqba.model.remote.pojo.RentMode;
+import com.infinitum.bookingqba.model.remote.pojo.Municipality;
+import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.comment.CommentRepository;
 import com.infinitum.bookingqba.model.repository.municipality.MunicipalityRepository;
@@ -35,10 +37,6 @@ import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepo
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
-import com.infinitum.bookingqba.view.adapters.items.filter.ReferenceZoneViewItem;
-import com.infinitum.bookingqba.view.adapters.items.filter.AmenitieViewItem;
-import com.infinitum.bookingqba.view.adapters.items.filter.RentModeViewItem;
-import com.infinitum.bookingqba.view.adapters.items.filter.StarViewItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentAmenitieItem;
@@ -49,6 +47,7 @@ import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentOfferItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
+import com.infinitum.bookingqba.view.profile.FormSelectorItem;
 
 import org.oscim.core.GeoPoint;
 
@@ -62,7 +61,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -151,7 +149,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     private Flowable<Map<String, List<CheckableItem>>> getMapFlowable(String province) {
-        Flowable<List<CheckableItem>> amenitieFlow = amenitiesRepository.allAmenities()
+        Flowable<List<CheckableItem>> amenitieFlow = amenitiesRepository.allLocalAmenities()
                 .subscribeOn(Schedulers.io())
                 .map(this::transformAmenitieToMap);
         Flowable<List<CheckableItem>> rentModeFlow = rentRepository.allRentMode()
@@ -176,6 +174,89 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return ldRentsList;
     }
 
+    //------------------------- ADD NEW RENT -------------------------------------------- //
+
+    public Single<Resource<List<FormSelectorItem>>> getAllRemoteReferenceZone(String token){
+        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Playa"));
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Historia"));
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Natural"));
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Barriada"));
+
+        return Single.just(Resource.success(formSelectorItemList));
+
+//        return rzoneRepository.allRemoteReferencesZone(token)
+//                .subscribeOn(Schedulers.io())
+//                .map(this::transformReferenceZoneToFormSelector)
+//                .onErrorReturn(Resource::error);
+    }
+
+    private Resource<List<FormSelectorItem>> transformReferenceZoneToFormSelector(Resource<List<ReferenceZone>> listResource) {
+        if (listResource.data!=null && listResource.data.size()>0){
+            List<FormSelectorItem> formSelectorItems = new ArrayList<>();
+            for(ReferenceZone referenceZone: listResource.data){
+                formSelectorItems.add(new FormSelectorItem(referenceZone.getId(),referenceZone.getName()));
+            }
+            return Resource.success(formSelectorItems);
+        }else{
+            return Resource.error("Datos nulos o vacios");
+        }
+    }
+
+    public Single<Resource<List<FormSelectorItem>>> getAllRemoteAmenities(String token){
+        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Aire acondicionado"));
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Minibar"));
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Parqueo"));
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Entrada independiente"));
+
+        return Single.just(Resource.success(formSelectorItemList));
+
+//        return amenitiesRepository.allRemoteAmenities(token)
+//                .subscribeOn(Schedulers.io())
+//                .map(this::transformAmenitiesToFormSelector)
+//                .onErrorReturn(Resource::error);
+    }
+
+    private Resource<List<FormSelectorItem>> transformAmenitiesToFormSelector(Resource<List<Amenities>> listResource) {
+        if (listResource.data!=null && listResource.data.size()>0){
+            List<FormSelectorItem> formSelectorItems = new ArrayList<>();
+            for(Amenities amenities: listResource.data){
+                formSelectorItems.add(new FormSelectorItem(amenities.getId(),amenities.getName()));
+            }
+            return Resource.success(formSelectorItems);
+        }else{
+            return Resource.error("Datos nulos o vacios");
+        }
+    }
+
+    public Single<Resource<List<FormSelectorItem>>> getAllRemoteMunicipalities(String token){
+        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Arroyo Naranjo"));
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"San Miguel del Padron"));
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Regla"));
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"10 de Octubre"));
+        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Guanabacoa"));
+
+        return Single.just(Resource.success(formSelectorItemList));
+
+//        return municipalityRepository.allRemoteMunicipalities(token)
+//                .subscribeOn(Schedulers.io())
+//                .map(this::transformMunicipalitiesToFormSelector)
+//                .onErrorReturn(Resource::error);
+    }
+
+    private Resource<List<FormSelectorItem>> transformMunicipalitiesToFormSelector(Resource<List<Municipality>> listResource) {
+        if (listResource.data!=null && listResource.data.size()>0){
+            List<FormSelectorItem> formSelectorItems = new ArrayList<>();
+            for(Municipality municipality: listResource.data){
+                formSelectorItems.add(new FormSelectorItem(municipality.getId(),municipality.getName()));
+            }
+            return Resource.success(formSelectorItems);
+        }else{
+            return Resource.error("Datos nulos o vacios");
+        }
+    }
     // ------------------------ RENT DETAIL --------------------------------------------- //
 
     public Flowable<Resource<RentItem>> getRentDetailById(String uuid) {
@@ -363,7 +444,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
             }
             return Resource.success(geoRentList);
         } else {
-            return Resource.error("Null or empty values");
+            return Resource.error("Datos nulos o vacios");
         }
     }
 

@@ -82,9 +82,16 @@ public class MunicipalityRepoImpl implements MunicipalityRepository {
     }
 
     @Override
-    public Flowable<Resource<List<MunicipalityEntity>>> allMunicipalities() {
+    public Flowable<Resource<List<MunicipalityEntity>>> allLocalMunicipalities() {
         return qbaDao.getAllMunicipalities()
                 .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Single<Resource<List<Municipality>>> allRemoteMunicipalities(String token) {
+        return retrofit.create(ApiInterface.class).getAllMunicipality(token)
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
     }

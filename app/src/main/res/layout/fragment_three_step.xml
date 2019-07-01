@@ -18,154 +18,101 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/material_color_grey_200"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="12dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginBottom="12dp"
                 android:fontFamily="@font/poppinsbold"
-                android:text="Paso 3"
+                android:text="Esencial"
                 android:textSize="18sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_rect_white_r15"
                 android:focusableInTouchMode="true"
                 android:orientation="vertical"
                 android:padding="12dp">
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_capability"
+                <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
+                    android:id="@+id/til_rent_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundMode="filled">
+                    android:layout_marginBottom="8dp"
+                    app:labelText="Nombre de la Renta"
+                    app:panelBackgroundColor="@color/material_color_grey_200"
+                    app:useDenseSpacing="true">
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_capability"
-                        android:layout_width="match_parent"
+                    <studio.carbonylgroup.textfieldboxes.ExtendedEditText
+                        android:id="@+id/et_rent_name"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:hint="Cantidad de huespedes"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="13sp" />
+                        android:inputType="text" />
 
-                </android.support.design.widget.TextInputLayout>
+                </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_max_beds"
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/rounded_rect_grey_200"
+                    android:paddingEnd="1dp"
+                    android:paddingStart="1dp">
+
+                    <TextView
+                        android:id="@+id/tv_rent_mode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|start"
+                        android:layout_marginStart="14dp"
+                        android:text="Modo de Renta"
+                        android:textSize="14sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_gravity="bottom"
+                        android:background="@drawable/rounded_rect_black" />
+
+                </FrameLayout>
+
+                <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
+                    android:id="@+id/til_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundMode="filled">
+                    android:layout_marginBottom="8dp"
+                    app:labelText="Precio"
+                    app:panelBackgroundColor="@color/material_color_grey_200"
+                    app:useDenseSpacing="true">
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_max_beds"
-                        android:layout_width="match_parent"
+                    <studio.carbonylgroup.textfieldboxes.ExtendedEditText
+                        android:id="@+id/et_price"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:hint="Cantidad de Camas"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="13sp" />
+                        android:inputType="numberDecimal" />
 
-                </android.support.design.widget.TextInputLayout>
+                </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_max_baths"
+                <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
+                    android:id="@+id/til_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxBackgroundMode="filled">
+                    android:layout_marginBottom="8dp"
+                    app:labelText="Email"
+                    app:panelBackgroundColor="@color/material_color_grey_200"
+                    app:useDenseSpacing="true">
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_max_baths"
-                        android:layout_width="match_parent"
+                    <studio.carbonylgroup.textfieldboxes.ExtendedEditText
+                        android:id="@+id/et_email"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:hint="Cantidad de baños"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="13sp" />
+                        android:inputType="textEmailAddress" />
 
-                </android.support.design.widget.TextInputLayout>
+                </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_max_rooms"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:boxBackgroundMode="filled">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_max_rooms"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:hint="Cantidad de habitaciones"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="13sp" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:boxBackgroundMode="filled">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_description"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:hint="Descripcion"
-                        android:inputType="textMultiLine"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="13sp" />
-
-                </android.support.design.widget.TextInputLayout>
-
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_personal_phone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:boxBackgroundMode="filled">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_personal_phone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:hint="Telefono Movil"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="13sp" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_phone_home"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:boxBackgroundMode="filled">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_phone_home"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:hint="Telefono de la Casa"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="13sp" />
-
-                </android.support.design.widget.TextInputLayout>
 
             </LinearLayout>
 

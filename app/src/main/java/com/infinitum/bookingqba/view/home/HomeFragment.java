@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
@@ -77,7 +78,7 @@ public class HomeFragment extends BaseNavigationFragment {
     private Disposable disposable;
 
     private CommonSpinnerList spinnerList;
-    private SpinnerAdapter adapter;
+    private ArrayAdapter<String> adapter;
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -139,7 +140,7 @@ public class HomeFragment extends BaseNavigationFragment {
         int provinceIndex = sharedPreferences.getInt(PROVINCE_SPINNER_INDEX, 0);
         this.spinnerList = listResource.data;
         if (adapter == null) {
-            adapter = new SpinnerAdapter(getActivity(), R.layout.spinner_text_layout, spinnerList.getArrayNames());
+            adapter = new ArrayAdapter<>(getActivity(), R.layout.center_text_layout, spinnerList.getArrayNames());
         }
         fragmentHomeBinding.spinnerProvinces.setAdapter(adapter);
         fragmentHomeBinding.spinnerProvinces.setSelection(provinceIndex);

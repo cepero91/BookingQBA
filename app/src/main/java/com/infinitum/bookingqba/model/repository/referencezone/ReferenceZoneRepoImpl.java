@@ -73,9 +73,16 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
     }
 
     @Override
-    public Flowable<Resource<List<ReferenceZoneEntity>>> allReferencesZone(String province) {
+    public Flowable<Resource<List<ReferenceZoneEntity>>> allLocalReferencesZone(String province) {
         return qbaDao.getAllReferencesZone(province)
                 .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Single<Resource<List<ReferenceZone>>> allRemoteReferencesZone(String token) {
+        return retrofit.create(ApiInterface.class).getAllReferencesZone(token)
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
     }
