@@ -177,18 +177,18 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     //------------------------- ADD NEW RENT -------------------------------------------- //
 
     public Single<Resource<List<FormSelectorItem>>> getAllRemoteReferenceZone(String token){
-        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Playa"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Historia"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Natural"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Barriada"));
+//        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Playa"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Historia"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Natural"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Barriada"));
+//
+//        return Single.just(Resource.success(formSelectorItemList));
 
-        return Single.just(Resource.success(formSelectorItemList));
-
-//        return rzoneRepository.allRemoteReferencesZone(token)
-//                .subscribeOn(Schedulers.io())
-//                .map(this::transformReferenceZoneToFormSelector)
-//                .onErrorReturn(Resource::error);
+        return rzoneRepository.allRemoteReferencesZone(token)
+                .subscribeOn(Schedulers.io())
+                .map(this::transformReferenceZoneToFormSelector)
+                .onErrorReturn(Resource::error);
     }
 
     private Resource<List<FormSelectorItem>> transformReferenceZoneToFormSelector(Resource<List<ReferenceZone>> listResource) {
@@ -204,18 +204,18 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     public Single<Resource<List<FormSelectorItem>>> getAllRemoteAmenities(String token){
-        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Aire acondicionado"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Minibar"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Parqueo"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Entrada independiente"));
+//        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Aire acondicionado"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Minibar"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Parqueo"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Entrada independiente"));
+//
+//        return Single.just(Resource.success(formSelectorItemList));
 
-        return Single.just(Resource.success(formSelectorItemList));
-
-//        return amenitiesRepository.allRemoteAmenities(token)
-//                .subscribeOn(Schedulers.io())
-//                .map(this::transformAmenitiesToFormSelector)
-//                .onErrorReturn(Resource::error);
+        return amenitiesRepository.allRemoteAmenities(token)
+                .subscribeOn(Schedulers.io())
+                .map(this::transformAmenitiesToFormSelector)
+                .onErrorReturn(Resource::error);
     }
 
     private Resource<List<FormSelectorItem>> transformAmenitiesToFormSelector(Resource<List<Amenities>> listResource) {
@@ -231,19 +231,19 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     public Single<Resource<List<FormSelectorItem>>> getAllRemoteMunicipalities(String token){
-        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Arroyo Naranjo"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"San Miguel del Padron"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Regla"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"10 de Octubre"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Guanabacoa"));
+//        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Arroyo Naranjo"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"San Miguel del Padron"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Regla"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"10 de Octubre"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Guanabacoa"));
+//
+//        return Single.just(Resource.success(formSelectorItemList));
 
-        return Single.just(Resource.success(formSelectorItemList));
-
-//        return municipalityRepository.allRemoteMunicipalities(token)
-//                .subscribeOn(Schedulers.io())
-//                .map(this::transformMunicipalitiesToFormSelector)
-//                .onErrorReturn(Resource::error);
+        return municipalityRepository.allRemoteMunicipalities(token)
+                .subscribeOn(Schedulers.io())
+                .map(this::transformMunicipalitiesToFormSelector)
+                .onErrorReturn(Resource::error);
     }
 
     private Resource<List<FormSelectorItem>> transformMunicipalitiesToFormSelector(Resource<List<Municipality>> listResource) {

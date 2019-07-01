@@ -152,7 +152,10 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
     @Override
     public void onDetach() {
         this.onStepFormEnd = null;
+        if(!disposable.isDisposed())
+            disposable.dispose();
         compositeDisposable.clear();
+        binding.mapview.onDestroy();
         super.onDetach();
     }
 
@@ -170,6 +173,7 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
     @Override
     public void onDestroyView() {
+        onStepFormEnd = null;
         binding.mapview.onDestroy();
         super.onDestroyView();
     }
@@ -363,7 +367,7 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
     @Override
     public void onError(@NonNull VerificationError error) {
-
+        AlertUtils.showErrorTopToast(getActivity(), error.getErrorMessage());
     }
 
     //------------------------------------ EVENTS

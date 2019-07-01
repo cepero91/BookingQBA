@@ -225,6 +225,7 @@ dependencies {
     implementation 'com.yarolegovich:lovely-dialog:1.1.0'
     implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.1.0'
     implementation 'com.github.Shashank02051997:FancyAlertDialog-Android:0.1'
+    implementation 'com.github.mirrajabi:search-dialog:1.2.3'
 
     //Reporte de Fallos
 //    implementation "ch.acra:acra-core:$acraVersion"

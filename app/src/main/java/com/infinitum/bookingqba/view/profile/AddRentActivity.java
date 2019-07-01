@@ -109,6 +109,7 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
 
     @Override
     protected void onDestroy() {
+        fragmentStepAdapter = null;
         if (disposable != null && !disposable.isDisposed())
             disposable.dispose();
         compositeDisposable.clear();
@@ -246,7 +247,6 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
 
     @Override
     public void onError(VerificationError verificationError) {
-        AlertUtils.showErrorTopToast(this, verificationError.getErrorMessage());
     }
 
     @Override
@@ -266,8 +266,8 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     }
 
     private void updateSelectorSecondStep() {
-        Single<Resource<List<FormSelectorItem>>> remoteReferenceZone = rentViewModel.getAllRemoteReferenceZone("qwertyuiop");
-        Single<Resource<List<FormSelectorItem>>> remoteMunicipalities = rentViewModel.getAllRemoteMunicipalities("qwertyuiop");
+        Single<Resource<List<FormSelectorItem>>> remoteReferenceZone = rentViewModel.getAllRemoteReferenceZone(getString(R.string.device));
+        Single<Resource<List<FormSelectorItem>>> remoteMunicipalities = rentViewModel.getAllRemoteMunicipalities(getString(R.string.device));
         disposable = Single.zip(remoteReferenceZone, remoteMunicipalities,
                 (BiFunction<Resource<List<FormSelectorItem>>, Resource<List<FormSelectorItem>>, Map>) (t1, t2) -> {
                     Map<String, List<FormSelectorItem>> map = new HashMap<>();

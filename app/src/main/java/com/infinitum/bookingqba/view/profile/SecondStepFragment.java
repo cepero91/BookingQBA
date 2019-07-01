@@ -26,6 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import dagger.android.support.AndroidSupportInjection;
+import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
+import ir.mirrajabi.searchdialog.core.BaseSearchDialogCompat;
+import ir.mirrajabi.searchdialog.core.SearchResultListener;
+import ir.mirrajabi.searchdialog.core.Searchable;
 
 public class SecondStepFragment extends Fragment implements Step, View.OnClickListener {
 
@@ -38,6 +42,7 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
     private List<String> municipalitiesStringList;
     private CFAlertDialog.Builder builder;
     private String referenceZoneUuid;
+    private String municipalityUuid;
 
 
     public SecondStepFragment() {
@@ -61,7 +66,8 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
         referenceStringList = new ArrayList<>();
         municipalitiesStringList = new ArrayList<>();
         binding.flReferenceZone.setOnClickListener(this);
-        binding.spinnerMunicipalities.setEnabled(false);
+        binding.flMunicipalities.setOnClickListener(this);
+//        binding.spinnerMunicipalities.setEnabled(false);
     }
 
     @Override
@@ -87,21 +93,21 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
             binding.ivErrorMunicipalities.setVisibility(View.GONE);
             binding.ivErrorReferenceZone.setVisibility(View.GONE);
             binding.tvError.setText("");
-            binding.spinnerMunicipalities.setEnabled(true);
+//            binding.spinnerMunicipalities.setEnabled(true);
             setupMunicipalitiesDialog();
             setupReferenceDialog();
         } else {
             binding.ivErrorMunicipalities.setVisibility(View.VISIBLE);
             binding.ivErrorReferenceZone.setVisibility(View.VISIBLE);
             binding.tvError.setText("Error al cargar formulario");
-            binding.spinnerMunicipalities.setEnabled(false);
+//            binding.spinnerMunicipalities.setEnabled(false);
         }
     }
 
     public void pasiveUpdateInputs(String address, String referenceZone, String municipality) {
-        binding.etAddress.setText(address);
-        binding.tvReferenceZone.setText(getNameByUuid(referenceZone,mapSelector.get("referenceZone")));
-        binding.spinnerMunicipalities.setSelection(getPosByUuid(municipality,mapSelector.get("municipalities")));
+//        binding.etAddress.setText(address);
+//        binding.tvReferenceZone.setText(getNameByUuid(referenceZone, mapSelector.get("referenceZone")));
+//        binding.spinnerMunicipalities.setSelection(getPosByUuid(municipality, mapSelector.get("municipalities")),false);
     }
 
     //--------------------------------- STEP ---------------------------
@@ -110,12 +116,12 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
     public VerificationError verifyStep() {
         String address = binding.etAddress.getText().toString();
         if (!address.equals("")
-                && referenceZoneUuid!=null && referenceZoneUuid.length()>0
-                && binding.spinnerMunicipalities.getSelectedItemPosition() >= 0) {
-            onStepFormEnd.submitSecondForm(address,referenceZoneUuid, getUuidByWish(binding.spinnerMunicipalities.getSelectedItemPosition(),mapSelector.get("municipalities")));
+                && referenceZoneUuid != null && referenceZoneUuid.length() > 0
+                && municipalityUuid != null && municipalityUuid.length() > 0) {
+            onStepFormEnd.submitSecondForm(address, referenceZoneUuid, municipalityUuid);
             return null;
         } else {
-            return new VerificationError("Por favor llene los campos requeridos");
+            return new VerificationError("Llene los campos requeridos");
         }
     }
 
@@ -126,7 +132,7 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
 
     @Override
     public void onError(@NonNull VerificationError error) {
-
+        binding.tvError.setText(error.getErrorMessage());
     }
 
     @Override
@@ -136,6 +142,15 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
                 if (mapSelector.containsKey("referenceZone") && mapSelector.get("referenceZone").size() > 0) {
                     builder.show();
                 }
+                break;
+            case R.id.fl_municipalities:
+                new SimpleSearchDialogCompat(getActivity(), "Search...",
+                        "What are you looking for...?", null, createSampleData(),
+                        (SearchResultListener<SearchableModel>) (dialog, item, position) -> {
+                            Toast.makeText(getActivity(), item.getTitle(),
+                                    Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        }).show();
                 break;
         }
     }
@@ -152,24 +167,40 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
     }
 
     private void setupMunicipalitiesDialog() {
-        binding.spinnerMunicipalities.setTitle("Seleccione un Municipio");
-        if (arrayAdapter == null) {
-            arrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_custom_item_no_padding,
-                    getMunicipalitiesStringFromList(mapSelector.get("municipalities")));
-        }
-        binding.spinnerMunicipalities.setAdapter(arrayAdapter);
-        binding.spinnerMunicipalities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String uuid = getUuidByWish(position, mapSelector.get("municipalities"));
-                Toast.makeText(getActivity(), uuid, Toast.LENGTH_SHORT).show();
-            }
+//        binding.spinnerMunicipalities.setTitle("Seleccione un Municipio");
+//        if (arrayAdapter == null) {
+//            arrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_custom_item_no_padding,
+//                    getMunicipalitiesStringFromList(mapSelector.get("municipalities")));
+//        }
+//        binding.spinnerMunicipalities.setAdapter(arrayAdapter);
+//        binding.spinnerMunicipalities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                municipalityUuid = getUuidByWish(position, mapSelector.get("municipalities"));
+//                binding.tvHintSpinner.setVisibility(View.GONE);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
 
-            }
-        });
+    }
+
+    private ArrayList<SearchableModel> createSampleData(){
+        ArrayList<SearchableModel> items = new ArrayList<>();
+        items.add(new SearchableModel("First item"));
+        items.add(new SearchableModel("Second item"));
+        items.add(new SearchableModel("Third item"));
+        items.add(new SearchableModel("The ultimate item"));
+        items.add(new SearchableModel("Last item"));
+        items.add(new SearchableModel("Lorem ipsum"));
+        items.add(new SearchableModel("Dolor sit"));
+        items.add(new SearchableModel("Some random word"));
+        items.add(new SearchableModel("guess who's back"));
+        return items;
     }
 
     private String[] getReferenceStringFromList(List<FormSelectorItem> formSelectorItems) {
@@ -194,8 +225,8 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
 
     private String getNameByUuid(String uuid, List<FormSelectorItem> list) {
         String name = "";
-        for(FormSelectorItem item: list){
-            if(item.getUuid().equals(uuid)){
+        for (FormSelectorItem item : list) {
+            if (item.getUuid().equals(uuid)) {
                 name = item.getName();
                 break;
             }
@@ -205,8 +236,8 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
 
     private int getPosByUuid(String uuid, List<FormSelectorItem> list) {
         int pos = -1;
-        for(int i = 0; i < list.size(); i++){
-            if(list.get(i).getUuid().equals(uuid)){
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getUuid().equals(uuid)) {
                 pos = i;
                 break;
             }
