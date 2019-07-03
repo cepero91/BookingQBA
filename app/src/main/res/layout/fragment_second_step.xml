@@ -109,13 +109,6 @@
                     android:paddingEnd="1dp"
                     android:paddingStart="1dp">
 
-                    <!--<com.infinitum.bookingqba.view.widgets.SearchableSpinner-->
-                        <!--android:id="@+id/spinner_municipalities"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="42dp"-->
-                        <!--android:background="@null"-->
-                        <!--android:layout_gravity="center" />-->
-
                     <TextView
                         android:id="@+id/tv_hint_spinner"
                         android:layout_width="wrap_content"

@@ -18,9 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -32,9 +30,9 @@ import com.infinitum.bookingqba.databinding.ActivityAddRentBinding;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.LocationHelpers;
-import com.infinitum.bookingqba.view.interaction.OnNavigationBarListener;
 import com.infinitum.bookingqba.view.interaction.OnStepFormEnd;
-import com.infinitum.bookingqba.view.map.MapFragment;
+import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
+import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.stepstone.stepper.Step;
@@ -52,12 +50,10 @@ import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -109,7 +105,7 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
 
     @Override
     protected void onDestroy() {
-        fragmentStepAdapter = null;
+        Timber.e("Activity onDestroy");
         if (disposable != null && !disposable.isDisposed())
             disposable.dispose();
         compositeDisposable.clear();

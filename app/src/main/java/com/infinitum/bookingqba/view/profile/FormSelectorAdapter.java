@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class FormSelectorAdapter extends ArrayAdapter<FormSelectorItem>{
 
         FormSelectorItem option = getItem(position);
 
-        vh.name.setText(option.getName());
+        vh.name.setText(option.getTitle());
 
         return convertView;
     }

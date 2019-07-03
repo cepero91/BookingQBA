@@ -76,7 +76,7 @@ import static com.infinitum.bookingqba.util.Constants.USER_GPS;
 import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
 
 public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.OnItemGestureListener<MarkerItem>,
-        View.OnClickListener {
+        View.OnClickListener{
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -151,6 +151,7 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
     @Override
     public void onDetach() {
+        Timber.e("Fragment onDetach");
         this.onStepFormEnd = null;
         if(!disposable.isDisposed())
             disposable.dispose();
@@ -161,21 +162,32 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
     @Override
     public void onResume() {
+        Timber.e("Fragment onResume");
         binding.mapview.onResume();
         super.onResume();
     }
 
     @Override
     public void onPause() {
+        Timber.e("Fragment onPause");
         binding.mapview.onPause();
         super.onPause();
     }
 
     @Override
     public void onDestroyView() {
-        onStepFormEnd = null;
+        Timber.e("Fragment onDestroyView");
+        if(!disposable.isDisposed())
+            disposable.dispose();
+        compositeDisposable.clear();
         binding.mapview.onDestroy();
         super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        binding.mapview.onDestroy();
+        super.onDestroy();
     }
 
     //-------------------------------------- MAP
@@ -193,8 +205,6 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnComplete(this::showViews).subscribe();
             compositeDisposable.add(disposable);
-//            setupMapView();
-//            showViews();
         }
     }
 
@@ -232,7 +242,7 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
         String mapPath = new File(mapFilePath).getAbsolutePath();
         if (tileSource.setMapFile(mapPath)) {
 
-            binding.mapview.map().layers().add(new MapEventsReceiver(binding.mapview.map()));
+            binding.mapview.map().layers().add(new MapEventsReceiver());
 
             // Vector layer
             VectorTileLayer tileLayer = binding.mapview.map().setBaseMap(tileSource);
@@ -277,8 +287,8 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
     class MapEventsReceiver extends Layer implements GestureListener {
 
-        MapEventsReceiver(Map map) {
-            super(map);
+        MapEventsReceiver() {
+            super(binding.mapview.map());
         }
 
         @Override
@@ -367,7 +377,7 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
     @Override
     public void onError(@NonNull VerificationError error) {
-        AlertUtils.showErrorTopToast(getActivity(), error.getErrorMessage());
+//        AlertUtils.showErrorTopToast(getActivity(), error.getErrorMessage());
     }
 
     //------------------------------------ EVENTS

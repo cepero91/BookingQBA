@@ -5,7 +5,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
-import android.arch.persistence.room.EmptyResultSetException;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
@@ -47,7 +46,8 @@ import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentOfferItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
-import com.infinitum.bookingqba.view.profile.FormSelectorItem;
+import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
+import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
 
 import org.oscim.core.GeoPoint;
 
@@ -62,7 +62,6 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -176,15 +175,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     //------------------------- ADD NEW RENT -------------------------------------------- //
 
-    public Single<Resource<List<FormSelectorItem>>> getAllRemoteReferenceZone(String token){
-//        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Playa"));
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Historia"));
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Natural"));
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Barriada"));
-//
-//        return Single.just(Resource.success(formSelectorItemList));
-
+    public Single<Resource<List<FormSelectorItem>>> getAllRemoteReferenceZone(String token) {
         return rzoneRepository.allRemoteReferencesZone(token)
                 .subscribeOn(Schedulers.io())
                 .map(this::transformReferenceZoneToFormSelector)
@@ -192,26 +183,18 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     private Resource<List<FormSelectorItem>> transformReferenceZoneToFormSelector(Resource<List<ReferenceZone>> listResource) {
-        if (listResource.data!=null && listResource.data.size()>0){
+        if (listResource.data != null && listResource.data.size() > 0) {
             List<FormSelectorItem> formSelectorItems = new ArrayList<>();
-            for(ReferenceZone referenceZone: listResource.data){
-                formSelectorItems.add(new FormSelectorItem(referenceZone.getId(),referenceZone.getName()));
+            for (ReferenceZone referenceZone : listResource.data) {
+                formSelectorItems.add(new SearchableSelectorModel(referenceZone.getId(), referenceZone.getName()));
             }
             return Resource.success(formSelectorItems);
-        }else{
+        } else {
             return Resource.error("Datos nulos o vacios");
         }
     }
 
-    public Single<Resource<List<FormSelectorItem>>> getAllRemoteAmenities(String token){
-//        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Aire acondicionado"));
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Minibar"));
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Parqueo"));
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Entrada independiente"));
-//
-//        return Single.just(Resource.success(formSelectorItemList));
-
+    public Single<Resource<List<FormSelectorItem>>> getAllRemoteAmenities(String token) {
         return amenitiesRepository.allRemoteAmenities(token)
                 .subscribeOn(Schedulers.io())
                 .map(this::transformAmenitiesToFormSelector)
@@ -219,27 +202,18 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     private Resource<List<FormSelectorItem>> transformAmenitiesToFormSelector(Resource<List<Amenities>> listResource) {
-        if (listResource.data!=null && listResource.data.size()>0){
+        if (listResource.data != null && listResource.data.size() > 0) {
             List<FormSelectorItem> formSelectorItems = new ArrayList<>();
-            for(Amenities amenities: listResource.data){
-                formSelectorItems.add(new FormSelectorItem(amenities.getId(),amenities.getName()));
+            for (Amenities amenities : listResource.data) {
+                formSelectorItems.add(new FormSelectorItem(amenities.getId(), amenities.getName()));
             }
             return Resource.success(formSelectorItems);
-        }else{
+        } else {
             return Resource.error("Datos nulos o vacios");
         }
     }
 
-    public Single<Resource<List<FormSelectorItem>>> getAllRemoteMunicipalities(String token){
-//        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Arroyo Naranjo"));
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"San Miguel del Padron"));
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Regla"));
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"10 de Octubre"));
-//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Guanabacoa"));
-//
-//        return Single.just(Resource.success(formSelectorItemList));
-
+    public Single<Resource<List<FormSelectorItem>>> getAllRemoteMunicipalities(String token) {
         return municipalityRepository.allRemoteMunicipalities(token)
                 .subscribeOn(Schedulers.io())
                 .map(this::transformMunicipalitiesToFormSelector)
@@ -247,13 +221,14 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     private Resource<List<FormSelectorItem>> transformMunicipalitiesToFormSelector(Resource<List<Municipality>> listResource) {
-        if (listResource.data!=null && listResource.data.size()>0){
+        if (listResource.data != null && listResource.data.size() > 0) {
             List<FormSelectorItem> formSelectorItems = new ArrayList<>();
-            for(Municipality municipality: listResource.data){
-                formSelectorItems.add(new FormSelectorItem(municipality.getId(),municipality.getName()));
+            for (Municipality municipality : listResource.data) {
+                SearchableSelectorModel searchableSelectorModel = new SearchableSelectorModel(municipality.getId(),municipality.getName());
+                formSelectorItems.add(searchableSelectorModel);
             }
             return Resource.success(formSelectorItems);
-        }else{
+        } else {
             return Resource.error("Datos nulos o vacios");
         }
     }
@@ -319,11 +294,11 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     public Completable addRating(float rating, String comment, String rent) {
-        RatingEntity entity = new RatingEntity(UUID.randomUUID().toString(), rating, comment, rent,0);
+        RatingEntity entity = new RatingEntity(UUID.randomUUID().toString(), rating, comment, rent, 0);
         return rentRepository.addOrUpdateRating(entity);
     }
 
-    public Single<Pair<Float,String>> getLastRentVote(String rent) {
+    public Single<Pair<Float, String>> getLastRentVote(String rent) {
         return rentRepository.getLastRentVote(rent)
                 .subscribeOn(Schedulers.io())
                 .map(entity -> {
@@ -398,7 +373,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private ArrayList<RentCommentItem> convertCommentPojoToParcel(List<CommentEntity> commentEntities) {
         ArrayList<RentCommentItem> detailCommentItems = new ArrayList<>();
         for (CommentEntity item : commentEntities) {
-            detailCommentItems.add(new RentCommentItem(item.getId(), item.getUsername(), item.getDescription(), item.getAvatar(), item.isOwner(), CommentEmotion.fromEmotion(item.getEmotion()),item.getCreated()));
+            detailCommentItems.add(new RentCommentItem(item.getId(), item.getUsername(), item.getDescription(), item.getAvatar(), item.isOwner(), CommentEmotion.fromEmotion(item.getEmotion()), item.getCreated()));
         }
         return detailCommentItems;
     }

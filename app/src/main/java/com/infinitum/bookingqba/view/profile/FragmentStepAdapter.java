@@ -9,13 +9,12 @@ import com.stepstone.stepper.Step;
 import com.stepstone.stepper.adapter.AbstractFragmentStepAdapter;
 import com.stepstone.stepper.viewmodel.StepViewModel;
 
-public class FragmentStepAdapter extends AbstractFragmentStepAdapter {
+import java.lang.ref.WeakReference;
 
-    private Context context;
+public class FragmentStepAdapter extends AbstractFragmentStepAdapter {
 
     public FragmentStepAdapter(@NonNull FragmentManager fm, @NonNull Context context) {
         super(fm, context);
-        this.context = context;
     }
 
     @Override

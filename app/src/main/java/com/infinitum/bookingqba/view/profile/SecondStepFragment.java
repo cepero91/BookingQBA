@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -18,6 +17,8 @@ import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentSecondStepBinding;
 import com.infinitum.bookingqba.view.interaction.OnStepFormEnd;
+import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
+import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
 import com.stepstone.stepper.Step;
 import com.stepstone.stepper.VerificationError;
 
@@ -27,9 +28,7 @@ import java.util.Map;
 
 import dagger.android.support.AndroidSupportInjection;
 import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
-import ir.mirrajabi.searchdialog.core.BaseSearchDialogCompat;
 import ir.mirrajabi.searchdialog.core.SearchResultListener;
-import ir.mirrajabi.searchdialog.core.Searchable;
 
 public class SecondStepFragment extends Fragment implements Step, View.OnClickListener {
 
@@ -40,6 +39,7 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
     private ArrayAdapter<String> arrayAdapter;
     private List<String> referenceStringList;
     private List<String> municipalitiesStringList;
+    private List<SearchableSelectorModel> searchableSelectorModelLis;
     private CFAlertDialog.Builder builder;
     private String referenceZoneUuid;
     private String municipalityUuid;
@@ -93,21 +93,17 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
             binding.ivErrorMunicipalities.setVisibility(View.GONE);
             binding.ivErrorReferenceZone.setVisibility(View.GONE);
             binding.tvError.setText("");
-//            binding.spinnerMunicipalities.setEnabled(true);
-            setupMunicipalitiesDialog();
-            setupReferenceDialog();
         } else {
             binding.ivErrorMunicipalities.setVisibility(View.VISIBLE);
             binding.ivErrorReferenceZone.setVisibility(View.VISIBLE);
             binding.tvError.setText("Error al cargar formulario");
-//            binding.spinnerMunicipalities.setEnabled(false);
         }
     }
 
     public void pasiveUpdateInputs(String address, String referenceZone, String municipality) {
-//        binding.etAddress.setText(address);
-//        binding.tvReferenceZone.setText(getNameByUuid(referenceZone, mapSelector.get("referenceZone")));
-//        binding.spinnerMunicipalities.setSelection(getPosByUuid(municipality, mapSelector.get("municipalities")),false);
+        binding.etAddress.setText(address);
+        binding.tvReferenceZone.setText(getNameByUuid(referenceZone, mapSelector.get("referenceZone")));
+        binding.tvHintSpinner.setText(getNameByUuid(municipality, mapSelector.get("municipalities")));
     }
 
     //--------------------------------- STEP ---------------------------
@@ -140,94 +136,34 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
         switch (v.getId()) {
             case R.id.fl_reference_zone:
                 if (mapSelector.containsKey("referenceZone") && mapSelector.get("referenceZone").size() > 0) {
-                    builder.show();
+                    new SimpleSearchDialogCompat<SearchableSelectorModel>(getActivity(), "Zona de Referencia",
+                            "Puede buscar por nombre...", null, (ArrayList) mapSelector.get("referenceZone"),
+                            (dialog, item, position) -> {
+                                municipalityUuid = item.getUuid();
+                                binding.tvHintSpinner.setText(item.getTitle());
+                                dialog.dismiss();
+                            }).show();
                 }
                 break;
             case R.id.fl_municipalities:
-                new SimpleSearchDialogCompat(getActivity(), "Search...",
-                        "What are you looking for...?", null, createSampleData(),
-                        (SearchResultListener<SearchableModel>) (dialog, item, position) -> {
-                            Toast.makeText(getActivity(), item.getTitle(),
-                                    Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                        }).show();
+                if (mapSelector.get("municipalities") != null && mapSelector.get("municipalities").size() > 0) {
+                    new SimpleSearchDialogCompat<SearchableSelectorModel>(getActivity(), "Municipios",
+                            "Puede buscar por nombre...", null, (ArrayList) mapSelector.get("municipalities"),
+                            (dialog, item, position) -> {
+                                referenceZoneUuid = item.getUuid();
+                                binding.tvReferenceZone.setText(item.getTitle());
+                                dialog.dismiss();
+                            }).show();
+                }
                 break;
         }
-    }
-
-    private void setupReferenceDialog() {
-        builder = new CFAlertDialog.Builder(getActivity());
-        builder.setTitle("Zona de Referencia");
-        builder.setMessage("Seleccione la zona donde crea, pertenesca su renta");
-        builder.setItems(getReferenceStringFromList(mapSelector.get("referenceZone")), (dialog, which) -> {
-            binding.tvReferenceZone.setText(referenceStringList.get(which));
-            referenceZoneUuid = getUuidByWish(which, mapSelector.get("referenceZone"));
-            dialog.dismiss();
-        });
-    }
-
-    private void setupMunicipalitiesDialog() {
-//        binding.spinnerMunicipalities.setTitle("Seleccione un Municipio");
-//        if (arrayAdapter == null) {
-//            arrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_custom_item_no_padding,
-//                    getMunicipalitiesStringFromList(mapSelector.get("municipalities")));
-//        }
-//        binding.spinnerMunicipalities.setAdapter(arrayAdapter);
-//        binding.spinnerMunicipalities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                municipalityUuid = getUuidByWish(position, mapSelector.get("municipalities"));
-//                binding.tvHintSpinner.setVisibility(View.GONE);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
-
-
-    }
-
-    private ArrayList<SearchableModel> createSampleData(){
-        ArrayList<SearchableModel> items = new ArrayList<>();
-        items.add(new SearchableModel("First item"));
-        items.add(new SearchableModel("Second item"));
-        items.add(new SearchableModel("Third item"));
-        items.add(new SearchableModel("The ultimate item"));
-        items.add(new SearchableModel("Last item"));
-        items.add(new SearchableModel("Lorem ipsum"));
-        items.add(new SearchableModel("Dolor sit"));
-        items.add(new SearchableModel("Some random word"));
-        items.add(new SearchableModel("guess who's back"));
-        return items;
-    }
-
-    private String[] getReferenceStringFromList(List<FormSelectorItem> formSelectorItems) {
-        referenceStringList = new ArrayList<>();
-        for (FormSelectorItem formSelectorItem : formSelectorItems) {
-            referenceStringList.add(formSelectorItem.getName());
-        }
-        return referenceStringList.toArray(new String[referenceStringList.size()]);
-    }
-
-    private String[] getMunicipalitiesStringFromList(List<FormSelectorItem> formSelectorItems) {
-        municipalitiesStringList = new ArrayList<>();
-        for (FormSelectorItem formSelectorItem : formSelectorItems) {
-            municipalitiesStringList.add(formSelectorItem.getName());
-        }
-        return municipalitiesStringList.toArray(new String[municipalitiesStringList.size()]);
-    }
-
-    private String getUuidByWish(int wish, List<FormSelectorItem> list) {
-        return list.get(wish).getUuid();
     }
 
     private String getNameByUuid(String uuid, List<FormSelectorItem> list) {
         String name = "";
         for (FormSelectorItem item : list) {
             if (item.getUuid().equals(uuid)) {
-                name = item.getName();
+                name = item.getTitle();
                 break;
             }
         }
