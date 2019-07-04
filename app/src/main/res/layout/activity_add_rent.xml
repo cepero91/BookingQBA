@@ -1,22 +1,576 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <data>
+
+        <variable
+            name="isLoading"
+            type="Boolean" />
+
+    </data>
+
+    <com.xw.repo.widget.BounceScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".view.profile.AddRentActivity">
+        android:layout_height="wrap_content">
 
-        <com.stepstone.stepper.StepperLayout
-            android:id="@+id/stepperLayout"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:ms_stepperType="progress_bar" />
+            android:orientation="vertical"
+            tools:context=".view.profile.AddRentActivity">
 
-    </android.support.constraint.ConstraintLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="@color/material_color_blue_grey_200"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:text="Donde esta su Renta?" />
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="end|center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/material_color_blue_grey_50"
+                android:orientation="vertical"
+                android:paddingBottom="15dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:id="@+id/tv_latitude"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        android:text="Latitud: --,------" />
+
+                    <TextView
+                        android:id="@+id/tv_longitude"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/tv_latitude"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        android:gravity="center"
+                        android:text="Longitud: --,------" />
+
+                </LinearLayout>
+
+                <mehdi.sakout.fancybuttons.FancyButton
+                    android:id="@+id/btn_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:paddingBottom="6dp"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:paddingTop="6dp"
+                    fancy:fb_borderColor="@color/material_color_blue_grey_200"
+                    fancy:fb_borderWidth="2dp"
+                    fancy:fb_defaultColor="#FFF"
+                    fancy:fb_focusColor="@color/material_color_blue_grey_200"
+                    fancy:fb_fontIconResource="&#xf041;"
+                    fancy:fb_iconPosition="left"
+                    fancy:fb_radius="30dp"
+                    fancy:fb_text="Localizar"
+                    fancy:fb_textColor="@color/material_color_blue_grey_500" />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="@color/material_color_blue_grey_200"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:text="Sobre ubicacion" />
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="end|center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/material_color_blue_grey_50"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <com.libizo.CustomEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Direccion"
+                    android:inputType="text"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+
+                <FrameLayout
+                    android:id="@+id/fl_municipalities"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/shape_btn_white_border"
+                    android:paddingEnd="1dp"
+                    android:paddingStart="1dp">
+
+                    <TextView
+                        android:id="@+id/tv_hint_spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|start"
+                        android:layout_marginStart="12sp"
+                        android:textColor="@color/Black_35"
+                        android:text="Seleccione un Municipio"
+                        android:textSize="14sp" />
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|end"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginStart="12dp"
+                        app:srcCompat="@drawable/ic_search" />
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/fl_reference_zone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/shape_btn_white_border"
+                    android:paddingEnd="1dp"
+                    android:paddingStart="1dp">
+
+                    <TextView
+                        android:id="@+id/tv_reference_zone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|start"
+                        android:layout_marginStart="14dp"
+                        android:text="Zona de referencia"
+                        android:textColor="@color/Black_35"
+                        android:textSize="14sp" />
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_search"
+                        android:layout_gravity="center|end"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"/>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="@color/material_color_blue_grey_200"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:text="Esencial" />
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="end|center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/material_color_blue_grey_50"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_rent_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Nombre de Renta"
+                    android:inputType="text"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+
+                <FrameLayout
+                    android:id="@+id/fl_rent_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/shape_btn_white_border"
+                    android:paddingEnd="1dp"
+                    android:paddingStart="1dp">
+
+                    <TextView
+                        android:id="@+id/tv_rent_mode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|start"
+                        android:layout_marginStart="12sp"
+                        android:textColor="@color/Black_35"
+                        android:text="Modo de Renta"
+                        android:textSize="14sp" />
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|end"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginStart="12dp"
+                        app:srcCompat="@drawable/ic_search" />
+                </FrameLayout>
+
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Precio"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="@color/material_color_blue_grey_200"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:text="Sobre capacidad" />
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="end|center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/material_color_blue_grey_50"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_capability"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Cant. de Huespedes"
+                    android:inputType="number"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_max_rooms"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Cant. Habitaciones"
+                    android:inputType="number"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_max_beds"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Cant. Camas"
+                    android:inputType="number"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_max_baths"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Cant. Banos"
+                    android:inputType="number"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_rules"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Reglas"
+                    android:inputType="text"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="@color/material_color_blue_grey_200"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:text="Ultimos detalles" />
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="end|center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/material_color_blue_grey_50"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Descripcion"
+                    android:inputType="text"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_personal_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Telefono movil (Opcional)"
+                    android:inputType="number"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_home_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Telefono de la Renta (Opcional)"
+                    android:inputType="number"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp" />
+
+                <FrameLayout
+                    android:id="@+id/fl_amenities"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/shape_btn_white_border"
+                    android:paddingEnd="1dp"
+                    android:paddingStart="1dp">
+
+                    <TextView
+                        android:id="@+id/tv_amenities"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|start"
+                        android:layout_marginStart="12sp"
+                        android:textColor="@color/Black_35"
+                        android:text="Facilidades"
+                        android:textSize="14sp" />
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|end"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginStart="12dp"
+                        app:srcCompat="@drawable/ic_search" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/fl_galery"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/shape_btn_white_border"
+                    android:paddingEnd="1dp"
+                    android:paddingStart="1dp">
+
+                    <TextView
+                        android:id="@+id/tv_galery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|start"
+                        android:layout_marginStart="12sp"
+                        android:textColor="@color/Black_35"
+                        android:text="Imagenes"
+                        android:textSize="14sp" />
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center|end"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginStart="12dp"
+                        android:tint="@color/material_color_blue_grey_300"
+                        app:srcCompat="@drawable/ic_plus" />
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.xw.repo.widget.BounceScrollView>
+
 </layout>

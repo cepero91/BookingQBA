@@ -28,54 +28,44 @@
         android:layout_height="match_parent"
         android:focusableInTouchMode="true">
 
-        <android.support.v7.widget.CardView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="5dp">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="@color/material_color_grey_300"
+                android:weightSum="2">
+
+                <TextView
+                    android:id="@+id/btn_signin"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/White_100"
+                    android:fontFamily="@font/poppinsbold"
+                    android:gravity="center"
+                    android:text="Autenticarse"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/btn_signup"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/poppinsbold"
+                    android:gravity="center"
+                    android:text="Registrarse"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <com.xw.repo.widget.BounceScrollView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="?actionBarSize"
-                    android:background="@color/material_color_grey_300"
-                    android:weightSum="2">
-
-                    <TextView
-                        android:id="@+id/btn_signin"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@color/White_100"
-                        android:fontFamily="@font/poppinsbold"
-                        android:gravity="center"
-                        android:text="Autenticarse"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/btn_signup"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/poppinsbold"
-                        android:gravity="center"
-                        android:text="Registrarse"
-                        android:textSize="14sp" />
-
-                </LinearLayout>
-
-                <com.xw.repo.widget.BounceScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                android:background="@color/White_100">
 
                 <LinearLayout
                     android:id="@+id/ll_content_signin"
@@ -85,101 +75,109 @@
                     android:orientation="vertical"
                     android:padding="10dp">
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.libizo.CustomEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:hint="Nombre de Usuario"
+                        android:inputType="text"
+                        android:textColor="@color/colorAccent"
+                        app:libIZO_setBorderColor="@color/material_color_blue_grey_500"
+                        app:libIZO_setBorderView="true"
+                        app:libIZO_setClearIconVisible="false"
+                        app:libIZO_setCornerRadius="15dp"
+                        app:libIZO_setStrokeWidth="1dp"/>
+
+                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
                         android:id="@+id/til_username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundMode="filled"
+                        android:layout_marginBottom="8dp"
+                        app:labelText="Nombre de Usuario"
+                        app:panelBackgroundColor="@color/material_color_grey_200"
+                        app:useDenseSpacing="true"
                         app:visibleGone="@{!safeUnbox(isCode)}">
 
-                        <android.support.design.widget.TextInputEditText
+                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
                             android:id="@+id/et_username"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppinsregular"
-                            android:hint="@string/usuario"
-                            android:inputType="text"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="12sp" />
+                            android:inputType="text" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
 
-                    <android.support.design.widget.TextInputLayout
+
+                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
                         android:id="@+id/til_first_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundMode="filled"
+                        android:layout_marginBottom="8dp"
+                        app:labelText="Primer Nombre"
+                        app:panelBackgroundColor="@color/material_color_grey_200"
+                        app:useDenseSpacing="true"
                         app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}">
 
-                        <android.support.design.widget.TextInputEditText
+                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
                             android:id="@+id/et_first_name"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppinsregular"
-                            android:hint="@string/primer_nombre"
-                            android:inputType="text"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="12sp" />
+                            android:inputType="text" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
 
-                    <android.support.design.widget.TextInputLayout
-                        android:id="@+id/til_second_name"
+                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
+                        android:id="@+id/til_last_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundMode="filled"
+                        android:layout_marginBottom="8dp"
+                        app:labelText="Apellidos"
+                        app:panelBackgroundColor="@color/material_color_grey_200"
+                        app:useDenseSpacing="true"
                         app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}">
 
-                        <android.support.design.widget.TextInputEditText
-                            android:id="@+id/et_second_name"
-                            android:layout_width="match_parent"
+                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
+                            android:id="@+id/et_last_name"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppinsregular"
-                            android:hint="Segundo Nombre"
-                            android:inputType="text"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="12sp" />
+                            android:inputType="text" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
 
-                    <android.support.design.widget.TextInputLayout
+                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
                         android:id="@+id/til_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundMode="filled"
+                        android:layout_marginBottom="8dp"
+                        app:labelText="Email"
+                        app:panelBackgroundColor="@color/material_color_grey_200"
+                        app:useDenseSpacing="true"
                         app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}">
 
-                        <android.support.design.widget.TextInputEditText
+                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
                             android:id="@+id/et_email"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppinsregular"
-                            android:hint="Email"
-                            android:inputType="textEmailAddress"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="12sp" />
+                            android:inputType="textEmailAddress" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
 
-                    <android.support.design.widget.TextInputLayout
+                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
                         android:id="@+id/til_password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundMode="filled"
-                        app:passwordToggleEnabled="true"
+                        android:layout_marginBottom="8dp"
+                        app:labelText="Contraseña"
+                        app:panelBackgroundColor="@color/material_color_grey_200"
+                        app:useDenseSpacing="true"
                         app:visibleGone="@{!safeUnbox(isCode)}">
 
-                        <android.support.design.widget.TextInputEditText
+                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
                             android:id="@+id/et_password"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppinsregular"
-                            android:hint="@string/contrase_a"
-                            android:inputType="textPassword"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="12sp" />
+                            android:inputType="textPassword" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
 
                     <CheckBox
                         android:layout_width="wrap_content"
@@ -189,24 +187,23 @@
                         android:textSize="12sp"
                         app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
 
-                    <android.support.design.widget.TextInputLayout
+                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
                         android:id="@+id/til_activation_code"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:boxBackgroundMode="filled"
+                        android:layout_marginBottom="8dp"
+                        app:labelText="Codigo de Activacion"
+                        app:panelBackgroundColor="@color/material_color_grey_200"
+                        app:useDenseSpacing="true"
                         app:visibleGone="@{safeUnbox(isCode)}">
 
-                        <android.support.design.widget.TextInputEditText
+                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
                             android:id="@+id/et_activation_code"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppinsregular"
-                            android:hint="@string/codigo_de_activacion"
-                            android:inputType="number"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="12sp" />
+                            android:inputType="number" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
 
                     <TextView
                         android:id="@+id/tv_resend_activation_code"
@@ -222,9 +219,9 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
                         android:layout_marginTop="12dp"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
                         <mehdi.sakout.fancybuttons.FancyButton
                             android:id="@+id/send"
@@ -255,23 +252,22 @@
                             android:paddingLeft="15dp"
                             android:paddingRight="15dp"
                             android:paddingTop="8dp"
+                            app:visibleGone="@{safeUnbox(isCode)}"
                             fancy:fb_defaultColor="@color/material_color_red_500"
                             fancy:fb_fontIconResource="&#xf00d;"
                             fancy:fb_iconPosition="left"
                             fancy:fb_radius="30dp"
                             fancy:fb_text="Cancelar"
-                            fancy:fb_textColor="#FFF"
-                            app:visibleGone="@{safeUnbox(isCode)}"/>
+                            fancy:fb_textColor="#FFF" />
 
                     </LinearLayout>
 
                 </LinearLayout>
 
-                </com.xw.repo.widget.BounceScrollView>
+            </com.xw.repo.widget.BounceScrollView>
 
-            </LinearLayout>
+        </LinearLayout>
 
-        </android.support.v7.widget.CardView>
 
     </FrameLayout>
 

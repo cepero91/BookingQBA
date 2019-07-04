@@ -24,6 +24,7 @@ import com.wshunli.assets.CopyAssets;
 import com.wshunli.assets.CopyCreator;
 import com.wshunli.assets.CopyListener;
 
+import org.oscim.android.MapView;
 import org.oscim.android.cache.TileCache;
 import org.oscim.android.tiling.source.mbtiles.MBTilesBitmapTileSource;
 import org.oscim.backend.CanvasAdapter;
@@ -58,6 +59,7 @@ import org.oscim.tiling.source.oscimap4.OSciMap4TileSource;
 import org.oscim.utils.animation.Easing;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,6 +103,9 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
     private double argLatitude;
     private double argLongitude;
 
+    private MapEventsReceiver mapEventsReceiver;
+    private MapView mapView;
+
 
     public FirstStepFragment() {
     }
@@ -133,6 +138,8 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
         mapFilePath = sharedPreferences.getString(MAP_PATH, "");
 
+        this.mapView = binding.mapview;
+
         initializeMap();
 
     }
@@ -156,21 +163,21 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
         if(!disposable.isDisposed())
             disposable.dispose();
         compositeDisposable.clear();
-        binding.mapview.onDestroy();
+        mapView.onDestroy();
         super.onDetach();
     }
 
     @Override
     public void onResume() {
         Timber.e("Fragment onResume");
-        binding.mapview.onResume();
+        mapView.onResume();
         super.onResume();
     }
 
     @Override
     public void onPause() {
         Timber.e("Fragment onPause");
-        binding.mapview.onPause();
+        mapView.onPause();
         super.onPause();
     }
 
@@ -180,13 +187,13 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
         if(!disposable.isDisposed())
             disposable.dispose();
         compositeDisposable.clear();
-        binding.mapview.onDestroy();
+        mapView.onDestroy();
         super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        binding.mapview.onDestroy();
+        mapView.onDestroy();
         super.onDestroy();
     }
 
@@ -242,36 +249,38 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
         String mapPath = new File(mapFilePath).getAbsolutePath();
         if (tileSource.setMapFile(mapPath)) {
 
-            binding.mapview.map().layers().add(new MapEventsReceiver());
+            mapEventsReceiver = new MapEventsReceiver(mapView.map());
+
+            mapView.map().layers().add(mapEventsReceiver);
 
             // Vector layer
-            VectorTileLayer tileLayer = binding.mapview.map().setBaseMap(tileSource);
+            VectorTileLayer tileLayer = mapView.map().setBaseMap(tileSource);
 
             // Building layer
-            binding.mapview.map().layers().add(new BuildingLayer(binding.mapview.map(), tileLayer));
+            mapView.map().layers().add(new BuildingLayer(mapView.map(), tileLayer));
 
             // Label layer
-            binding.mapview.map().layers().add(new LabelLayer(binding.mapview.map(), tileLayer));
+            mapView.map().layers().add(new LabelLayer(mapView.map(), tileLayer));
 
             // Render theme
-            binding.mapview.map().setTheme(VtmThemes.OSMARENDER);
+            mapView.map().setTheme(VtmThemes.OSMARENDER);
 
             // Scale bar
-            MapScaleBar mapScaleBar = new DefaultMapScaleBar(binding.mapview.map());
-            MapScaleBarLayer mapScaleBarLayer = new MapScaleBarLayer(binding.mapview.map(), mapScaleBar);
+            MapScaleBar mapScaleBar = new DefaultMapScaleBar(mapView.map());
+            MapScaleBarLayer mapScaleBarLayer = new MapScaleBarLayer(mapView.map(), mapScaleBar);
             mapScaleBarLayer.getRenderer().setPosition(GLViewport.Position.BOTTOM_LEFT);
             mapScaleBarLayer.getRenderer().setOffset(5 * CanvasAdapter.getScale(), 0);
-            binding.mapview.map().layers().add(mapScaleBarLayer);
+            mapView.map().layers().add(mapScaleBarLayer);
 
-            mMarkerLayer = new ItemizedLayer<>(binding.mapview.map(), new ArrayList<>(), userMarker, this);
-            binding.mapview.map().layers().add(mMarkerLayer);
+            mMarkerLayer = new ItemizedLayer<>(mapView.map(), new ArrayList<>(), userMarker, this);
+            mapView.map().layers().add(mMarkerLayer);
 
         }
     }
 
     private void showViews() {
         binding.setIsLoading(false);
-        binding.mapview.map().setMapPosition(23.1165, -82.3882, 2 << 12);
+        mapView.map().setMapPosition(23.1165, -82.3882, 2 << 12);
         binding.progressPvLinear.stop();
     }
 
@@ -287,8 +296,8 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
     class MapEventsReceiver extends Layer implements GestureListener {
 
-        MapEventsReceiver() {
-            super(binding.mapview.map());
+        MapEventsReceiver(Map map) {
+            super(map);
         }
 
         @Override
@@ -300,6 +309,7 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
             }
             return false;
         }
+
     }
 
 
@@ -338,7 +348,7 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
         MarkerItem item = new MarkerItem(USER_GPS, "User", new GeoPoint(lati, longi));
         item.setMarker(userMarker);
         mMarkerLayer.addItem(item);
-        binding.mapview.map().animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 16), Easing.Type.SINE_IN);
+        mapView.map().animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 16), Easing.Type.SINE_IN);
     }
 
     private void findAndRemoveLastUserTrack() {
@@ -363,11 +373,12 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
     @Nullable
     @Override
     public VerificationError verifyStep() {
-        if (geoPointLocation != null) {
-            return null;
-        } else {
-            return new VerificationError("No se ha obtenido localizacion");
-        }
+        return null;
+//        if (geoPointLocation != null) {
+//            return null;
+//        } else {
+//            return new VerificationError("No se ha obtenido localizacion");
+//        }
     }
 
     @Override

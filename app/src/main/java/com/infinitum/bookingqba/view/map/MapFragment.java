@@ -32,12 +32,17 @@ import org.oscim.backend.canvas.Bitmap;
 import org.oscim.backend.canvas.Color;
 import org.oscim.core.GeoPoint;
 import org.oscim.core.MapPosition;
+import org.oscim.event.Gesture;
+import org.oscim.event.GestureListener;
+import org.oscim.event.MotionEvent;
+import org.oscim.layers.Layer;
 import org.oscim.layers.marker.ItemizedLayer;
 import org.oscim.layers.marker.MarkerItem;
 import org.oscim.layers.marker.MarkerSymbol;
 import org.oscim.layers.tile.buildings.BuildingLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
 import org.oscim.layers.tile.vector.labeling.LabelLayer;
+import org.oscim.map.Map;
 import org.oscim.renderer.GLViewport;
 import org.oscim.renderer.MapRenderer;
 import org.oscim.scalebar.DefaultMapScaleBar;
@@ -211,6 +216,8 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         MapFileTileSource tileSource = new MapFileTileSource();
         String mapPath = new File(mapFilePath).getAbsolutePath();
         if (tileSource.setMapFile(mapPath)) {
+
+            mapBinding.mapview.map().layers().add(new MapEventsReceiver(mapBinding.mapview.map()));
 
             // Vector layer
             VectorTileLayer tileLayer = mapBinding.mapview.map().setBaseMap(tileSource);
@@ -445,6 +452,24 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     public interface OnFragmentMapInteraction {
 
         void onMapInteraction(GeoRent geoRent);
+
+    }
+
+    class MapEventsReceiver extends Layer implements GestureListener {
+
+        MapEventsReceiver(Map map) {
+            super(map);
+        }
+
+        @Override
+        public boolean onGesture(Gesture g, MotionEvent e) {
+            if (g instanceof Gesture.LongPress) {
+                GeoPoint p = mMap.viewport().fromScreenPoint(e.getX(), e.getY());
+                updateUserTracking(p.getLatitude(), p.getLongitude());
+                return true;
+            }
+            return false;
+        }
 
     }
 

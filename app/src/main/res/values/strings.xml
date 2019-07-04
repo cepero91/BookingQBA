@@ -151,4 +151,6 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="pulse_prolongadamente_o_marque_opcion_gps">Pulse prolongadamente, o marque opcion GPS</string>
     <string name="perm_denied_msg">Has negado permanentemente el permiso requerido. Puede que la aplicación no funcione correctamente.</string>
     <string name="perm_need_msg">Permiso de %s requerido, por favor otórguelo.</string>
+
+    <string name="poppinsregular">font/poppinsregular.ttf</string>
 </resources>

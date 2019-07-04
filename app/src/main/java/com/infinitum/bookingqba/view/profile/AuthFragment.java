@@ -229,7 +229,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
     private Map<String, String> getUserMap() {
         String username = fragmentAuthBinding.etUsername.getText().toString();
         String firstName = fragmentAuthBinding.etFirstName.getText().toString();
-        String secondName = fragmentAuthBinding.etSecondName.getText().toString();
+        String secondName = fragmentAuthBinding.etLastName.getText().toString();
         email = fragmentAuthBinding.etEmail.getText().toString();
         String password = fragmentAuthBinding.etPassword.getText().toString();
         Map<String, String> map = new HashMap<>();
@@ -244,7 +244,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
     private void resetRegisterForm() {
         fragmentAuthBinding.etUsername.setText("");
         fragmentAuthBinding.etFirstName.setText("");
-        fragmentAuthBinding.etSecondName.setText("");
+        fragmentAuthBinding.etLastName.setText("");
         fragmentAuthBinding.etEmail.setText("");
         fragmentAuthBinding.etPassword.setText("");
     }

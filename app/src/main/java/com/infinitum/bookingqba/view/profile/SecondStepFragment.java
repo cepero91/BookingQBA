@@ -110,15 +110,16 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
     @Nullable
     @Override
     public VerificationError verifyStep() {
-        String address = binding.etAddress.getText().toString();
-        if (!address.equals("")
-                && referenceZoneUuid != null && referenceZoneUuid.length() > 0
-                && municipalityUuid != null && municipalityUuid.length() > 0) {
-            onStepFormEnd.submitSecondForm(address, referenceZoneUuid, municipalityUuid);
-            return null;
-        } else {
-            return new VerificationError("Llene los campos requeridos");
-        }
+        return null;
+//        String address = binding.etAddress.getText().toString();
+//        if (!address.equals("")
+//                && referenceZoneUuid != null && referenceZoneUuid.length() > 0
+//                && municipalityUuid != null && municipalityUuid.length() > 0) {
+//            onStepFormEnd.submitSecondForm(address, referenceZoneUuid, municipalityUuid);
+//            return null;
+//        } else {
+//            return new VerificationError("Llene los campos requeridos");
+//        }
     }
 
     @Override
@@ -139,8 +140,8 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
                     new SimpleSearchDialogCompat<SearchableSelectorModel>(getActivity(), "Zona de Referencia",
                             "Puede buscar por nombre...", null, (ArrayList) mapSelector.get("referenceZone"),
                             (dialog, item, position) -> {
-                                municipalityUuid = item.getUuid();
-                                binding.tvHintSpinner.setText(item.getTitle());
+                                referenceZoneUuid = item.getUuid();
+                                binding.tvReferenceZone.setText(item.getTitle());
                                 dialog.dismiss();
                             }).show();
                 }
@@ -150,8 +151,8 @@ public class SecondStepFragment extends Fragment implements Step, View.OnClickLi
                     new SimpleSearchDialogCompat<SearchableSelectorModel>(getActivity(), "Municipios",
                             "Puede buscar por nombre...", null, (ArrayList) mapSelector.get("municipalities"),
                             (dialog, item, position) -> {
-                                referenceZoneUuid = item.getUuid();
-                                binding.tvReferenceZone.setText(item.getTitle());
+                                municipalityUuid = item.getUuid();
+                                binding.tvHintSpinner.setText(item.getTitle());
                                 dialog.dismiss();
                             }).show();
                 }

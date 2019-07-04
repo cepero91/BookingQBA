@@ -226,6 +226,9 @@ dependencies {
     implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.1.0'
     implementation 'com.github.Shashank02051997:FancyAlertDialog-Android:0.1'
     implementation 'com.github.mirrajabi:search-dialog:1.2.3'
+    implementation 'com.libizo:customedittext:1.0.6'
+    implementation 'com.ernestoyaquello.stepperform:vertical-stepper-form:0.9.8'
+    implementation 'com.github.iammert:ExpandableLayout:1.4.1'
 
     //Reporte de Fallos
 //    implementation "ch.acra:acra-core:$acraVersion"
