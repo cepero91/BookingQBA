@@ -22,12 +22,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationCallback;
@@ -43,6 +45,7 @@ import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
 import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.stepstone.stepper.Step;
 import com.stepstone.stepper.StepperLayout;
 import com.stepstone.stepper.VerificationError;
@@ -91,10 +94,10 @@ import static com.infinitum.bookingqba.util.Constants.LOCATION_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
 import static com.infinitum.bookingqba.util.Constants.REQUEST_CHECK_SETTINGS;
 
-public class AddRentActivity extends AppCompatActivity implements HasSupportFragmentInjector {
+public class AddRentActivity extends AppCompatActivity implements HasSupportFragmentInjector,
+        MapRentLocation, View.OnClickListener {
 
     private ActivityAddRentBinding binding;
-    private FragmentStepAdapter fragmentStepAdapter;
     //----Location
     private String locationPerm = Manifest.permission.ACCESS_FINE_LOCATION;
     private LocationHelpers locationHelpers;
@@ -119,6 +122,14 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     private String mapFilePath;
     private MarkerSymbol userMarker;
     private ItemizedLayer<MarkerItem> mMarkerLayer;
+    private FirstStepFragment mapFragment;
+
+    //-------- Boolean field for panel
+    private boolean formLocationOpen = true;
+    private boolean formMunicipalityOpen = true;
+    private boolean formEsentialOpen = true;
+    private boolean formCapabilityOpen = true;
+    private boolean formFinallyOpen = true;
 
 
     //--------------------------------------------------------------------------------
@@ -129,18 +140,32 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_rent);
         AndroidInjection.inject(this);
 
-//        binding.setIsLoading(true);
-//        binding.progressPvCircularInout.start();
+        binding.flLocationBar.setOnClickListener(this);
+        binding.flMunicipalityBar.setOnClickListener(this);
+        binding.flEsentialBar.setOnClickListener(this);
+        binding.flCapabilityBar.setOnClickListener(this);
+        binding.flFinallyBar.setOnClickListener(this);
 
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
         compositeDisposable = new CompositeDisposable();
 
         rentFormObject = new RentFormObject();
 
-//        setupMap();
-
         isLocationRequest = false;
         initLocationApi();
+
+        binding.slidingLayout.setTouchEnabled(false);
+
+        binding.btnLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+            }
+        });
+
+        mapFragment = FirstStepFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.map_content,
+                mapFragment).commit();
 
     }
 
@@ -151,10 +176,21 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         if (disposable != null && !disposable.isDisposed())
             disposable.dispose();
         compositeDisposable.clear();
-//        binding.mapview.onDestroy();
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        if ((binding.slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || binding.slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
+            binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            if(isLocationRequest) {
+                locationHelpers.stopLocationUpdates();
+                isLocationRequest = false;
+            }
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     //------------------------------------- LOCATION API ------------------------------------
     private void initLocationApi() {
@@ -171,9 +207,8 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     }
 
     private void updateMapLocation(Location mCurrentLocation) {
-        Step step = fragmentStepAdapter.findStep(0);
-        if (step != null) {
-            ((FirstStepFragment) step).setGeoPointLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        if (mapFragment != null) {
+            mapFragment.setGeoPointLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         }
     }
 
@@ -206,9 +241,8 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     }
 
     private void changeIconColor(boolean isLocationRequest) {
-        Step step = fragmentStepAdapter.findStep(0);
-        if (step != null) {
-            ((FirstStepFragment) step).changeIconColor(isLocationRequest);
+        if (mapFragment != null) {
+            mapFragment.changeIconColor(isLocationRequest);
         }
     }
 
@@ -280,201 +314,98 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         alertDialog.show();
     }
 
-    //------------------------------ STEPPER IMPL -----------------------
+    @Override
+    public void onLocationButtonClick() {
+        if (checkSinglePermission(locationPerm, LOCATION_REQUEST_CODE)) {
+            if (!isLocationRequest) {
+                isLocationRequest = true;
+                changeIconColor(true);
+                startLocationUpdates();
+            } else {
+                stopLocationUpdates();
+            }
+        }
+    }
 
-//    @Override
-//    public void onCompleted(View completeButton) {
-//    }
-//
-//    @Override
-//    public void onError(VerificationError verificationError) {
-//    }
-//
-//    @Override
-//    public void onStepSelected(int newStepPosition) {
-//        switch (newStepPosition) {
-//            case 0:
-//                pasiveUpdateMapLocation();
-//                break;
-//            case 1:
-//                if (isLocationRequest) {
-//                    locationHelpers.stopLocationUpdates();
-//                }
-//                updateSelectorSecondStep();
-//                break;
-//
-//        }
-//    }
-//
-//    private void updateSelectorSecondStep() {
-//        Single<Resource<List<FormSelectorItem>>> remoteReferenceZone = rentViewModel.getAllRemoteReferenceZone(getString(R.string.device));
-//        Single<Resource<List<FormSelectorItem>>> remoteMunicipalities = rentViewModel.getAllRemoteMunicipalities(getString(R.string.device));
-//        disposable = Single.zip(remoteReferenceZone, remoteMunicipalities,
-//                (BiFunction<Resource<List<FormSelectorItem>>, Resource<List<FormSelectorItem>>, Map>) (t1, t2) -> {
-//                    Map<String, List<FormSelectorItem>> map = new HashMap<>();
-//                    if (t1.data != null && t1.data.size() > 0)
-//                        map.put("referenceZone", t1.data);
-//                    if (t2.data != null && t2.data.size() > 0)
-//                        map.put("municipalities", t2.data);
-//                    return map;
-//                })
-//                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(map -> {
-//                    Step step = fragmentStepAdapter.findStep(1);
-//                    if (step != null) {
-//                        ((SecondStepFragment) step).setMapSelector(map);
-//                        boolean hasAddress = rentFormObject.getAddress() != null && rentFormObject.getAddress().length() > 0;
-//                        boolean hasMun = rentFormObject.getMunicipality() != null && rentFormObject.getMunicipality().length() > 0;
-//                        boolean hasRef = rentFormObject.getReferenceZone() != null && rentFormObject.getReferenceZone().length() > 0;
-//                        if (hasAddress && hasMun && hasRef)
-//                            ((SecondStepFragment) step).pasiveUpdateInputs(rentFormObject.getAddress(),rentFormObject.getReferenceZone(),rentFormObject.getMunicipality());
-//                    }
-//                }, Timber::e);
-//        compositeDisposable.add(disposable);
-//
-//    }
-//
-//    @Override
-//    public void onReturn() {
-//        finish();
-//    }
-//
-//    private void pasiveUpdateMapLocation() {
-//        Step step = fragmentStepAdapter.findStep(0);
-//        if (step != null && rentFormObject.getLatitude() != 0.0 && rentFormObject.getLongitude() != 0.0) {
-//            ((FirstStepFragment) step).setPasiveGeoPointLocation(rentFormObject.getLatitude(), rentFormObject.getLongitude());
-//        }
-//    }
+    @Override
+    public void onLocationUpdates(double latitude, double longitude) {
+        rentFormObject.setLatitude(latitude);
+        rentFormObject.setLongitude(longitude);
+        binding.tvLatitude.setText(String.format("Lat: %.5f",latitude));
+        binding.tvLongitude.setText(String.format("Lon: %.5f",longitude));
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
+        // Title and message
+        builder.setTitle("Renta localizada!!");
+        builder.setMessage("Coordenadas obtenidas con exito");
+        builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
+        builder.addButton("Cerrar mapa", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.CENTER, (dialog, which) ->{
+            dialog.dismiss();
+            onBackPressed();
+        });
+        builder.show();
+    }
 
-    //---------------------- OnStepFormEnd -----------------------
-
-//    @Override
-//    public void onLocationCatch(double latitude, double longitude) {
-//        AlertUtils.showInfoTopToast(this, "Localizacion obtenida");
-//        rentFormObject.setLatitude(latitude);
-//        rentFormObject.setLongitude(longitude);
-//    }
-//
-//    @Override
-//    public void submitSecondForm(String address, String referenceZone, String municipality) {
-//        this.rentFormObject.setAddress(address);
-//        this.rentFormObject.setReferenceZone(referenceZone);
-//        this.rentFormObject.setMunicipality(municipality);
-//    }
-//
-//    @Override
-//    public void barNavigationEnabled(boolean isEnabled) {
-//        binding.stepperLayout.setNextButtonVerificationFailed(!isEnabled);
-//        binding.stepperLayout.setCompleteButtonVerificationFailed(!isEnabled);
-//    }
-//
-//    @Override
-//    public void onLocationClick() {
-//        if (checkSinglePermission(locationPerm, LOCATION_REQUEST_CODE)) {
-//            if (!isLocationRequest) {
-//                isLocationRequest = true;
-//                changeIconColor(true);
-//                startLocationUpdates();
-//            } else {
-//                stopLocationUpdates();
-//            }
-//        }
-//    }
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.fl_location_bar:
+                if(formLocationOpen){
+                    binding.llLocationForm.setVisibility(View.GONE);
+                    binding.ivArrowLocation.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
+                    formLocationOpen = false;
+                }else{
+                    binding.llLocationForm.setVisibility(View.VISIBLE);
+                    binding.ivArrowLocation.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
+                    formLocationOpen = true;
+                }
+                break;
+            case R.id.fl_municipality_bar:
+                if(formMunicipalityOpen){
+                    binding.llMunicipalityForm.setVisibility(View.GONE);
+                    binding.ivArrowMunicipality.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
+                    formMunicipalityOpen = false;
+                }else{
+                    binding.llMunicipalityForm.setVisibility(View.VISIBLE);
+                    binding.ivArrowMunicipality.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
+                    formMunicipalityOpen = true;
+                }
+                break;
+            case R.id.fl_esential_bar:
+                if (formEsentialOpen) {
+                    binding.llEsentialForm.setVisibility(View.GONE);
+                    binding.ivArrowEsential.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
+                    formEsentialOpen = false;
+                } else {
+                    binding.llEsentialForm.setVisibility(View.VISIBLE);
+                    binding.ivArrowEsential.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
+                    formEsentialOpen = true;
+                }
+                break;
+            case R.id.fl_capability_bar:
+                if (formCapabilityOpen) {
+                    binding.llCapabilityForm.setVisibility(View.GONE);
+                    binding.ivArrowCapability.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
+                    formCapabilityOpen = false;
+                } else {
+                    binding.llCapabilityForm.setVisibility(View.VISIBLE);
+                    binding.ivArrowCapability.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
+                    formCapabilityOpen = true;
+                }
+                break;
+            case R.id.fl_finally_bar:
+                if (formFinallyOpen) {
+                    binding.llFinallyForm.setVisibility(View.GONE);
+                    binding.ivArrowFinally.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
+                    formFinallyOpen = false;
+                } else {
+                    binding.llFinallyForm.setVisibility(View.VISIBLE);
+                    binding.ivArrowFinally.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
+                    formFinallyOpen = true;
+                }
+                break;
+        }
+    }
 
 
-    //-------------------------- MAP METHOD ---------------------------------
-
-//    private void setupMap() {
-//        mapFilePath = sharedPreferences.getString(MAP_PATH, "");
-//        if (mapFilePath.equals("")) {
-//            disposable = Completable.fromAction(this::copyAssetMap)
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .andThen(Completable.fromAction(this::setupMapView))
-//                    .doOnComplete(this::showViews).subscribe();
-//            compositeDisposable.add(disposable);
-//        } else {
-//            disposable = Completable.fromAction(this::setupMapView)
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .doOnComplete(this::showViews).subscribe();
-//            compositeDisposable.add(disposable);
-//        }
-//    }
-//
-//    private void copyAssetMap() {
-//        CopyAssets.with(this)
-//                .from("map")
-//                .setListener(new CopyListener() {
-//                    @Override
-//                    public void pending(CopyCreator copyCreator, String oriPath, String desPath, List<String> names) {
-//
-//                    }
-//
-//                    @Override
-//                    public void progress(CopyCreator copyCreator, File currentFile, int copyProgress) {
-//                    }
-//
-//                    @Override
-//                    public void completed(CopyCreator copyCreator, java.util.Map<File, Boolean> results) {
-//                        SharedPreferences.Editor edit = sharedPreferences.edit();
-//                        edit.putString(MAP_PATH, ((File) results.keySet().toArray()[0]).getAbsolutePath());
-//                        edit.apply();
-//                        mapFilePath = ((File) results.keySet().toArray()[0]).getAbsolutePath();
-//                    }
-//
-//                    @Override
-//                    public void error(CopyCreator copyCreator, Throwable e) {
-//                        Timber.e(e);
-//                    }
-//                })
-//                .copy();
-//    }
-//
-//    public void setupMapView() {
-//        MapFileTileSource tileSource = new MapFileTileSource();
-//        String mapPath = new File(mapFilePath).getAbsolutePath();
-//        if (tileSource.setMapFile(mapPath)) {
-//
-//            // Vector layer
-//            VectorTileLayer tileLayer = binding.mapview.map().setBaseMap(tileSource);
-//
-//            // Building layer
-//            binding.mapview.map().layers().add(new BuildingLayer( binding.mapview.map(), tileLayer));
-//
-//            // Label layer
-//            binding.mapview.map().layers().add(new LabelLayer( binding.mapview.map(), tileLayer));
-//
-//            // Render theme
-//            binding.mapview.map().setTheme(VtmThemes.OSMARENDER);
-//
-//            // Scale bar
-//            MapScaleBar mapScaleBar = new DefaultMapScaleBar( binding.mapview.map());
-//            MapScaleBarLayer mapScaleBarLayer = new MapScaleBarLayer( binding.mapview.map(), mapScaleBar);
-//            mapScaleBarLayer.getRenderer().setPosition(GLViewport.Position.BOTTOM_LEFT);
-//            mapScaleBarLayer.getRenderer().setOffset(5 * CanvasAdapter.getScale(), 0);
-//            binding.mapview.map().layers().add(mapScaleBarLayer);
-//
-//            mMarkerLayer = new ItemizedLayer<>( binding.mapview.map(), new ArrayList<>(), userMarker, this);
-//            binding.mapview.map().layers().add(mMarkerLayer);
-//
-//        }
-//    }
-//
-//    private void showViews() {
-//        binding.setIsLoading(false);
-//        binding.mapview.map().setMapPosition(23.1165, -82.3882, 2 << 12);
-//        binding.progressPvCircularInout.stop();
-//    }
-//
-//
-//    @Override
-//    public boolean onItemSingleTapUp(int index, MarkerItem item) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean onItemLongPress(int index, MarkerItem item) {
-//        return false;
-//    }
 }

@@ -229,6 +229,7 @@ dependencies {
     implementation 'com.libizo:customedittext:1.0.6'
     implementation 'com.ernestoyaquello.stepperform:vertical-stepper-form:0.9.8'
     implementation 'com.github.iammert:ExpandableLayout:1.4.1'
+    implementation 'com.sothree.slidinguppanel:library:3.4.0'
 
     //Reporte de Fallos
 //    implementation "ch.acra:acra-core:$acraVersion"

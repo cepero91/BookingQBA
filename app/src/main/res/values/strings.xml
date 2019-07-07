@@ -152,5 +152,8 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="perm_denied_msg">Has negado permanentemente el permiso requerido. Puede que la aplicación no funcione correctamente.</string>
     <string name="perm_need_msg">Permiso de %s requerido, por favor otórguelo.</string>
 
-    <string name="poppinsregular">font/poppinsregular.ttf</string>
+    <string name="donde_esta_su_renta">Donde esta su Renta?</string>
+    <string name="sobre_ubicacion">Sobre ubicacion</string>
+    <string name="informacion_esencial">Informacion Esencial</string>
+    <string name="ultimos_detalles">Ultimos detalles</string>
 </resources>

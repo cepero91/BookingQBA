@@ -77,14 +77,13 @@ import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
 import static com.infinitum.bookingqba.util.Constants.USER_GPS;
 import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
 
-public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.OnItemGestureListener<MarkerItem>,
-        View.OnClickListener{
+public class FirstStepFragment extends Fragment implements ItemizedLayer.OnItemGestureListener<MarkerItem> {
 
     @Inject
     SharedPreferences sharedPreferences;
 
     private FragmentFirstStepBinding binding;
-    private OnStepFormEnd onStepFormEnd;
+    private MapRentLocation mapRentLocation;
     private GeoPoint geoPointLocation;
     private boolean isLocationEmpty;
     private CompositeDisposable compositeDisposable;
@@ -93,12 +92,6 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
     private String mapFilePath;
     private MarkerSymbol userMarker;
     private ItemizedLayer<MarkerItem> mMarkerLayer;
-
-    //Bitmap Map
-    private BitmapTileSource mTileSource;
-    protected BitmapTileLayer mBitmapLayer;
-    private static final boolean USE_CACHE = false;
-    private TileCache mCache;
 
     private double argLatitude;
     private double argLongitude;
@@ -134,7 +127,6 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
         binding.setIsLoading(true);
         binding.progressPvLinear.start();
-        binding.ivLocation.setOnClickListener(this);
 
         mapFilePath = sharedPreferences.getString(MAP_PATH, "");
 
@@ -150,16 +142,14 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
     public void onAttach(Context context) {
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
-        if (context instanceof OnStepFormEnd) {
-            this.onStepFormEnd = (OnStepFormEnd) context;
-            compositeDisposable = new CompositeDisposable();
-        }
+        compositeDisposable = new CompositeDisposable();
+        if(context instanceof MapRentLocation)
+            mapRentLocation = (MapRentLocation) context;
     }
 
     @Override
     public void onDetach() {
         Timber.e("Fragment onDetach");
-        this.onStepFormEnd = null;
         if(!disposable.isDisposed())
             disposable.dispose();
         compositeDisposable.clear();
@@ -315,15 +305,13 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
 
     public void setGeoPointLocation(double latitude, double longitude) {
         this.geoPointLocation = new GeoPoint(latitude,longitude);
-        onStepFormEnd.barNavigationEnabled(true);
         updateUserTracking(latitude, longitude);
-        onStepFormEnd.onLocationCatch(latitude, longitude);
+        mapRentLocation.onLocationUpdates(latitude, longitude);
     }
 
     public void setPasiveGeoPointLocation(double latitude, double longitude) {
         this.geoPointLocation = new GeoPoint(latitude,longitude);
         updateUserTracking(latitude, longitude);
-        onStepFormEnd.barNavigationEnabled(true);
     }
 
     public void changeIconColor(boolean locationEnabled) {
@@ -368,37 +356,5 @@ public class FirstStepFragment extends Fragment implements Step, ItemizedLayer.O
         return mapPosition;
     }
 
-    //--------------------------------------- STEP
 
-    @Nullable
-    @Override
-    public VerificationError verifyStep() {
-        return null;
-//        if (geoPointLocation != null) {
-//            return null;
-//        } else {
-//            return new VerificationError("No se ha obtenido localizacion");
-//        }
-    }
-
-    @Override
-    public void onSelected() {
-        onStepFormEnd.barNavigationEnabled(false);
-    }
-
-    @Override
-    public void onError(@NonNull VerificationError error) {
-//        AlertUtils.showErrorTopToast(getActivity(), error.getErrorMessage());
-    }
-
-    //------------------------------------ EVENTS
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.iv_location:
-                onStepFormEnd.onLocationClick();
-                break;
-        }
-    }
 }

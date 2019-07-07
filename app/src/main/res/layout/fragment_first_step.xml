@@ -34,30 +34,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <RelativeLayout
-                android:id="@+id/rl_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@drawable/rounded_top_rect_white"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp">
-
-                <TextView
-                    android:id="@+id/tv_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:fontFamily="@font/poppinsbold"
-                    android:text="@string/d_nde_est_su_casa"/>
 
                 <LinearLayout
-                    android:layout_below="@+id/tv_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:padding="8dp"
+                    android:layout_gravity="top"
                     android:orientation="horizontal"
-                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/rounded_top_rect_white"
                     android:weightSum="5">
 
                     <TextView
@@ -80,8 +64,6 @@
                         app:srcCompat="@drawable/ic_crosshairs_grey" />
 
                 </LinearLayout>
-
-            </RelativeLayout>
 
 
         </FrameLayout>
