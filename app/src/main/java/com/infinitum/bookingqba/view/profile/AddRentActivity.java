@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.view.profile;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
@@ -9,27 +10,34 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.EditText;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
+import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
+import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
+import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationCallback;
@@ -37,41 +45,20 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityAddRentBinding;
-import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.LocationHelpers;
-import com.infinitum.bookingqba.view.interaction.OnStepFormEnd;
 import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
 import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
+import com.infinitum.bookingqba.view.profile.uploaditem.RentFormObject;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.stepstone.stepper.Step;
-import com.stepstone.stepper.StepperLayout;
-import com.stepstone.stepper.VerificationError;
-import com.wshunli.assets.CopyAssets;
-import com.wshunli.assets.CopyCreator;
-import com.wshunli.assets.CopyListener;
-
-import org.oscim.backend.CanvasAdapter;
-import org.oscim.layers.marker.ItemizedLayer;
-import org.oscim.layers.marker.MarkerItem;
-import org.oscim.layers.marker.MarkerSymbol;
-import org.oscim.layers.tile.buildings.BuildingLayer;
-import org.oscim.layers.tile.vector.VectorTileLayer;
-import org.oscim.layers.tile.vector.labeling.LabelLayer;
-import org.oscim.renderer.GLViewport;
-import org.oscim.scalebar.DefaultMapScaleBar;
-import org.oscim.scalebar.MapScaleBar;
-import org.oscim.scalebar.MapScaleBarLayer;
-import org.oscim.theme.VtmThemes;
-import org.oscim.tiling.source.mapfile.MapFileTileSource;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -79,25 +66,26 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import ernestoyaquello.com.verticalstepperform.VerticalStepperFormLayout;
-import ernestoyaquello.com.verticalstepperform.interfaces.VerticalStepperForm;
-import io.reactivex.Completable;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
+import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
+import ir.mirrajabi.searchdialog.core.SearchResultListener;
 import timber.log.Timber;
 
+import static android.view.Gravity.CENTER;
 import static com.infinitum.bookingqba.util.Constants.LOCATION_REQUEST_CODE;
-import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
 import static com.infinitum.bookingqba.util.Constants.REQUEST_CHECK_SETTINGS;
+import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
+import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
 
 public class AddRentActivity extends AppCompatActivity implements HasSupportFragmentInjector,
         MapRentLocation, View.OnClickListener {
 
     private ActivityAddRentBinding binding;
+    private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
+    private static final int PICK_PICTURE_CODE = 1560;
     //----Location
     private String locationPerm = Manifest.permission.ACCESS_FINE_LOCATION;
     private LocationHelpers locationHelpers;
@@ -119,10 +107,8 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     private RentViewModel rentViewModel;
     private Disposable disposable;
     private CompositeDisposable compositeDisposable;
-    private String mapFilePath;
-    private MarkerSymbol userMarker;
-    private ItemizedLayer<MarkerItem> mMarkerLayer;
-    private FirstStepFragment mapFragment;
+
+    private MapFormFragment mapFragment;
 
     //-------- Boolean field for panel
     private boolean formLocationOpen = true;
@@ -131,44 +117,71 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     private boolean formCapabilityOpen = true;
     private boolean formFinallyOpen = true;
 
+    //------------------- Amenities many to many
+    private boolean[] amenitiesSelected;
+    private ArrayList<FormSelectorItem> amenitiesSelectorOptions;
+    private ArrayList<String> amenitiesString;
+    //------------------- Galery files
+    private ArrayList<String> imagesFilesPath;
+    private ArrayList<GaleryModelItem> galeryModelItems;
+
 
     //--------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_rent);
-        AndroidInjection.inject(this);
+
+        imagesFilesPath = new ArrayList<>();
 
         binding.flLocationBar.setOnClickListener(this);
         binding.flMunicipalityBar.setOnClickListener(this);
         binding.flEsentialBar.setOnClickListener(this);
         binding.flCapabilityBar.setOnClickListener(this);
         binding.flFinallyBar.setOnClickListener(this);
+        binding.btnLocation.setOnClickListener(this);
+        binding.flMunicipalities.setOnClickListener(this);
+        binding.flReferenceZone.setOnClickListener(this);
+        binding.flRentMode.setOnClickListener(this);
+        binding.flAmenities.setOnClickListener(this);
+        binding.flGalery.setOnClickListener(this);
+        binding.btnUpload.setOnClickListener(this);
 
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
         compositeDisposable = new CompositeDisposable();
 
-        rentFormObject = new RentFormObject();
+        rentFormObject = new RentFormObject(UUID.randomUUID().toString());
 
         isLocationRequest = false;
         initLocationApi();
 
         binding.slidingLayout.setTouchEnabled(false);
-
-        binding.btnLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-            }
-        });
-
-        mapFragment = FirstStepFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().replace(R.id.map_content,
-                mapFragment).commit();
-
+        initMapFragment(savedInstanceState);
     }
 
+    private void initMapFragment(Bundle saveInstanceState) {
+        if (saveInstanceState != null) {
+            mapFragment = (MapFormFragment) getSupportFragmentManager().getFragment(saveInstanceState, STATE_ACTIVE_FRAGMENT);
+        } else {
+            mapFragment = MapFormFragment.newInstance();
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.map_content,
+                mapFragment).commit();
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        getSupportFragmentManager().putFragment(outState, STATE_ACTIVE_FRAGMENT, mapFragment);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
 
     @Override
     protected void onDestroy() {
@@ -183,12 +196,47 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     public void onBackPressed() {
         if ((binding.slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || binding.slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
             binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            if(isLocationRequest) {
+            if (isLocationRequest) {
                 locationHelpers.stopLocationUpdates();
                 isLocationRequest = false;
             }
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        startLocationUpdates();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        isLocationRequest = false;
+                        AlertUtils.showErrorToast(this, "Imposible ser localizado");
+                        changeIconColor(false);
+                        break;
+                }
+                break;
+            case PICK_PICTURE_CODE:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        if (data.getClipData() != null) {
+                            int count = data.getClipData().getItemCount();
+                            for (int i = 0; i < count; i++) {
+                                Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                                addImagePathToList(imageUri);
+                            }
+                        } else if (data.getData() != null) {
+                            Uri imagePath = data.getData();
+                            addImagePathToList(imagePath);
+                        }
+                        break;
+                }
+                break;
         }
     }
 
@@ -329,17 +377,23 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
 
     @Override
     public void onLocationUpdates(double latitude, double longitude) {
-        rentFormObject.setLatitude(latitude);
-        rentFormObject.setLongitude(longitude);
-        binding.tvLatitude.setText(String.format("Lat: %.5f",latitude));
-        binding.tvLongitude.setText(String.format("Lon: %.5f",longitude));
+        rentFormObject.setLatitude(String.valueOf(latitude));
+        rentFormObject.setLongitude(String.valueOf(longitude));
+        binding.tvLatitude.setTextColor(Color.parseColor("#FFC400"));
+        binding.tvLongitude.setTextColor(Color.parseColor("#FFC400"));
+        binding.tvLatitude.setText(String.format("%.5f", latitude));
+        binding.tvLongitude.setText(String.format("%.5f", longitude));
+        showSuccessLocationDialog();
+    }
+
+    private void showSuccessLocationDialog() {
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
         // Title and message
         builder.setTitle("Renta localizada!!");
         builder.setMessage("Coordenadas obtenidas con exito");
         builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
-        builder.addButton("Cerrar mapa", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.CENTER, (dialog, which) ->{
+        builder.addButton("Cerrar mapa", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.CENTER, (dialog, which) -> {
             dialog.dismiss();
             onBackPressed();
         });
@@ -348,24 +402,24 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.fl_location_bar:
-                if(formLocationOpen){
+                if (formLocationOpen) {
                     binding.llLocationForm.setVisibility(View.GONE);
                     binding.ivArrowLocation.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
                     formLocationOpen = false;
-                }else{
+                } else {
                     binding.llLocationForm.setVisibility(View.VISIBLE);
                     binding.ivArrowLocation.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
                     formLocationOpen = true;
                 }
                 break;
             case R.id.fl_municipality_bar:
-                if(formMunicipalityOpen){
+                if (formMunicipalityOpen) {
                     binding.llMunicipalityForm.setVisibility(View.GONE);
                     binding.ivArrowMunicipality.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
                     formMunicipalityOpen = false;
-                }else{
+                } else {
                     binding.llMunicipalityForm.setVisibility(View.VISIBLE);
                     binding.ivArrowMunicipality.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
                     formMunicipalityOpen = true;
@@ -404,7 +458,259 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
                     formFinallyOpen = true;
                 }
                 break;
+            case R.id.btn_location:
+                binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                break;
+            case R.id.fl_municipalities:
+                showMunicipalitiesDialog();
+                break;
+            case R.id.fl_reference_zone:
+                showReferenceDialog();
+                break;
+            case R.id.fl_rent_mode:
+                showRentModeDialog();
+                break;
+            case R.id.fl_amenities:
+                showAmenitiesDialog();
+                break;
+            case R.id.fl_galery:
+                pickGaleryFiles();
+                break;
+            case R.id.btn_upload:
+                uploadRent();
+                break;
         }
+    }
+
+    private void uploadRent() {
+        rentFormObject.setRentName(binding.etRentName.getText().toString());
+        rentFormObject.setAddress(binding.etAddress.getText().toString());
+        rentFormObject.setDescription(binding.etDescription.getText().toString());
+        rentFormObject.setEmail(binding.etEmail.getText().toString());
+        rentFormObject.setPhoneNumber(binding.etPersonalPhone.getText().toString());
+        rentFormObject.setPhoneHomeNumber(binding.etHomePhone.getText().toString());
+        rentFormObject.setMaxBaths(binding.etMaxBaths.getText().toString());
+        rentFormObject.setMaxBeds(binding.etMaxBeds.getText().toString());
+        rentFormObject.setMaxRooms(binding.etMaxRooms.getText().toString());
+        rentFormObject.setCapability(binding.etCapability.getText().toString());
+        rentFormObject.setRentMode(binding.tvRentMode.getText().toString());
+        rentFormObject.setRules(binding.etRules.getText().toString());
+        rentFormObject.setPrice(Float.parseFloat(binding.etPrice.getText().toString()));
+        rentFormObject.setLatitude(binding.tvLatitude.getText().toString());
+        rentFormObject.setLongitude(binding.tvLongitude.getText().toString());
+        rentFormObject.setMunicipality(binding.tvMunicipality.getText().toString());
+        rentFormObject.setReferenceZone(binding.tvReferenceZone.getText().toString());
+        disposable = rentViewModel.sendRentToServer(getString(R.string.device), rentFormObject)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(responseResult -> {
+                    if (responseResult != null) {
+                        Timber.e(responseResult.getMsg());
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void pickGaleryFiles() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        startActivityForResult(Intent.createChooser(intent, "Seleccione las imagenes"), PICK_PICTURE_CODE);
+    }
+
+    private void setupGalerieAdapter(ArrayList<GaleryModelItem> argGaleries) {
+        if (argGaleries != null && argGaleries.size() > 0) {
+            RendererRecyclerViewAdapter adapter = new RendererRecyclerViewAdapter();
+            adapter.registerRenderer(getGalerieVinder());
+            adapter.setItems(argGaleries);
+            binding.rvGaleries.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            binding.rvGaleries.setAdapter(adapter);
+            ViewCompat.setNestedScrollingEnabled(binding.rvGaleries, false);
+        }
+    }
+
+    private ViewBinder<?> getGalerieVinder() {
+        return new ViewBinder<>(
+                R.layout.recycler_new_rent_form,
+                GaleryModelItem.class,
+                (model, finder, payloads) -> finder
+                        .find(R.id.iv_galery, (ViewProvider<AppCompatImageView>) view -> {
+                            String path;
+                            if (!model.getImagePath().contains("http")) {
+                                path = "file:" + model.getImagePath();
+                            } else {
+                                path = model.getImagePath();
+                            }
+                            Picasso.get()
+                                    .load(path)
+                                    .resize(THUMB_WIDTH,THUMB_HEIGHT)
+                                    .placeholder(R.drawable.placeholder)
+                                    .into(view);
+                        })
+        );
+    }
+
+    private void addImagePathToList(Uri uri) {
+        File file = new File(uri.getPath());
+        String[] filePath = file.getPath().split(":");
+        String imageId = filePath[filePath.length - 1];
+
+        Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + "=?", new String[]{imageId}, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            imagesFilesPath.add(imagePath);
+            addImageToAdapter(imagesFilesPath);
+            cursor.close();
+        }
+    }
+
+    private void addImageToAdapter(ArrayList<String> filesPath) {
+        galeryModelItems = new ArrayList<>();
+        for(String paths: filesPath) {
+            galeryModelItems.add(new GaleryModelItem(paths));
+        }
+        setupGalerieAdapter(galeryModelItems);
+    }
+
+    private void showAmenitiesDialog() {
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+        builder.setTitle("Facilidades");
+        builder.setMessage("Seleccione las facilidades de su renta");
+        disposable = rentViewModel.getAllRemoteAmenities(getString(R.string.device))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listResource -> {
+                    if (listResource.data != null && listResource.data.size() > 0) {
+                        amenitiesSelectorOptions = (ArrayList<FormSelectorItem>) listResource.data;
+                        amenitiesSelected = initBooleanSelected(listResource.data);
+                        amenitiesString = initAmenitiesString(listResource.data);
+                        builder.setMultiChoiceItems(amenitiesString.toArray(new String[amenitiesString.size()]), amenitiesSelected, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                amenitiesSelected[which] = isChecked;
+                                binding.fbAmenities.removeAllViews();
+                                populateAmenitiesFlexbox();
+                            }
+                        });
+                        builder.show();
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void populateAmenitiesFlexbox() {
+        for (int i = 0; i < amenitiesSelected.length; i++) {
+            if (amenitiesSelected[i]) {
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                TextView textView = (TextView) getLayoutInflater().inflate(R.layout.flexbox_ships_form_item, null);
+                textView.setText(amenitiesSelectorOptions.get(i).getTitle());
+                params.setMargins(5, 5, 5, 5);
+                textView.setLayoutParams(params);
+                binding.fbAmenities.addView(textView);
+
+            }
+        }
+    }
+
+    private boolean[] initBooleanSelected(List<FormSelectorItem> data) {
+        if (amenitiesSelected == null) {
+            amenitiesSelected = new boolean[data.size()];
+            for (int i = 0; i < data.size(); i++) {
+                amenitiesSelected[i] = false;
+            }
+        } else if (data.size() > amenitiesSelected.length) {
+            boolean[] amenitiesSelectedCopy = new boolean[data.size()];
+            for (int i = 0; i < data.size(); i++) {
+                if (i < amenitiesSelected.length) {
+                    amenitiesSelectedCopy[i] = amenitiesSelected[i];
+                } else {
+                    amenitiesSelectedCopy[i] = false;
+                }
+            }
+            amenitiesSelected = amenitiesSelectedCopy;
+        } else if (data.size() < amenitiesSelected.length) {
+            boolean[] amenitiesSelectedCopy = new boolean[data.size()];
+            System.arraycopy(amenitiesSelected, 0, amenitiesSelectedCopy, 0, data.size());
+            amenitiesSelected = amenitiesSelectedCopy;
+        }
+        return amenitiesSelected;
+    }
+
+    private ArrayList<String> initAmenitiesString(List<FormSelectorItem> data) {
+        amenitiesString = new ArrayList<>();
+        for (int i = 0; i < data.size(); i++) {
+            amenitiesString.add(data.get(i).getTitle());
+        }
+        return amenitiesString;
+    }
+
+    private void showRentModeDialog() {
+        disposable = rentViewModel.getAllRemoteRentMode(getString(R.string.device))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listResource -> {
+                    if (listResource.data != null && listResource.data.size() > 0) {
+                        ArrayList<SearchableSelectorModel> list = new ArrayList<>(listResource.data);
+                        new SimpleSearchDialogCompat<>(this, "Modo de Renta",
+                                "Buscar por nombre", null, list, (dialog, item, position) -> {
+                            rentFormObject.setRentMode(item.getUuid());
+                            binding.tvRentMode.setTextColor(Color.parseColor("#FFC400"));
+                            binding.tvRentMode.setText(item.getTitle());
+                            dialog.dismiss();
+                        }).show();
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void showReferenceDialog() {
+        disposable = rentViewModel.getAllRemoteReferenceZone(getString(R.string.device))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listResource -> {
+                    if (listResource.data != null && listResource.data.size() > 0) {
+                        ArrayList<SearchableSelectorModel> list = new ArrayList<>(listResource.data);
+                        new SimpleSearchDialogCompat<>(this, "Zona de Referencia",
+                                "Buscar por nombre", null, list, (dialog, item, position) -> {
+                            rentFormObject.setReferenceZone(item.getUuid());
+                            binding.tvReferenceZone.setTextColor(Color.parseColor("#FFC400"));
+                            binding.tvReferenceZone.setText(item.getTitle());
+                            dialog.dismiss();
+                        }).show();
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void showMunicipalitiesDialog() {
+        disposable = rentViewModel.getAllRemoteMunicipalities(getString(R.string.device))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listResource -> {
+                    if (listResource.data != null && listResource.data.size() > 0) {
+                        ArrayList<SearchableSelectorModel> list = new ArrayList<>(listResource.data);
+                        new SimpleSearchDialogCompat<>(this, "Municipios",
+                                "Buscar por nombre", null, list, (dialog, item, position) -> {
+                            rentFormObject.setMunicipality(item.getUuid());
+                            binding.tvMunicipality.setTextColor(Color.parseColor("#FFC400"));
+                            binding.tvMunicipality.setText(item.getTitle());
+                            dialog.dismiss();
+                        }).show();
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    @NonNull
+    private SimpleSearchDialogCompat<SearchableSelectorModel> buildSearchDialog(String title, String searchHint, SearchResultListener<SearchableSelectorModel> listener) {
+        SimpleSearchDialogCompat<SearchableSelectorModel> searchDialogCompat = new SimpleSearchDialogCompat<>(this, title,
+                searchHint, null, new ArrayList<>(), listener);
+        searchDialogCompat.setLoading(true);
+        Window window = searchDialogCompat.getWindow();
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        window.setGravity(CENTER);
+        return searchDialogCompat;
     }
 
 

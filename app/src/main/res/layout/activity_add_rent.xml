@@ -21,10 +21,10 @@
         sothree:umanoPanelHeight="0dp"
         sothree:umanoScrollableView="@+id/map_content">
 
+
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:focusableInTouchMode="true">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -182,15 +182,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/material_color_blue_grey_50"
+                    android:focusableInTouchMode="true"
                     android:orientation="vertical"
                     android:padding="12dp">
 
                     <com.libizo.CustomEditText
+                        android:id="@+id/et_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:hint="Direccion"
                         android:inputType="text"
+                        android:padding="10dp"
                         android:textColor="@color/colorAccent"
                         android:textSize="14sp"
                         app:libIZO_setBackgroundColor="@color/White_100"
@@ -211,7 +214,7 @@
                         android:paddingStart="1dp">
 
                         <TextView
-                            android:id="@+id/tv_hint_spinner"
+                            android:id="@+id/tv_municipality"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|start"
@@ -396,10 +399,10 @@
                         android:layout_gravity="start|center"
                         android:layout_marginEnd="10dp"
                         android:layout_marginStart="10dp"
-                        android:text="Sobre capacidad"
                         android:fontFamily="@font/poppinsregular"
                         android:includeFontPadding="false"
-                        android:textColor="@color/White_100"/>
+                        android:text="Sobre capacidad"
+                        android:textColor="@color/White_100" />
 
                     <android.support.v7.widget.AppCompatImageView
                         android:id="@+id/iv_arrow_capability"
@@ -520,10 +523,10 @@
                         android:layout_gravity="start|center"
                         android:layout_marginEnd="10dp"
                         android:layout_marginStart="10dp"
-                        android:text="@string/ultimos_detalles"
                         android:fontFamily="@font/poppinsregular"
-                        android:textColor="@color/White_100"
-                        android:includeFontPadding="false"/>
+                        android:includeFontPadding="false"
+                        android:text="@string/ultimos_detalles"
+                        android:textColor="@color/White_100" />
 
                     <android.support.v7.widget.AppCompatImageView
                         android:id="@+id/iv_arrow_finally"
@@ -597,12 +600,11 @@
                         app:libIZO_setCornerRadius="5dp"
                         app:libIZO_setStrokeWidth="1dp" />
 
-                    <FrameLayout
+                    <RelativeLayout
                         android:id="@+id/fl_amenities"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:background="@drawable/shape_btn_white_border"
                         android:padding="10dp"
                         android:paddingEnd="1dp"
                         android:paddingStart="1dp">
@@ -611,27 +613,47 @@
                             android:id="@+id/tv_amenities"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center|start"
+                            android:layout_alignParentStart="true"
                             android:layout_marginStart="12sp"
                             android:text="Facilidades"
-                            android:textColor="@color/Black_35"
+                            android:textColor="@color/material_color_blue_grey_400"
                             android:textSize="14sp" />
 
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center|end"
+                            android:layout_alignParentEnd="true"
                             android:layout_marginEnd="12dp"
                             android:layout_marginStart="12dp"
-                            app:srcCompat="@drawable/ic_search" />
-                    </FrameLayout>
+                            app:srcCompat="@drawable/ic_add_black_24dp"
+                            android:tint="@color/material_color_blue_grey_400"/>
 
-                    <FrameLayout
+                        <View
+                            android:id="@+id/v_line"
+                            android:layout_width="match_parent"
+                            android:layout_height="0.8dp"
+                            android:background="@color/material_color_blue_grey_200"
+                            android:layout_marginTop="10dp"
+                            android:layout_below="@+id/tv_amenities"/>
+
+                        <com.google.android.flexbox.FlexboxLayout
+                            android:id="@+id/fb_amenities"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/v_line"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="3dp"
+                            android:layout_marginStart="3dp"
+                            app:alignContent="center"
+                            app:flexWrap="wrap" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
                         android:id="@+id/fl_galery"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:background="@drawable/shape_btn_white_border"
                         android:padding="10dp"
                         android:paddingEnd="1dp"
                         android:paddingStart="1dp">
@@ -640,23 +662,64 @@
                             android:id="@+id/tv_galery"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center|start"
+                            android:layout_alignParentStart="true"
                             android:layout_marginStart="12sp"
                             android:text="Imagenes"
-                            android:textColor="@color/Black_35"
+                            android:textColor="@color/material_color_blue_grey_400"
                             android:textSize="14sp" />
 
                         <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center|end"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
                             android:layout_marginEnd="12dp"
                             android:layout_marginStart="12dp"
-                            android:tint="@color/material_color_blue_grey_300"
-                            app:srcCompat="@drawable/ic_plus" />
-                    </FrameLayout>
+                            app:srcCompat="@drawable/ic_add_black_24dp"
+                            android:tint="@color/material_color_blue_grey_400"/>
+
+                        <View
+                            android:id="@+id/v_line_g"
+                            android:layout_width="match_parent"
+                            android:layout_height="0.8dp"
+                            android:background="@color/material_color_blue_grey_200"
+                            android:layout_marginTop="10dp"
+                            android:layout_below="@+id/tv_galery"/>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rv_galeries"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/v_line_g"
+                            android:layout_marginTop="5dp"/>
+
+                    </RelativeLayout>
 
                 </LinearLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="?actionBarSize">
+
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:id="@+id/btn_upload"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="8dp"
+                        fancy:fb_borderColor="@color/colorPrimary"
+                        fancy:fb_borderWidth="2dp"
+                        fancy:fb_defaultColor="#FFF"
+                        fancy:fb_focusColor="@color/colorPrimaryDark"
+                        fancy:fb_fontIconResource="&#xf093;"
+                        fancy:fb_iconPosition="left"
+                        fancy:fb_radius="8dp"
+                        fancy:fb_text="Subir Renta"
+                        fancy:fb_textColor="@color/colorPrimary" />
+
+                </FrameLayout>
 
             </LinearLayout>
 

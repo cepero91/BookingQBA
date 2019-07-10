@@ -14,6 +14,8 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
+import com.infinitum.bookingqba.model.remote.pojo.RentMode;
+import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.util.DateUtils;
 
 import java.util.ArrayList;
@@ -204,13 +206,26 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
+    public Single<Resource<List<RentMode>>> allRemoteRentMode(String token) {
+        return retrofit.create(ApiInterface.class)
+                .getAllRentsMode(token)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
     public DataSource.Factory<Integer,RentAndGalery> filterRents(Map<String, List<String>> filterParams, String province) {
         String query  = FilterRepositoryUtil.generalQuery(filterParams,province);
         SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query);
         return qbaDao.filterRents(simpleSQLiteQuery);
     }
 
-
+    @Override
+    public Single<ResponseResult> addRent(String token, Rent rent) {
+        return retrofit.create(ApiInterface.class)
+                .addRent(token,rent).subscribeOn(Schedulers.io());
+    }
 
 
 }

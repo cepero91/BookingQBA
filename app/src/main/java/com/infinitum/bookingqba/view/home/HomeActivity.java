@@ -175,9 +175,9 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         homeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
-        AndroidInjection.inject(this);
 
         deviceID = sharedPreferences.getString(IMEI, "");
 

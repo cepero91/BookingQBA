@@ -43,9 +43,9 @@ public abstract class BaseNavigationFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        super.onDetach();
         mListener = null;
         compositeDisposable.clear();
+        super.onDetach();
     }
 
 

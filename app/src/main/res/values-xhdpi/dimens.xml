@@ -44,4 +44,5 @@
     <dimen name="splash_gif_dimen">220dp</dimen>
 
     <dimen name="overlap_top">40dp</dimen>
+    <dimen name="edit_text_size">16sp</dimen>
 </resources>

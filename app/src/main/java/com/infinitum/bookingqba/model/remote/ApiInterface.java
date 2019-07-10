@@ -151,6 +151,9 @@ public interface ApiInterface {
     @GET("/api/rents")
     Single<List<Rent>> getRents(@Header("Authorization") String token, @Query("value") String value);
 
+    @POST("/api/rents-add")
+    Single<ResponseResult> addRent(@Header("Authorization") String token, @Body Rent rent);
+
     //------------------- COMMENT ---------------------//
 
     @GET("/api/comments")
@@ -161,6 +164,10 @@ public interface ApiInterface {
 
     @GET("/api/rentsMode")
     Single<List<RentMode>> getRentsMode(@Header("Authorization") String token, @Query("value") String value);
+
+
+    @GET("/api/rentsMode-all")
+    Single<List<RentMode>> getAllRentsMode(@Header("Authorization") String token);
 
     //------------------- ZONA DE REFERENCIA ---------------------//
 

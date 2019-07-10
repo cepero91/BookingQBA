@@ -3,7 +3,6 @@ package com.infinitum.bookingqba.view.profile;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,28 +10,18 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
-import com.infinitum.bookingqba.databinding.FragmentFirstStepBinding;
-import com.infinitum.bookingqba.util.AlertUtils;
-import com.infinitum.bookingqba.util.LocationHelpers;
-import com.infinitum.bookingqba.view.interaction.OnStepFormEnd;
-import com.stepstone.stepper.Step;
-import com.stepstone.stepper.VerificationError;
+import com.infinitum.bookingqba.databinding.FragmentMapFormBinding;
 import com.wshunli.assets.CopyAssets;
 import com.wshunli.assets.CopyCreator;
 import com.wshunli.assets.CopyListener;
 
 import org.oscim.android.MapView;
-import org.oscim.android.cache.TileCache;
-import org.oscim.android.tiling.source.mbtiles.MBTilesBitmapTileSource;
 import org.oscim.backend.CanvasAdapter;
 import org.oscim.backend.canvas.Bitmap;
-import org.oscim.core.BoundingBox;
 import org.oscim.core.GeoPoint;
 import org.oscim.core.MapPosition;
-import org.oscim.core.Tile;
 import org.oscim.event.Gesture;
 import org.oscim.event.GestureListener;
 import org.oscim.event.MotionEvent;
@@ -40,26 +29,19 @@ import org.oscim.layers.Layer;
 import org.oscim.layers.marker.ItemizedLayer;
 import org.oscim.layers.marker.MarkerItem;
 import org.oscim.layers.marker.MarkerSymbol;
-import org.oscim.layers.tile.bitmap.BitmapTileLayer;
 import org.oscim.layers.tile.buildings.BuildingLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
 import org.oscim.layers.tile.vector.labeling.LabelLayer;
 import org.oscim.map.Map;
 import org.oscim.renderer.GLViewport;
-import org.oscim.renderer.MapRenderer;
 import org.oscim.scalebar.DefaultMapScaleBar;
 import org.oscim.scalebar.MapScaleBar;
 import org.oscim.scalebar.MapScaleBarLayer;
 import org.oscim.theme.VtmThemes;
-import org.oscim.tiling.TileSource;
-import org.oscim.tiling.source.bitmap.BitmapTileSource;
-import org.oscim.tiling.source.bitmap.DefaultSources;
 import org.oscim.tiling.source.mapfile.MapFileTileSource;
-import org.oscim.tiling.source.oscimap4.OSciMap4TileSource;
 import org.oscim.utils.animation.Easing;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,12 +59,12 @@ import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
 import static com.infinitum.bookingqba.util.Constants.USER_GPS;
 import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
 
-public class FirstStepFragment extends Fragment implements ItemizedLayer.OnItemGestureListener<MarkerItem> {
+public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGestureListener<MarkerItem>, View.OnClickListener {
 
     @Inject
     SharedPreferences sharedPreferences;
 
-    private FragmentFirstStepBinding binding;
+    private FragmentMapFormBinding binding;
     private MapRentLocation mapRentLocation;
     private GeoPoint geoPointLocation;
     private boolean isLocationEmpty;
@@ -100,12 +82,12 @@ public class FirstStepFragment extends Fragment implements ItemizedLayer.OnItemG
     private MapView mapView;
 
 
-    public FirstStepFragment() {
+    public MapFormFragment() {
     }
 
-    public static FirstStepFragment newInstance() {
-        FirstStepFragment firstStepFragment = new FirstStepFragment();
-        return firstStepFragment;
+    public static MapFormFragment newInstance() {
+        MapFormFragment mapFormFragment = new MapFormFragment();
+        return mapFormFragment;
     }
 
     @Override
@@ -117,13 +99,15 @@ public class FirstStepFragment extends Fragment implements ItemizedLayer.OnItemG
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_first_step, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_map_form, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        binding.ivLocation.setOnClickListener(this);
 
         binding.setIsLoading(true);
         binding.progressPvLinear.start();
@@ -284,6 +268,14 @@ public class FirstStepFragment extends Fragment implements ItemizedLayer.OnItemG
         return false;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.iv_location:
+                mapRentLocation.onLocationButtonClick();
+        }
+    }
+
     class MapEventsReceiver extends Layer implements GestureListener {
 
         MapEventsReceiver(Map map) {
@@ -318,7 +310,7 @@ public class FirstStepFragment extends Fragment implements ItemizedLayer.OnItemG
         if (locationEnabled) {
             binding.ivLocation.setImageResource(R.drawable.ic_crosshairs_yellow);
         } else {
-            binding.ivLocation.setImageResource(R.drawable.ic_crosshairs_grey);
+            binding.ivLocation.setImageResource(R.drawable.ic_crosshairs);
         }
     }
 
