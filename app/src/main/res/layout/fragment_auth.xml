@@ -36,7 +36,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
-                android:background="@color/material_color_grey_300"
                 android:weightSum="2">
 
                 <TextView
@@ -44,7 +43,6 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@color/White_100"
                     android:fontFamily="@font/poppinsbold"
                     android:gravity="center"
                     android:text="Autenticarse"
@@ -55,6 +53,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:background="@color/material_color_grey_300"
                     android:fontFamily="@font/poppinsbold"
                     android:gravity="center"
                     android:text="Registrarse"
@@ -62,209 +61,186 @@
 
             </LinearLayout>
 
-            <com.xw.repo.widget.BounceScrollView
+            <LinearLayout
+                android:id="@+id/ll_content_signin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/White_100">
+                android:animateLayoutChanges="true"
+                android:orientation="vertical"
+                android:padding="10dp">
 
-                <LinearLayout
-                    android:id="@+id/ll_content_signin"
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:animateLayoutChanges="true"
-                    android:orientation="vertical"
-                    android:padding="10dp">
-
-                    <com.libizo.CustomEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:hint="Nombre de Usuario"
-                        android:inputType="text"
-                        android:textColor="@color/colorAccent"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_500"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="15dp"
-                        app:libIZO_setStrokeWidth="1dp"/>
-
-                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
-                        android:id="@+id/til_username"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        app:labelText="Nombre de Usuario"
-                        app:panelBackgroundColor="@color/material_color_grey_200"
-                        app:useDenseSpacing="true"
-                        app:visibleGone="@{!safeUnbox(isCode)}">
-
-                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
-                            android:id="@+id/et_username"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:inputType="text" />
-
-                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
+                    android:layout_margin="5dp"
+                    android:hint="Nombre de Usuario"
+                    android:inputType="text"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp"
+                    app:visibleGone="@{!safeUnbox(isCode)}" />
 
 
-                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
-                        android:id="@+id/til_first_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        app:labelText="Primer Nombre"
-                        app:panelBackgroundColor="@color/material_color_grey_200"
-                        app:useDenseSpacing="true"
-                        app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}">
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_first_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Primer Nombre"
+                    android:inputType="text"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp"
+                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
 
-                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
-                            android:id="@+id/et_first_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:inputType="text" />
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_last_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Apellidos"
+                    android:inputType="text"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp"
+                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
 
-                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp"
+                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
 
-                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
-                        android:id="@+id/til_last_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        app:labelText="Apellidos"
-                        app:panelBackgroundColor="@color/material_color_grey_200"
-                        app:useDenseSpacing="true"
-                        app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}">
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Contraseña"
+                    android:inputType="textPassword"
+                    android:padding="10dp"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp"
+                    app:visibleGone="@{!safeUnbox(isCode)}" />
 
-                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
-                            android:id="@+id/et_last_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:inputType="text" />
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsregular"
+                    android:text="Soy anfitrion"
+                    android:textSize="12sp"
+                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
 
-                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
+                <com.libizo.CustomEditText
+                    android:id="@+id/et_activation_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Codigo"
+                    android:inputType="number"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp"
+                    app:libIZO_hideShowPasswordIconTint="@color/Black_100"
+                    app:libIZO_setBackgroundColor="@color/White_100"
+                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
+                    app:libIZO_setBorderView="true"
+                    app:libIZO_setClearIconVisible="false"
+                    app:libIZO_setCornerRadius="5dp"
+                    app:libIZO_setStrokeWidth="1dp"
+                    app:visibleGone="@{safeUnbox(isCode)}" />
 
-                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
-                        android:id="@+id/til_email"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        app:labelText="Email"
-                        app:panelBackgroundColor="@color/material_color_grey_200"
-                        app:useDenseSpacing="true"
-                        app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}">
+                <TextView
+                    android:id="@+id/tv_resend_activation_code"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:text="Reenviar codigo de activacion"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="12sp"
+                    app:visibleGone="@{safeUnbox(isCode)}" />
 
-                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
-                            android:id="@+id/et_email"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:inputType="textEmailAddress" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
-
-                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
-                        android:id="@+id/til_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        app:labelText="Contraseña"
-                        app:panelBackgroundColor="@color/material_color_grey_200"
-                        app:useDenseSpacing="true"
-                        app:visibleGone="@{!safeUnbox(isCode)}">
-
-                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
-                            android:id="@+id/et_password"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:inputType="textPassword" />
-
-                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:text="Soy anfitrion"
-                        android:textSize="12sp"
-                        app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
-
-                    <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
-                        android:id="@+id/til_activation_code"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        app:labelText="Codigo de Activacion"
-                        app:panelBackgroundColor="@color/material_color_grey_200"
-                        app:useDenseSpacing="true"
-                        app:visibleGone="@{safeUnbox(isCode)}">
-
-                        <studio.carbonylgroup.textfieldboxes.ExtendedEditText
-                            android:id="@+id/et_activation_code"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:inputType="number" />
-
-                    </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
-
-                    <TextView
-                        android:id="@+id/tv_resend_activation_code"
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:id="@+id/send"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="8dp"
-                        android:text="Reenviar codigo de activacion"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="12sp"
-                        app:visibleGone="@{safeUnbox(isCode)}" />
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginStart="3dp"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:paddingTop="8dp"
+                        fancy:fb_defaultColor="@color/colorPrimary"
+                        fancy:fb_fontIconResource="&#xf00c;"
+                        fancy:fb_iconPosition="left"
+                        fancy:fb_radius="30dp"
+                        fancy:fb_text="Enviar"
+                        fancy:fb_textColor="#FFF" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:id="@+id/cancel"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                        <mehdi.sakout.fancybuttons.FancyButton
-                            android:id="@+id/send"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginEnd="3dp"
-                            android:layout_marginStart="3dp"
-                            android:paddingBottom="8dp"
-                            android:paddingLeft="15dp"
-                            android:paddingRight="15dp"
-                            android:paddingTop="8dp"
-                            fancy:fb_defaultColor="@color/colorPrimary"
-                            fancy:fb_fontIconResource="&#xf00c;"
-                            fancy:fb_iconPosition="left"
-                            fancy:fb_radius="30dp"
-                            fancy:fb_text="Enviar"
-                            fancy:fb_textColor="#FFF" />
-
-                        <mehdi.sakout.fancybuttons.FancyButton
-                            android:id="@+id/cancel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginEnd="3dp"
-                            android:layout_marginStart="3dp"
-                            android:paddingBottom="8dp"
-                            android:paddingLeft="15dp"
-                            android:paddingRight="15dp"
-                            android:paddingTop="8dp"
-                            app:visibleGone="@{safeUnbox(isCode)}"
-                            fancy:fb_defaultColor="@color/material_color_red_500"
-                            fancy:fb_fontIconResource="&#xf00d;"
-                            fancy:fb_iconPosition="left"
-                            fancy:fb_radius="30dp"
-                            fancy:fb_text="Cancelar"
-                            fancy:fb_textColor="#FFF" />
-
-                    </LinearLayout>
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginStart="3dp"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:paddingTop="8dp"
+                        app:visibleGone="@{safeUnbox(isCode)}"
+                        fancy:fb_defaultColor="@color/material_color_red_500"
+                        fancy:fb_fontIconResource="&#xf00d;"
+                        fancy:fb_iconPosition="left"
+                        fancy:fb_radius="30dp"
+                        fancy:fb_text="Cancelar"
+                        fancy:fb_textColor="#FFF" />
 
                 </LinearLayout>
 
-            </com.xw.repo.widget.BounceScrollView>
+            </LinearLayout>
+
 
         </LinearLayout>
 

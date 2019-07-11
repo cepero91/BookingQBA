@@ -14,10 +14,12 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
+import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.util.DateUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +30,21 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
+import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 
@@ -161,7 +174,7 @@ public class RentRepoImpl implements RentRepository {
 
     @Override
     public Completable addOrUpdateRating(RatingEntity entity) {
-        SupportSQLiteQuery query = new SimpleSQLiteQuery("INSERT OR REPLACE INTO Rating VALUES ('" + entity.getId() + "','" + entity.getRating() + "', '" + entity.getComment() + "', '" + entity.getRent() + "','"+entity.getVersion()+"')");
+        SupportSQLiteQuery query = new SimpleSQLiteQuery("INSERT OR REPLACE INTO Rating VALUES ('" + entity.getId() + "','" + entity.getRating() + "', '" + entity.getComment() + "', '" + entity.getRent() + "','" + entity.getVersion() + "')");
         return Completable.fromAction(() -> qbaDao.addOrUpdateRating(query))
                 .subscribeOn(Schedulers.io());
     }
@@ -215,16 +228,39 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public DataSource.Factory<Integer,RentAndGalery> filterRents(Map<String, List<String>> filterParams, String province) {
-        String query  = FilterRepositoryUtil.generalQuery(filterParams,province);
+    public DataSource.Factory<Integer, RentAndGalery> filterRents(Map<String, List<String>> filterParams, String province) {
+        String query = FilterRepositoryUtil.generalQuery(filterParams, province);
         SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query);
         return qbaDao.filterRents(simpleSQLiteQuery);
     }
 
     @Override
-    public Single<ResponseResult> addRent(String token, Rent rent) {
-        return retrofit.create(ApiInterface.class)
-                .addRent(token,rent).subscribeOn(Schedulers.io());
+    public Single<OperationResult> addRent(String token, Rent rent, RentAmenities rentAmenities, ArrayList<String> imagesPath) {
+        Single<ResponseResult> newRent = retrofit.create(ApiInterface.class)
+                .addRent(token, rent).subscribeOn(Schedulers.io());
+        Single<ResponseResult> newAmenitiesRent = retrofit.create(ApiInterface.class)
+                .addRentAmenities(token, rentAmenities).subscribeOn(Schedulers.io());
+        MultipartBody imagesRequestBody = getMultipartImagesBody(rent.getId(),imagesPath);
+        Single<ResponseResult> newRentGalery = retrofit.create(ApiInterface.class)
+                .addRentGalery(token, imagesRequestBody).subscribeOn(Schedulers.io());
+        Single.concat(newRent, newAmenitiesRent,newRentGalery).doOnNext(new Consumer<ResponseResult>() {
+            @Override
+            public void accept(ResponseResult responseResult) throws Exception {
+                Timber.e(responseResult.getMsg());
+            }
+        }).subscribe();
+        return Single.just(OperationResult.success());
+    }
+
+    private MultipartBody getMultipartImagesBody(String id, ArrayList<String> imagesPath) {
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.setType(MultipartBody.FORM);
+        builder.addFormDataPart("rent", id);
+        for (int i = 0; i < imagesPath.size(); i++) {
+            File file = new File(imagesPath.get(i));
+            builder.addFormDataPart("file[]", file.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
+        }
+        return builder.build();
     }
 
 

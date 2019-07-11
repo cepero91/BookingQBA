@@ -35,6 +35,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
+import com.github.siyamed.shapeimageview.RoundedImageView;
+import com.github.siyamed.shapeimageview.mask.PorterShapeImageView;
 import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
@@ -49,6 +51,7 @@ import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.LocationHelpers;
 import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
 import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
+import com.infinitum.bookingqba.view.profile.uploaditem.AmenitiesRentFormObject;
 import com.infinitum.bookingqba.view.profile.uploaditem.RentFormObject;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
@@ -81,7 +84,7 @@ import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
 import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
 
 public class AddRentActivity extends AppCompatActivity implements HasSupportFragmentInjector,
-        MapRentLocation, View.OnClickListener {
+        MapRentLocation, View.OnClickListener, ImageFormAdapter.OnImageDeleteClick {
 
     private ActivityAddRentBinding binding;
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
@@ -124,6 +127,7 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     //------------------- Galery files
     private ArrayList<String> imagesFilesPath;
     private ArrayList<GaleryModelItem> galeryModelItems;
+    private ImageFormAdapter imageFormAdapter;
 
 
     //--------------------------------------------------------------------------------
@@ -230,9 +234,11 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
                                 Uri imageUri = data.getClipData().getItemAt(i).getUri();
                                 addImagePathToList(imageUri);
                             }
+                            addImageToAdapter(imagesFilesPath);
                         } else if (data.getData() != null) {
                             Uri imagePath = data.getData();
                             addImagePathToList(imagePath);
+                            addImageToAdapter(imagesFilesPath);
                         }
                         break;
                 }
@@ -493,22 +499,31 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         rentFormObject.setMaxBeds(binding.etMaxBeds.getText().toString());
         rentFormObject.setMaxRooms(binding.etMaxRooms.getText().toString());
         rentFormObject.setCapability(binding.etCapability.getText().toString());
-        rentFormObject.setRentMode(binding.tvRentMode.getText().toString());
         rentFormObject.setRules(binding.etRules.getText().toString());
         rentFormObject.setPrice(Float.parseFloat(binding.etPrice.getText().toString()));
         rentFormObject.setLatitude(binding.tvLatitude.getText().toString());
         rentFormObject.setLongitude(binding.tvLongitude.getText().toString());
-        rentFormObject.setMunicipality(binding.tvMunicipality.getText().toString());
-        rentFormObject.setReferenceZone(binding.tvReferenceZone.getText().toString());
-        disposable = rentViewModel.sendRentToServer(getString(R.string.device), rentFormObject)
+        ArrayList<String> amenitiesRentFormObjects = getAllAmenitiesRent();
+        disposable = rentViewModel.sendRentToServer(getString(R.string.device), rentFormObject,
+                amenitiesRentFormObjects, imagesFilesPath)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(responseResult -> {
-                    if (responseResult != null) {
-                        Timber.e(responseResult.getMsg());
+                .subscribe(operationResult -> {
+                    if (operationResult != null) {
+                        Timber.e(operationResult.getMessage());
                     }
                 }, Timber::e);
         compositeDisposable.add(disposable);
+    }
+
+    private ArrayList<String> getAllAmenitiesRent() {
+        ArrayList<String> amenitiesRentFormObjects = new ArrayList<>();
+        for (int i = 0; i < amenitiesSelected.length; i++) {
+            if (amenitiesSelected[i]) {
+                amenitiesRentFormObjects.add(amenitiesSelectorOptions.get(i).getUuid());
+            }
+        }
+        return amenitiesRentFormObjects;
     }
 
     private void pickGaleryFiles() {
@@ -518,37 +533,6 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         startActivityForResult(Intent.createChooser(intent, "Seleccione las imagenes"), PICK_PICTURE_CODE);
     }
 
-    private void setupGalerieAdapter(ArrayList<GaleryModelItem> argGaleries) {
-        if (argGaleries != null && argGaleries.size() > 0) {
-            RendererRecyclerViewAdapter adapter = new RendererRecyclerViewAdapter();
-            adapter.registerRenderer(getGalerieVinder());
-            adapter.setItems(argGaleries);
-            binding.rvGaleries.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-            binding.rvGaleries.setAdapter(adapter);
-            ViewCompat.setNestedScrollingEnabled(binding.rvGaleries, false);
-        }
-    }
-
-    private ViewBinder<?> getGalerieVinder() {
-        return new ViewBinder<>(
-                R.layout.recycler_new_rent_form,
-                GaleryModelItem.class,
-                (model, finder, payloads) -> finder
-                        .find(R.id.iv_galery, (ViewProvider<AppCompatImageView>) view -> {
-                            String path;
-                            if (!model.getImagePath().contains("http")) {
-                                path = "file:" + model.getImagePath();
-                            } else {
-                                path = model.getImagePath();
-                            }
-                            Picasso.get()
-                                    .load(path)
-                                    .resize(THUMB_WIDTH,THUMB_HEIGHT)
-                                    .placeholder(R.drawable.placeholder)
-                                    .into(view);
-                        })
-        );
-    }
 
     private void addImagePathToList(Uri uri) {
         File file = new File(uri.getPath());
@@ -560,17 +544,14 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
             cursor.moveToFirst();
             String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
             imagesFilesPath.add(imagePath);
-            addImageToAdapter(imagesFilesPath);
             cursor.close();
         }
     }
 
     private void addImageToAdapter(ArrayList<String> filesPath) {
-        galeryModelItems = new ArrayList<>();
-        for(String paths: filesPath) {
-            galeryModelItems.add(new GaleryModelItem(paths));
-        }
-        setupGalerieAdapter(galeryModelItems);
+        imageFormAdapter = new ImageFormAdapter(filesPath, this);
+        binding.rvGaleries.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        binding.rvGaleries.setAdapter(imageFormAdapter);
     }
 
     private void showAmenitiesDialog() {
@@ -702,16 +683,9 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         compositeDisposable.add(disposable);
     }
 
-    @NonNull
-    private SimpleSearchDialogCompat<SearchableSelectorModel> buildSearchDialog(String title, String searchHint, SearchResultListener<SearchableSelectorModel> listener) {
-        SimpleSearchDialogCompat<SearchableSelectorModel> searchDialogCompat = new SimpleSearchDialogCompat<>(this, title,
-                searchHint, null, new ArrayList<>(), listener);
-        searchDialogCompat.setLoading(true);
-        Window window = searchDialogCompat.getWindow();
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        window.setGravity(CENTER);
-        return searchDialogCompat;
+
+    @Override
+    public void onImageDelete(String imagePath, int pos) {
+        imageFormAdapter.removeItem(pos);
     }
-
-
 }

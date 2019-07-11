@@ -32,6 +32,7 @@ import java.util.Map;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -153,6 +154,12 @@ public interface ApiInterface {
 
     @POST("/api/rents-add")
     Single<ResponseResult> addRent(@Header("Authorization") String token, @Body Rent rent);
+
+    @POST("/api/rentAmenities-add")
+    Single<ResponseResult> addRentAmenities(@Header("Authorization") String token, @Body RentAmenities rentAmenities);
+
+    @POST("/api/rentGalery-add")
+    Single<ResponseResult> addRentGalery(@Header("Authorization") String token, @Body RequestBody requestBody);
 
     //------------------- COMMENT ---------------------//
 

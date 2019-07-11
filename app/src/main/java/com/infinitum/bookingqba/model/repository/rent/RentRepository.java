@@ -10,9 +10,11 @@ import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
+import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +59,6 @@ public interface RentRepository {
 
     DataSource.Factory<Integer,RentAndGalery> filterRents(Map<String,List<String>> filterParams, String province);
 
-    Single<ResponseResult> addRent(String token, Rent rent);
+    Single<OperationResult> addRent(String token, Rent rent, RentAmenities rentAmenities, ArrayList<String> imagesPath);
 
 }

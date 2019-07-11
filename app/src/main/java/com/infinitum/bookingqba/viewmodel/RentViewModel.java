@@ -8,6 +8,7 @@ import android.arch.paging.PagedList;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
+import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.CommentEntity;
@@ -30,6 +31,7 @@ import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.Municipality;
 import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
+import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
@@ -49,6 +51,7 @@ import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentOfferItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
+import com.infinitum.bookingqba.view.profile.uploaditem.AmenitiesRentFormObject;
 import com.infinitum.bookingqba.view.profile.uploaditem.RentFormObject;
 import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
 import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
@@ -206,22 +209,22 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     public Single<Resource<List<FormSelectorItem>>> getAllRemoteAmenities(String token) {
-        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Aire Acondicionado"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Mini bar"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Cocina"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Refrigerador"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Agua caliente"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Entrada independiente"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Parqueo"));
-        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(),"Wifi"));
+//        List<FormSelectorItem> formSelectorItemList = new ArrayList<>();
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(), "Aire Acondicionado"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(), "Mini bar"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(), "Cocina"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(), "Refrigerador"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(), "Agua caliente"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(), "Entrada independiente"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(), "Parqueo"));
+//        formSelectorItemList.add(new FormSelectorItem(UUID.randomUUID().toString(), "Wifi"));
+//
+//        return Single.just(Resource.success(formSelectorItemList));
 
-        return Single.just(Resource.success(formSelectorItemList));
-
-//        return amenitiesRepository.allRemoteAmenities(token)
-//                .subscribeOn(Schedulers.io())
-//                .map(this::transformAmenitiesToFormSelector)
-//                .onErrorReturn(Resource::error);
+        return amenitiesRepository.allRemoteAmenities(token)
+                .subscribeOn(Schedulers.io())
+                .map(this::transformAmenitiesToFormSelector)
+                .onErrorReturn(Resource::error);
     }
 
     private Resource<List<FormSelectorItem>> transformAmenitiesToFormSelector(Resource<List<Amenities>> listResource) {
@@ -258,7 +261,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         if (listResource.data != null && listResource.data.size() > 0) {
             List<SearchableSelectorModel> formSelectorItems = new ArrayList<>();
             for (Municipality municipality : listResource.data) {
-                SearchableSelectorModel searchableSelectorModel = new SearchableSelectorModel(municipality.getId(),municipality.getName());
+                SearchableSelectorModel searchableSelectorModel = new SearchableSelectorModel(municipality.getId(), municipality.getName());
                 formSelectorItems.add(searchableSelectorModel);
             }
             return Resource.success(formSelectorItems);
@@ -286,7 +289,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         if (listResource.data != null && listResource.data.size() > 0) {
             List<SearchableSelectorModel> formSelectorItems = new ArrayList<>();
             for (RentMode rentMode : listResource.data) {
-                SearchableSelectorModel searchableSelectorModel = new SearchableSelectorModel(rentMode.getId(),rentMode.getName());
+                SearchableSelectorModel searchableSelectorModel = new SearchableSelectorModel(rentMode.getId(), rentMode.getName());
                 formSelectorItems.add(searchableSelectorModel);
             }
             return Resource.success(formSelectorItems);
@@ -295,10 +298,15 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         }
     }
 
-    public Single<ResponseResult> sendRentToServer(String token,RentFormObject rentFormObject){
+    public Single<OperationResult> sendRentToServer(String token, RentFormObject rentFormObject,
+                                                    ArrayList<String> amenitiesRentFormObjects,
+                                                    ArrayList<String> imagesPath) {
         Rent newRent = transformRentFormToRent(rentFormObject);
-        return rentRepository.addRent(token,newRent);
+        RentAmenities rentAmenities = new RentAmenities(rentFormObject.getUuid(),amenitiesRentFormObjects);
+        return rentRepository.addRent(token, newRent, rentAmenities, imagesPath);
     }
+
+
 
     private Rent transformRentFormToRent(RentFormObject rentFormObject) {
         Rent rent = new Rent();
@@ -320,6 +328,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         rent.setLongitude(rentFormObject.getLongitude());
         rent.setMunicipality(rentFormObject.getMunicipality());
         rent.setReferenceZone(rentFormObject.getReferenceZone());
+        rent.setUserid("1");
         return rent;
     }
     // ------------------------ RENT DETAIL --------------------------------------------- //

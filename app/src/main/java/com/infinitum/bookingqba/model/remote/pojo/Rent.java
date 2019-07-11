@@ -85,6 +85,10 @@ public class Rent {
     @Expose
     private String created;
 
+    @SerializedName("userid")
+    @Expose
+    private String userid;
+
 
 
     public String getId() {
@@ -245,5 +249,13 @@ public class Rent {
 
     public void setRatingEmbeded(RatingEmbeded ratingEmbeded) {
         this.ratingEmbeded = ratingEmbeded;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
     }
 }
