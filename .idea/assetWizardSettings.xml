@@ -28,9 +28,13 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_add_black_24dp" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/Font-Awesome-SVG-PNG-master/Font-Awesome-SVG-PNG-master/black/svg/folder.svg" />
+                            <entry key="height" value="20" />
+                            <entry key="outputName" value="ic_check_circle" />
+                            <entry key="overrideSize" value="true" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/fontawesome-free-5.7.2-desktop/svgs/solid/check-circle.svg" />
+                            <entry key="width" value="20" />
                           </map>
                         </option>
                       </PersistentState>

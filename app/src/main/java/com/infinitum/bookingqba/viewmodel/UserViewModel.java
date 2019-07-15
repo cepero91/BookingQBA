@@ -15,6 +15,8 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 
 public class UserViewModel extends ViewModel{
@@ -39,15 +41,19 @@ public class UserViewModel extends ViewModel{
     }
 
     public Single<Response<User>> login(Map<String, String> map){
+//        User user = new User("qwertyuiop", "cepero91");
         return userRepository.login(map);
+//        return Single.just(Response.success(201, user));
     }
 
     public Single<Resource<ResponseResult>> register(Map<String, String> map){
         return userRepository.register(map);
+//        return Single.just(Resource.success(new ResponseResult(200,"Un codigo de activacion ha sido enviado a su correo")));
     }
 
     public Single<Resource<ResponseResult>> activate(Map<String, String> map){
         return userRepository.activationUser(map);
+//        return Single.just(Resource.success(new ResponseResult(200,"Usuario activado con exito")));
     }
 
     public Single<Resource<ResponseResult>> resendCode(Map<String, String> map){

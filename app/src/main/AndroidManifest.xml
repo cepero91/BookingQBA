@@ -52,10 +52,15 @@
             android:name=".view.galery.GaleryActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".view.profile.AddRentActivity"
+        <activity
+            android:name=".view.profile.AddRentActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".view.profile.UserAuthActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
 
         <provider
             android:name="androidx.work.impl.WorkManagerInitializer"

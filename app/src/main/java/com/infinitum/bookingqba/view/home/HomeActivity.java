@@ -85,6 +85,7 @@ import com.infinitum.bookingqba.view.profile.AuthFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.profile.MyRentsFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
+import com.infinitum.bookingqba.view.profile.UserAuthActivity;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
@@ -610,8 +611,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             mFragment = InfoFragment.newInstance();
             sameFragment = false;
         } else if (id == R.id.nav_auth && !(mFragment instanceof AuthFragment)) {
-            mFragment = AuthFragment.newInstance();
-            sameFragment = false;
+            startActivity(new Intent(this, UserAuthActivity.class));
         } else if (id == R.id.nav_my_rents && !(mFragment instanceof MyRentsFragment)) {
             mFragment = MyRentsFragment.newInstance();
             sameFragment = false;
@@ -821,15 +821,15 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     }
 
 
-    private void showAuthFragment() {
-        homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
-        homeBinding.drawerLayout.postDelayed(() -> {
-            // Inflate the new Fragment with the new RecyclerView and a new Adapter
-            AuthFragment authFragment = AuthFragment.newInstance();
-            fragmentManager.beginTransaction().replace(R.id.frame_container,
-                    authFragment).commit();
-        }, 700);
-    }
+//    private void showAuthFragment() {
+//        homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
+//        homeBinding.drawerLayout.postDelayed(() -> {
+//            // Inflate the new Fragment with the new RecyclerView and a new Adapter
+//            AuthFragment authFragment = AuthFragment.newInstance();
+//            fragmentManager.beginTransaction().replace(R.id.frame_container,
+//                    authFragment).commit();
+//        }, 700);
+//    }
 
     @Override
     public void onAddRentClick() {

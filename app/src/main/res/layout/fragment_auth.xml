@@ -25,41 +25,21 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:focusableInTouchMode="true">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:weightSum="2">
-
-                <TextView
-                    android:id="@+id/btn_signin"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/poppinsbold"
-                    android:gravity="center"
-                    android:text="Autenticarse"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/btn_signup"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@color/material_color_grey_300"
-                    android:fontFamily="@font/poppinsbold"
-                    android:gravity="center"
-                    android:text="Registrarse"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="90dp"
+                android:layout_marginBottom="15dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logotipo" />
 
             <LinearLayout
                 android:id="@+id/ll_content_signin"
@@ -67,120 +47,143 @@
                 android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
                 android:orientation="vertical"
-                android:padding="10dp">
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp">
 
-                <com.libizo.CustomEditText
-                    android:id="@+id/et_username"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="5dp"
+                    android:weightSum="2"
+                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}">
+
+                    <TextView
+                        android:id="@+id/tv_im_visitor"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Soy huesped"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="3dp"
+                        android:textAlignment="center"
+                        android:includeFontPadding="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:textColor="@color/White_100"
+                        android:background="@drawable/shape_filter_ship_selected"/>
+
+                    <TextView
+                        android:id="@+id/tv_im_host"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Soy Anfitrion"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textAlignment="center"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginEnd="5dp"
+                        android:includeFontPadding="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:background="@drawable/shape_filter_ship_unselected"/>
+
+                </LinearLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_username"
+                    style="@style/MyStyleUserInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:hint="Nombre de Usuario"
-                    android:inputType="text"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="14sp"
-                    app:libIZO_setBackgroundColor="@color/White_100"
-                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                    app:libIZO_setBorderView="true"
-                    app:libIZO_setClearIconVisible="false"
-                    app:libIZO_setCornerRadius="5dp"
-                    app:libIZO_setStrokeWidth="1dp"
-                    app:visibleGone="@{!safeUnbox(isCode)}" />
+                    app:boxStrokeColor="@color/colorPrimary"
+                    app:visibleGone="@{!safeUnbox(isCode)}">
 
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_user_input"
+                        android:fontFamily="@font/poppinsregular"
+                        android:inputType="text"
+                        android:padding="12dp"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                        android:textColor="@color/colorAccent" />
 
-                <com.libizo.CustomEditText
-                    android:id="@+id/et_first_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:hint="Primer Nombre"
-                    android:inputType="text"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="14sp"
-                    app:libIZO_setBackgroundColor="@color/White_100"
-                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                    app:libIZO_setBorderView="true"
-                    app:libIZO_setClearIconVisible="false"
-                    app:libIZO_setCornerRadius="5dp"
-                    app:libIZO_setStrokeWidth="1dp"
-                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
+                </android.support.design.widget.TextInputLayout>
 
-                <com.libizo.CustomEditText
-                    android:id="@+id/et_last_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:hint="Apellidos"
-                    android:inputType="text"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="14sp"
-                    app:libIZO_setBackgroundColor="@color/White_100"
-                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                    app:libIZO_setBorderView="true"
-                    app:libIZO_setClearIconVisible="false"
-                    app:libIZO_setCornerRadius="5dp"
-                    app:libIZO_setStrokeWidth="1dp"
-                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
-
-                <com.libizo.CustomEditText
-                    android:id="@+id/et_email"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_email"
+                    style="@style/MyStyleUserInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:hint="Email"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="14sp"
-                    app:libIZO_setBackgroundColor="@color/White_100"
-                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                    app:libIZO_setBorderView="true"
-                    app:libIZO_setClearIconVisible="false"
-                    app:libIZO_setCornerRadius="5dp"
-                    app:libIZO_setStrokeWidth="1dp"
-                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
+                    app:boxStrokeColor="@color/colorPrimary"
+                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}">
 
-                <com.libizo.CustomEditText
-                    android:id="@+id/et_password"
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_envelope_input"
+                        android:fontFamily="@font/poppinsregular"
+                        android:inputType="textEmailAddress"
+                        android:padding="12dp"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                        android:textColor="@color/colorAccent" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_password"
+                    style="@style/MyStyleUserInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
-                    android:hint="Contraseña"
-                    android:inputType="textPassword"
-                    android:padding="10dp"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="14sp"
-                    app:libIZO_setBackgroundColor="@color/White_100"
-                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                    app:libIZO_setBorderView="true"
-                    app:libIZO_setClearIconVisible="false"
-                    app:libIZO_setCornerRadius="5dp"
-                    app:libIZO_setStrokeWidth="1dp"
-                    app:visibleGone="@{!safeUnbox(isCode)}" />
+                    android:hint="@string/contrase_a"
+                    app:boxStrokeColor="@color/colorPrimary"
+                    app:passwordToggleEnabled="true"
+                    app:visibleGone="@{!safeUnbox(isCode)}">
 
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsregular"
-                    android:text="Soy anfitrion"
-                    android:textSize="12sp"
-                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_key"
+                        android:fontFamily="@font/poppinsregular"
+                        android:inputType="textPassword"
+                        android:padding="12dp"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                        android:textColor="@color/colorAccent" />
 
-                <com.libizo.CustomEditText
-                    android:id="@+id/et_activation_code"
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_activation_code"
+                    style="@style/MyStyleUserInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:hint="Codigo"
-                    android:inputType="number"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="14sp"
-                    app:libIZO_hideShowPasswordIconTint="@color/Black_100"
-                    app:libIZO_setBackgroundColor="@color/White_100"
-                    app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                    app:libIZO_setBorderView="true"
-                    app:libIZO_setClearIconVisible="false"
-                    app:libIZO_setCornerRadius="5dp"
-                    app:libIZO_setStrokeWidth="1dp"
-                    app:visibleGone="@{safeUnbox(isCode)}" />
+                    app:boxStrokeColor="@color/colorPrimary"
+                    app:visibleGone="@{safeUnbox(isCode)}">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_activation_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_hashtag"
+                        android:fontFamily="@font/poppinsregular"
+                        android:inputType="number"
+                        android:padding="12dp"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                        android:textColor="@color/colorAccent" />
+
+                </android.support.design.widget.TextInputLayout>
 
                 <TextView
                     android:id="@+id/tv_resend_activation_code"
@@ -208,42 +211,53 @@
                         android:layout_marginEnd="3dp"
                         android:layout_marginStart="3dp"
                         android:paddingBottom="8dp"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
+                        android:paddingLeft="25dp"
+                        android:paddingRight="25dp"
                         android:paddingTop="8dp"
-                        fancy:fb_defaultColor="@color/colorPrimary"
+                        fancy:fb_borderColor="@color/colorPrimary"
+                        fancy:fb_borderWidth="2dp"
+                        fancy:fb_defaultColor="@color/White_100"
                         fancy:fb_fontIconResource="&#xf00c;"
                         fancy:fb_iconPosition="left"
-                        fancy:fb_radius="30dp"
+                        fancy:fb_radius="10dp"
                         fancy:fb_text="Enviar"
-                        fancy:fb_textColor="#FFF" />
-
-                    <mehdi.sakout.fancybuttons.FancyButton
-                        android:id="@+id/cancel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="3dp"
-                        android:layout_marginStart="3dp"
-                        android:paddingBottom="8dp"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
-                        android:paddingTop="8dp"
-                        app:visibleGone="@{safeUnbox(isCode)}"
-                        fancy:fb_defaultColor="@color/material_color_red_500"
-                        fancy:fb_fontIconResource="&#xf00d;"
-                        fancy:fb_iconPosition="left"
-                        fancy:fb_radius="30dp"
-                        fancy:fb_text="Cancelar"
-                        fancy:fb_textColor="#FFF" />
+                        fancy:fb_textColor="@color/colorPrimary" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/ll_btn_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_account_question"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppinsregular"
+                android:text="No tienes cuenta?"
+                android:textColor="@color/material_color_blue_grey_300"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+
+            <TextView
+                android:id="@+id/tv_account_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppinsregular"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:text="Registrate"
+                android:textColor="@color/material_color_blue_grey_700"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+
+        </LinearLayout>
 
     </FrameLayout>
 
