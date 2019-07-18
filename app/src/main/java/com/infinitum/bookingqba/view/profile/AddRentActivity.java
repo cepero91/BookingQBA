@@ -143,7 +143,6 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         binding.flLocationBar.setOnClickListener(this);
         binding.flMunicipalityBar.setOnClickListener(this);
         binding.flEsentialBar.setOnClickListener(this);
-        binding.flCapabilityBar.setOnClickListener(this);
         binding.flFinallyBar.setOnClickListener(this);
         binding.btnLocation.setOnClickListener(this);
         binding.flMunicipalities.setOnClickListener(this);
@@ -440,17 +439,6 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
                     binding.llEsentialForm.setVisibility(View.VISIBLE);
                     binding.ivArrowEsential.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
                     formEsentialOpen = true;
-                }
-                break;
-            case R.id.fl_capability_bar:
-                if (formCapabilityOpen) {
-                    binding.llCapabilityForm.setVisibility(View.GONE);
-                    binding.ivArrowCapability.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
-                    formCapabilityOpen = false;
-                } else {
-                    binding.llCapabilityForm.setVisibility(View.VISIBLE);
-                    binding.ivArrowCapability.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
-                    formCapabilityOpen = true;
                 }
                 break;
             case R.id.fl_finally_bar:

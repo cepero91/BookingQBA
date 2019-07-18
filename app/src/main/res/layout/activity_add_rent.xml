@@ -37,7 +37,7 @@
                     android:id="@+id/fl_location_bar"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
-                    android:background="@color/colorPrimary"
+                    android:background="@color/White_100"
                     android:orientation="horizontal">
 
                     <TextView
@@ -46,10 +46,10 @@
                         android:layout_gravity="start|center"
                         android:layout_marginEnd="10dp"
                         android:layout_marginStart="10dp"
-                        android:fontFamily="@font/poppinsregular"
+                        android:fontFamily="@font/poppinsbold"
                         android:includeFontPadding="false"
                         android:text="@string/donde_esta_su_renta"
-                        android:textColor="@color/White_100" />
+                        android:textColor="@color/material_color_blue_grey_500" />
 
                     <android.support.v7.widget.AppCompatImageView
                         android:id="@+id/iv_arrow_location"
@@ -58,6 +58,7 @@
                         android:layout_gravity="end|center"
                         android:layout_marginEnd="10dp"
                         android:layout_marginStart="10dp"
+                        android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
 
                     <View
@@ -76,69 +77,91 @@
                     android:orientation="vertical"
                     android:padding="12dp">
 
-                    <FrameLayout
-                        android:id="@+id/fl_latitude"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/shape_btn_white_border"
-                        android:padding="10dp"
-                        android:paddingEnd="1dp"
-                        android:paddingStart="1dp">
+                        android:weightSum="6"
+                        android:baselineAligned="false">
 
-                        <TextView
-                            android:id="@+id/tv_latitude"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center|start"
-                            android:layout_marginStart="12sp"
-                            android:text="Latitud"
-                            android:textColor="@color/Black_35"
-                            android:textSize="14sp" />
+                            android:layout_weight="4"
+                            android:orientation="vertical">
 
-                    </FrameLayout>
+                            <FrameLayout
+                                android:id="@+id/fl_latitude"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:background="@drawable/shape_btn_white_border"
+                                android:padding="10dp"
+                                android:paddingEnd="1dp"
+                                android:paddingStart="1dp">
 
-                    <FrameLayout
-                        android:id="@+id/fl_longitude"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/shape_btn_white_border"
-                        android:padding="10dp"
-                        android:paddingEnd="1dp"
-                        android:paddingStart="1dp">
+                                <TextView
+                                    android:id="@+id/tv_latitude"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center|start"
+                                    android:layout_marginStart="12sp"
+                                    android:text="Latitud"
+                                    android:textColor="@color/Black_35"
+                                    android:textSize="14sp" />
 
-                        <TextView
-                            android:id="@+id/tv_longitude"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center|start"
-                            android:layout_marginStart="12sp"
-                            android:text="Longitud"
-                            android:textColor="@color/Black_35"
-                            android:textSize="14sp" />
+                            </FrameLayout>
 
-                    </FrameLayout>
+                            <FrameLayout
+                                android:id="@+id/fl_longitude"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:background="@drawable/shape_btn_white_border"
+                                android:padding="10dp"
+                                android:paddingEnd="1dp"
+                                android:paddingStart="1dp">
 
-                    <mehdi.sakout.fancybuttons.FancyButton
-                        android:id="@+id/btn_location"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:paddingBottom="6dp"
-                        android:paddingLeft="12dp"
-                        android:paddingRight="12dp"
-                        android:paddingTop="6dp"
-                        fancy:fb_borderColor="@color/material_color_blue_grey_200"
-                        fancy:fb_borderWidth="2dp"
-                        fancy:fb_defaultColor="#FFF"
-                        fancy:fb_focusColor="@color/material_color_blue_grey_200"
-                        fancy:fb_fontIconResource="&#xf041;"
-                        fancy:fb_iconPosition="left"
-                        fancy:fb_radius="30dp"
-                        fancy:fb_text="Localizar"
-                        fancy:fb_textColor="@color/material_color_blue_grey_500" />
+                                <TextView
+                                    android:id="@+id/tv_longitude"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center|start"
+                                    android:layout_marginStart="12sp"
+                                    android:text="Longitud"
+                                    android:textColor="@color/Black_35"
+                                    android:textSize="14sp" />
+
+                            </FrameLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/btn_location"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:layout_margin="5dp"
+                            android:orientation="vertical">
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="match_parent"
+                                android:layout_height="70dp"
+                                app:lottie_autoPlay="true"
+                                app:lottie_fileName="lottie/location1.json"
+                                app:lottie_loop="true" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="Localizar"
+                                android:fontFamily="@font/poppinsbold"
+                                android:textColor="@color/material_color_blue_grey_500"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -146,7 +169,7 @@
                     android:id="@+id/fl_municipality_bar"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
-                    android:background="@color/colorPrimary"
+                    android:background="@color/White_100"
                     android:orientation="horizontal">
 
                     <TextView
@@ -155,10 +178,10 @@
                         android:layout_gravity="start|center"
                         android:layout_marginEnd="10dp"
                         android:layout_marginStart="10dp"
-                        android:fontFamily="@font/poppinsregular"
+                        android:fontFamily="@font/poppinsbold"
                         android:includeFontPadding="false"
                         android:text="@string/sobre_ubicacion"
-                        android:textColor="@color/White_100" />
+                        android:textColor="@color/material_color_blue_grey_500" />
 
                     <android.support.v7.widget.AppCompatImageView
                         android:id="@+id/iv_arrow_municipality"
@@ -167,6 +190,7 @@
                         android:layout_gravity="end|center"
                         android:layout_marginEnd="10dp"
                         android:layout_marginStart="10dp"
+                        android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
 
                     <View
@@ -269,7 +293,7 @@
                     android:id="@+id/fl_esential_bar"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
-                    android:background="@color/colorPrimary"
+                    android:background="@color/White_100"
                     android:orientation="horizontal">
 
                     <TextView
@@ -278,10 +302,10 @@
                         android:layout_gravity="start|center"
                         android:layout_marginEnd="10dp"
                         android:layout_marginStart="10dp"
-                        android:fontFamily="@font/poppinsregular"
+                        android:fontFamily="@font/poppinsbold"
                         android:includeFontPadding="false"
                         android:text="@string/informacion_esencial"
-                        android:textColor="@color/White_100" />
+                        android:textColor="@color/material_color_blue_grey_500" />
 
                     <android.support.v7.widget.AppCompatImageView
                         android:id="@+id/iv_arrow_esential"
@@ -290,6 +314,7 @@
                         android:layout_gravity="end|center"
                         android:layout_marginEnd="10dp"
                         android:layout_marginStart="10dp"
+                        android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
 
                     <View
@@ -387,10 +412,10 @@
                 </LinearLayout>
 
                 <FrameLayout
-                    android:id="@+id/fl_capability_bar"
+                    android:id="@+id/fl_finally_bar"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
-                    android:background="@color/colorPrimary"
+                    android:background="@color/White_100"
                     android:orientation="horizontal">
 
                     <TextView
@@ -399,18 +424,19 @@
                         android:layout_gravity="start|center"
                         android:layout_marginEnd="10dp"
                         android:layout_marginStart="10dp"
-                        android:fontFamily="@font/poppinsregular"
+                        android:fontFamily="@font/poppinsbold"
                         android:includeFontPadding="false"
-                        android:text="Sobre capacidad"
-                        android:textColor="@color/White_100" />
+                        android:text="Informacion detallada"
+                        android:textColor="@color/material_color_blue_grey_500" />
 
                     <android.support.v7.widget.AppCompatImageView
-                        android:id="@+id/iv_arrow_capability"
+                        android:id="@+id/iv_arrow_finally"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_gravity="end|center"
                         android:layout_marginEnd="10dp"
                         android:layout_marginStart="10dp"
+                        android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
 
                     <View
@@ -418,11 +444,10 @@
                         android:layout_height="2dp"
                         android:layout_gravity="bottom"
                         android:background="@color/Black_25" />
-
                 </FrameLayout>
 
                 <LinearLayout
-                    android:id="@+id/ll_capability_form"
+                    android:id="@+id/ll_finally_form"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/material_color_blue_grey_50"
@@ -508,49 +533,6 @@
                         app:libIZO_setClearIconVisible="false"
                         app:libIZO_setCornerRadius="5dp"
                         app:libIZO_setStrokeWidth="1dp" />
-                </LinearLayout>
-
-                <FrameLayout
-                    android:id="@+id/fl_finally_bar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?actionBarSize"
-                    android:background="@color/colorPrimary"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start|center"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp"
-                        android:fontFamily="@font/poppinsregular"
-                        android:includeFontPadding="false"
-                        android:text="@string/ultimos_detalles"
-                        android:textColor="@color/White_100" />
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:id="@+id/iv_arrow_finally"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="end|center"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp"
-                        app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_gravity="bottom"
-                        android:background="@color/Black_25" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_finally_form"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/material_color_blue_grey_50"
-                    android:orientation="vertical"
-                    android:padding="12dp">
 
                     <com.libizo.CustomEditText
                         android:id="@+id/et_description"
@@ -604,6 +586,7 @@
                         android:id="@+id/fl_amenities"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/shape_btn_white_border"
                         android:layout_margin="5dp"
                         android:padding="10dp"
                         android:paddingEnd="1dp"
@@ -628,19 +611,11 @@
                             app:srcCompat="@drawable/ic_add_black_24dp"
                             android:tint="@color/material_color_blue_grey_400"/>
 
-                        <View
-                            android:id="@+id/v_line"
-                            android:layout_width="match_parent"
-                            android:layout_height="0.8dp"
-                            android:background="@color/material_color_blue_grey_200"
-                            android:layout_marginTop="10dp"
-                            android:layout_below="@+id/tv_amenities"/>
-
                         <com.google.android.flexbox.FlexboxLayout
                             android:id="@+id/fb_amenities"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/v_line"
+                            android:layout_below="@+id/tv_amenities"
                             android:layout_marginTop="5dp"
                             android:layout_marginEnd="3dp"
                             android:layout_marginStart="3dp"
@@ -653,6 +628,7 @@
                         android:id="@+id/fl_galery"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/shape_btn_white_border"
                         android:layout_margin="5dp"
                         android:padding="10dp"
                         android:paddingEnd="1dp"
@@ -677,47 +653,35 @@
                             app:srcCompat="@drawable/ic_add_black_24dp"
                             android:tint="@color/material_color_blue_grey_400"/>
 
-                        <View
-                            android:id="@+id/v_line_g"
-                            android:layout_width="match_parent"
-                            android:layout_height="0.8dp"
-                            android:background="@color/material_color_blue_grey_200"
-                            android:layout_marginTop="10dp"
-                            android:layout_below="@+id/tv_galery"/>
-
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/rv_galeries"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/v_line_g"
-                            android:layout_marginTop="5dp"/>
+                            android:layout_below="@+id/tv_galery"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:layout_marginTop="8dp"/>
 
                     </RelativeLayout>
 
                 </LinearLayout>
 
                 <FrameLayout
+                    android:id="@+id/btn_upload"
                     android:layout_width="match_parent"
-                    android:layout_height="?actionBarSize">
+                    android:layout_height="?actionBarSize"
+                    android:elevation="5dp">
 
-                    <mehdi.sakout.fancybuttons.FancyButton
-                        android:id="@+id/btn_upload"
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsbold"
+                        android:text="Subir Renta"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="14sp"
+                        android:drawablePadding="10dp"
                         android:layout_gravity="center"
-                        android:paddingBottom="8dp"
-                        android:paddingLeft="12dp"
-                        android:paddingRight="12dp"
-                        android:paddingTop="8dp"
-                        fancy:fb_borderColor="@color/colorPrimary"
-                        fancy:fb_borderWidth="2dp"
-                        fancy:fb_defaultColor="#FFF"
-                        fancy:fb_focusColor="@color/colorPrimaryDark"
-                        fancy:fb_fontIconResource="&#xf093;"
-                        fancy:fb_iconPosition="left"
-                        fancy:fb_radius="8dp"
-                        fancy:fb_text="Subir Renta"
-                        fancy:fb_textColor="@color/colorPrimary" />
+                        android:drawableStart="@drawable/ic_check_blue_grey"/>
 
                 </FrameLayout>
 

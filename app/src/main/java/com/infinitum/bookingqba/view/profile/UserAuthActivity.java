@@ -20,6 +20,7 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 
 import static com.infinitum.bookingqba.util.Constants.IMEI;
+import static com.infinitum.bookingqba.util.Constants.LAST_EMAIL_REGISTER;
 
 public class UserAuthActivity extends AppCompatActivity implements HasSupportFragmentInjector, AuthFragment.AuthInteraction {
 
@@ -37,7 +38,7 @@ public class UserAuthActivity extends AppCompatActivity implements HasSupportFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_auth);
 
-        mFragment = AuthFragment.newInstance(sharedPreferences.getString(IMEI,""));
+        mFragment = AuthFragment.newInstance(sharedPreferences.getString(IMEI,""),sharedPreferences.getString(LAST_EMAIL_REGISTER,""));
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_main_content, mFragment).commit();
 
     }
@@ -58,5 +59,12 @@ public class UserAuthActivity extends AppCompatActivity implements HasSupportFra
         builder.setAutoDismissAfter(3000);
         builder.setTextColor(Color.parseColor("#607D8B"));
         builder.show();
+    }
+
+    @Override
+    public void signupSuccess(String email) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(LAST_EMAIL_REGISTER,email);
+        editor.apply();
     }
 }

@@ -44,6 +44,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.IMEI;
+import static com.infinitum.bookingqba.util.Constants.LAST_EMAIL_REGISTER;
 
 public class AuthFragment extends Fragment implements View.OnClickListener {
 
@@ -51,6 +52,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
     public static final String SIGNUP = "signup";
     public static final String CODE = "code";
     private String imeiArg;
+    private String lastEmailRegisterArg;
 
     private FragmentAuthBinding fragmentAuthBinding;
 
@@ -72,10 +74,11 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public static AuthFragment newInstance(String imei) {
+    public static AuthFragment newInstance(String imei, String lastEmailRegister) {
         AuthFragment authFragment = new AuthFragment();
         Bundle args = new Bundle();
         args.putString(IMEI, imei);
+        args.putString(LAST_EMAIL_REGISTER, lastEmailRegister);
         authFragment.setArguments(args);
         return authFragment;
     }
@@ -86,6 +89,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
 
         if (getArguments() != null) {
             imeiArg = getArguments().getString(IMEI);
+            lastEmailRegisterArg = getArguments().getString(LAST_EMAIL_REGISTER);
         }
     }
 
@@ -114,6 +118,9 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         setHasOptionsMenu(true);
 
         userViewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel.class);
+
+        if(!lastEmailRegisterArg.equals(""))
+            email = lastEmailRegisterArg;
 
     }
 
@@ -186,20 +193,20 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
 
     //------------------------------------------ USER LOGIN ---------------------------------
     private void validateUserLogin() {
-//        if (networkHelper.isNetworkAvailable()) {
-        if (validateInputs()) {
-            String params1 = fragmentAuthBinding.etUsername.getText().toString();
-            String params2 = fragmentAuthBinding.etPassword.getText().toString();
-            String params3 = imeiArg;
-            Map<String, String> userLoginParams = new HashMap<>();
-            userLoginParams.put("param1", params1);
-            userLoginParams.put("param2", params2);
-            userLoginParams.put("param3", params3);
-            sendUserLoginParams(userLoginParams);
+        if (networkHelper.isNetworkAvailable()) {
+            if (validateInputs()) {
+                String params1 = fragmentAuthBinding.etUsername.getText().toString();
+                String params2 = fragmentAuthBinding.etPassword.getText().toString();
+                String params3 = imeiArg;
+                Map<String, String> userLoginParams = new HashMap<>();
+                userLoginParams.put("username", params1);
+                userLoginParams.put("password", params2);
+                userLoginParams.put("imei", params3);
+                sendUserLoginParams(userLoginParams);
+            }
+        } else {
+            showErrorDialog("Aviso!!", "No se puede efectuar la operacion. Sin conexion");
         }
-//        } else {
-//            showErrorDialog("Aviso!!", "No se puede efectuar la operacion. Sin conexion");
-//        }
     }
 
     private void sendUserLoginParams(Map<String, String> userLoginParams) {
@@ -211,13 +218,15 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                     if (response.isSuccessful() && response.code() == 200) {
                         authInteraction.signinSuccess(response.body());
                         fragmentAuthBinding.send.setEnabled(true);
-                    } else if(response.isSuccessful() && response.code() == 201){
-                        setRegisterUserToActivateCount("Usuario pendiente de activacion.");
-                        fragmentAuthBinding.send.setEnabled(true);
                     } else {
                         String errorMsg = ErrorUtils.parseError(response).getMsg();
-                        showErrorSnackbar(errorMsg);
-                        fragmentAuthBinding.send.setEnabled(true);
+                        if (errorMsg.equals("500")) {
+                            setRegisterUserToActivateCount("Usuario pendiente de activacion.");
+                            fragmentAuthBinding.send.setEnabled(true);
+                        } else {
+                            showErrorSnackbar(errorMsg);
+                            fragmentAuthBinding.send.setEnabled(true);
+                        }
                     }
                 }, throwable -> {
                     String msg = "Un error ha ocurrido";
@@ -234,32 +243,32 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
 
     private void validateUserRegister() {
         fragmentAuthBinding.send.setEnabled(false);
-//        if (networkHelper.isNetworkAvailable()) {
-        if (validateInputs()) {
-            Map<String, String> map = getUserMap();
-            disposable = userViewModel.register(map)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(resource -> {
-                        if (resource.status == Resource.Status.SUCCESS) {
-                            verifyUserStatus(resource.data);
-                        } else {
-                            showErrorSnackbar(resource.message);
-                        }
-                        fragmentAuthBinding.send.setEnabled(true);
-                    }, throwable -> {
-                        String msg = "";
-                        if (throwable instanceof ConnectException || throwable instanceof SocketException) {
-                            msg = "Error al conectarse";
-                        }
-                        showErrorSnackbar(msg);
-                        fragmentAuthBinding.send.setEnabled(true);
-                    });
-            compositeDisposable.add(disposable);
+        if (networkHelper.isNetworkAvailable()) {
+            if (validateInputs()) {
+                Map<String, String> map = getUserMap();
+                disposable = userViewModel.register(map)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(resource -> {
+                            if (resource.status == Resource.Status.SUCCESS) {
+                                verifyUserStatus(resource.data);
+                            } else {
+                                showErrorSnackbar(resource.message);
+                            }
+                            fragmentAuthBinding.send.setEnabled(true);
+                        }, throwable -> {
+                            String msg = "";
+                            if (throwable instanceof ConnectException || throwable instanceof SocketException) {
+                                msg = "Error al conectarse";
+                            }
+                            showErrorSnackbar(msg);
+                            fragmentAuthBinding.send.setEnabled(true);
+                        });
+                compositeDisposable.add(disposable);
+            }
+        } else {
+            showErrorDialog("Aviso!!", "No se puede efectuar la operacion. Sin conexion");
         }
-//        } else {
-//            showErrorDialog("Aviso!!", "No se puede efectuar la operacion. Sin conexion");
-//        }
     }
 
     private void resendActivationCode() {
@@ -270,12 +279,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resultResource -> {
                     if (resultResource.status == Resource.Status.SUCCESS) {
-                        Snacky.builder()
-                                .setActivity(getActivity())
-                                .setText("Codigo reeviado con exito")
-                                .success()
-                                .show();
-//                        AlertUtils.showSuccessAlert(getActivity(),"Codigo Reenviado");
+                        showSuccessSnackbar("Codigo reeviado con exito");
                     } else {
                         //showErrorMessage()
                     }
@@ -284,40 +288,50 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
     }
 
     private void validateUserActivationCode() {
-//        if (networkHelper.isNetworkAvailable()) {
-        if (validateInputs()) {
-            String activationCode = fragmentAuthBinding.etActivationCode.getText().toString();
-            Map<String, String> map = new HashMap<>();
-            map.put("activationCode", activationCode);
-            map.put("email", email);
-            disposable = userViewModel.activate(map)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(resultResource -> {
-                        if (resultResource.status == Resource.Status.SUCCESS) {
-                            showSuccessDialog("Aviso!!!", "Usuario activado con exito");
-                        } else {
-                            showErrorSnackbar(resultResource.message);
-                        }
-                    }, throwable -> {
-                        String msg = "Un error ha ocurrido";
-                        if (throwable instanceof ConnectException || throwable instanceof SocketException) {
-                            msg = "Error al conectarse";
-                        }
-                        showErrorSnackbar(msg);
-                        fragmentAuthBinding.send.setEnabled(true);
-                    });
-            compositeDisposable.add(disposable);
+        if (networkHelper.isNetworkAvailable()) {
+            if (validateInputs()) {
+                String activationCode = fragmentAuthBinding.etActivationCode.getText().toString();
+                Map<String, String> map = new HashMap<>();
+                map.put("activationCode", activationCode);
+                map.put("email", email);
+                map.put("imei", imeiArg);
+                disposable = userViewModel.activate(map)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(resultResource -> {
+                            if(resultResource.status.equals(Resource.Status.SUCCESS)) {
+                                verifyActivationCode(resultResource);
+                            }else{
+                                showErrorSnackbar(resultResource.message);
+                            }
+                        }, throwable -> {
+                            String msg = "Un error ha ocurrido";
+                            if (throwable instanceof ConnectException || throwable instanceof SocketException) {
+                                msg = "Error al conectarse";
+                            }
+                            showErrorSnackbar(msg);
+                            fragmentAuthBinding.send.setEnabled(true);
+                        });
+                compositeDisposable.add(disposable);
+            }
+        } else {
+            showErrorDialog("Aviso!!", "No se puede efectuar la operacion. Sin conexion");
         }
-//        } else {
-//            showErrorDialog("Aviso!!", "No se puede efectuar la operacion. Sin conexion");
-//        }
+    }
+
+    private void verifyActivationCode(Resource<ResponseResult> resultResource) {
+        if (resultResource.data != null && resultResource.data.getCode() == 200) {
+            showSuccessDialog("Aviso!!!", "Usuario activado con exito");
+        } else if(resultResource.data != null && resultResource.data.getCode() != 200) {
+            showErrorSnackbar(resultResource.data.getMsg());
+        }
     }
 
     private void verifyUserStatus(ResponseResult data) {
         if (data != null && data.getCode() == 200) {
+            authInteraction.signupSuccess(email);
             setRegisterUserToActivateCount(data.getMsg());
-        } else if (data != null && data.getCode() != 500) {
+        } else if (data != null && data.getCode() != 200) {
             showErrorSnackbar(data.getMsg());
         }
     }
@@ -426,10 +440,22 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                 .show();
     }
 
+    private void showWarningSnackbar(String message) {
+        Snacky.builder()
+                .setActivity(getActivity())
+                .setText(message)
+                .setDuration(8000)
+                .setBackgroundColor(Color.parseColor("#FFC107"))
+                .setIcon(R.drawable.ic_exclamation_triangle)
+                .build()
+                .show();
+    }
+
 
     //------------------------------- INTERFACE ---------------------------------
 
     public interface AuthInteraction {
         void signinSuccess(User user);
+        void signupSuccess(String email);
     }
 }

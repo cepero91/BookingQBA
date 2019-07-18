@@ -92,6 +92,7 @@ public final class Constants {
     public static final String USER_TOKEN = "userToken";
     public static final String USER_RENTS = "userRents";
     public static final String USER_AVATAR = "userAvatar";
+    public static final String LAST_EMAIL_REGISTER = "lastEmailRegister";
 
     public static final String MAP_PATH = "mapDir";
 
