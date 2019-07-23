@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.infinitum.bookingqba"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -230,6 +230,9 @@ dependencies {
     implementation 'com.ernestoyaquello.stepperform:vertical-stepper-form:0.9.8'
     implementation 'com.github.iammert:ExpandableLayout:1.4.1'
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
+
+    implementation 'com.yayandroid:LocationManager:2.0.4'
+    implementation 'com.github.florent37:rxgps:1.0.2'
 
     //Reporte de Fallos
 //    implementation "ch.acra:acra-core:$acraVersion"

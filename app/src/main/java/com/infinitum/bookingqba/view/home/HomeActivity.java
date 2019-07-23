@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,7 +17,11 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -25,6 +30,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -37,6 +43,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,6 +54,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.github.florent37.shapeofview.shapes.CutCornerView;
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.google.android.gms.common.api.ApiException;
@@ -60,12 +68,14 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.infinitum.bookingqba.BuildConfig;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.LocationHelpers;
+import com.infinitum.bookingqba.util.PermissionHelper;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
@@ -91,6 +101,15 @@ import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
+import com.yayandroid.locationmanager.base.LocationBaseActivity;
+import com.yayandroid.locationmanager.configuration.Configurations;
+import com.yayandroid.locationmanager.configuration.DefaultProviderConfiguration;
+import com.yayandroid.locationmanager.configuration.GooglePlayServicesConfiguration;
+import com.yayandroid.locationmanager.configuration.LocationConfiguration;
+import com.yayandroid.locationmanager.configuration.PermissionConfiguration;
+import com.yayandroid.locationmanager.constants.FailType;
+import com.yayandroid.locationmanager.constants.ProviderType;
+import com.yayandroid.locationmanager.providers.dialogprovider.SimpleMessageDialogProvider;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -122,6 +141,7 @@ import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
 import static com.infinitum.bookingqba.util.Constants.LOCATION_REQUEST_CODE;
+import static com.infinitum.bookingqba.util.Constants.LOGIN_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.LOGIN_TAG;
 import static com.infinitum.bookingqba.util.Constants.MY_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_DEFAULT;
@@ -139,10 +159,10 @@ import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
-public class HomeActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector,
+public class HomeActivity extends LocationBaseActivity implements HasSupportFragmentInjector,
         FragmentNavInteraction, NavigationView.OnNavigationItemSelectedListener,
-        FilterInteraction, LoginInteraction, MapFragment.OnFragmentMapInteraction,
-        InfoInteraction, DialogFeedback.FeedbackInteraction, MyRentsFragment.AddRentClick {
+        FilterInteraction, MapFragment.OnFragmentMapInteraction, InfoInteraction,
+        DialogFeedback.FeedbackInteraction, MyRentsFragment.AddRentClick {
 
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
     private ActivityHomeBinding homeBinding;
@@ -152,9 +172,21 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     //------------------------- LOCATION VAR --------------------------//
     private Location mCurrentLocation;
-    private Boolean mRequestingLocationUpdates;
-
+    private Location lastKnowLocation;
+    private boolean mRequestingLocationUpdates = false;
     private LocationHelpers locationHelper;
+
+
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
+    private FusedLocationProviderClient mFusedLocationClient;
+    private SettingsClient mSettingsClient;
+    private LocationRequest mLocationRequest;
+    private LocationSettingsRequest mLocationSettingsRequest;
+    private LocationCallback locationCallback;
+
 
     //-------------------------- PERMISSION VAR --------------------------------//
     private String locationPerm = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -170,9 +202,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
     @Inject
     SharedPreferences sharedPreferences;
 
-    private TelephonyManager telephonyManager;
-    private String deviceID = "";
-
+    private PermissionHelper permissionHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,22 +210,24 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         super.onCreate(savedInstanceState);
         homeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
 
-        deviceID = sharedPreferences.getString(IMEI, "");
-
         setupToolbar();
-
-        initializeFragment(savedInstanceState);
-
-        if (checkSinglePermission(readPhonePerm, READ_PHONE_REQUEST_CODE)) {
-            if (sharedPreferences.getString(IMEI, "").equals(""))
-                sharedPreferences.edit().putString(IMEI, getDeviceUniversalID()).apply();
-        }
 
         initDrawerLayout();
 
         initWorkRequest();
 
-        setupLocationApi();
+        initializeFragment(savedInstanceState);
+
+        getLocation();
+
+//        setupLocationApi();
+
+//        initPermissionRequest();
+
+//        initLocationManager();
+//        checkGpsAvailability();
+//        ensureLastLocationInit();
+//        updateCurrentLocation(null);
 
     }
 
@@ -233,9 +265,7 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         WorkManager.getInstance().enqueueUniquePeriodicWork(PERIODICAL_WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, periodicWorkRequest);
     }
 
-    /**
-     * BUSCAR UNA BIBLIOTECA QUE LA ANIMACION NO LA HAGA TAN LENTA
-     */
+
     private void initDrawerLayout() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, homeBinding.drawerLayout, homeBinding.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -256,18 +286,17 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
     // ---------------------- LOCATION METHOD ------------------------ //
 
-    private void setupLocationApi() {
-        mRequestingLocationUpdates = false;
-        locationHelper = new LocationHelpers(this);
-        locationHelper.setLocationCallback(new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                mCurrentLocation = locationResult.getLastLocation();
-                updateMapLocation(mCurrentLocation);
-            }
-        });
-    }
+//    private void setupLocationApi() {
+//        locationHelper = new LocationHelpers(this);
+//        locationHelper.setLocationCallback(new LocationCallback() {
+//            @Override
+//            public void onLocationResult(LocationResult locationResult) {
+//                super.onLocationResult(locationResult);
+//                mCurrentLocation = locationResult.getLastLocation();
+//                updateMapLocation(mCurrentLocation);
+//            }
+//        });
+//    }
 
     private void updateMapLocation(Location mCurrentLocation) {
         if (mCurrentLocation != null && mFragment instanceof MapFragment) {
@@ -297,83 +326,121 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         });
     }
 
-    private void stopLocationUpdates() {
-        locationHelper.stopLocationUpdates();
-        mRequestingLocationUpdates = false;
-        invalidateOptionsMenu();
-    }
+//    private void stopLocationUpdates() {
+//        locationHelper.stopLocationUpdates();
+//        mRequestingLocationUpdates = false;
+//        invalidateOptionsMenu();
+//    }
 
     // ------------------------- PERMISSION -------------------------------- //
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == LOCATION_REQUEST_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                checkPermissionResult(permissions, LOCATION_REQUEST_CODE, "Localizacion");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mRequestingLocationUpdates = true;
-                MenuItem menuItem = homeBinding.toolbar.getMenu().findItem(R.id.action_gps);
-                if (menuItem != null) {
-                    changeMenuIcon(menuItem);
-                }
-                startLocationUpdates();
-            }
-        } else if (requestCode == READ_PHONE_REQUEST_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                checkPermissionResult(permissions, READ_PHONE_REQUEST_CODE, "Estado del Telefono");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (sharedPreferences.getString(IMEI, "").equals("")) {
-                    deviceID = getDeviceUniversalID();
-                    sharedPreferences.edit().putString(IMEI, deviceID).apply();
-                }
-            }
-        }
+    public void initPermissionRequest() {
+        permissionHelper = new PermissionHelper(this);
+        permissionHelper.check(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                .withDialogBeforeRun(R.string.dialog_before_run_title, R.string.dialog_before_run_message, R.string.dialog_positive_button)
+                .setDialogPositiveButtonColor(android.R.color.holo_orange_dark)
+                .onSuccess(this::onPermissionSuccess)
+                .onDenied(this::onPermissionDenied)
+                .onNeverAskAgain(this::onPermissionNeverAskAgain)
+                .run();
     }
 
-    private boolean checkSinglePermission(String perm, int requestCode) {
-        if (ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
-            String[] perms = new String[1];
-            perms[0] = perm;
-            ActivityCompat.requestPermissions(this, perms, requestCode);
-            return false;
-        }
-        return true;
+    private void onPermissionNeverAskAgain() {
+        Toast.makeText(this, "onPermissionNeverAskAgain", Toast.LENGTH_SHORT).show();
     }
 
-    private void checkPermissionResult(String[] permissions, int requestCode, String permCodeName) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
-            String msg = String.format("Permiso de %s requerido, por favor otórguelo.", permCodeName);
-            showDialog(msg, "Otorgar",
-                    (dialog, which) -> {
-                        dialog.dismiss();
-                        checkSinglePermission(permissions[0], requestCode);
-                    }, "No, cerrar", (dialog, which) -> dialog.dismiss(), false);
-        } else {
-            String msg = "Has negado permanentemente el permiso requerido. Puede que la aplicación no funcione correctamente.";
-            showDialog(msg, "Ir",
-                    (dialog, which) -> {
-                        dialog.dismiss();
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                Uri.fromParts("package", getPackageName(), null));
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                    }, "No, cerrar", (dialog, which) -> dialog.dismiss(), false);
-        }
+    private void onPermissionDenied() {
+        Toast.makeText(this, "onPermissionDenied", Toast.LENGTH_SHORT).show();
     }
 
-    public void showDialog(String msg, String positiveLabel, DialogInterface.OnClickListener onClickListener,
-                           String negativeLevel, DialogInterface.OnClickListener onCancelListener, boolean isCancelable) {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Aviso!!");
-        builder.setMessage(msg);
-        builder.setCancelable(isCancelable);
-        builder.setPositiveButton(positiveLabel, onClickListener);
-        builder.setNegativeButton(negativeLevel, onCancelListener);
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+    private void onPermissionSuccess() {
+        Toast.makeText(this, "onPermissionSuccess", Toast.LENGTH_SHORT).show();
     }
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        permissionHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//    }
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+//                                           @NonNull int[] grantResults) {
+//        if (requestCode == LOCATION_REQUEST_CODE) {
+//            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+//                checkPermissionResult(permissions, LOCATION_REQUEST_CODE, "Localizacion");
+//            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                mRequestingLocationUpdates = true;
+//                MenuItem menuItem = homeBinding.toolbar.getMenu().findItem(R.id.action_gps);
+//                if (menuItem != null) {
+//                    changeMenuIcon(menuItem);
+//                }
+//                startLocationUpdates();
+//            }
+//        } else if (requestCode == READ_PHONE_REQUEST_CODE) {
+//            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+//                checkPermissionResult(permissions, READ_PHONE_REQUEST_CODE, "Estado del Telefono");
+//            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                if (sharedPreferences.getString(IMEI, "").equals("")) {
+//                    deviceID = getDeviceUniversalID();
+//                    sharedPreferences.edit().putString(IMEI, deviceID).apply();
+//                }
+//            }
+//        }
+//    }
+//
+//    private boolean checkSinglePermission(String perm, int requestCode) {
+//        if (ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
+//            String[] perms = new String[1];
+//            perms[0] = perm;
+//            ActivityCompat.requestPermissions(this, perms, requestCode);
+//            return false;
+//        }
+//        return true;
+//    }
+//
+//    private boolean checkMultiplePermission(String perm, int requestCode) {
+//        if (ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
+//            String[] perms = new String[1];
+//            perms[0] = perm;
+//            ActivityCompat.requestPermissions(this, perms, requestCode);
+//            return false;
+//        }
+//        return true;
+//    }
+//
+//    private void checkPermissionResult(String[] permissions, int requestCode, String permCodeName) {
+//        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
+//            String msg = String.format("Permiso de %s requerido, por favor otórguelo.", permCodeName);
+//            showDialog(msg, "Otorgar",
+//                    (dialog, which) -> {
+//                        dialog.dismiss();
+//                        checkSinglePermission(permissions[0], requestCode);
+//                    }, "No, cerrar", (dialog, which) -> dialog.dismiss(), false);
+//        } else {
+//            String msg = "Has negado permanentemente el permiso requerido. Puede que la aplicación no funcione correctamente.";
+//            showDialog(msg, "Ir",
+//                    (dialog, which) -> {
+//                        dialog.dismiss();
+//                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+//                                Uri.fromParts("package", getPackageName(), null));
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        startActivity(intent);
+//                    }, "No, cerrar", (dialog, which) -> dialog.dismiss(), false);
+//        }
+//    }
+//
+//    public void showDialog(String msg, String positiveLabel, DialogInterface.OnClickListener onClickListener,
+//                           String negativeLevel, DialogInterface.OnClickListener onCancelListener, boolean isCancelable) {
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Aviso!!");
+//        builder.setMessage(msg);
+//        builder.setCancelable(isCancelable);
+//        builder.setPositiveButton(positiveLabel, onClickListener);
+//        builder.setNegativeButton(negativeLevel, onCancelListener);
+//        AlertDialog alertDialog = builder.create();
+//        alertDialog.show();
+//    }
 
     //------------------------------ ACTIVITY RESULT ---------------------- //
 
@@ -411,12 +478,18 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        startLocationUpdates();
                         break;
                     case Activity.RESULT_CANCELED:
-                        mRequestingLocationUpdates = false;
                         AlertUtils.showErrorToast(this, "Imposible ser localizado");
-                        invalidateOptionsMenu();
+                        break;
+                }
+                break;
+            case LOGIN_REQUEST_CODE:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        if (data != null && data.hasExtra(USER_NAME)) {
+                            showLoginSuccessAlert(data.getStringExtra(USER_NAME));
+                        }
                         break;
                 }
                 break;
@@ -480,31 +553,11 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
 
 
     public void checkMenuItemsVisibility(Menu menu) {
-        MenuItem menuItem = menu.findItem(R.id.action_filter_panel);
-        menuItem.setVisible(false);
-        boolean loginVisibility = sharedPreferences.getBoolean(USER_IS_AUTH, false);
-        boolean isProfileActive = sharedPreferences.getBoolean(IS_PROFILE_ACTIVE, false);
-        MenuItem login = menu.findItem(R.id.action_login);
-        login.setVisible(!loginVisibility);
-        MenuItem logout = menu.findItem(R.id.action_logout);
-        logout.setVisible(loginVisibility);
+        MenuItem menuFilter = menu.findItem(R.id.action_filter_panel);
+        menuFilter.setVisible(false);
         menu.findItem(R.id.action_filter_panel).setVisible(mFragment instanceof RentListFragment);
         menu.findItem(R.id.action_gps).setVisible(mFragment instanceof MapFragment);
         menu.findItem(R.id.action_refresh).setVisible(mFragment instanceof ProfileFragment);
-        homeBinding.navView.getMenu().findItem(R.id.nav_profile).setVisible(isProfileActive);
-        if (loginVisibility) {
-            String username = sharedPreferences.getString(USER_NAME, "");
-            if (username.length() > 1) {
-                updateNavHeader(username,
-                        sharedPreferences.getString(USER_AVATAR, null));
-            } else {
-                updateNavHeader(getString(R.string.hola_invitado),
-                        null);
-            }
-        } else {
-            updateNavHeader(getString(R.string.hola_invitado),
-                    null);
-        }
     }
 
 
@@ -521,33 +574,24 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
                 homeBinding.drawerLayout.postDelayed(() -> homeBinding.drawerLayout.openDrawer(Gravity.END), 200);
                 return true;
-            case R.id.action_login:
-                if (!loginIsClicked) {
-                    loginIsClicked = true;
-                    showLoginDialog();
-                }
-                return true;
-            case R.id.action_logout:
-                confirmLogout();
-                return true;
             case R.id.action_gps:
-                initLocation(item);
+//                initLocation(item);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void initLocation(MenuItem item) {
-        if (checkSinglePermission(locationPerm, LOCATION_REQUEST_CODE)) {
-            if (!mRequestingLocationUpdates) {
-                mRequestingLocationUpdates = true;
-                changeMenuIcon(item);
-                startLocationUpdates();
-            } else {
-                stopLocationUpdates();
-            }
-        }
-    }
+//    private void initLocation(MenuItem item) {
+////        if (checkSinglePermission(locationPerm, LOCATION_REQUEST_CODE)) {
+//        if (!mRequestingLocationUpdates) {
+//            mRequestingLocationUpdates = true;
+//            changeMenuIcon(item);
+//            startLocationUpdates();
+//        } else {
+//            stopLocationUpdates();
+//        }
+////        }
+//    }
 
     private void changeMenuIcon(MenuItem item) {
         if (mRequestingLocationUpdates) {
@@ -611,19 +655,17 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
             mFragment = InfoFragment.newInstance();
             sameFragment = false;
         } else if (id == R.id.nav_auth && !(mFragment instanceof AuthFragment)) {
-            startActivity(new Intent(this, UserAuthActivity.class));
+            new Handler().postDelayed(() -> {
+                Intent intent = new Intent(HomeActivity.this, UserAuthActivity.class);
+                startActivityForResult(intent, LOGIN_REQUEST_CODE);
+            }, 500);
         } else if (id == R.id.nav_my_rents && !(mFragment instanceof MyRentsFragment)) {
-            mFragment = MyRentsFragment.newInstance();
+            mFragment = MyRentsFragment.newInstance("1");
             sameFragment = false;
         }
         if (mFragment != null && !sameFragment) {
             // Highlight the selected item has been done by NavigationView
             menuItem.setChecked(true);
-
-            if (mRequestingLocationUpdates) {
-                locationHelper.stopLocationUpdates();
-                mRequestingLocationUpdates = false;
-            }
             // Close drawer
             homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
             homeBinding.drawerLayout.postDelayed(() -> {
@@ -659,17 +701,17 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         }
     }
 
-    @Override
-    public void onLogin(User user) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(USER_IS_AUTH, true);
-        editor.putString(USER_TOKEN, user.getToken());
-        editor.putString(USER_NAME, user.getUsername());
-        editor.putString(USER_ID, user.getUserid());
-        editor.putString(USER_AVATAR, user.getAvatar());
-        editor.putStringSet(USER_RENTS, new HashSet<>(user.getRents()));
-        editor.apply();
-        invalidateOptionsMenu();
+
+    private void showLoginSuccessAlert(String username) {
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // Title and message
+        builder.setTitle("En hora buena");
+        builder.setMessage(String.format("%s, es un gusto recibirlo/a", username));
+        builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
+        builder.setAutoDismissAfter(3000);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.show();
     }
 
     private void updateNavHeader(String username, @Nullable String avatar) {
@@ -684,42 +726,6 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
                 .placeholder(R.drawable.user_placeholder)
                 .into(circularImageView);
         tvUsername.setText(String.format(username));
-    }
-
-    void showLoginDialog() {
-        if (!deviceID.equals("")) {
-            FragmentTransaction ft = fragmentManager.beginTransaction();
-            Fragment prev = fragmentManager.findFragmentByTag(LOGIN_TAG);
-            if (prev != null) {
-                ft.remove(prev);
-            }
-            ft.addToBackStack(null);
-
-            // Create and show the dialog.
-            LoginFragment loginFragment = LoginFragment.newInstance();
-            loginFragment.show(ft, LOGIN_TAG);
-        } else {
-            loginIsClicked = false;
-            AlertUtils.showErrorAlert(this, "Esta operación no se puede efectuar");
-        }
-    }
-
-    @Override
-    public void dismissDialog() {
-        loginIsClicked = false;
-    }
-
-    @Override
-    public void showNotificationToUpdate(String msg) {
-        AlertUtils.notifyPendingProfileActivate(getApplication(), msg);
-    }
-
-    @Override
-    public void showGroupMenuProfile(boolean show) {
-        homeBinding.navView.getMenu().setGroupVisible(R.id.group_2, show);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(IS_PROFILE_ACTIVE, show);
-        editor.apply();
     }
 
     @Override
@@ -787,53 +793,102 @@ public class HomeActivity extends DaggerAppCompatActivity implements HasSupportF
         startActivity(Intent.createChooser(intent, "Enviar email..."));
     }
 
-    // -------------------------- PREFERENCES ---------------------------------------- //
-
-    private void saveImeiToPreference(String deviceUniqueID) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(IMEI, deviceUniqueID);
-        editor.apply();
-    }
-
-    @SuppressLint("MissingPermission")
-    private String getDeviceUniversalID() {
-        String deviceUniqueID = null;
-        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        if (telephonyManager != null) {
-            deviceUniqueID = telephonyManager.getDeviceId();
-        }
-        if (deviceUniqueID == null) {
-            deviceUniqueID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        }
-        return deviceUniqueID;
-    }
-
     // -------------------------- LIVECYCLE ACTIVITY METHOD -------------------------- //
-
-    @Override
-    protected void onDestroy() {
-        try {
-            locationHelper.stopLocationUpdates();
-        } catch (Exception e) {
-            Timber.e("onDestroy removeLocationUpdates %s", e.getMessage());
-        }
-        super.onDestroy();
-    }
-
-
-//    private void showAuthFragment() {
-//        homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
-//        homeBinding.drawerLayout.postDelayed(() -> {
-//            // Inflate the new Fragment with the new RecyclerView and a new Adapter
-//            AuthFragment authFragment = AuthFragment.newInstance();
-//            fragmentManager.beginTransaction().replace(R.id.frame_container,
-//                    authFragment).commit();
-//        }, 700);
-//    }
 
     @Override
     public void onAddRentClick() {
         Intent intent = new Intent(this, AddRentActivity.class);
         startActivity(intent);
+    }
+
+    //--------------------------------------- OTHER LOCATION CONFIG --------------------------
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+    }
+
+    @Override
+    public LocationConfiguration getLocationConfiguration() {
+        return new LocationConfiguration.Builder()
+                .askForPermission(new PermissionConfiguration.Builder().rationaleMessage("Give permission").build())
+                .useGooglePlayServices(new GooglePlayServicesConfiguration.Builder().build())
+                .useDefaultProviders(new DefaultProviderConfiguration.Builder()
+                        .acceptableAccuracy(5.0f)
+                        .requiredDistanceInterval(0)
+                        .gpsMessage("Turn GPS on?")
+                        .build())
+                .keepTracking(true)
+                .build();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Toast.makeText(this, "onLocationChanged", Toast.LENGTH_SHORT).show();
+        if(mFragment instanceof MapFragment)
+            ((MapFragment) mFragment).updateCurrentLocation(location);
+    }
+
+    @Override
+    public void onLocationFailed(int type) {
+        switch (type) {
+            case FailType.TIMEOUT: {
+                showToast("Couldn't get location, and timeout!");
+                break;
+            }
+            case FailType.PERMISSION_DENIED: {
+                showToast("Couldn't get location, because user didn't give permission!");
+                break;
+            }
+            case FailType.NETWORK_NOT_AVAILABLE: {
+                showToast("Couldn't get location, because network is not accessible!");
+                break;
+            }
+            case FailType.GOOGLE_PLAY_SERVICES_NOT_AVAILABLE: {
+                showToast("Couldn't get location, because Google Play Services not available!");
+                break;
+            }
+            case FailType.GOOGLE_PLAY_SERVICES_CONNECTION_FAIL: {
+                showToast("Couldn't get location, because Google Play Services connection failed!");
+                break;
+            }
+            case FailType.GOOGLE_PLAY_SERVICES_SETTINGS_DIALOG: {
+                showToast("Couldn't display settingsApi dialog!");
+                break;
+            }
+            case FailType.GOOGLE_PLAY_SERVICES_SETTINGS_DENIED: {
+                showToast("Couldn't get location, because user didn't activate providers via settingsApi!");
+                break;
+            }
+            case FailType.VIEW_DETACHED: {
+                showToast("Couldn't get location, because in the process view was detached!");
+                break;
+            }
+            case FailType.VIEW_NOT_REQUIRED_TYPE: {
+                showToast("Couldn't get location, "
+                        + "because view wasn't sufficient enough to fulfill given configuration!");
+                break;
+            }
+            case FailType.UNKNOWN: {
+                showToast("Ops! Something went wrong!");
+                break;
+            }
+        }
+    }
+
+    private void showToast(String msg){
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }

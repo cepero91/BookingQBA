@@ -38,7 +38,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
                     android:background="@color/White_100"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:elevation="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -60,12 +61,6 @@
                         android:layout_marginStart="10dp"
                         android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_gravity="bottom"
-                        android:background="@color/Black_25" />
 
                 </FrameLayout>
 
@@ -170,7 +165,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
                     android:background="@color/White_100"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:elevation="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -192,12 +188,6 @@
                         android:layout_marginStart="10dp"
                         android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_gravity="bottom"
-                        android:background="@color/Black_25" />
 
                 </FrameLayout>
 
@@ -294,7 +284,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
                     android:background="@color/White_100"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:elevation="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -316,12 +307,6 @@
                         android:layout_marginStart="10dp"
                         android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_gravity="bottom"
-                        android:background="@color/Black_25" />
 
                 </FrameLayout>
 
@@ -416,7 +401,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
                     android:background="@color/White_100"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:elevation="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -439,11 +425,6 @@
                         android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_gravity="bottom"
-                        android:background="@color/Black_25" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -586,7 +567,6 @@
                         android:id="@+id/fl_amenities"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/shape_btn_white_border"
                         android:layout_margin="5dp"
                         android:padding="10dp"
                         android:paddingEnd="1dp"
@@ -628,7 +608,6 @@
                         android:id="@+id/fl_galery"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/shape_btn_white_border"
                         android:layout_margin="5dp"
                         android:padding="10dp"
                         android:paddingEnd="1dp"

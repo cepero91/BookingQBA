@@ -25,6 +25,7 @@ public final class Constants {
 
     //REQUEST ACTIVITY FOR RESULT
     public static final int MY_REQUEST_CODE = 4;
+    public static final int LOGIN_REQUEST_CODE = 7;
 
     //WORK SERVICES
     public static final String PERIODICAL_WORK_NAME = "MyPeriodicalWork";
@@ -86,6 +87,7 @@ public final class Constants {
 
     //USER LOGIN
     public static final String USER_IS_AUTH = "userIsAuth";
+    public static final String USER_IS_RENTS_OWNER = "userIsRentOwner";
     public static final String IS_PROFILE_ACTIVE = "profileActive";
     public static final String USER_NAME = "userName";
     public static final String USER_ID = "userId";
@@ -109,6 +111,7 @@ public final class Constants {
 
     public static final int LOCATION_REQUEST_CODE = 1240;
     public static final int READ_PHONE_REQUEST_CODE = 1241;
+    public static final int WRITE_EXTERNAL_CODE = 1242;
 
     public static final int REQUEST_CHECK_SETTINGS = 0x1;
 

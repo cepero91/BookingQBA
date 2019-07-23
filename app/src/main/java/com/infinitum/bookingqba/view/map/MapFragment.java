@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.Toast;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.CafeBarMapMarkerBinding;
@@ -73,6 +75,10 @@ import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
 
 
 public class MapFragment extends Fragment implements ItemizedLayer.OnItemGestureListener<MarkerItem> {
+
+    //Location variables
+    private Location lastKnowLocation;
+    private Location currentLocation;
 
     // Rxjava
     private CompositeDisposable compositeDisposable;
@@ -198,7 +204,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
                     @Override
                     public void completed(CopyCreator copyCreator, java.util.Map<File, Boolean> results) {
                         SharedPreferences.Editor edit = sharedPreferences.edit();
-                        edit.putString(MAP_PATH,((File) results.keySet().toArray()[0]).getAbsolutePath());
+                        edit.putString(MAP_PATH, ((File) results.keySet().toArray()[0]).getAbsolutePath());
                         edit.apply();
                         mapFilePath = ((File) results.keySet().toArray()[0]).getAbsolutePath();
                     }
@@ -471,6 +477,44 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
             return false;
         }
 
+    }
+
+
+    public void updateCurrentLocation(Location location) {
+        if (lastKnowLocation == null) {
+            currentLocation = location;
+            lastKnowLocation = currentLocation;
+            updateUserTracking(location.getLatitude(), location.getLongitude());
+            Toast.makeText(getActivity(), "Location is new", Toast.LENGTH_SHORT).show();
+        } else if (distance(lastKnowLocation.getLatitude(), lastKnowLocation.getLongitude(), location.getLatitude(), location.getLongitude()) < 0.1) {
+            Toast.makeText(getActivity(), "Location is the same", Toast.LENGTH_SHORT).show();
+        } else {
+            currentLocation = location;
+            lastKnowLocation = currentLocation;
+            updateUserTracking(location.getLatitude(), location.getLongitude());
+            Toast.makeText(getActivity(), "Location is updated", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private double distance(double lat1, double lng1, double lat2, double lng2) {
+
+        double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
+
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+
+        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        double dist = earthRadius * c;
+
+        return dist; // output distance, in MILES
     }
 
 

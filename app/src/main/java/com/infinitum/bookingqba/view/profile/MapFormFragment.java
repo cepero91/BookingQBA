@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentMapFormBinding;
+import com.infinitum.bookingqba.util.AlertUtils;
 import com.wshunli.assets.CopyAssets;
 import com.wshunli.assets.CopyCreator;
 import com.wshunli.assets.CopyListener;
@@ -75,8 +77,10 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
     private MarkerSymbol userMarker;
     private ItemizedLayer<MarkerItem> mMarkerLayer;
 
-    private double argLatitude;
-    private double argLongitude;
+    private String argLatitude;
+    private String argLongitude;
+    private static final String LATITUDE = "lat";
+    private static final String LONGITUDE = "lon";
 
     private MapEventsReceiver mapEventsReceiver;
     private MapView mapView;
@@ -85,15 +89,22 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
     public MapFormFragment() {
     }
 
-    public static MapFormFragment newInstance() {
+    public static MapFormFragment newInstance(String latitude, String longitude) {
         MapFormFragment mapFormFragment = new MapFormFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(LATITUDE, latitude);
+        bundle.putString(LONGITUDE, longitude);
+        mapFormFragment.setArguments(bundle);
         return mapFormFragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (getArguments() != null) {
+            argLatitude = getArguments().getString(LATITUDE);
+            argLongitude = getArguments().getString(LONGITUDE);
+        }
     }
 
     @Nullable
@@ -110,7 +121,7 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
         binding.ivLocation.setOnClickListener(this);
 
         binding.setIsLoading(true);
-        binding.progressPvLinear.start();
+        binding.progressPvCircularInout.start();
 
         mapFilePath = sharedPreferences.getString(MAP_PATH, "");
 
@@ -127,14 +138,14 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
         compositeDisposable = new CompositeDisposable();
-        if(context instanceof MapRentLocation)
+        if (context instanceof MapRentLocation)
             mapRentLocation = (MapRentLocation) context;
     }
 
     @Override
     public void onDetach() {
         Timber.e("Fragment onDetach");
-        if(!disposable.isDisposed())
+        if (!disposable.isDisposed())
             disposable.dispose();
         compositeDisposable.clear();
         mapView.onDestroy();
@@ -158,7 +169,7 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
     @Override
     public void onDestroyView() {
         Timber.e("Fragment onDestroyView");
-        if(!disposable.isDisposed())
+        if (!disposable.isDisposed())
             disposable.dispose();
         compositeDisposable.clear();
         mapView.onDestroy();
@@ -237,7 +248,7 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
             mapView.map().layers().add(new LabelLayer(mapView.map(), tileLayer));
 
             // Render theme
-            mapView.map().setTheme(VtmThemes.OSMARENDER);
+            mapView.map().setTheme(VtmThemes.DEFAULT);
 
             // Scale bar
             MapScaleBar mapScaleBar = new DefaultMapScaleBar(mapView.map());
@@ -254,8 +265,14 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
 
     private void showViews() {
         binding.setIsLoading(false);
-        mapView.map().setMapPosition(23.1165, -82.3882, 2 << 12);
-        binding.progressPvLinear.stop();
+        if (!argLatitude.equals("") && !argLongitude.equals("")) {
+            setPasiveGeoPointLocation(Float.parseFloat(argLatitude), Float.parseFloat(argLongitude));
+        } else {
+            mapView.map().setMapPosition(23.1165, -82.3882, 2 << 12);
+        }
+        binding.progressPvCircularInout.stop();
+        new Handler().postDelayed(() -> AlertUtils.showCFInfoAlert(getActivity(),
+                "Presiona prolongadamente o pulse el boton de localizar"),2000);
     }
 
     @Override
@@ -270,7 +287,7 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.iv_location:
                 mapRentLocation.onLocationButtonClick();
         }
@@ -296,13 +313,13 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
 
 
     public void setGeoPointLocation(double latitude, double longitude) {
-        this.geoPointLocation = new GeoPoint(latitude,longitude);
+        this.geoPointLocation = new GeoPoint(latitude, longitude);
         updateUserTracking(latitude, longitude);
         mapRentLocation.onLocationUpdates(latitude, longitude);
     }
 
     public void setPasiveGeoPointLocation(double latitude, double longitude) {
-        this.geoPointLocation = new GeoPoint(latitude,longitude);
+        this.geoPointLocation = new GeoPoint(latitude, longitude);
         updateUserTracking(latitude, longitude);
     }
 
@@ -328,7 +345,7 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
         MarkerItem item = new MarkerItem(USER_GPS, "User", new GeoPoint(lati, longi));
         item.setMarker(userMarker);
         mMarkerLayer.addItem(item);
-        mapView.map().animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 16), Easing.Type.SINE_IN);
+        mapView.map().animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 14), Easing.Type.SINE_IN);
     }
 
     private void findAndRemoveLastUserTrack() {

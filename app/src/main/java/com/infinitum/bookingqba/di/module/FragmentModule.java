@@ -10,6 +10,7 @@ import com.infinitum.bookingqba.view.profile.MapFormFragment;
 import com.infinitum.bookingqba.view.profile.FiveStepFragment;
 import com.infinitum.bookingqba.view.profile.FourStepFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
+import com.infinitum.bookingqba.view.profile.MyRentsFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.profile.SecondStepFragment;
 import com.infinitum.bookingqba.view.profile.ThreeStepFragment;
@@ -63,6 +64,9 @@ public interface FragmentModule {
 
     @ContributesAndroidInjector
     FiveStepFragment bindFiveStepFragment();
+
+    @ContributesAndroidInjector
+    MyRentsFragment bindMyRentsFragment();
 
 
 }

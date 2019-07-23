@@ -78,7 +78,6 @@ public class APIUnitTest {
         };
         ArrayList<String> strings = new ArrayList<>(Arrays.asList(rent));
         user.setUserid("1");
-        user.setRents(strings);
         TestObserver<User> testObserver = new TestObserver<>();
         apiInterface.login(username,password,imei)
                 .map(response -> response.body())

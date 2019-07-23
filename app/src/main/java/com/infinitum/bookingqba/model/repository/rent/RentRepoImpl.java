@@ -252,6 +252,14 @@ public class RentRepoImpl implements RentRepository {
         return Single.just(OperationResult.success());
     }
 
+    @Override
+    public Flowable<Resource<List<Rent>>> allRentByUserId(String token,String userid) {
+        return retrofit.create(ApiInterface.class)
+                .allRentByUserId(token,userid)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
     private MultipartBody getMultipartImagesBody(String id, ArrayList<String> imagesPath) {
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.FORM);

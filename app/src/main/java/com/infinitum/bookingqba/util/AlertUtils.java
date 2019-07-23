@@ -10,16 +10,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewCompat;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
@@ -186,6 +189,18 @@ public class AlertUtils {
                     }, 400);
                 })
                 .show();
+    }
+
+    public static void showCFInfoAlert(Context context, String message){
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.NOTIFICATION);
+        // Title and message
+        builder.setTitle("Informacion");
+        builder.setMessage(message);
+        builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
+        builder.setAutoDismissAfter(5000);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.show();
     }
 
     public static void notifyPendingProfileActivate(Application application, String msg) {

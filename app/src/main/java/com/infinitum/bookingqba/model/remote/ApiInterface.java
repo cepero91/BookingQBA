@@ -149,6 +149,9 @@ public interface ApiInterface {
 
     //------------------- RENTAS ---------------------//
 
+    @GET("/api/user-rents")
+    Flowable<List<Rent>> allRentByUserId(@Header("Authorization") String token, @Query("userid") String value);
+
     @GET("/api/rents")
     Single<List<Rent>> getRents(@Header("Authorization") String token, @Query("value") String value);
 

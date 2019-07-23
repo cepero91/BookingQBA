@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -82,6 +83,7 @@ import static com.infinitum.bookingqba.util.Constants.LOCATION_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.REQUEST_CHECK_SETTINGS;
 import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
 import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
+import static com.infinitum.bookingqba.util.Constants.WRITE_EXTERNAL_CODE;
 
 public class AddRentActivity extends AppCompatActivity implements HasSupportFragmentInjector,
         MapRentLocation, View.OnClickListener, ImageFormAdapter.OnImageDeleteClick {
@@ -91,6 +93,7 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     private static final int PICK_PICTURE_CODE = 1560;
     //----Location
     private String locationPerm = Manifest.permission.ACCESS_FINE_LOCATION;
+    private String storagePerm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
     private LocationHelpers locationHelpers;
     private boolean isLocationRequest;
 
@@ -117,7 +120,6 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     private boolean formLocationOpen = true;
     private boolean formMunicipalityOpen = true;
     private boolean formEsentialOpen = true;
-    private boolean formCapabilityOpen = true;
     private boolean formFinallyOpen = true;
 
     //------------------- Amenities many to many
@@ -161,17 +163,7 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         initLocationApi();
 
         binding.slidingLayout.setTouchEnabled(false);
-        initMapFragment(savedInstanceState);
-    }
 
-    private void initMapFragment(Bundle saveInstanceState) {
-        if (saveInstanceState != null) {
-            mapFragment = (MapFormFragment) getSupportFragmentManager().getFragment(saveInstanceState, STATE_ACTIVE_FRAGMENT);
-        } else {
-            mapFragment = MapFormFragment.newInstance();
-        }
-        getSupportFragmentManager().beginTransaction().replace(R.id.map_content,
-                mapFragment).commit();
     }
 
 
@@ -283,6 +275,11 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
                     AlertUtils.showErrorTopToast(AddRentActivity.this, "Imposible ser localizado");
                     changeIconColor(false);
                     break;
+                case LocationSettingsStatusCodes.DEVELOPER_ERROR:
+                    isLocationRequest = false;
+                    AlertUtils.showErrorTopToast(AddRentActivity.this, "Imposible ser localizado");
+                    changeIconColor(false);
+                    break;
             }
         });
     }
@@ -317,6 +314,13 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
                     isLocationRequest = true;
                     changeIconColor(true);
                     startLocationUpdates();
+                }
+                break;
+            case WRITE_EXTERNAL_CODE:
+                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                    checkPermissionResult(permissions, WRITE_EXTERNAL_CODE, "Lectura y Escritura");
+                } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    pickGaleryFiles();
                 }
                 break;
         }
@@ -453,7 +457,14 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
                 }
                 break;
             case R.id.btn_location:
-                binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                if (rentFormObject.getLatitude() != null && !rentFormObject.getLatitude().equals("") &&
+                        rentFormObject.getLongitude() != null && !rentFormObject.getLongitude().equals("")) {
+                    mapFragment = MapFormFragment.newInstance(rentFormObject.getLatitude(), rentFormObject.getLongitude());
+                } else {
+                    mapFragment = MapFormFragment.newInstance("", "");
+                }
+                getSupportFragmentManager().beginTransaction().replace(R.id.map_content,
+                        mapFragment).runOnCommit(() -> binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED)).commit();
                 break;
             case R.id.fl_municipalities:
                 showMunicipalitiesDialog();
@@ -468,7 +479,9 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
                 showAmenitiesDialog();
                 break;
             case R.id.fl_galery:
-                pickGaleryFiles();
+                if (checkSinglePermission(storagePerm, WRITE_EXTERNAL_CODE)) {
+                    pickGaleryFiles();
+                }
                 break;
             case R.id.btn_upload:
                 uploadRent();
@@ -477,31 +490,37 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     }
 
     private void uploadRent() {
-        rentFormObject.setRentName(binding.etRentName.getText().toString());
-        rentFormObject.setAddress(binding.etAddress.getText().toString());
-        rentFormObject.setDescription(binding.etDescription.getText().toString());
-        rentFormObject.setEmail(binding.etEmail.getText().toString());
-        rentFormObject.setPhoneNumber(binding.etPersonalPhone.getText().toString());
-        rentFormObject.setPhoneHomeNumber(binding.etHomePhone.getText().toString());
-        rentFormObject.setMaxBaths(binding.etMaxBaths.getText().toString());
-        rentFormObject.setMaxBeds(binding.etMaxBeds.getText().toString());
-        rentFormObject.setMaxRooms(binding.etMaxRooms.getText().toString());
-        rentFormObject.setCapability(binding.etCapability.getText().toString());
-        rentFormObject.setRules(binding.etRules.getText().toString());
-        rentFormObject.setPrice(Float.parseFloat(binding.etPrice.getText().toString()));
-        rentFormObject.setLatitude(binding.tvLatitude.getText().toString());
-        rentFormObject.setLongitude(binding.tvLongitude.getText().toString());
-        ArrayList<String> amenitiesRentFormObjects = getAllAmenitiesRent();
-        disposable = rentViewModel.sendRentToServer(getString(R.string.device), rentFormObject,
-                amenitiesRentFormObjects, imagesFilesPath)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(operationResult -> {
-                    if (operationResult != null) {
-                        Timber.e(operationResult.getMessage());
-                    }
-                }, Timber::e);
-        compositeDisposable.add(disposable);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_upload_rent, null);
+        dialogBuilder.setView(dialogView);
+        AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+//        rentFormObject.setRentName(binding.etRentName.getText().toString());
+//        rentFormObject.setAddress(binding.etAddress.getText().toString());
+//        rentFormObject.setDescription(binding.etDescription.getText().toString());
+//        rentFormObject.setEmail(binding.etEmail.getText().toString());
+//        rentFormObject.setPhoneNumber(binding.etPersonalPhone.getText().toString());
+//        rentFormObject.setPhoneHomeNumber(binding.etHomePhone.getText().toString());
+//        rentFormObject.setMaxBaths(binding.etMaxBaths.getText().toString());
+//        rentFormObject.setMaxBeds(binding.etMaxBeds.getText().toString());
+//        rentFormObject.setMaxRooms(binding.etMaxRooms.getText().toString());
+//        rentFormObject.setCapability(binding.etCapability.getText().toString());
+//        rentFormObject.setRules(binding.etRules.getText().toString());
+//        rentFormObject.setPrice(Float.parseFloat(binding.etPrice.getText().toString()));
+//        rentFormObject.setLatitude(binding.tvLatitude.getText().toString());
+//        rentFormObject.setLongitude(binding.tvLongitude.getText().toString());
+//        ArrayList<String> amenitiesRentFormObjects = getAllAmenitiesRent();
+//        disposable = rentViewModel.sendRentToServer(getString(R.string.device), rentFormObject,
+//                amenitiesRentFormObjects, imagesFilesPath)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(operationResult -> {
+//                    if (operationResult != null) {
+//                        Timber.e(operationResult.getMessage());
+//                    }
+//                }, Timber::e);
+//        compositeDisposable.add(disposable);
     }
 
     private ArrayList<String> getAllAmenitiesRent() {

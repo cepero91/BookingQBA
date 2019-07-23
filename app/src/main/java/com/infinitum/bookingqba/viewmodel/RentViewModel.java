@@ -69,6 +69,7 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -181,6 +182,20 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     //------------------------- ADD NEW RENT -------------------------------------------- //
+
+    public Flowable<Resource<List<String>>> fetchRentByUserId(String token, String userId) {
+        return rentRepository.allRentByUserId(token, userId).map(new Function<Resource<List<Rent>>, Resource<List<String>>>() {
+            @Override
+            public Resource<List<String>> apply(Resource<List<Rent>> listResource) throws Exception {
+                List<String> stringList = new ArrayList<>();
+                if (listResource.data != null) {
+                    for (Rent rent : listResource.data)
+                        stringList.add(rent.getName());
+                }
+                return Resource.success(stringList);
+            }
+        });
+    }
 
     public Single<Resource<List<SearchableSelectorModel>>> getAllRemoteReferenceZone(String token) {
 //        List<SearchableSelectorModel> formSelectorItemList = new ArrayList<>();
@@ -302,10 +317,9 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                                                     ArrayList<String> amenitiesRentFormObjects,
                                                     ArrayList<String> imagesPath) {
         Rent newRent = transformRentFormToRent(rentFormObject);
-        RentAmenities rentAmenities = new RentAmenities(rentFormObject.getUuid(),amenitiesRentFormObjects);
+        RentAmenities rentAmenities = new RentAmenities(rentFormObject.getUuid(), amenitiesRentFormObjects);
         return rentRepository.addRent(token, newRent, rentAmenities, imagesPath);
     }
-
 
 
     private Rent transformRentFormToRent(RentFormObject rentFormObject) {

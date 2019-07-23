@@ -496,7 +496,6 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
         editor.putString(USER_NAME, user.getUsername());
         editor.putString(USER_ID, user.getUserid());
         editor.putString(USER_AVATAR, user.getAvatar());
-        editor.putStringSet(USER_RENTS, new HashSet<>(user.getRents()));
         editor.apply();
         invalidateOptionsMenu();
     }

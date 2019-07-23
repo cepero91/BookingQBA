@@ -61,4 +61,6 @@ public interface RentRepository {
 
     Single<OperationResult> addRent(String token, Rent rent, RentAmenities rentAmenities, ArrayList<String> imagesPath);
 
+    Flowable<Resource<List<Rent>>> allRentByUserId(String token, String userid);
+
 }

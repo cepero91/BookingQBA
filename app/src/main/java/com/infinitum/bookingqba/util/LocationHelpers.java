@@ -24,7 +24,7 @@ import java.lang.ref.WeakReference;
 import timber.log.Timber;
 
 public class LocationHelpers {
-    private WeakReference<Activity> activityWeakReference;
+    private Activity activity;
 
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
@@ -37,14 +37,14 @@ public class LocationHelpers {
     private LocationCallback locationCallback;
     private LocationReference locationReference;
 
-    public LocationHelpers(Activity activityWeakReference) {
-        this.activityWeakReference = new WeakReference<>(activityWeakReference);
+    public LocationHelpers(Activity activity) {
+        this.activity = activity;
         setupLocationApi();
     }
 
     private void setupLocationApi() {
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(activityWeakReference.get());
-        mSettingsClient = LocationServices.getSettingsClient(activityWeakReference.get());
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this.activity);
+        mSettingsClient = LocationServices.getSettingsClient(this.activity);
         createLocationRequest();
         buildLocationSettingsRequest();
     }
@@ -71,7 +71,7 @@ public class LocationHelpers {
     public void startLocationUpdate(OnFailureListener onFailureListener){
         // Begin by checking if the device has the necessary location settings.
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
-                .addOnSuccessListener(activityWeakReference.get(), locationSettingsResponse -> {
+                .addOnSuccessListener(this.activity, locationSettingsResponse -> {
                     //noinspection MissingPermission
                     mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                             locationReference, Looper.myLooper());
@@ -83,7 +83,7 @@ public class LocationHelpers {
 
     public void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates(locationReference)
-                .addOnCompleteListener(activityWeakReference.get(), task -> {
+                .addOnCompleteListener(this.activity, task -> {
                     Timber.e("Location Callback removed");
                 });
     }

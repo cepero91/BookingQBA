@@ -156,4 +156,9 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="sobre_ubicacion">Sobre ubicacion</string>
     <string name="informacion_esencial">Informacion Esencial</string>
     <string name="ultimos_detalles">Ultimos detalles</string>
+    <string name="title_activity_test">TestActivity</string>
+
+    <string name="dialog_before_run_title">Permisos requeridos</string>
+    <string name="dialog_before_run_message">Por favor, acepte los permisos para el correcto funcionamiento!</string>
+    <string name="dialog_positive_button">ok, lo entiendo</string>
 </resources>
