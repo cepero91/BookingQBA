@@ -29,6 +29,7 @@ import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.muddzdev.styleabletoast.StyleableToast;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import de.mateware.snacky.Snacky;
 
 import static android.view.Gravity.CENTER;
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
@@ -223,6 +224,55 @@ public class AlertUtils {
                 .setAutoCancel(true);
 
         notificationManager.notify(NOTIFICATION_ID, notification.build());
+    }
+
+    public static void showSuccessSnackbar(Activity activity,String message) {
+        Snacky.builder()
+                .setActivity(activity)
+                .setText(message)
+                .setDuration(8000)
+                .setBackgroundColor(Color.parseColor("#009688"))
+                .setIcon(R.drawable.ic_check_circle)
+                .build()
+                .show();
+    }
+
+    public static void showErrorSnackbar(Activity activity,String message) {
+        Snacky.builder()
+                .setActivity(activity)
+                .setText(message)
+                .setDuration(5000)
+                .setBackgroundColor(Color.parseColor("#D32F2F"))
+                .setIcon(R.drawable.ic_exclamation_triangle)
+                .build()
+                .show();
+    }
+
+    public static void showErrorSnackbarWithAction(Activity activity, String message, View.OnClickListener onClickListener, String action) {
+        Snacky.builder()
+                .setActivity(activity)
+                .setDuration(Snacky.LENGTH_INDEFINITE)
+                .setText(message)
+                .setActionText(action)
+                .setActionClickListener(onClickListener)
+                .setActionTextColor(Color.WHITE)
+                .setBackgroundColor(Color.parseColor("#D32F2F"))
+                .setIcon(R.drawable.ic_exclamation_triangle)
+                .build()
+                .show();
+    }
+
+    public static void showCFErrorAlertWithAction(Context context, String title, String message, DialogInterface.OnClickListener onClickListener,String buttonTitle){
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
+        // Title and message
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setTextGravity(Gravity.START);
+        builder.setIcon(R.drawable.ic_unlock_alt);
+        builder.addButton(buttonTitle, -1, -1, CFAlertDialog.CFAlertActionStyle.NEGATIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.show();
     }
 
 

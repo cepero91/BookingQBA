@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -16,6 +17,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.view.Gravity;
+
+import com.crowdfire.cfalertdialog.CFAlertDialog;
+import com.infinitum.bookingqba.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +34,9 @@ public class PermissionHelper {
     private Runnable deniedListener;
     private Runnable neverAskAgainListener;
     private AlertDialog.Builder dialogBeforeRunBuilder;
+    private CFAlertDialog.Builder cfDialogBeforeRunBuilder;
     private int dialogBeforeAskPositiveButton;
+    private String stringDialogBeforeAskPositiveButton;
     private int dialogBeforeAskPositiveButtonColor = DIALOG_WITHOUT_CUSTOM_COLOR;
     private final static int DIALOG_WITHOUT_CUSTOM_COLOR = 0;
 
@@ -133,7 +140,15 @@ public class PermissionHelper {
                                                 @StringRes int positiveButtonRes) {
 
         this.dialogBeforeAskPositiveButton = positiveButtonRes;
-        dialogBeforeRunBuilder = getDialogBuilder(titleRes, messageRes);
+        cfDialogBeforeRunBuilder = getCFDialogBuilder(titleRes, messageRes);
+        return this;
+    }
+
+    public PermissionHelper withCFDialogBeforeRun(@StringRes int titleRes,
+                                                  @StringRes int messageRes,
+                                                  String positiveButtonString) {
+        this.stringDialogBeforeAskPositiveButton = positiveButtonString;
+        cfDialogBeforeRunBuilder = getCFDialogBuilder(titleRes, messageRes);
         return this;
     }
 
@@ -165,6 +180,19 @@ public class PermissionHelper {
         dialogBuilder.setMessage(context.getString(messageRes));
         dialogBuilder.setCancelable(false);
         return dialogBuilder;
+    }
+
+    private CFAlertDialog.Builder getCFDialogBuilder(@StringRes int titleRes, @StringRes int messageRes) {
+        final Context context = getContext();
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
+        // Title and message
+        builder.setTitle(titleRes);
+        builder.setMessage(messageRes);
+        builder.setTextGravity(Gravity.START);
+        builder.setIcon(R.drawable.ic_unlock_alt);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        return builder;
     }
 
     /**
@@ -229,8 +257,8 @@ public class PermissionHelper {
      */
     @SuppressLint("NewApi")
     private void checkDialogAndAskPermissions(final String[] permissionsForRequest) {
-        if (dialogBeforeRunBuilder != null && isNotContainsNeverAskAgain(permissionsForRequest)) {
-            showDialogBeforeRun(permissionsForRequest);
+        if (cfDialogBeforeRunBuilder != null && isNotContainsNeverAskAgain(permissionsForRequest)) {
+            showCFDialogBeforeRun(permissionsForRequest);
         } else {
             askPermissions(permissionsForRequest);
         }
@@ -270,6 +298,15 @@ public class PermissionHelper {
         if (dialogBeforeAskPositiveButtonColor != DIALOG_WITHOUT_CUSTOM_COLOR) {
             dialogBeforeRun.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(dialogBeforeAskPositiveButtonColor);
         }
+    }
+
+    private void showCFDialogBeforeRun(final String[] permissionsForRequest) {
+        cfDialogBeforeRunBuilder.addButton(stringDialogBeforeAskPositiveButton, -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE,
+                CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, (dialog, which) -> {
+                    askPermissions(permissionsForRequest);
+                    dialog.dismiss();
+                });
+        cfDialogBeforeRunBuilder.show();
     }
 
     /**

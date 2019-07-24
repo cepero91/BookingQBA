@@ -65,6 +65,7 @@ public class UserAuthActivity extends AppCompatActivity implements HasSupportFra
         saveUserDataToPreferences(user);
         Intent intent = new Intent(this, HomeActivity.class);
         intent.putExtra(USER_NAME,user.getUsername());
+        intent.putExtra(USER_AVATAR,user.getAvatar());
         setResult(Activity.RESULT_OK, intent);
         this.finish();
     }

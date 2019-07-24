@@ -281,7 +281,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                     if (resultResource.status == Resource.Status.SUCCESS) {
                         showSuccessSnackbar("Codigo reeviado con exito");
                     } else {
-                        //showErrorMessage()
+                        showErrorSnackbar("Oops.. algo anda mal");
                     }
                 }, Timber::e);
         compositeDisposable.add(disposable);

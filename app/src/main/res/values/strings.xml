@@ -159,6 +159,7 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="title_activity_test">TestActivity</string>
 
     <string name="dialog_before_run_title">Permisos requeridos</string>
-    <string name="dialog_before_run_message">Por favor, acepte los permisos para el correcto funcionamiento!</string>
+    <string name="dialog_before_run_message">Por favor, acepte los permisos para el correcto funcionamiento de la aplicación.</string>
     <string name="dialog_positive_button">ok, lo entiendo</string>
+    <string name="ubication_perm_denied">Ubicación no disponible. Conceda los permisos</string>
 </resources>

@@ -60,6 +60,7 @@ import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -81,6 +82,7 @@ import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
 import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
+import com.infinitum.bookingqba.view.base.LocationActivity;
 import com.infinitum.bookingqba.view.info.DialogFeedback;
 import com.infinitum.bookingqba.view.info.InfoFragment;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
@@ -159,7 +161,7 @@ import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
-public class HomeActivity extends LocationBaseActivity implements HasSupportFragmentInjector,
+public class HomeActivity extends LocationActivity implements HasSupportFragmentInjector,
         FragmentNavInteraction, NavigationView.OnNavigationItemSelectedListener,
         FilterInteraction, MapFragment.OnFragmentMapInteraction, InfoInteraction,
         DialogFeedback.FeedbackInteraction, MyRentsFragment.AddRentClick {
@@ -174,7 +176,6 @@ public class HomeActivity extends LocationBaseActivity implements HasSupportFrag
     private Location mCurrentLocation;
     private Location lastKnowLocation;
     private boolean mRequestingLocationUpdates = false;
-    private LocationHelpers locationHelper;
 
 
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
@@ -210,6 +211,8 @@ public class HomeActivity extends LocationBaseActivity implements HasSupportFrag
         super.onCreate(savedInstanceState);
         homeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
 
+        Timber.e("HomeActivity");
+
         setupToolbar();
 
         initDrawerLayout();
@@ -218,7 +221,7 @@ public class HomeActivity extends LocationBaseActivity implements HasSupportFrag
 
         initializeFragment(savedInstanceState);
 
-        getLocation();
+        setLocationCallback();
 
 //        setupLocationApi();
 
@@ -229,6 +232,22 @@ public class HomeActivity extends LocationBaseActivity implements HasSupportFrag
 //        ensureLastLocationInit();
 //        updateCurrentLocation(null);
 
+    }
+
+    private void setLocationCallback(){
+        locationHelpers.setLocationCallback(new LocationCallback(){
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                Toast.makeText(HomeActivity.this, "Location Change", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLocationAvailability(LocationAvailability locationAvailability) {
+                super.onLocationAvailability(locationAvailability);
+                Toast.makeText(HomeActivity.this, "Location Available", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // ------------------ INITIALIZE UI ----------------------------------- //
@@ -284,163 +303,11 @@ public class HomeActivity extends LocationBaseActivity implements HasSupportFrag
         homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
     }
 
-    // ---------------------- LOCATION METHOD ------------------------ //
-
-//    private void setupLocationApi() {
-//        locationHelper = new LocationHelpers(this);
-//        locationHelper.setLocationCallback(new LocationCallback() {
-//            @Override
-//            public void onLocationResult(LocationResult locationResult) {
-//                super.onLocationResult(locationResult);
-//                mCurrentLocation = locationResult.getLastLocation();
-//                updateMapLocation(mCurrentLocation);
-//            }
-//        });
-//    }
-
     private void updateMapLocation(Location mCurrentLocation) {
         if (mCurrentLocation != null && mFragment instanceof MapFragment) {
             ((MapFragment) mFragment).updateUserTracking(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         }
     }
-
-    @SuppressLint("MissingPermission")
-    private void startLocationUpdates() {
-        locationHelper.startLocationUpdate(e -> {
-            int statusCode = ((ApiException) e).getStatusCode();
-            switch (statusCode) {
-                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                    try {
-                        ResolvableApiException rae = (ResolvableApiException) e;
-                        rae.startResolutionForResult(HomeActivity.this, REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException sie) {
-                        Timber.e(sie);
-                    }
-                    break;
-                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                    mRequestingLocationUpdates = false;
-                    AlertUtils.showErrorToast(HomeActivity.this, "Imposible ser localizado");
-                    invalidateOptionsMenu();
-                    break;
-            }
-        });
-    }
-
-//    private void stopLocationUpdates() {
-//        locationHelper.stopLocationUpdates();
-//        mRequestingLocationUpdates = false;
-//        invalidateOptionsMenu();
-//    }
-
-    // ------------------------- PERMISSION -------------------------------- //
-
-    public void initPermissionRequest() {
-        permissionHelper = new PermissionHelper(this);
-        permissionHelper.check(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-                .withDialogBeforeRun(R.string.dialog_before_run_title, R.string.dialog_before_run_message, R.string.dialog_positive_button)
-                .setDialogPositiveButtonColor(android.R.color.holo_orange_dark)
-                .onSuccess(this::onPermissionSuccess)
-                .onDenied(this::onPermissionDenied)
-                .onNeverAskAgain(this::onPermissionNeverAskAgain)
-                .run();
-    }
-
-    private void onPermissionNeverAskAgain() {
-        Toast.makeText(this, "onPermissionNeverAskAgain", Toast.LENGTH_SHORT).show();
-    }
-
-    private void onPermissionDenied() {
-        Toast.makeText(this, "onPermissionDenied", Toast.LENGTH_SHORT).show();
-    }
-
-    private void onPermissionSuccess() {
-        Toast.makeText(this, "onPermissionSuccess", Toast.LENGTH_SHORT).show();
-    }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        permissionHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//    }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-//                                           @NonNull int[] grantResults) {
-//        if (requestCode == LOCATION_REQUEST_CODE) {
-//            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-//                checkPermissionResult(permissions, LOCATION_REQUEST_CODE, "Localizacion");
-//            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                mRequestingLocationUpdates = true;
-//                MenuItem menuItem = homeBinding.toolbar.getMenu().findItem(R.id.action_gps);
-//                if (menuItem != null) {
-//                    changeMenuIcon(menuItem);
-//                }
-//                startLocationUpdates();
-//            }
-//        } else if (requestCode == READ_PHONE_REQUEST_CODE) {
-//            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-//                checkPermissionResult(permissions, READ_PHONE_REQUEST_CODE, "Estado del Telefono");
-//            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                if (sharedPreferences.getString(IMEI, "").equals("")) {
-//                    deviceID = getDeviceUniversalID();
-//                    sharedPreferences.edit().putString(IMEI, deviceID).apply();
-//                }
-//            }
-//        }
-//    }
-//
-//    private boolean checkSinglePermission(String perm, int requestCode) {
-//        if (ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
-//            String[] perms = new String[1];
-//            perms[0] = perm;
-//            ActivityCompat.requestPermissions(this, perms, requestCode);
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//    private boolean checkMultiplePermission(String perm, int requestCode) {
-//        if (ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
-//            String[] perms = new String[1];
-//            perms[0] = perm;
-//            ActivityCompat.requestPermissions(this, perms, requestCode);
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//    private void checkPermissionResult(String[] permissions, int requestCode, String permCodeName) {
-//        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
-//            String msg = String.format("Permiso de %s requerido, por favor otórguelo.", permCodeName);
-//            showDialog(msg, "Otorgar",
-//                    (dialog, which) -> {
-//                        dialog.dismiss();
-//                        checkSinglePermission(permissions[0], requestCode);
-//                    }, "No, cerrar", (dialog, which) -> dialog.dismiss(), false);
-//        } else {
-//            String msg = "Has negado permanentemente el permiso requerido. Puede que la aplicación no funcione correctamente.";
-//            showDialog(msg, "Ir",
-//                    (dialog, which) -> {
-//                        dialog.dismiss();
-//                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-//                                Uri.fromParts("package", getPackageName(), null));
-//                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        startActivity(intent);
-//                    }, "No, cerrar", (dialog, which) -> dialog.dismiss(), false);
-//        }
-//    }
-//
-//    public void showDialog(String msg, String positiveLabel, DialogInterface.OnClickListener onClickListener,
-//                           String negativeLevel, DialogInterface.OnClickListener onCancelListener, boolean isCancelable) {
-//
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Aviso!!");
-//        builder.setMessage(msg);
-//        builder.setCancelable(isCancelable);
-//        builder.setPositiveButton(positiveLabel, onClickListener);
-//        builder.setNegativeButton(negativeLevel, onCancelListener);
-//        AlertDialog alertDialog = builder.create();
-//        alertDialog.show();
-//    }
 
     //------------------------------ ACTIVITY RESULT ---------------------- //
 
@@ -475,20 +342,12 @@ public class HomeActivity extends LocationBaseActivity implements HasSupportFrag
                         break;
                 }
                 break;
-            case REQUEST_CHECK_SETTINGS:
-                switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        break;
-                    case Activity.RESULT_CANCELED:
-                        AlertUtils.showErrorToast(this, "Imposible ser localizado");
-                        break;
-                }
-                break;
             case LOGIN_REQUEST_CODE:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         if (data != null && data.hasExtra(USER_NAME)) {
                             showLoginSuccessAlert(data.getStringExtra(USER_NAME));
+                            updateNavHeader(data.getStringExtra(USER_NAME),data.getStringExtra(USER_AVATAR));
                         }
                         break;
                 }
@@ -579,26 +438,6 @@ public class HomeActivity extends LocationBaseActivity implements HasSupportFrag
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-//    private void initLocation(MenuItem item) {
-////        if (checkSinglePermission(locationPerm, LOCATION_REQUEST_CODE)) {
-//        if (!mRequestingLocationUpdates) {
-//            mRequestingLocationUpdates = true;
-//            changeMenuIcon(item);
-//            startLocationUpdates();
-//        } else {
-//            stopLocationUpdates();
-//        }
-////        }
-//    }
-
-    private void changeMenuIcon(MenuItem item) {
-        if (mRequestingLocationUpdates) {
-            item.setIcon(R.drawable.ic_crosshairs_focus);
-        } else {
-            item.setIcon(R.drawable.ic_crosshairs);
-        }
     }
 
     private void confirmLogout() {
@@ -793,18 +632,17 @@ public class HomeActivity extends LocationBaseActivity implements HasSupportFrag
         startActivity(Intent.createChooser(intent, "Enviar email..."));
     }
 
-    // -------------------------- LIVECYCLE ACTIVITY METHOD -------------------------- //
-
     @Override
     public void onAddRentClick() {
         Intent intent = new Intent(this, AddRentActivity.class);
         startActivity(intent);
     }
 
-    //--------------------------------------- OTHER LOCATION CONFIG --------------------------
+    // -------------------------- LIVECYCLE ACTIVITY METHOD -------------------------- //
 
     @Override
     protected void onDestroy() {
+        System.gc();
         super.onDestroy();
     }
 
@@ -816,79 +654,6 @@ public class HomeActivity extends LocationBaseActivity implements HasSupportFrag
     @Override
     protected void onResume() {
         super.onResume();
-
-
     }
 
-    @Override
-    public LocationConfiguration getLocationConfiguration() {
-        return new LocationConfiguration.Builder()
-                .askForPermission(new PermissionConfiguration.Builder().rationaleMessage("Give permission").build())
-                .useGooglePlayServices(new GooglePlayServicesConfiguration.Builder().build())
-                .useDefaultProviders(new DefaultProviderConfiguration.Builder()
-                        .acceptableAccuracy(5.0f)
-                        .requiredDistanceInterval(0)
-                        .gpsMessage("Turn GPS on?")
-                        .build())
-                .keepTracking(true)
-                .build();
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        Toast.makeText(this, "onLocationChanged", Toast.LENGTH_SHORT).show();
-        if(mFragment instanceof MapFragment)
-            ((MapFragment) mFragment).updateCurrentLocation(location);
-    }
-
-    @Override
-    public void onLocationFailed(int type) {
-        switch (type) {
-            case FailType.TIMEOUT: {
-                showToast("Couldn't get location, and timeout!");
-                break;
-            }
-            case FailType.PERMISSION_DENIED: {
-                showToast("Couldn't get location, because user didn't give permission!");
-                break;
-            }
-            case FailType.NETWORK_NOT_AVAILABLE: {
-                showToast("Couldn't get location, because network is not accessible!");
-                break;
-            }
-            case FailType.GOOGLE_PLAY_SERVICES_NOT_AVAILABLE: {
-                showToast("Couldn't get location, because Google Play Services not available!");
-                break;
-            }
-            case FailType.GOOGLE_PLAY_SERVICES_CONNECTION_FAIL: {
-                showToast("Couldn't get location, because Google Play Services connection failed!");
-                break;
-            }
-            case FailType.GOOGLE_PLAY_SERVICES_SETTINGS_DIALOG: {
-                showToast("Couldn't display settingsApi dialog!");
-                break;
-            }
-            case FailType.GOOGLE_PLAY_SERVICES_SETTINGS_DENIED: {
-                showToast("Couldn't get location, because user didn't activate providers via settingsApi!");
-                break;
-            }
-            case FailType.VIEW_DETACHED: {
-                showToast("Couldn't get location, because in the process view was detached!");
-                break;
-            }
-            case FailType.VIEW_NOT_REQUIRED_TYPE: {
-                showToast("Couldn't get location, "
-                        + "because view wasn't sufficient enough to fulfill given configuration!");
-                break;
-            }
-            case FailType.UNKNOWN: {
-                showToast("Ops! Something went wrong!");
-                break;
-            }
-        }
-    }
-
-    private void showToast(String msg){
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
 }
