@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.di.module;
 
 
+import com.infinitum.bookingqba.view.base.LocationActivity;
 import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.profile.AddRentActivity;
 import com.infinitum.bookingqba.view.profile.UserAuthActivity;
@@ -37,6 +38,8 @@ public interface ActivityModule {
     @ContributesAndroidInjector(modules = FragmentModule.class)
     UserAuthActivity bindUserAuthActivity();
 
+//    @ContributesAndroidInjector
+//    LocationActivity bindLocationActivity();
 
 
 }

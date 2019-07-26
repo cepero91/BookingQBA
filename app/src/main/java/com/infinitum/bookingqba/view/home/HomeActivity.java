@@ -114,6 +114,7 @@ import com.yayandroid.locationmanager.constants.ProviderType;
 import com.yayandroid.locationmanager.providers.dialogprovider.SimpleMessageDialogProvider;
 
 import java.lang.ref.WeakReference;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
@@ -173,27 +174,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     private FilterFragment filterFragment;
 
     //------------------------- LOCATION VAR --------------------------//
-    private Location mCurrentLocation;
-    private Location lastKnowLocation;
-    private boolean mRequestingLocationUpdates = false;
-
-
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
-            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-
-    private FusedLocationProviderClient mFusedLocationClient;
-    private SettingsClient mSettingsClient;
-    private LocationRequest mLocationRequest;
-    private LocationSettingsRequest mLocationSettingsRequest;
-    private LocationCallback locationCallback;
-
-
-    //-------------------------- PERMISSION VAR --------------------------------//
-    private String locationPerm = Manifest.permission.ACCESS_FINE_LOCATION;
-    private String readPhonePerm = Manifest.permission.READ_PHONE_STATE;
-
-
+    private Location currentLocation;
     //-------------------------- LOGING FRAGMENT ------------------------------//
     private boolean loginIsClicked = false;
 
@@ -234,18 +215,20 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
     }
 
-    private void setLocationCallback(){
-        locationHelpers.setLocationCallback(new LocationCallback(){
+    private void setLocationCallback() {
+        locationHelpers.setLocationCallback(new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-                Toast.makeText(HomeActivity.this, "Location Change", Toast.LENGTH_SHORT).show();
+                currentLocation = locationResult.getLastLocation();
+                if (mFragment instanceof MapFragment)
+                    ((MapFragment) mFragment).updateCurrentLocation(currentLocation);
             }
 
             @Override
             public void onLocationAvailability(LocationAvailability locationAvailability) {
                 super.onLocationAvailability(locationAvailability);
-                Toast.makeText(HomeActivity.this, "Location Available", Toast.LENGTH_SHORT).show();
+                Toast.makeText(HomeActivity.this, "Location av "+locationAvailability.isLocationAvailable(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -347,7 +330,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                     case Activity.RESULT_OK:
                         if (data != null && data.hasExtra(USER_NAME)) {
                             showLoginSuccessAlert(data.getStringExtra(USER_NAME));
-                            updateNavHeader(data.getStringExtra(USER_NAME),data.getStringExtra(USER_AVATAR));
+                            updateNavHeader(data.getStringExtra(USER_NAME), data.getStringExtra(USER_AVATAR));
                         }
                         break;
                 }
@@ -574,6 +557,15 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         intent.putExtra("url", geoRent.getImagePath());
         intent.putExtra("wished", geoRent.getWished());
         startActivityForResult(intent, MY_REQUEST_CODE);
+    }
+
+    @Override
+    public void getLastLocation() {
+        if (isLocationRunning() && currentLocation == null) {
+            AlertUtils.showSuccessLocationToast(this,"Ubicando...");
+        } else if (!isLocationRunning()){
+            startLocationUpdatesWithUnknowPermission();
+        }
     }
 
     // -------------------------- FILTER --------------------------------------------- //

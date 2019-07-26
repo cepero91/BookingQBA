@@ -4,11 +4,11 @@
     android:layout_height="wrap_content"
     android:padding="5dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
     <com.airbnb.lottie.LottieAnimationView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_gravity="center"
         app:lottie_fileName="lottie/house_upload.json"
         app:lottie_loop="true"
@@ -20,8 +20,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Subiendo..."
-        android:textSize="14sp"
+        android:text="  Subiendo..."
+        android:textSize="16sp"
         android:fontFamily="@font/poppinsregular"/>
 
 </LinearLayout>

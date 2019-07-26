@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.github.siyamed.shapeimageview.RoundedImageView;
@@ -43,6 +44,7 @@ import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
@@ -50,10 +52,13 @@ import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityAddRentBinding;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.LocationHelpers;
+import com.infinitum.bookingqba.view.base.LocationActivity;
+import com.infinitum.bookingqba.view.map.MapFragment;
 import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
 import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
 import com.infinitum.bookingqba.view.profile.uploaditem.AmenitiesRentFormObject;
 import com.infinitum.bookingqba.view.profile.uploaditem.RentFormObject;
+import com.infinitum.bookingqba.view.widgets.DialogLocationConfirmView;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -85,18 +90,14 @@ import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
 import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
 import static com.infinitum.bookingqba.util.Constants.WRITE_EXTERNAL_CODE;
 
-public class AddRentActivity extends AppCompatActivity implements HasSupportFragmentInjector,
-        MapRentLocation, View.OnClickListener, ImageFormAdapter.OnImageDeleteClick {
+public class AddRentActivity extends LocationActivity implements HasSupportFragmentInjector,
+        MapRentLocation, View.OnClickListener, ImageFormAdapter.OnImageDeleteClick
+        , DialogLocationConfirmView.DialogLocationConfirmListener{
 
     private ActivityAddRentBinding binding;
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
     private static final int PICK_PICTURE_CODE = 1560;
     //----Location
-    private String locationPerm = Manifest.permission.ACCESS_FINE_LOCATION;
-    private String storagePerm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-    private LocationHelpers locationHelpers;
-    private boolean isLocationRequest;
-
     private RentFormObject rentFormObject;
 
     @Inject
@@ -108,7 +109,7 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     @Inject
     SharedPreferences sharedPreferences;
 
-    private Location mCurrentLocation;
+    private Location currentLocation;
 
     private RentViewModel rentViewModel;
     private Disposable disposable;
@@ -140,6 +141,8 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_rent);
 
+        compositeDisposable = new CompositeDisposable();
+
         imagesFilesPath = new ArrayList<>();
 
         binding.flLocationBar.setOnClickListener(this);
@@ -155,17 +158,31 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         binding.btnUpload.setOnClickListener(this);
 
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
-        compositeDisposable = new CompositeDisposable();
 
         rentFormObject = new RentFormObject(UUID.randomUUID().toString());
 
-        isLocationRequest = false;
-        initLocationApi();
-
         binding.slidingLayout.setTouchEnabled(false);
+
+        setLocationCallback();
 
     }
 
+    private void setLocationCallback() {
+        locationHelpers.setLocationCallback(new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                currentLocation = locationResult.getLastLocation();
+                //todo something with locationResult
+            }
+
+            @Override
+            public void onLocationAvailability(LocationAvailability locationAvailability) {
+                super.onLocationAvailability(locationAvailability);
+                Toast.makeText(AddRentActivity.this, "Location av " + locationAvailability.isLocationAvailable(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -191,10 +208,6 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     public void onBackPressed() {
         if ((binding.slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || binding.slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
             binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            if (isLocationRequest) {
-                locationHelpers.stopLocationUpdates();
-                isLocationRequest = false;
-            }
         } else {
             super.onBackPressed();
         }
@@ -204,18 +217,6 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CHECK_SETTINGS:
-                switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        startLocationUpdates();
-                        break;
-                    case Activity.RESULT_CANCELED:
-                        isLocationRequest = false;
-                        AlertUtils.showErrorToast(this, "Imposible ser localizado");
-                        changeIconColor(false);
-                        break;
-                }
-                break;
             case PICK_PICTURE_CODE:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
@@ -238,63 +239,12 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     }
 
     //------------------------------------- LOCATION API ------------------------------------
-    private void initLocationApi() {
-        isLocationRequest = false;
-        locationHelpers = new LocationHelpers(this);
-        locationHelpers.setLocationCallback(new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                mCurrentLocation = locationResult.getLastLocation();
-                updateMapLocation(mCurrentLocation);
-            }
-        });
-    }
-
     private void updateMapLocation(Location mCurrentLocation) {
         if (mapFragment != null) {
             mapFragment.setGeoPointLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private void startLocationUpdates() {
-        locationHelpers.startLocationUpdate(e -> {
-            int statusCode = ((ApiException) e).getStatusCode();
-            switch (statusCode) {
-                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                    try {
-                        ResolvableApiException rae = (ResolvableApiException) e;
-                        rae.startResolutionForResult(AddRentActivity.this, REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException sie) {
-                        Timber.e(sie);
-                    }
-                    break;
-                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                    isLocationRequest = false;
-                    AlertUtils.showErrorTopToast(AddRentActivity.this, "Imposible ser localizado");
-                    changeIconColor(false);
-                    break;
-                case LocationSettingsStatusCodes.DEVELOPER_ERROR:
-                    isLocationRequest = false;
-                    AlertUtils.showErrorTopToast(AddRentActivity.this, "Imposible ser localizado");
-                    changeIconColor(false);
-                    break;
-            }
-        });
-    }
-
-    private void stopLocationUpdates() {
-        locationHelpers.stopLocationUpdates();
-        isLocationRequest = false;
-        changeIconColor(false);
-    }
-
-    private void changeIconColor(boolean isLocationRequest) {
-        if (mapFragment != null) {
-            mapFragment.changeIconColor(isLocationRequest);
-        }
-    }
 
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
@@ -307,18 +257,9 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
-            case LOCATION_REQUEST_CODE:
-                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    checkPermissionResult(permissions, LOCATION_REQUEST_CODE, "Localizacion");
-                } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    isLocationRequest = true;
-                    changeIconColor(true);
-                    startLocationUpdates();
-                }
-                break;
             case WRITE_EXTERNAL_CODE:
                 if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    checkPermissionResult(permissions, WRITE_EXTERNAL_CODE, "Lectura y Escritura");
+                    checkPermissionResult(permissions);
                 } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     pickGaleryFiles();
                 }
@@ -337,51 +278,22 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         return true;
     }
 
-    private void checkPermissionResult(String[] permissions, int requestCode, String permCodeName) {
+    private void checkPermissionResult(String[] permissions) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])) {
-            String msg = String.format(getString(R.string.perm_need_msg), permCodeName);
-            showDialog(msg, "Otorgar",
-                    (dialog, which) -> {
-                        dialog.dismiss();
-                        checkSinglePermission(permissions[0], requestCode);
-                    }, "No, cerrar", (dialog, which) -> dialog.dismiss(), false);
+            AlertUtils.showErrorSnackbar(this, "Imposible agregar imágenes. Otorge los permisos.");
         } else {
-            String msg = getString(R.string.perm_denied_msg);
-            showDialog(msg, "Ir",
+            AlertUtils.showCFErrorAlertWithAction(this, "Permiso requerido", "Esta funcionalidad requiere del permiso 'Lectura y Escritura' de memoria interna. Por favor otorguelos.",
                     (dialog, which) -> {
-                        dialog.dismiss();
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                                 Uri.fromParts("package", getPackageName(), null));
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
-                    }, "No, cerrar", (dialog, which) -> dialog.dismiss(), false);
+                    }, "Otorgar");
         }
-    }
-
-    public void showDialog(String msg, String positiveLabel, DialogInterface.OnClickListener onClickListener,
-                           String negativeLevel, DialogInterface.OnClickListener onCancelListener, boolean isCancelable) {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Aviso!!");
-        builder.setMessage(msg);
-        builder.setCancelable(isCancelable);
-        builder.setPositiveButton(positiveLabel, onClickListener);
-        builder.setNegativeButton(negativeLevel, onCancelListener);
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
     }
 
     @Override
     public void onLocationButtonClick() {
-        if (checkSinglePermission(locationPerm, LOCATION_REQUEST_CODE)) {
-            if (!isLocationRequest) {
-                isLocationRequest = true;
-                changeIconColor(true);
-                startLocationUpdates();
-            } else {
-                stopLocationUpdates();
-            }
-        }
     }
 
     @Override
@@ -395,6 +307,32 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         showSuccessLocationDialog();
     }
 
+    @Override
+    public void showLocationConfirmDialog() {
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
+        // Title and message
+        builder.setTitle("Ubicacion obtenida");
+        builder.setTextGravity(Gravity.START);
+        builder.setIcon(R.drawable.ic_map_marker_alt_blue_grey);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+
+        DialogLocationConfirmView dialogLocationConfirmView = new DialogLocationConfirmView(this);
+        builder.setFooterView(dialogLocationConfirmView);
+
+        builder.show();
+    }
+
+    @Override
+    public void onButtonSaveClick() {
+
+    }
+
+    @Override
+    public void onButtonConfirmClick() {
+
+    }
+
     private void showSuccessLocationDialog() {
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
@@ -402,7 +340,7 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
         builder.setTitle("Renta localizada!!");
         builder.setMessage("Coordenadas obtenidas con exito");
         builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
-        builder.addButton("Cerrar mapa", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.CENTER, (dialog, which) -> {
+        builder.addButton("Cerrar mapa", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, (dialog, which) -> {
             dialog.dismiss();
             onBackPressed();
         });
@@ -479,7 +417,7 @@ public class AddRentActivity extends AppCompatActivity implements HasSupportFrag
                 showAmenitiesDialog();
                 break;
             case R.id.fl_galery:
-                if (checkSinglePermission(storagePerm, WRITE_EXTERNAL_CODE)) {
+                if (checkSinglePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, WRITE_EXTERNAL_CODE)) {
                     pickGaleryFiles();
                 }
                 break;

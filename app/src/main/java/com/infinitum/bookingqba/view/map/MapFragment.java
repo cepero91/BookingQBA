@@ -12,8 +12,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -34,17 +32,12 @@ import org.oscim.backend.canvas.Bitmap;
 import org.oscim.backend.canvas.Color;
 import org.oscim.core.GeoPoint;
 import org.oscim.core.MapPosition;
-import org.oscim.event.Gesture;
-import org.oscim.event.GestureListener;
-import org.oscim.event.MotionEvent;
-import org.oscim.layers.Layer;
 import org.oscim.layers.marker.ItemizedLayer;
 import org.oscim.layers.marker.MarkerItem;
 import org.oscim.layers.marker.MarkerSymbol;
 import org.oscim.layers.tile.buildings.BuildingLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
 import org.oscim.layers.tile.vector.labeling.LabelLayer;
-import org.oscim.map.Map;
 import org.oscim.renderer.GLViewport;
 import org.oscim.renderer.MapRenderer;
 import org.oscim.scalebar.DefaultMapScaleBar;
@@ -74,7 +67,7 @@ import static com.infinitum.bookingqba.util.Constants.USER_GPS;
 import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
 
 
-public class MapFragment extends Fragment implements ItemizedLayer.OnItemGestureListener<MarkerItem> {
+public class MapFragment extends Fragment implements ItemizedLayer.OnItemGestureListener<MarkerItem>, View.OnClickListener {
 
     //Location variables
     private Location lastKnowLocation;
@@ -93,7 +86,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     ViewModelFactory viewModelFactory;
     private RentViewModel rentViewModel;
 
-    private OnFragmentMapInteraction mListener;
+    private OnFragmentMapInteraction fragmentMapInteraction;
 
     //Databinding
     private FragmentMapBinding mapBinding;
@@ -153,6 +146,8 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         AndroidSupportInjection.inject(this);
         super.onActivityCreated(savedInstanceState);
 
+        mapBinding.ivLocation.setOnClickListener(this);
+
         mapBinding.setIsLoading(true);
 
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
@@ -167,9 +162,9 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     private void setupMarkerView() {
         cafeBarMapMarkerBinding = DataBindingUtil.inflate(getActivity().getLayoutInflater(), R.layout.cafe_bar_map_marker, mapBinding.flContentMap, false);
         cafeBarMapMarkerBinding.contentCafebar.setOnClickListener(v -> {
-            if (mListener != null) {
+            if (fragmentMapInteraction != null) {
                 if (currentMarkerIndex != -1 && geoRentArrayList != null && geoRentArrayList.size() > 0)
-                    mListener.onMapInteraction(geoRentArrayList.get(currentMarkerIndex));
+                    fragmentMapInteraction.onMapInteraction(geoRentArrayList.get(currentMarkerIndex));
             }
         });
     }
@@ -183,8 +178,11 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
                     .doOnComplete(this::showViews).subscribe();
             compositeDisposable.add(disposable);
         } else {
-            setupMapView();
-            showViews();
+            disposable = Completable.fromAction(this::setupMapView)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnComplete(this::showViews).subscribe();
+            compositeDisposable.add(disposable);
         }
     }
 
@@ -223,8 +221,6 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         String mapPath = new File(mapFilePath).getAbsolutePath();
         if (tileSource.setMapFile(mapPath)) {
 
-            mapBinding.mapview.map().layers().add(new MapEventsReceiver(mapBinding.mapview.map()));
-
             // Vector layer
             VectorTileLayer tileLayer = mapBinding.mapview.map().setBaseMap(tileSource);
 
@@ -248,18 +244,6 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
                 setupMarkers(geoRentArrayList);
             } else {
                 initializeMarker();
-            }
-
-            if (isFromDetail && geoRentArrayList != null) {
-                MapPosition mapPosition = new MapPosition();
-                mapPosition.setPosition(geoRentArrayList.get(0).getGeoPoint());
-                mapPosition.setZoomLevel(16);
-                mapBinding.mapview.map().setMapPosition(mapPosition);
-                mMarkerLayer.getItemList().get(0).setMarker(mFocusMarker);
-                showMarkerView(0);
-            } else {
-                // Position Habana
-                mapBinding.mapview.map().setMapPosition(23.1165, -82.3882, 2 << 12);
             }
 
         }
@@ -297,27 +281,25 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     private void showViews() {
         mapBinding.setIsLoading(false);
         mapBinding.progressPvLinear.stop();
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        changeMenuIcon(menu.findItem(R.id.action_gps));
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    private void changeMenuIcon(MenuItem item) {
-        if (isGPSActive) {
-            item.setIcon(R.drawable.ic_crosshairs_focus);
+        if (isFromDetail && geoRentArrayList != null) {
+            MapPosition mapPosition = new MapPosition();
+            mapPosition.setPosition(geoRentArrayList.get(0).getGeoPoint());
+            mapPosition.setZoomLevel(16);
+            mapBinding.mapview.map().setMapPosition(mapPosition);
+            mMarkerLayer.getItemList().get(0).setMarker(mFocusMarker);
+            showMarkerView(0);
         } else {
-            item.setIcon(R.drawable.ic_crosshairs);
+            // Position Habana
+            mapBinding.mapview.map().setMapPosition(23.1165, -82.3882, 2 << 12);
         }
     }
+
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentMapInteraction) {
-            mListener = (OnFragmentMapInteraction) context;
+            fragmentMapInteraction = (OnFragmentMapInteraction) context;
             compositeDisposable = new CompositeDisposable();
             Timber.e("onAttach");
         } else {
@@ -329,9 +311,8 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     @Override
     public void onDetach() {
         super.onDetach();
-        Timber.e("onDetach");
         cafeBarMapMarkerBinding = null;
-        mListener = null;
+        fragmentMapInteraction = null;
         compositeDisposable.clear();
     }
 
@@ -429,11 +410,12 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     }
 
     public void updateUserTracking(double lati, double longi) {
-        Completable.fromAction(this::findAndRemoveLastUserTrack)
+        disposable = Completable.fromAction(this::findAndRemoveLastUserTrack)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .andThen(Completable.fromAction(() -> addUserMarkerToMap(lati, longi)))
                 .subscribe();
+        compositeDisposable.add(disposable);
     }
 
     private void addUserMarkerToMap(double lati, double longi) {
@@ -442,7 +424,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         MarkerItem item = new MarkerItem(USER_GPS, "User", new GeoPoint(lati, longi));
         item.setMarker(userMarker);
         mMarkerLayer.addItem(item);
-        mapBinding.mapview.map().animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 16), Easing.Type.SINE_IN);
+        mapBinding.mapview.map().render();
     }
 
     private void findAndRemoveLastUserTrack() {
@@ -455,67 +437,49 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.iv_location:
+                if(lastKnowLocation!=null){
+                    mapBinding.mapview.map().animator().animateTo(1000, getMapPositionWithZoom(new GeoPoint(lastKnowLocation.getLatitude(),lastKnowLocation.getLongitude()), 16), Easing.Type.SINE_IN);
+                }else{
+                    fragmentMapInteraction.getLastLocation();
+                }
+        }
+    }
+
     public interface OnFragmentMapInteraction {
 
         void onMapInteraction(GeoRent geoRent);
 
-    }
-
-    class MapEventsReceiver extends Layer implements GestureListener {
-
-        MapEventsReceiver(Map map) {
-            super(map);
-        }
-
-        @Override
-        public boolean onGesture(Gesture g, MotionEvent e) {
-            if (g instanceof Gesture.LongPress) {
-                GeoPoint p = mMap.viewport().fromScreenPoint(e.getX(), e.getY());
-                updateUserTracking(p.getLatitude(), p.getLongitude());
-                return true;
-            }
-            return false;
-        }
+        void getLastLocation();
 
     }
+
 
 
     public void updateCurrentLocation(Location location) {
-        if (lastKnowLocation == null) {
-            currentLocation = location;
-            lastKnowLocation = currentLocation;
-            updateUserTracking(location.getLatitude(), location.getLongitude());
-            Toast.makeText(getActivity(), "Location is new", Toast.LENGTH_SHORT).show();
-        } else if (distance(lastKnowLocation.getLatitude(), lastKnowLocation.getLongitude(), location.getLatitude(), location.getLongitude()) < 0.1) {
-            Toast.makeText(getActivity(), "Location is the same", Toast.LENGTH_SHORT).show();
-        } else {
-            currentLocation = location;
-            lastKnowLocation = currentLocation;
-            updateUserTracking(location.getLatitude(), location.getLongitude());
-            Toast.makeText(getActivity(), "Location is updated", Toast.LENGTH_SHORT).show();
-        }
+        currentLocation = location;
+        lastKnowLocation = currentLocation;
+        updateUserTracking(location.getLatitude(), location.getLongitude());
+//        if (lastKnowLocation == null) {
+//            currentLocation = location;
+//            lastKnowLocation = currentLocation;
+//            updateUserTracking(location.getLatitude(), location.getLongitude());
+//            Toast.makeText(getActivity(), "Location is new", Toast.LENGTH_SHORT).show();
+//        } else if (distance(lastKnowLocation.getLatitude(), lastKnowLocation.getLongitude(), location.getLatitude(), location.getLongitude()) < 0.1) {
+//            Toast.makeText(getActivity(), "Location is the same", Toast.LENGTH_SHORT).show();
+//        } else {
+//            currentLocation = location;
+//            lastKnowLocation = currentLocation;
+//            updateUserTracking(location.getLatitude(), location.getLongitude());
+//            Toast.makeText(getActivity(), "Location is updated", Toast.LENGTH_SHORT).show();
+//        }
     }
 
 
-    private double distance(double lat1, double lng1, double lat2, double lng2) {
 
-        double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
-
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLng = Math.toRadians(lng2 - lng1);
-
-        double sindLat = Math.sin(dLat / 2);
-        double sindLng = Math.sin(dLng / 2);
-
-        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
-                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        double dist = earthRadius * c;
-
-        return dist; // output distance, in MILES
-    }
 
 
 }

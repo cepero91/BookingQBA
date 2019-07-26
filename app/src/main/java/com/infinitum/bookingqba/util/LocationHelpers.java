@@ -2,29 +2,37 @@ package com.infinitum.bookingqba.util;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.IntentSender;
+import android.app.Application;
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.infinitum.bookingqba.view.home.HomeActivity;
+import com.google.android.gms.tasks.Task;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.List;
+import java.util.Locale;
+
+import javax.inject.Inject;
 
 import timber.log.Timber;
 
 public class LocationHelpers {
-    private Activity activity;
 
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
@@ -36,15 +44,19 @@ public class LocationHelpers {
     private LocationSettingsRequest mLocationSettingsRequest;
     private LocationCallback locationCallback;
     private LocationReference locationReference;
+    private boolean locationRunning;
 
-    public LocationHelpers(Activity activity) {
-        this.activity = activity;
+    private Context context;
+
+    public LocationHelpers(Context context) {
+        this.context = context;
         setupLocationApi();
+        locationRunning = false;
     }
 
     private void setupLocationApi() {
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this.activity);
-        mSettingsClient = LocationServices.getSettingsClient(this.activity);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
+        mSettingsClient = LocationServices.getSettingsClient(context);
         createLocationRequest();
         buildLocationSettingsRequest();
     }
@@ -68,10 +80,12 @@ public class LocationHelpers {
     }
 
     @SuppressLint("MissingPermission")
-    public void startLocationUpdate(OnFailureListener onFailureListener){
+    public void startLocationUpdate(OnFailureListener onFailureListener, Activity activity){
         // Begin by checking if the device has the necessary location settings.
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
-                .addOnSuccessListener(this.activity, locationSettingsResponse -> {
+                .addOnSuccessListener(activity, locationSettingsResponse -> {
+                    locationRunning = true;
+                    AlertUtils.showSuccessLocationToast(activity,"Ubicando...");
                     //noinspection MissingPermission
                     mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                             locationReference, Looper.myLooper());
@@ -80,14 +94,28 @@ public class LocationHelpers {
                 .addOnFailureListener(onFailureListener);
     }
 
+    @SuppressLint("MissingPermission")
+    public void startForegroundLocationUpdate(OnFailureListener onFailureListener){
+        // Begin by checking if the device has the necessary location settings.
+        mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
+                .addOnSuccessListener(locationSettingsResponse -> {
+                    locationRunning = true;
+                    //noinspection MissingPermission
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                            locationReference, Looper.myLooper());
 
-    public void stopLocationUpdates() {
-        mFusedLocationClient.removeLocationUpdates(locationReference)
-                .addOnCompleteListener(this.activity, task -> {
-                    Timber.e("Location Callback removed");
-                });
+                })
+                .addOnFailureListener(onFailureListener);
     }
 
+    public void stopLocationUpdates() {
+        mFusedLocationClient.removeLocationUpdates(locationReference);
+        locationRunning = false;
+    }
+
+    public boolean isLocationRunning() {
+        return locationRunning;
+    }
 
     private static class LocationReference extends LocationCallback {
         private WeakReference<LocationCallback> locationWeakReference;
@@ -103,5 +131,47 @@ public class LocationHelpers {
                 locationWeakReference.get().onLocationResult(locationResult);
             }
         }
+
+        @Override
+        public void onLocationAvailability(LocationAvailability locationAvailability) {
+            super.onLocationAvailability(locationAvailability);
+            if (locationWeakReference != null && locationWeakReference.get() != null) {
+                locationWeakReference.get().onLocationAvailability(locationAvailability);
+            }
+        }
+    }
+
+
+    public String getAddressByLocation(Location location){
+        StringBuilder result = new StringBuilder();
+        try{
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(),location.getLatitude(),1);
+            if(addresses.size()>0){
+                Address address = addresses.get(0);
+                result.append(address.getLocality()).append("\n");
+                result.append(address.getCountryName());
+            }
+        }catch (IOException e){
+            Timber.e(e);
+        }
+        return result.toString();
+    }
+
+    public Location getLastLocation(){
+        final Location[] locationResult = {null};
+        try {
+            mFusedLocationClient.getLastLocation()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            locationResult[0] = task.getResult();
+                        } else {
+                            Timber.e("Failed to get location.");
+                        }
+                    });
+        } catch (SecurityException unlikely) {
+            Timber.e("Lost location permission." + unlikely);
+        }
+        return locationResult[0];
     }
 }

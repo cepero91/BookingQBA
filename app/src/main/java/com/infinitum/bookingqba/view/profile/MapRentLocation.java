@@ -6,4 +6,6 @@ public interface MapRentLocation {
 
     void onLocationUpdates(double latitude, double longitude);
 
+    void showLocationConfirmDialog();
+
 }

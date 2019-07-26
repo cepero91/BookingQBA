@@ -85,6 +85,10 @@
         <item name="stIconStart">@drawable/ic_check</item>
     </style>
 
+    <style name="mySuccessLocationToast" parent="myToast">
+        <item name="stColorBackground">#00BFA5</item>
+    </style>
+
     <style name="myErrorToast" parent="myToast">
         <item name="stColorBackground">#F44336</item>
         <item name="stIconStart">@drawable/ic_exclamation_triangle</item>

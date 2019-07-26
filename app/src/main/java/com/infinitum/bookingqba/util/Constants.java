@@ -2,6 +2,8 @@ package com.infinitum.bookingqba.util;
 
 public final class Constants {
 
+    public static final int PERMISSION_REQUEST_CODE = 98;
+
     //CRASH REPORT
     public static final String ACRA_MAIL_TO_REPORT = "bookingqba.error@gmail.com";
 

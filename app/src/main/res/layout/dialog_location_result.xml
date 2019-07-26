@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:orientation="vertical"
+    android:animateLayoutChanges="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/ll_content_confirmation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Esta seguro que esta es su ubicacion"
+            android:fontFamily="@font/poppinsregular"
+            android:padding="12dp"/>
+
+        <TextView
+            android:id="@+id/tv_btn_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="@drawable/shape_btn_color_primary"
+            android:text="Confirmar"
+            android:textAlignment="center"
+            android:fontFamily="@font/poppinsregular"
+            android:includeFontPadding="false"
+            android:textColor="@color/White_100" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_content_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:layout_width="70dp"
+            android:layout_height="70dp">
+
+            <com.rey.material.widget.ProgressView
+                android:id="@+id/progress_pv_circular_inout"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:layout_gravity="center"
+                app:pv_autostart="true"
+                app:v_styleId="@array/pv_circular_in" />
+
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cargando datos..."
+            android:textSize="14sp"
+            android:fontFamily="@font/poppinsbold"
+            android:layout_gravity="start|center"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_content_params"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Direccion"
+            android:fontFamily="@font/poppinsbold"/>
+
+        <TextView
+            android:id="@+id/tv_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppinsregular"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Puntos de interes cercanos"
+            android:fontFamily="@font/poppinsbold"/>
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/fb_poi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="5dp"
+            app:alignContent="center"
+            app:flexWrap="wrap" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zona de Referencia"
+            android:fontFamily="@font/poppinsbold"/>
+
+        <TextView
+            android:id="@+id/tv_reference_zone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppinsregular"/>
+
+        <TextView
+            android:id="@+id/tv_btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="8dp"
+            android:background="@drawable/shape_btn_color_primary"
+            android:text="Guardar y cerrar mapa"
+            android:textAlignment="center"
+            android:fontFamily="@font/poppinsregular"
+            android:includeFontPadding="false"
+            android:textColor="@color/White_100" />
+
+    </LinearLayout>
+
+</LinearLayout>

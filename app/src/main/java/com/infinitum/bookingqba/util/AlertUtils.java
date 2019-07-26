@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.DrawableRes;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewCompat;
 import android.view.Gravity;
@@ -65,6 +66,10 @@ public class AlertUtils {
 
     public static void showSuccessToast(Context context, String message) {
         StyleableToast.makeText(context, message, Toast.LENGTH_LONG, R.style.mySuccessToast).show();
+    }
+
+    public static void showSuccessLocationToast(Context context, String message) {
+        StyleableToast.makeText(context, message, Toast.LENGTH_LONG, R.style.mySuccessLocationToast).show();
     }
 
     public static void showSuccessAlert(Context context) {
@@ -270,6 +275,19 @@ public class AlertUtils {
         builder.setMessage(message);
         builder.setTextGravity(Gravity.START);
         builder.setIcon(R.drawable.ic_unlock_alt);
+        builder.addButton(buttonTitle, -1, -1, CFAlertDialog.CFAlertActionStyle.NEGATIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.show();
+    }
+
+    public static void showCFErrorAlertWithAction(Context context, String title, String message, DialogInterface.OnClickListener onClickListener,String buttonTitle,@DrawableRes int drawableIcon){
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
+        // Title and message
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setTextGravity(Gravity.START);
+        builder.setIcon(drawableIcon);
         builder.addButton(buttonTitle, -1, -1, CFAlertDialog.CFAlertActionStyle.NEGATIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
         builder.setTextColor(Color.parseColor("#607D8B"));
         builder.show();

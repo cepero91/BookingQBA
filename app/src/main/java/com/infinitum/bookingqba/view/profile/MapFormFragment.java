@@ -3,18 +3,22 @@ package com.infinitum.bookingqba.view.profile;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentMapFormBinding;
 import com.infinitum.bookingqba.util.AlertUtils;
+import com.infinitum.bookingqba.view.widgets.DialogLocationConfirmView;
 import com.wshunli.assets.CopyAssets;
 import com.wshunli.assets.CopyCreator;
 import com.wshunli.assets.CopyListener;
@@ -61,7 +65,8 @@ import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
 import static com.infinitum.bookingqba.util.Constants.USER_GPS;
 import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
 
-public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGestureListener<MarkerItem>, View.OnClickListener {
+public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGestureListener<MarkerItem>
+        , View.OnClickListener {
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -315,21 +320,15 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
     public void setGeoPointLocation(double latitude, double longitude) {
         this.geoPointLocation = new GeoPoint(latitude, longitude);
         updateUserTracking(latitude, longitude);
-        mapRentLocation.onLocationUpdates(latitude, longitude);
+        mapRentLocation.showLocationConfirmDialog();
     }
+
 
     public void setPasiveGeoPointLocation(double latitude, double longitude) {
         this.geoPointLocation = new GeoPoint(latitude, longitude);
         updateUserTracking(latitude, longitude);
     }
 
-    public void changeIconColor(boolean locationEnabled) {
-        if (locationEnabled) {
-            binding.ivLocation.setImageResource(R.drawable.ic_crosshairs_yellow);
-        } else {
-            binding.ivLocation.setImageResource(R.drawable.ic_crosshairs);
-        }
-    }
 
     public void updateUserTracking(double lati, double longi) {
         Completable.fromAction(this::findAndRemoveLastUserTrack)

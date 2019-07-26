@@ -25,8 +25,9 @@ import com.infinitum.bookingqba.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.infinitum.bookingqba.util.Constants.PERMISSION_REQUEST_CODE;
+
 public class PermissionHelper {
-    private static final int PERMISSION_REQUEST_CODE = 98;
     private Activity activity;
     private Fragment fragment;
     private String[] permissions;
