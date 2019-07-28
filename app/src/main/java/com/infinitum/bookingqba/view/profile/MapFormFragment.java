@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -18,6 +19,7 @@ import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentMapFormBinding;
 import com.infinitum.bookingqba.util.AlertUtils;
+import com.infinitum.bookingqba.view.base.BaseMapFragment;
 import com.infinitum.bookingqba.view.widgets.DialogLocationConfirmView;
 import com.wshunli.assets.CopyAssets;
 import com.wshunli.assets.CopyCreator;
@@ -65,7 +67,7 @@ import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
 import static com.infinitum.bookingqba.util.Constants.USER_GPS;
 import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
 
-public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGestureListener<MarkerItem>
+public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.OnItemGestureListener<MarkerItem>
         , View.OnClickListener {
 
     @Inject
@@ -75,8 +77,6 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
     private MapRentLocation mapRentLocation;
     private GeoPoint geoPointLocation;
     private boolean isLocationEmpty;
-    private CompositeDisposable compositeDisposable;
-    private Disposable disposable;
 
     private String mapFilePath;
     private MarkerSymbol userMarker;
@@ -88,7 +88,9 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
     private static final String LONGITUDE = "lon";
 
     private MapEventsReceiver mapEventsReceiver;
-    private MapView mapView;
+    private Location currentLocation;
+    private Location lastKnowLocation;
+    private boolean alreadyDoneShow;
 
 
     public MapFormFragment() {
@@ -123,16 +125,13 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        binding.ivDone.setOnClickListener(this);
+        binding.ivDone.hide();
+
         binding.ivLocation.setOnClickListener(this);
 
         binding.setIsLoading(true);
         binding.progressPvCircularInout.start();
-
-        mapFilePath = sharedPreferences.getString(MAP_PATH, "");
-
-        this.mapView = binding.mapview;
-
-        initializeMap();
 
     }
 
@@ -150,134 +149,29 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
     @Override
     public void onDetach() {
         Timber.e("Fragment onDetach");
-        if (!disposable.isDisposed())
+        if (disposable!=null && !disposable.isDisposed())
             disposable.dispose();
         compositeDisposable.clear();
-        mapView.onDestroy();
         super.onDetach();
     }
 
-    @Override
-    public void onResume() {
-        Timber.e("Fragment onResume");
-        mapView.onResume();
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        Timber.e("Fragment onPause");
-        mapView.onPause();
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroyView() {
-        Timber.e("Fragment onDestroyView");
-        if (!disposable.isDisposed())
-            disposable.dispose();
-        compositeDisposable.clear();
-        mapView.onDestroy();
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        mapView.onDestroy();
-        super.onDestroy();
-    }
-
     //-------------------------------------- MAP
-    private void initializeMap() {
-        if (mapFilePath.equals("")) {
-            disposable = Completable.fromAction(this::copyAssetMap)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .andThen(Completable.fromAction(this::setupMapView))
-                    .doOnComplete(this::showViews).subscribe();
-            compositeDisposable.add(disposable);
-        } else {
-            disposable = Completable.fromAction(this::setupMapView)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnComplete(this::showViews).subscribe();
-            compositeDisposable.add(disposable);
-        }
+
+    @Override
+    protected void initializeMarker() {
+        mapEventsReceiver = new MapEventsReceiver(map);
+        map.layers().add(mapEventsReceiver);
     }
 
-    private void copyAssetMap() {
-        CopyAssets.with(getActivity())
-                .from("map")
-                .setListener(new CopyListener() {
-                    @Override
-                    public void pending(CopyCreator copyCreator, String oriPath, String desPath, List<String> names) {
-
-                    }
-
-                    @Override
-                    public void progress(CopyCreator copyCreator, File currentFile, int copyProgress) {
-                    }
-
-                    @Override
-                    public void completed(CopyCreator copyCreator, java.util.Map<File, Boolean> results) {
-                        SharedPreferences.Editor edit = sharedPreferences.edit();
-                        edit.putString(MAP_PATH, ((File) results.keySet().toArray()[0]).getAbsolutePath());
-                        edit.apply();
-                        mapFilePath = ((File) results.keySet().toArray()[0]).getAbsolutePath();
-                    }
-
-                    @Override
-                    public void error(CopyCreator copyCreator, Throwable e) {
-                        Timber.e(e);
-                    }
-                })
-                .copy();
-    }
-
-    public void setupMapView() {
-        MapFileTileSource tileSource = new MapFileTileSource();
-        String mapPath = new File(mapFilePath).getAbsolutePath();
-        if (tileSource.setMapFile(mapPath)) {
-
-            mapEventsReceiver = new MapEventsReceiver(mapView.map());
-
-            mapView.map().layers().add(mapEventsReceiver);
-
-            // Vector layer
-            VectorTileLayer tileLayer = mapView.map().setBaseMap(tileSource);
-
-            // Building layer
-            mapView.map().layers().add(new BuildingLayer(mapView.map(), tileLayer));
-
-            // Label layer
-            mapView.map().layers().add(new LabelLayer(mapView.map(), tileLayer));
-
-            // Render theme
-            mapView.map().setTheme(VtmThemes.DEFAULT);
-
-            // Scale bar
-            MapScaleBar mapScaleBar = new DefaultMapScaleBar(mapView.map());
-            MapScaleBarLayer mapScaleBarLayer = new MapScaleBarLayer(mapView.map(), mapScaleBar);
-            mapScaleBarLayer.getRenderer().setPosition(GLViewport.Position.BOTTOM_LEFT);
-            mapScaleBarLayer.getRenderer().setOffset(5 * CanvasAdapter.getScale(), 0);
-            mapView.map().layers().add(mapScaleBarLayer);
-
-            mMarkerLayer = new ItemizedLayer<>(mapView.map(), new ArrayList<>(), userMarker, this);
-            mapView.map().layers().add(mMarkerLayer);
-
-        }
-    }
-
-    private void showViews() {
+    @Override
+    protected void showViews() {
         binding.setIsLoading(false);
         if (!argLatitude.equals("") && !argLongitude.equals("")) {
-            setPasiveGeoPointLocation(Float.parseFloat(argLatitude), Float.parseFloat(argLongitude));
+            updateGestureCurrentLocation(Float.parseFloat(argLatitude), Float.parseFloat(argLongitude),0);
         } else {
             mapView.map().setMapPosition(23.1165, -82.3882, 2 << 12);
         }
         binding.progressPvCircularInout.stop();
-        new Handler().postDelayed(() -> AlertUtils.showCFInfoAlert(getActivity(),
-                "Presiona prolongadamente o pulse el boton de localizar"),2000);
     }
 
     @Override
@@ -294,7 +188,16 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_location:
-                mapRentLocation.onLocationButtonClick();
+                if (!argLatitude.equals("") && !argLongitude.equals("")) {
+                    map.animator().animateTo(1000, getMapPositionWithZoom(new GeoPoint(Float.parseFloat(argLatitude),Float.parseFloat(argLongitude)), 15), Easing.Type.SINE_IN);
+                } else {
+                    mapRentLocation.onLocationButtonClick();
+                }
+                break;
+            case R.id.iv_done:
+                showDialogLocationConfirm();
+                break;
+
         }
     }
 
@@ -308,7 +211,7 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
         public boolean onGesture(Gesture g, MotionEvent e) {
             if (g instanceof Gesture.LongPress) {
                 GeoPoint p = mMap.viewport().fromScreenPoint(e.getX(), e.getY());
-                setGeoPointLocation(p.getLatitude(), p.getLongitude());
+                updateGestureCurrentLocation(p.getLatitude(), p.getLongitude(),0);
                 return true;
             }
             return false;
@@ -316,52 +219,50 @@ public class MapFormFragment extends Fragment implements ItemizedLayer.OnItemGes
 
     }
 
-
-    public void setGeoPointLocation(double latitude, double longitude) {
-        this.geoPointLocation = new GeoPoint(latitude, longitude);
-        updateUserTracking(latitude, longitude);
-        mapRentLocation.showLocationConfirmDialog();
-    }
-
-
-    public void setPasiveGeoPointLocation(double latitude, double longitude) {
-        this.geoPointLocation = new GeoPoint(latitude, longitude);
-        updateUserTracking(latitude, longitude);
-    }
-
-
-    public void updateUserTracking(double lati, double longi) {
-        Completable.fromAction(this::findAndRemoveLastUserTrack)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .andThen(Completable.fromAction(() -> addUserMarkerToMap(lati, longi)))
-                .subscribe();
-    }
-
-    private void addUserMarkerToMap(double lati, double longi) {
-        Bitmap bitmapUser = drawableToBitmap(getResources().getDrawable(R.drawable.ic_male));
-        userMarker = new MarkerSymbol(bitmapUser, MarkerSymbol.HotspotPlace.BOTTOM_CENTER);
-        MarkerItem item = new MarkerItem(USER_GPS, "User", new GeoPoint(lati, longi));
-        item.setMarker(userMarker);
-        mMarkerLayer.addItem(item);
-        mapView.map().animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 14), Easing.Type.SINE_IN);
-    }
-
-    private void findAndRemoveLastUserTrack() {
-        List<MarkerItem> markerItemList = mMarkerLayer.getItemList();
-        for (int i = 0; i < markerItemList.size(); i++) {
-            if (markerItemList.get(i).getTitle().equals(USER_GPS)) {
-                mMarkerLayer.removeItem(i);
-                break;
-            }
-        }
-    }
-
     private MapPosition getMapPositionWithZoom(GeoPoint geoPoint, int zoom) {
         MapPosition mapPosition = new MapPosition();
         mapPosition.setPosition(geoPoint);
         mapPosition.setZoomLevel(zoom);
         return mapPosition;
+    }
+
+    public void updateGPSCurrentLocation(Location location) {
+        argLatitude = String.valueOf(location.getLatitude());
+        argLongitude = String.valueOf(location.getLongitude());
+        locationLayer.setEnabled(true);
+        locationLayer.setPosition(location.getLatitude(), location.getLongitude(), location.getAccuracy());
+        map.animator().animateTo(1000, getMapPositionWithZoom(new GeoPoint(Float.parseFloat(argLatitude),Float.parseFloat(argLongitude)), 15), Easing.Type.SINE_IN);
+        showDoneFAB();
+    }
+
+    public void updateGestureCurrentLocation(double latitude, double longitude, double accuracy) {
+        argLatitude = String.valueOf(latitude);
+        argLongitude = String.valueOf(longitude);
+        locationLayer.setEnabled(true);
+        locationLayer.setPosition(latitude, longitude, accuracy);
+        showDoneFAB();
+    }
+
+    private void showDoneFAB(){
+        if(!alreadyDoneShow) {
+            binding.ivDone.show();
+            alreadyDoneShow = true;
+        }
+    }
+
+    private void showDialogLocationConfirm() {
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(getActivity());
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
+        // Title and message
+        builder.setTitle("Ubicacion obtenida");
+        builder.setTextGravity(Gravity.START);
+        builder.setIcon(R.drawable.ic_map_marker_alt_blue_grey);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+
+        DialogLocationConfirmView dialogLocationConfirmView = new DialogLocationConfirmView(getActivity());
+        builder.setFooterView(dialogLocationConfirmView);
+
+        builder.show();
     }
 
 

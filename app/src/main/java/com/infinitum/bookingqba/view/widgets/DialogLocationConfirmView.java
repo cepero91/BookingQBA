@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.infinitum.bookingqba.R;
 
@@ -43,6 +44,8 @@ public class DialogLocationConfirmView extends LinearLayout implements View.OnCl
     }
 
     private void setupSubviews() {
+        TextView btnConfirm = findViewById(R.id.tv_btn_confirm);
+        btnConfirm.setOnClickListener(this);
         findViewById(R.id.ll_content_progress).setVisibility(GONE);
         findViewById(R.id.ll_content_params).setVisibility(GONE);
     }

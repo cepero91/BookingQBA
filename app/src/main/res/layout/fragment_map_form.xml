@@ -51,6 +51,17 @@
         </FrameLayout>
 
         <android.support.design.widget.FloatingActionButton
+            android:id="@+id/iv_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/iv_location"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="24dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_check" />
+
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/iv_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

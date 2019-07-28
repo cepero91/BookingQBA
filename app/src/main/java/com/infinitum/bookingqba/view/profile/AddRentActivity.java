@@ -84,6 +84,7 @@ import ir.mirrajabi.searchdialog.core.SearchResultListener;
 import timber.log.Timber;
 
 import static android.view.Gravity.CENTER;
+import static com.infinitum.bookingqba.service.LocationService.KEY_REQUESTING_LOCATION_UPDATES;
 import static com.infinitum.bookingqba.util.Constants.LOCATION_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.REQUEST_CHECK_SETTINGS;
 import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
@@ -92,7 +93,7 @@ import static com.infinitum.bookingqba.util.Constants.WRITE_EXTERNAL_CODE;
 
 public class AddRentActivity extends LocationActivity implements HasSupportFragmentInjector,
         MapRentLocation, View.OnClickListener, ImageFormAdapter.OnImageDeleteClick
-        , DialogLocationConfirmView.DialogLocationConfirmListener{
+        , DialogLocationConfirmView.DialogLocationConfirmListener {
 
     private ActivityAddRentBinding binding;
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
@@ -221,16 +222,13 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     @Override
     protected void updateLocation(Location location) {
-
-    }
-
-    //------------------------------------- LOCATION API ------------------------------------
-    private void updateMapLocation(Location mCurrentLocation) {
-        if (mapFragment != null) {
-            mapFragment.setGeoPointLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        if (binding.slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED &&
+                mapFragment != null && mapFragment.getUserVisibleHint()){
+            mapFragment.updateGPSCurrentLocation(location);
         }
     }
 
+    //------------------------------------- LOCATION API ------------------------------------
 
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
@@ -280,6 +278,11 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     @Override
     public void onLocationButtonClick() {
+        if (sharedPreferences.getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false) && currentLocation == null) {
+            AlertUtils.showSuccessLocationToast(this, "Ubicando...");
+        } else if (!sharedPreferences.getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false)) {
+            startLocationRequestUnknowPermission();
+        }
     }
 
     @Override

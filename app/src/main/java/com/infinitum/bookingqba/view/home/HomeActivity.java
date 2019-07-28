@@ -254,11 +254,6 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
     }
 
-    private void updateMapLocation(Location mCurrentLocation) {
-        if (mCurrentLocation != null && mFragment instanceof MapFragment) {
-            ((MapFragment) mFragment).updateUserTracking(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-        }
-    }
 
     //------------------------------ ACTIVITY RESULT ---------------------- //
 

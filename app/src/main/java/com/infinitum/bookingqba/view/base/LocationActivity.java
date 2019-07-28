@@ -113,7 +113,7 @@ public abstract class LocationActivity extends AppCompatActivity implements Shar
             bindService(new Intent(this, LocationService.class), mServiceConnection,
                     Context.BIND_AUTO_CREATE);
         } else {
-            Timber.i("========>> locationServiceExist");
+            Timber.i("========>> LocationService Exist");
         }
     }
 
@@ -136,6 +136,8 @@ public abstract class LocationActivity extends AppCompatActivity implements Shar
             locationService.removeLocationUpdates();
             System.gc();
         } else {
+            unbindService(mServiceConnection);
+            mBound = false;
             Timber.i("=======>> locationService not need end");
         }
         PreferenceManager.getDefaultSharedPreferences(this)
