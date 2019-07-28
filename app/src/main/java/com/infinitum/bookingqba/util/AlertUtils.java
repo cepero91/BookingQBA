@@ -29,6 +29,9 @@ import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.muddzdev.styleabletoast.StyleableToast;
 
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
+
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.mateware.snacky.Snacky;
 
@@ -195,6 +198,21 @@ public class AlertUtils {
                     }, 400);
                 })
                 .show();
+    }
+
+    public static void showCFInfoAlertWithAction(Context context, String message, String buttonTitle, CFAlertDialog.OnClickListener onClickListener, DialogInterface.OnDismissListener onDismissListener) {
+        SoftReference<Context> weakReference = new SoftReference<>(context);
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(weakReference.get());
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // Title and message
+        builder.setTitle("Informacion");
+        builder.setMessage(message);
+        builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
+        builder.setAutoDismissAfter(8000);
+        builder.addButton(buttonTitle, -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.onDismissListener(onDismissListener);
+        builder.show();
     }
 
     public static void showCFInfoAlert(Context context, String message){

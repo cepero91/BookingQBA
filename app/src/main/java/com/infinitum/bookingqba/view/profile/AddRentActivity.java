@@ -163,25 +163,6 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
         binding.slidingLayout.setTouchEnabled(false);
 
-        setLocationCallback();
-
-    }
-
-    private void setLocationCallback() {
-        locationHelpers.setLocationCallback(new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                currentLocation = locationResult.getLastLocation();
-                //todo something with locationResult
-            }
-
-            @Override
-            public void onLocationAvailability(LocationAvailability locationAvailability) {
-                super.onLocationAvailability(locationAvailability);
-                Toast.makeText(AddRentActivity.this, "Location av " + locationAvailability.isLocationAvailable(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
@@ -236,6 +217,11 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void updateLocation(Location location) {
+
     }
 
     //------------------------------------- LOCATION API ------------------------------------

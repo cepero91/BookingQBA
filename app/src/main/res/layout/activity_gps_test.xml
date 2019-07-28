@@ -60,6 +60,13 @@
             android:layout_marginStart="@dimen/small_margin"
             android:textSize="@dimen/default_text_size" />
 
+        <Button
+            android:id="@+id/start_act"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Otra" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

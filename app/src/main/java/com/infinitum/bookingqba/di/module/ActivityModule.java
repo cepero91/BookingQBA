@@ -38,8 +38,8 @@ public interface ActivityModule {
     @ContributesAndroidInjector(modules = FragmentModule.class)
     UserAuthActivity bindUserAuthActivity();
 
-//    @ContributesAndroidInjector
-//    LocationActivity bindLocationActivity();
+    @ContributesAndroidInjector
+    LocationActivity bindLocationActivity();
 
 
 }

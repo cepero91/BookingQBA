@@ -32,9 +32,15 @@ import org.oscim.backend.canvas.Bitmap;
 import org.oscim.backend.canvas.Color;
 import org.oscim.core.GeoPoint;
 import org.oscim.core.MapPosition;
+import org.oscim.layers.LocationLayer;
+import org.oscim.layers.marker.ClusterMarkerRenderer;
 import org.oscim.layers.marker.ItemizedLayer;
 import org.oscim.layers.marker.MarkerItem;
+import org.oscim.layers.marker.MarkerLayer;
+import org.oscim.layers.marker.MarkerRenderer;
+import org.oscim.layers.marker.MarkerRendererFactory;
 import org.oscim.layers.marker.MarkerSymbol;
+import org.oscim.layers.tile.MapTile;
 import org.oscim.layers.tile.buildings.BuildingLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
 import org.oscim.layers.tile.vector.labeling.LabelLayer;
@@ -55,9 +61,11 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.Completable;
+import io.reactivex.CompletableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -100,6 +108,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     private ItemizedLayer<MarkerItem> mMarkerLayer;
     private int lastMarkerFocus = -1;
     private int currentMarkerIndex = -1;
+    private LocationLayer locationLayer;
 
     private static final String GEORENTS_PARAM = "param1";
     private static final String IS_FROM_DETAIL_PARAM = "param2";
@@ -221,6 +230,15 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         String mapPath = new File(mapFilePath).getAbsolutePath();
         if (tileSource.setMapFile(mapPath)) {
 
+            locationLayer = new LocationLayer(mapBinding.mapview.map());
+            locationLayer.locationRenderer.setShader("location_1_reverse");
+            locationLayer.locationRenderer.setColor(Color.parseColor("#F44336"));
+            locationLayer.setEnabled(false);
+            mapBinding.mapview.map().layers().add(locationLayer);
+
+
+            mapBinding.mapview.map().viewport().setMinZoomLevel(10);
+
             // Vector layer
             VectorTileLayer tileLayer = mapBinding.mapview.map().setBaseMap(tileSource);
 
@@ -231,7 +249,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
             mapBinding.mapview.map().layers().add(new LabelLayer(mapBinding.mapview.map(), tileLayer));
 
             // Render theme
-            mapBinding.mapview.map().setTheme(VtmThemes.OSMAGRAY);
+            mapBinding.mapview.map().setTheme(VtmThemes.DEFAULT);
 
             // Scale bar
             MapScaleBar mapScaleBar = new DefaultMapScaleBar(mapBinding.mapview.map());
@@ -266,7 +284,20 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         Bitmap bitmapFocus = drawableToBitmap(getResources().getDrawable(R.drawable.ic_map_pin_focus));
         mFocusMarker = new MarkerSymbol(bitmapFocus, MarkerSymbol.HotspotPlace.BOTTOM_CENTER);
 
-        mMarkerLayer = new ItemizedLayer<>(mapBinding.mapview.map(), new ArrayList<>(), symbol, this);
+        MarkerRendererFactory markerRendererFactory = new MarkerRendererFactory() {
+            @Override
+            public MarkerRenderer create(MarkerLayer markerLayer) {
+                return new ClusterMarkerRenderer(markerLayer, symbol, new ClusterMarkerRenderer.ClusterStyle(Color.WHITE, Color.parseColor("#607D8B"))) {
+                    @Override
+                    protected Bitmap getClusterBitmap(int size) {
+                        // Can customize cluster bitmap here
+                        return super.getClusterBitmap(size);
+                    }
+                };
+            }
+        };
+
+        mMarkerLayer = new ItemizedLayer<>(mapBinding.mapview.map(), new ArrayList<>(), markerRendererFactory, this);
         mapBinding.mapview.map().layers().add(mMarkerLayer);
 
         List<MarkerItem> pts = new ArrayList<>();
@@ -318,21 +349,19 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
 
     @Override
     public boolean onItemSingleTapUp(int index, MarkerItem item) {
-        if (!item.getTitle().equals(USER_GPS)) {
-            if (item.getMarker() == null) {
-                if (lastMarkerFocus != -1) {
-                    mMarkerLayer.getItemList().get(lastMarkerFocus).setMarker(null);
-                }
-                lastMarkerFocus = index;
-                item.setMarker(mFocusMarker);
-                mapBinding.mapview.map().animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 16), Easing.Type.SINE_IN);
-                showMarkerView(index);
-            } else {
-                item.setMarker(null);
-                lastMarkerFocus = -1;
-                mapBinding.mapview.map().animator().animateTo(500, getMapPositionWithZoom(item.getPoint(), 14), Easing.Type.SINE_IN);
-                hideMarkerView();
+        if (item.getMarker() == null) {
+            if (lastMarkerFocus != -1) {
+                mMarkerLayer.getItemList().get(lastMarkerFocus).setMarker(null);
             }
+            lastMarkerFocus = index;
+            item.setMarker(mFocusMarker);
+            mapBinding.mapview.map().animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 17), Easing.Type.SINE_IN);
+            showMarkerView(index);
+        } else {
+            item.setMarker(null);
+            lastMarkerFocus = -1;
+            mapBinding.mapview.map().animator().animateTo(500, getMapPositionWithZoom(item.getPoint(), 15), Easing.Type.SINE_IN);
+            hideMarkerView();
         }
         return true;
     }
@@ -364,6 +393,8 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     @Override
     public void onDestroyView() {
         mapBinding.mapview.onDestroy();
+        mMarkerLayer.removeAllItems();
+        mMarkerLayer.setOnItemGestureListener(null);
         super.onDestroyView();
     }
 
@@ -387,6 +418,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
             } else {
                 mapBinding.flMarker.addView(cafeBarMapMarkerBinding.getRoot());
             }
+            mapBinding.ivLocation.hide();
             ObjectAnimator markerAnimator = ObjectAnimator.ofFloat(mapBinding.flMarker, "translationY", 150f, 0f);
             markerAnimator.setDuration(500);
             markerAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -404,6 +436,7 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 mapBinding.flMarker.removeAllViews();
+                mapBinding.ivLocation.show();
             }
         });
         markerAnimator.start();
@@ -413,37 +446,43 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
         disposable = Completable.fromAction(this::findAndRemoveLastUserTrack)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .onErrorComplete()
                 .andThen(Completable.fromAction(() -> addUserMarkerToMap(lati, longi)))
+                .onErrorComplete()
                 .subscribe();
         compositeDisposable.add(disposable);
     }
 
     private void addUserMarkerToMap(double lati, double longi) {
-        Bitmap bitmapUser = drawableToBitmap(getResources().getDrawable(R.drawable.ic_male));
-        userMarker = new MarkerSymbol(bitmapUser, MarkerSymbol.HotspotPlace.BOTTOM_CENTER);
-        MarkerItem item = new MarkerItem(USER_GPS, "User", new GeoPoint(lati, longi));
-        item.setMarker(userMarker);
-        mMarkerLayer.addItem(item);
-        mapBinding.mapview.map().render();
+        if (mMarkerLayer != null) {
+            Bitmap bitmapUser = drawableToBitmap(getResources().getDrawable(R.drawable.ic_male));
+            userMarker = new MarkerSymbol(bitmapUser, MarkerSymbol.HotspotPlace.BOTTOM_CENTER);
+            MarkerItem item = new MarkerItem(USER_GPS, "User", new GeoPoint(lati, longi));
+            item.setMarker(userMarker);
+            mMarkerLayer.addItem(item);
+            mapBinding.mapview.map().render();
+        }
     }
 
     private void findAndRemoveLastUserTrack() {
-        List<MarkerItem> markerItemList = mMarkerLayer.getItemList();
-        for (int i = 0; i < markerItemList.size(); i++) {
-            if (markerItemList.get(i).getTitle().equals(USER_GPS)) {
-                mMarkerLayer.removeItem(i);
-                break;
+        if (mMarkerLayer != null && mMarkerLayer.getItemList() != null) {
+            List<MarkerItem> markerItemList = mMarkerLayer.getItemList();
+            for (int i = 0; i < markerItemList.size(); i++) {
+                if (markerItemList.get(i).getTitle().equals(USER_GPS)) {
+                    mMarkerLayer.removeItem(i);
+                    break;
+                }
             }
         }
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.iv_location:
-                if(lastKnowLocation!=null){
-                    mapBinding.mapview.map().animator().animateTo(1000, getMapPositionWithZoom(new GeoPoint(lastKnowLocation.getLatitude(),lastKnowLocation.getLongitude()), 16), Easing.Type.SINE_IN);
-                }else{
+                if (lastKnowLocation != null) {
+                    mapBinding.mapview.map().animator().animateTo(1000, getMapPositionWithZoom(new GeoPoint(lastKnowLocation.getLatitude(), lastKnowLocation.getLongitude()), 16), Easing.Type.SINE_IN);
+                } else {
                     fragmentMapInteraction.getLastLocation();
                 }
         }
@@ -458,11 +497,10 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
     }
 
 
-
     public void updateCurrentLocation(Location location) {
         currentLocation = location;
         lastKnowLocation = currentLocation;
-        updateUserTracking(location.getLatitude(), location.getLongitude());
+//        updateUserTracking(location.getLatitude(), location.getLongitude());
 //        if (lastKnowLocation == null) {
 //            currentLocation = location;
 //            lastKnowLocation = currentLocation;
@@ -476,10 +514,11 @@ public class MapFragment extends Fragment implements ItemizedLayer.OnItemGesture
 //            updateUserTracking(location.getLatitude(), location.getLongitude());
 //            Toast.makeText(getActivity(), "Location is updated", Toast.LENGTH_SHORT).show();
 //        }
+        locationLayer.setEnabled(true);
+        locationLayer.setPosition(location.getLatitude(), location.getLongitude(), location.getAccuracy());
+
+
     }
-
-
-
 
 
 }

@@ -135,6 +135,7 @@ import dagger.android.support.HasSupportFragmentInjector;
 import timber.log.Timber;
 
 import static android.view.Gravity.CENTER;
+import static com.infinitum.bookingqba.service.LocationService.KEY_REQUESTING_LOCATION_UPDATES;
 import static com.infinitum.bookingqba.util.Constants.ALTERNATIVE_SYNC;
 import static com.infinitum.bookingqba.util.Constants.BASE_URL_API;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
@@ -184,15 +185,11 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     @Inject
     SharedPreferences sharedPreferences;
 
-    private PermissionHelper permissionHelper;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         homeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
-
-        Timber.e("HomeActivity");
 
         setupToolbar();
 
@@ -202,35 +199,6 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
         initializeFragment(savedInstanceState);
 
-        setLocationCallback();
-
-//        setupLocationApi();
-
-//        initPermissionRequest();
-
-//        initLocationManager();
-//        checkGpsAvailability();
-//        ensureLastLocationInit();
-//        updateCurrentLocation(null);
-
-    }
-
-    private void setLocationCallback() {
-        locationHelpers.setLocationCallback(new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                currentLocation = locationResult.getLastLocation();
-                if (mFragment instanceof MapFragment)
-                    ((MapFragment) mFragment).updateCurrentLocation(currentLocation);
-            }
-
-            @Override
-            public void onLocationAvailability(LocationAvailability locationAvailability) {
-                super.onLocationAvailability(locationAvailability);
-                Toast.makeText(HomeActivity.this, "Location av "+locationAvailability.isLocationAvailable(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     // ------------------ INITIALIZE UI ----------------------------------- //
@@ -398,7 +366,6 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         MenuItem menuFilter = menu.findItem(R.id.action_filter_panel);
         menuFilter.setVisible(false);
         menu.findItem(R.id.action_filter_panel).setVisible(mFragment instanceof RentListFragment);
-        menu.findItem(R.id.action_gps).setVisible(mFragment instanceof MapFragment);
         menu.findItem(R.id.action_refresh).setVisible(mFragment instanceof ProfileFragment);
     }
 
@@ -415,9 +382,6 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                 fragmentManager.beginTransaction().replace(R.id.filter_container, filterFragment).commit();
                 homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
                 homeBinding.drawerLayout.postDelayed(() -> homeBinding.drawerLayout.openDrawer(Gravity.END), 200);
-                return true;
-            case R.id.action_gps:
-//                initLocation(item);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -516,7 +480,13 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             return;
         }
         if (mFragment instanceof HomeFragment) {
-            AlertUtils.showInfoAlertAndFinishApp(this);
+           if(timeToGo == 0){
+               Toast.makeText(this, "Presione de nuevo para salir", Toast.LENGTH_SHORT).show();
+               timeToGo = 1;
+               new Handler().postDelayed(() -> timeToGo = 0,5000);
+           }else{
+               super.onBackPressed();
+           }
         } else {
             MenuItem menuItem = homeBinding.navView.getMenu().findItem(R.id.nav_home);
             onNavigationItemSelected(menuItem);
@@ -561,11 +531,18 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
     @Override
     public void getLastLocation() {
-        if (isLocationRunning() && currentLocation == null) {
-            AlertUtils.showSuccessLocationToast(this,"Ubicando...");
-        } else if (!isLocationRunning()){
-            startLocationUpdatesWithUnknowPermission();
+        if (sharedPreferences.getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false) && currentLocation == null) {
+            AlertUtils.showSuccessLocationToast(this, "Ubicando...");
+        } else if (!sharedPreferences.getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false)) {
+            startLocationRequestUnknowPermission();
         }
+    }
+
+    @Override
+    protected void updateLocation(Location location) {
+        currentLocation = location;
+        if (mFragment instanceof MapFragment && mFragment.getUserVisibleHint())
+            ((MapFragment) mFragment).updateCurrentLocation(location);
     }
 
     // -------------------------- FILTER --------------------------------------------- //
