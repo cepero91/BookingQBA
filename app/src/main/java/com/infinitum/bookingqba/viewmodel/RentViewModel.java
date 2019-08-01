@@ -26,12 +26,14 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
 import com.infinitum.bookingqba.model.local.tconverter.CommentEmotion;
+import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.Municipality;
 import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
+import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
@@ -40,6 +42,7 @@ import com.infinitum.bookingqba.model.repository.municipality.MunicipalityReposi
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.util.DateUtils;
+import com.infinitum.bookingqba.view.adapters.items.addrent.MyRentItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
@@ -71,6 +74,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Response;
 import timber.log.Timber;
 
 public class RentViewModel extends android.arch.lifecycle.ViewModel {
@@ -183,18 +187,13 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     //------------------------- ADD NEW RENT -------------------------------------------- //
 
-    public Flowable<Resource<List<String>>> fetchRentByUserId(String token, String userId) {
-        return rentRepository.allRentByUserId(token, userId).map(new Function<Resource<List<Rent>>, Resource<List<String>>>() {
-            @Override
-            public Resource<List<String>> apply(Resource<List<Rent>> listResource) throws Exception {
-                List<String> stringList = new ArrayList<>();
-                if (listResource.data != null) {
-                    for (Rent rent : listResource.data)
-                        stringList.add(rent.getName());
-                }
-                return Resource.success(stringList);
-            }
-        });
+    public Single<Response<AddressResponse>> addressByLocation(double latitude, double longitude) {
+        return rentRepository.addressByLocation(latitude,longitude);
+    }
+
+    public Flowable<Resource<List<MyRentItem>>> fetchRentByUserId(String token, String userId) {
+        return rentRepository.allRentByUserId(token, userId)
+                .map(this::transformToMyRent);
     }
 
     public Single<Resource<List<SearchableSelectorModel>>> getAllRemoteReferenceZone(String token) {
@@ -549,6 +548,26 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
             listWishItems.add(item);
         }
         return Resource.success(listWishItems);
+    }
+
+    private Resource<List<MyRentItem>> transformToMyRent(Resource<List<RentEsential>> listResource) {
+        List<MyRentItem> myRentItems = new ArrayList<>();
+        if(listResource.data!=null) {
+            MyRentItem item;
+            for (RentEsential rentEsential : listResource.data) {
+                item = new MyRentItem();
+                item.setUuid(rentEsential.getId());
+                item.setName(rentEsential.getName());
+                item.setPortrait(rentEsential.getPortrait());
+                item.setPrice(rentEsential.getPrice());
+                item.setRentMode(rentEsential.getRentMode());
+                item.setActive(rentEsential.isActive());
+                myRentItems.add(item);
+            }
+        }else{
+            return Resource.error(listResource.message);
+        }
+        return Resource.success(myRentItems);
     }
 
     @NonNull

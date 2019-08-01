@@ -9,8 +9,10 @@ import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
+import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
+import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 
@@ -22,6 +24,7 @@ import java.util.Map;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
+import retrofit2.Response;
 
 public interface RentRepository {
 
@@ -61,6 +64,8 @@ public interface RentRepository {
 
     Single<OperationResult> addRent(String token, Rent rent, RentAmenities rentAmenities, ArrayList<String> imagesPath);
 
-    Flowable<Resource<List<Rent>>> allRentByUserId(String token, String userid);
+    Flowable<Resource<List<RentEsential>>> allRentByUserId(String token, String userid);
+
+    Single<Response<AddressResponse>> addressByLocation(double lat, double lon);
 
 }

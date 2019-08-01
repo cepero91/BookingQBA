@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.model.remote;
 
 
+import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
 import com.infinitum.bookingqba.model.remote.pojo.AnaliticsGroup;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
@@ -19,6 +20,7 @@ import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentDrawType;
+import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoi;
 import com.infinitum.bookingqba.model.remote.pojo.RentVisitCountGroup;
@@ -149,8 +151,11 @@ public interface ApiInterface {
 
     //------------------- RENTAS ---------------------//
 
+    @GET
+    Single<Response<AddressResponse>> addressByLocationOSM(@Url String url);
+
     @GET("/api/user-rents")
-    Flowable<List<Rent>> allRentByUserId(@Header("Authorization") String token, @Query("userid") String value);
+    Flowable<List<RentEsential>> allRentByUserId(@Header("Authorization") String token, @Query("userid") String value);
 
     @GET("/api/rents")
     Single<List<Rent>> getRents(@Header("Authorization") String token, @Query("value") String value);

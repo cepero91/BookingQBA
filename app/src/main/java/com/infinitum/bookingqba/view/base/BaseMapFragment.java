@@ -83,6 +83,12 @@ public abstract class BaseMapFragment extends Fragment {
         super.onAttach(context);
     }
 
+    @Override
+    public void onDetach() {
+        mapView.onDestroy();
+        super.onDetach();
+    }
+
     private void initializeMap() {
         if (mapFilePath.equals("")) {
             disposable = Completable.fromAction(this::copyAssetMap)
@@ -187,6 +193,8 @@ public abstract class BaseMapFragment extends Fragment {
     @Override
     public void onDestroyView() {
         compositeDisposable.clear();
+        mapView.map().layers().remove(locationLayer);
+        locationLayer = null;
         mapView.onDestroy();
         super.onDestroyView();
     }

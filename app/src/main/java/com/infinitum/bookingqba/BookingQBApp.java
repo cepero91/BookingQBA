@@ -12,7 +12,6 @@ import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.util.Constants;
 import com.rey.material.app.ThemeManager;
 import com.squareup.leakcanary.LeakCanary;
-import com.yayandroid.locationmanager.LocationManager;
 
 
 import java.util.concurrent.TimeUnit;
@@ -44,7 +43,6 @@ public class BookingQBApp extends DaggerApplication{
         super.onCreate();
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         ThemeManager.init(this, 1, 0, null);
-        LocationManager.enableLog(true);
 
         //METODO PARA INICIALIZAR LEAK CANARY
         if (LeakCanary.isInAnalyzerProcess(this)) {

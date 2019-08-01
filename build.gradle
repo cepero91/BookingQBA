@@ -28,6 +28,7 @@ ext {
     firebaseCM = "17.3.3"
 
     vtm_map="0.11.1"
+    mapforge = "0.11.0"
 }
 buildscript {
     
@@ -35,6 +36,7 @@ buildscript {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
+        maven { url "https://oss.sonatype.org/content/groups/public/" }
         maven{
             url "https://dl.bintray.com/infideap2/Drawer-Behavior"
         }
@@ -56,6 +58,7 @@ allprojects {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
+        maven { url "https://oss.sonatype.org/content/groups/public/" }
         maven{
             url "https://dl.bintray.com/infideap2/Drawer-Behavior"
         }

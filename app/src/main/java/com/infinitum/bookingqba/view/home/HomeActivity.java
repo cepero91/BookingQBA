@@ -103,20 +103,13 @@ import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
-import com.yayandroid.locationmanager.base.LocationBaseActivity;
-import com.yayandroid.locationmanager.configuration.Configurations;
-import com.yayandroid.locationmanager.configuration.DefaultProviderConfiguration;
-import com.yayandroid.locationmanager.configuration.GooglePlayServicesConfiguration;
-import com.yayandroid.locationmanager.configuration.LocationConfiguration;
-import com.yayandroid.locationmanager.configuration.PermissionConfiguration;
-import com.yayandroid.locationmanager.constants.FailType;
-import com.yayandroid.locationmanager.constants.ProviderType;
-import com.yayandroid.locationmanager.providers.dialogprovider.SimpleMessageDialogProvider;
+
 
 import java.lang.ref.WeakReference;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -190,6 +183,12 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         homeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
+
+        String uuid = sharedPreferences.getString(IMEI,"");
+        if(uuid.equals("")){
+            uuid = UUID.randomUUID().toString();
+            sharedPreferences.edit().putString(IMEI,uuid).apply();
+        }
 
         setupToolbar();
 
@@ -441,7 +440,9 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                 startActivityForResult(intent, LOGIN_REQUEST_CODE);
             }, 500);
         } else if (id == R.id.nav_my_rents && !(mFragment instanceof MyRentsFragment)) {
-            mFragment = MyRentsFragment.newInstance("1");
+            String userid = sharedPreferences.getString(USER_ID,"");
+            String token = sharedPreferences.getString(USER_TOKEN,"");
+            mFragment = MyRentsFragment.newInstance(userid,token);
             sameFragment = false;
         }
         if (mFragment != null && !sameFragment) {

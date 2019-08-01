@@ -130,6 +130,23 @@ dependencies {
     implementation 'com.wdtinc:mapbox-vector-tile:3.0.0'
     implementation 'org.locationtech.jts:jts-core:1.15.0'
 
+    //POI AND ROUTING
+    implementation "org.mapsforge:mapsforge-core:$mapforge"
+    implementation "org.mapsforge:mapsforge-poi:$mapforge"
+
+    implementation "org.mapsforge:mapsforge-poi-android:$mapforge"
+    implementation "org.mapsforge:sqlite-android:$mapforge"
+    implementation "org.mapsforge:sqlite-android:$mapforge:natives-armeabi-v7a"
+    implementation "org.mapsforge:sqlite-android:$mapforge:natives-arm64-v8a"
+    implementation "org.mapsforge:sqlite-android:$mapforge:natives-x86"
+    implementation "org.mapsforge:sqlite-android:$mapforge:natives-x86_64"
+
+    implementation(group: 'com.graphhopper', name: 'graphhopper-core', version: '0.13-SNAPSHOT') {
+        exclude group: 'com.google.protobuf', module: 'protobuf-java'
+        exclude group: 'org.openstreetmap.osmosis', module: 'osmosis-osm-binary'
+        exclude group: 'org.apache.xmlgraphics', module: 'xmlgraphics-commons'
+    }
+
     //Copy Assets
     implementation "com.wshunli.android:android-copy-assets:$android_copy_assets"
 
@@ -227,12 +244,9 @@ dependencies {
     implementation 'com.github.Shashank02051997:FancyAlertDialog-Android:0.1'
     implementation 'com.github.mirrajabi:search-dialog:1.2.3'
     implementation 'com.libizo:customedittext:1.0.6'
-    implementation 'com.ernestoyaquello.stepperform:vertical-stepper-form:0.9.8'
     implementation 'com.github.iammert:ExpandableLayout:1.4.1'
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
 
-    implementation 'com.yayandroid:LocationManager:2.0.4'
-    implementation 'com.github.florent37:rxgps:1.0.2'
 
     //Reporte de Fallos
 //    implementation "ch.acra:acra-core:$acraVersion"

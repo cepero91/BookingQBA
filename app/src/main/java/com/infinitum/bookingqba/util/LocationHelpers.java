@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -156,6 +157,21 @@ public class LocationHelpers {
             Timber.e(e);
         }
         return result.toString();
+    }
+
+    public List<Address> getAddressByNominatimApi(Location location){
+        GeocodeNominatim geocodeNominatim = new GeocodeNominatim(context,Locale.getDefault());
+        if (!GeocodeNominatim.isPresent()) { return new ArrayList<>(); }
+        try
+        {
+            List<Address> result = geocodeNominatim.getFromLocation(location.getLatitude(),location.getLongitude(),10);
+            return result;
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 
     public Location getLastLocation(){

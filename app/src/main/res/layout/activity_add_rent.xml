@@ -24,7 +24,8 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/White_100">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -37,9 +38,7 @@
                     android:id="@+id/fl_location_bar"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
-                    android:background="@color/White_100"
-                    android:orientation="horizontal"
-                    android:elevation="5dp">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -62,101 +61,41 @@
                         android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:layout_gravity="bottom"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@color/Black_15" />
+
                 </FrameLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_location_form"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/material_color_blue_grey_50"
                     android:orientation="vertical"
                     android:padding="12dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/btn_location"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="center"
+                        android:padding="8dp"
+                        app:srcCompat="@drawable/ic_map_not_localized" />
+
+                    <TextView
+                        android:id="@+id/tv_title_location"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:weightSum="6"
-                        android:baselineAligned="false">
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/poppinsregular"
+                        android:text="Localizar"
+                        android:textColor="@color/material_color_blue_grey_500" />
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="4"
-                            android:orientation="vertical">
-
-                            <FrameLayout
-                                android:id="@+id/fl_latitude"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="5dp"
-                                android:background="@drawable/shape_btn_white_border"
-                                android:padding="10dp"
-                                android:paddingEnd="1dp"
-                                android:paddingStart="1dp">
-
-                                <TextView
-                                    android:id="@+id/tv_latitude"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center|start"
-                                    android:layout_marginStart="12sp"
-                                    android:text="Latitud"
-                                    android:textColor="@color/Black_35"
-                                    android:textSize="14sp" />
-
-                            </FrameLayout>
-
-                            <FrameLayout
-                                android:id="@+id/fl_longitude"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="5dp"
-                                android:background="@drawable/shape_btn_white_border"
-                                android:padding="10dp"
-                                android:paddingEnd="1dp"
-                                android:paddingStart="1dp">
-
-                                <TextView
-                                    android:id="@+id/tv_longitude"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center|start"
-                                    android:layout_marginStart="12sp"
-                                    android:text="Longitud"
-                                    android:textColor="@color/Black_35"
-                                    android:textSize="14sp" />
-
-                            </FrameLayout>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/btn_location"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="2"
-                            android:gravity="center"
-                            android:layout_margin="5dp"
-                            android:orientation="vertical">
-
-                            <com.airbnb.lottie.LottieAnimationView
-                                android:layout_width="match_parent"
-                                android:layout_height="70dp"
-                                app:lottie_autoPlay="true"
-                                app:lottie_fileName="lottie/location1.json"
-                                app:lottie_loop="true" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Localizar"
-                                android:fontFamily="@font/poppinsbold"
-                                android:textColor="@color/material_color_blue_grey_500"/>
-
-                        </LinearLayout>
-
-                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -164,9 +103,7 @@
                     android:id="@+id/fl_municipality_bar"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
-                    android:background="@color/White_100"
-                    android:orientation="horizontal"
-                    android:elevation="5dp">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -189,33 +126,44 @@
                         android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:layout_gravity="bottom"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@color/Black_15" />
+
                 </FrameLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_municipality_form"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/material_color_blue_grey_50"
                     android:focusableInTouchMode="true"
                     android:orientation="vertical"
                     android:padding="12dp">
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_address"
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_address"
+                        style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:hint="Direccion"
-                        android:inputType="text"
-                        android:padding="10dp"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                        app:boxStrokeColor="@color/colorPrimary">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/et_address"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppinsregular"
+                            android:inputType="text"
+                            android:padding="12dp"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textColor="@color/colorAccent" />
+
+                    </android.support.design.widget.TextInputLayout>
 
                     <FrameLayout
                         android:id="@+id/fl_municipalities"
@@ -223,9 +171,10 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:background="@drawable/shape_btn_white_border"
-                        android:padding="10dp"
-                        android:paddingEnd="1dp"
-                        android:paddingStart="1dp">
+                        android:paddingBottom="12dp"
+                        android:paddingEnd="5dp"
+                        android:paddingStart="3dp"
+                        android:paddingTop="12dp">
 
                         <TextView
                             android:id="@+id/tv_municipality"
@@ -253,16 +202,17 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:background="@drawable/shape_btn_white_border"
-                        android:padding="10dp"
-                        android:paddingEnd="1dp"
-                        android:paddingStart="1dp">
+                        android:paddingBottom="12dp"
+                        android:paddingEnd="5dp"
+                        android:paddingStart="3dp"
+                        android:paddingTop="12dp">
 
                         <TextView
                             android:id="@+id/tv_reference_zone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|start"
-                            android:layout_marginStart="14dp"
+                            android:layout_marginStart="12dp"
                             android:text="Zona de referencia"
                             android:textColor="@color/Black_35"
                             android:textSize="14sp" />
@@ -283,9 +233,7 @@
                     android:id="@+id/fl_esential_bar"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
-                    android:background="@color/White_100"
-                    android:orientation="horizontal"
-                    android:elevation="5dp">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -308,101 +256,138 @@
                         android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:layout_gravity="bottom"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@color/Black_15" />
+
                 </FrameLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_esential_form"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/material_color_blue_grey_50"
                     android:orientation="vertical"
                     android:padding="12dp">
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_rent_name"
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_rent_name"
+                        style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:hint="Nombre de Renta"
-                        android:inputType="text"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                        app:boxStrokeColor="@color/colorPrimary">
 
-                    <FrameLayout
-                        android:id="@+id/fl_rent_mode"
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/et_rent_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppinsregular"
+                            android:inputType="text"
+                            android:padding="12dp"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textColor="@color/colorAccent" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/shape_btn_white_border"
-                        android:padding="10dp"
-                        android:paddingEnd="1dp"
-                        android:paddingStart="1dp">
+                        android:orientation="horizontal"
+                        android:weightSum="3">
 
-                        <TextView
-                            android:id="@+id/tv_rent_mode"
-                            android:layout_width="wrap_content"
+                        <FrameLayout
+                            android:id="@+id/fl_rent_mode"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center|start"
-                            android:layout_marginStart="12sp"
-                            android:text="Modo de Renta"
-                            android:textColor="@color/Black_35"
-                            android:textSize="14sp" />
+                            android:layout_margin="5dp"
+                            android:layout_weight="2"
+                            android:background="@drawable/shape_btn_white_border"
+                            android:paddingBottom="12dp"
+                            android:paddingEnd="5dp"
+                            android:paddingStart="3dp"
+                            android:paddingTop="12dp">
 
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="wrap_content"
+                            <TextView
+                                android:id="@+id/tv_rent_mode"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center|start"
+                                android:layout_marginStart="12sp"
+                                android:text="Modo de Renta"
+                                android:textColor="@color/Black_35"
+                                android:textSize="14sp" />
+
+                            <android.support.v7.widget.AppCompatImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center|end"
+                                android:layout_marginEnd="12dp"
+                                android:layout_marginStart="12dp"
+                                app:srcCompat="@drawable/ic_search" />
+
+                        </FrameLayout>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/til_price"
+                            style="@style/MyStyleUserInput"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center|end"
-                            android:layout_marginEnd="12dp"
-                            android:layout_marginStart="12dp"
-                            app:srcCompat="@drawable/ic_search" />
-                    </FrameLayout>
+                            android:layout_marginEnd="5dp"
+                            android:layout_weight="1"
+                            android:hint="Precio"
+                            app:boxStrokeColor="@color/colorPrimary">
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_price"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:hint="Precio"
-                        android:inputType="numberDecimal"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/et_price"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:drawablePadding="5dp"
+                                android:drawableStart="@drawable/ic_dollar_sign"
+                                android:fontFamily="@font/robotoregular"
+                                android:inputType="number"
+                                android:padding="10dp"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                                android:textColor="@color/colorAccent" />
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_email"
+                        </android.support.design.widget.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_email"
+                        style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:hint="Email"
-                        android:inputType="textEmailAddress"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                        app:boxStrokeColor="@color/colorPrimary">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/et_email"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawablePadding="5dp"
+                            android:drawableStart="@drawable/ic_envelope_input"
+                            android:fontFamily="@font/poppinsregular"
+                            android:inputType="textEmailAddress"
+                            android:padding="12dp"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textColor="@color/colorAccent" />
+
+                    </android.support.design.widget.TextInputLayout>
+
                 </LinearLayout>
 
                 <FrameLayout
                     android:id="@+id/fl_finally_bar"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
-                    android:background="@color/White_100"
-                    android:orientation="horizontal"
-                    android:elevation="5dp">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -425,143 +410,217 @@
                         android:tint="@color/material_color_blue_grey_500"
                         app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:layout_gravity="bottom"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@color/Black_15" />
+
                 </FrameLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_finally_form"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/material_color_blue_grey_50"
                     android:orientation="vertical"
                     android:padding="12dp">
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_capability"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:hint="Cant. de Huespedes"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginStart="3dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_max_rooms"
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/til_capability"
+                            style="@style/MyStyleUserInput"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:layout_weight="1"
+                            android:hint="Max. Huespedes"
+                            app:boxStrokeColor="@color/colorPrimary">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/et_capability"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/robotoregular"
+                                android:inputType="number"
+                                android:padding="10dp"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                                android:textColor="@color/colorAccent" />
+
+                        </android.support.design.widget.TextInputLayout>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/til_max_rooms"
+                            style="@style/MyStyleUserInput"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:layout_weight="1"
+                            android:hint="Cant. Habitaciones"
+                            app:boxStrokeColor="@color/colorPrimary">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/et_max_rooms"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/robotoregular"
+                                android:inputType="number"
+                                android:padding="10dp"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                                android:textColor="@color/colorAccent" />
+
+                        </android.support.design.widget.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:hint="Cant. Habitaciones"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginStart="3dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_max_beds"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:hint="Cant. Camas"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/til_max_beds"
+                            style="@style/MyStyleUserInput"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:layout_weight="1"
+                            android:hint="Cant. Camas"
+                            app:boxStrokeColor="@color/colorPrimary">
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_max_baths"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:hint="Cant. Banos"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/et_max_beds"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/robotoregular"
+                                android:inputType="number"
+                                android:padding="10dp"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                                android:textColor="@color/colorAccent" />
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_rules"
+                        </android.support.design.widget.TextInputLayout>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/til_max_baths"
+                            style="@style/MyStyleUserInput"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:layout_weight="1"
+                            android:hint="Cant. Baños"
+                            app:boxStrokeColor="@color/colorPrimary">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/et_max_baths"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/robotoregular"
+                                android:inputType="number"
+                                android:padding="10dp"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                                android:textColor="@color/colorAccent" />
+
+                        </android.support.design.widget.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_rules"
+                        style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:hint="Reglas"
-                        android:inputType="text"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                        app:boxStrokeColor="@color/colorPrimary">
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_description"
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/et_rules"
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp"
+                            android:fontFamily="@font/poppinsregular"
+                            android:inputType="textMultiLine"
+                            android:padding="12dp"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textColor="@color/colorAccent" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_description"
+                        style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:hint="Descripcion"
-                        android:inputType="text"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                        app:boxStrokeColor="@color/colorPrimary">
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_personal_phone"
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/et_description"
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp"
+                            android:fontFamily="@font/poppinsregular"
+                            android:inputType="textMultiLine"
+                            android:padding="12dp"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textColor="@color/colorAccent" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_personal_phone"
+                        style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:hint="Telefono movil (Opcional)"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                        app:boxStrokeColor="@color/colorPrimary">
 
-                    <com.libizo.CustomEditText
-                        android:id="@+id/et_home_phone"
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/et_personal_phone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppinsregular"
+                            android:inputType="phone"
+                            android:padding="12dp"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textColor="@color/colorAccent" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_home_phone"
+                        style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:hint="Telefono de la Renta (Opcional)"
-                        android:inputType="number"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="14sp"
-                        app:libIZO_setBackgroundColor="@color/White_100"
-                        app:libIZO_setBorderColor="@color/material_color_blue_grey_200"
-                        app:libIZO_setBorderView="true"
-                        app:libIZO_setClearIconVisible="false"
-                        app:libIZO_setCornerRadius="5dp"
-                        app:libIZO_setStrokeWidth="1dp" />
+                        app:boxStrokeColor="@color/colorPrimary">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/et_home_phone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppinsregular"
+                            android:inputType="phone"
+                            android:padding="12dp"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textColor="@color/colorAccent" />
+
+                    </android.support.design.widget.TextInputLayout>
 
                     <RelativeLayout
                         android:id="@+id/fl_amenities"
@@ -588,17 +647,17 @@
                             android:layout_alignParentEnd="true"
                             android:layout_marginEnd="12dp"
                             android:layout_marginStart="12dp"
-                            app:srcCompat="@drawable/ic_add_black_24dp"
-                            android:tint="@color/material_color_blue_grey_400"/>
+                            android:tint="@color/material_color_blue_grey_400"
+                            app:srcCompat="@drawable/ic_add_black_24dp" />
 
                         <com.google.android.flexbox.FlexboxLayout
                             android:id="@+id/fb_amenities"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/tv_amenities"
-                            android:layout_marginTop="5dp"
                             android:layout_marginEnd="3dp"
                             android:layout_marginStart="3dp"
+                            android:layout_marginTop="5dp"
                             app:alignContent="center"
                             app:flexWrap="wrap" />
 
@@ -629,40 +688,77 @@
                             android:layout_alignParentEnd="true"
                             android:layout_marginEnd="12dp"
                             android:layout_marginStart="12dp"
-                            app:srcCompat="@drawable/ic_add_black_24dp"
-                            android:tint="@color/material_color_blue_grey_400"/>
+                            android:tint="@color/material_color_blue_grey_400"
+                            app:srcCompat="@drawable/ic_add_black_24dp" />
 
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/rv_galeries"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/tv_galery"
-                            android:paddingStart="8dp"
+                            android:layout_marginTop="8dp"
                             android:paddingEnd="8dp"
-                            android:layout_marginTop="8dp"/>
+                            android:paddingStart="8dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/fl_offer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:padding="10dp"
+                        android:paddingEnd="1dp"
+                        android:paddingStart="1dp">
+
+                        <TextView
+                            android:id="@+id/tv_offer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginStart="12sp"
+                            android:text="Ofertas"
+                            android:textColor="@color/material_color_blue_grey_400"
+                            android:textSize="14sp" />
+
+                        <android.support.v7.widget.AppCompatImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="12dp"
+                            android:layout_marginStart="12dp"
+                            android:tint="@color/material_color_blue_grey_400"
+                            app:srcCompat="@drawable/ic_add_black_24dp" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rv_offer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tv_offer"
+                            android:layout_marginTop="8dp"
+                            android:paddingEnd="8dp"
+                            android:paddingStart="8dp" />
 
                     </RelativeLayout>
 
                 </LinearLayout>
 
-                <FrameLayout
+
+                <TextView
                     android:id="@+id/btn_upload"
                     android:layout_width="match_parent"
-                    android:layout_height="?actionBarSize"
-                    android:elevation="5dp">
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_btn_color_primary"
+                    android:padding="10dp"
+                    android:textAlignment="center"
+                    android:layout_margin="10dp"
+                    android:fontFamily="@font/poppinsbold"
+                    android:text="Subir Renta"
+                    android:textColor="@color/White_100"
+                    android:textSize="14sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:text="Subir Renta"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="14sp"
-                        android:drawablePadding="10dp"
-                        android:layout_gravity="center"
-                        android:drawableStart="@drawable/ic_check_blue_grey"/>
-
-                </FrameLayout>
 
             </LinearLayout>
 
@@ -672,7 +768,7 @@
             android:id="@+id/map_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/White_100">
+            android:elevation="3dp">
 
         </FrameLayout>
 

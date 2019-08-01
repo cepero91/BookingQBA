@@ -117,4 +117,100 @@ public final class Constants {
 
     public static final int REQUEST_CHECK_SETTINGS = 0x1;
 
+    public static final String[] category = new String[]{
+            "Restaurants",
+            "Fast food restaurants",
+            "Bars",
+            "Cafes",
+            "Ice cream shops",
+            "Car rental stations",
+            "Taxi stands",
+            "ATMs and cash points",
+            "Banks",
+            "Hospitals",
+            "Arts centers",
+            "Cinemas",
+            "Nightclubs (Dancing)",
+            "Theatres and operas",
+            "Castles",
+            "Memorials",
+            "Monuments",
+            "Ruins",
+            "Historic",
+            "Natural",
+            "Picnic sites",
+            "Nature reserves",
+            "Marinas",
+            "Attractions",
+    };
+
+    public static String[] urban_category = new String[]{
+                    "Restaurants",
+                    "Fast food restaurants",
+                    "Bars",
+                    "Cafes",
+                    "Ice cream shops",
+                    "Car rental stations",
+                    "Taxi stands",
+                    "ATMs and cash points",
+                    "Banks",
+                    "Hospitals",
+                    "Arts centers",
+                    "Cinemas",
+                    "Nightclubs (Dancing)",
+                    "Theatres and operas",
+            };
+
+    public static String[] historic_category = new String[]{
+            "Castles",
+            "Memorials",
+            "Monuments",
+            "Ruins",
+            "Historic",
+    };
+
+    public static String[] natural_category = new String[]{
+            "Natural",
+            "Picnic sites",
+            "Nature reserves",
+    };
+
+    public static String[] beach_category = new String[]{
+            "Marinas",
+            "Attractions",
+    };
+
+
+//            "Entertainment, arts and culture",
+//            "Churches, mosques, temples",
+//            "Airports",
+//            "Airport terminals",
+//            "Airport gates",
+//            "Terminals",
+//            "Airport POIs",
+//            "Dancing places",
+//            "Fishing sites",
+//            "Parks",
+//            "Sports centres",
+//            "Stadiums",
+//            "Swimming pools",
+//            "Water parks",
+//            "Attractions",
+//            "Travel agents",
+//            "Bakeries",
+//            "Beauty",
+//            "Boutiques",
+//            "Massages",
+//            "Musical instruments",
+//            "Seafood / Fish",
+//            "Sports",
+//            "Supermarkets",
+//            "Tattoos",
+//            "Tobacco",
+//            "Golf",
+//            "Swimming",
+//            "Camp sites",
+//            "Museums",
+//            "Zoos",
+//            "Waterfalls",
 }

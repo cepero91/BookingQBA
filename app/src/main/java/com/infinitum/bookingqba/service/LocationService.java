@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Address;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Build;
@@ -26,6 +27,7 @@ import com.infinitum.bookingqba.util.LocationHelpers;
 import com.infinitum.bookingqba.util.ParcelableException;
 
 import java.sql.Time;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -167,10 +169,8 @@ public class LocationService extends Service {
     private void onNewLocation(Location location) {
         Timber.i("New location: %s", location);
         currentLocation = location;
-        String address = locationHelpers.getAddressByLocation(location);
         Intent intent = new Intent(ACTION_BROADCAST);
         intent.putExtra(EXTRA_LOCATION, currentLocation);
-        intent.putExtra(EXTRA_ADDRESS, address);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 }

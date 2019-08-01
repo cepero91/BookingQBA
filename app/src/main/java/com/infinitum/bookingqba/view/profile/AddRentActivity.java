@@ -13,8 +13,10 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
+import android.location.Address;
 import android.location.Location;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -27,6 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +53,10 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityAddRentBinding;
+import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.util.AlertUtils;
+import com.infinitum.bookingqba.util.Constants;
+import com.infinitum.bookingqba.util.GeocodeNominatim;
 import com.infinitum.bookingqba.util.LocationHelpers;
 import com.infinitum.bookingqba.view.base.LocationActivity;
 import com.infinitum.bookingqba.view.map.MapFragment;
@@ -64,10 +70,25 @@ import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
 
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.poi.android.storage.AndroidPoiPersistenceManagerFactory;
+import org.mapsforge.poi.storage.ExactMatchPoiCategoryFilter;
+import org.mapsforge.poi.storage.PoiCategory;
+import org.mapsforge.poi.storage.PoiCategoryFilter;
+import org.mapsforge.poi.storage.PoiCategoryManager;
+import org.mapsforge.poi.storage.PoiPersistenceManager;
+import org.mapsforge.poi.storage.PointOfInterest;
+import org.mapsforge.poi.storage.UnknownPoiCategoryException;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -75,9 +96,14 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
+import io.reactivex.Completable;
+import io.reactivex.CompletableSource;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
 import ir.mirrajabi.searchdialog.core.SearchResultListener;
@@ -111,6 +137,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     SharedPreferences sharedPreferences;
 
     private Location currentLocation;
+    private double mLatitude;
+    private double mLongitude;
 
     private RentViewModel rentViewModel;
     private Disposable disposable;
@@ -132,6 +160,11 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     private ArrayList<String> imagesFilesPath;
     private ArrayList<GaleryModelItem> galeryModelItems;
     private ImageFormAdapter imageFormAdapter;
+    private PoiPersistenceManager mPersistenceManager;
+    private DialogLocationConfirmView dialogLocationConfirmView;
+    private CFAlertDialog.Builder builder;
+    private CFAlertDialog dialog;
+    private boolean isBtnSaveClick;
 
 
     //--------------------------------------------------------------------------------
@@ -141,6 +174,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_rent);
+
+        initPoiFile();
 
         compositeDisposable = new CompositeDisposable();
 
@@ -163,18 +198,26 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         rentFormObject = new RentFormObject(UUID.randomUUID().toString());
 
         binding.slidingLayout.setTouchEnabled(false);
+        binding.slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    getSupportFragmentManager().beginTransaction().remove(mapFragment).commit();
+                    mapFragment = null;
+                }
+            }
+        });
 
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        getSupportFragmentManager().putFragment(outState, STATE_ACTIVE_FRAGMENT, mapFragment);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
+    private void initPoiFile() {
+        String file = getFilesDir() + File.separator + "map" + File.separator + "cuba.poi";
+        mPersistenceManager = AndroidPoiPersistenceManagerFactory.getPoiPersistenceManager(file);
     }
 
     @Override
@@ -183,6 +226,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         if (disposable != null && !disposable.isDisposed())
             disposable.dispose();
         compositeDisposable.clear();
+        dialog = null;
+        builder = null;
         super.onDestroy();
     }
 
@@ -223,7 +268,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     @Override
     protected void updateLocation(Location location) {
         if (binding.slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED &&
-                mapFragment != null && mapFragment.getUserVisibleHint()){
+                mapFragment != null && mapFragment.getUserVisibleHint()) {
             mapFragment.updateGPSCurrentLocation(location);
         }
     }
@@ -287,18 +332,42 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     @Override
     public void onLocationUpdates(double latitude, double longitude) {
-        rentFormObject.setLatitude(String.valueOf(latitude));
-        rentFormObject.setLongitude(String.valueOf(longitude));
-        binding.tvLatitude.setTextColor(Color.parseColor("#FFC400"));
-        binding.tvLongitude.setTextColor(Color.parseColor("#FFC400"));
-        binding.tvLatitude.setText(String.format("%.5f", latitude));
-        binding.tvLongitude.setText(String.format("%.5f", longitude));
-        showSuccessLocationDialog();
+        this.mLatitude = latitude;
+        this.mLongitude = longitude;
+    }
+
+    private void getAddressByLocation() {
+        disposable = rentViewModel.addressByLocation(mLatitude, mLongitude)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(addressResponse -> {
+                    if (addressResponse.isSuccessful()) {
+                        buildAddressText(addressResponse.body().getDisplayName());
+                    }
+                }, throwable -> {
+                    Timber.e(throwable);
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    private void buildAddressText(String displayName) {
+        StringBuilder addressBuilder = new StringBuilder();
+        String[] displayList = displayName.split(",");
+        int size = displayList.length - 2;
+        for (int i = 0; i < size; i++) {
+            addressBuilder.append(displayList[i]);
+            if (i < size - 1) {
+                addressBuilder.append(", ");
+            }
+        }
+        if (!addressBuilder.toString().isEmpty()) {
+            binding.etAddress.setText(addressBuilder.toString());
+        }
     }
 
     @Override
     public void showLocationConfirmDialog() {
-        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+        builder = new CFAlertDialog.Builder(this);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
         // Title and message
         builder.setTitle("Ubicacion obtenida");
@@ -306,35 +375,106 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         builder.setIcon(R.drawable.ic_map_marker_alt_blue_grey);
         builder.setTextColor(Color.parseColor("#607D8B"));
 
-        DialogLocationConfirmView dialogLocationConfirmView = new DialogLocationConfirmView(this);
+        dialogLocationConfirmView = new DialogLocationConfirmView(this);
         builder.setFooterView(dialogLocationConfirmView);
 
-        builder.show();
+        dialog = builder.show();
     }
 
     @Override
     public void onButtonSaveClick() {
-
+        rentFormObject.setLatitude(String.valueOf(mLatitude));
+        rentFormObject.setLongitude(String.valueOf(mLongitude));
+        dialog.dismiss();
+        binding.ivArrowLocation.setImageResource(R.drawable.ic_map_localized);
+        binding.tvTitleLocation.setText("Localizado");
     }
 
     @Override
     public void onButtonConfirmClick() {
-
+        isBtnSaveClick = false;
+        dialogLocationConfirmView.isLoading(true);
+        disposable = Single.just(getPointOfInterestByLocation(mLatitude, mLongitude))
+                .subscribeOn(Schedulers.io())
+                .map(pointOfInterests -> {
+                    String referenceZone = getReferenceNameByPoiCategory(pointOfInterests);
+                    return new Pair<>(referenceZone, pointOfInterests);
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(pair -> {
+                    dialogLocationConfirmView.setPoints(pair.second);
+                    dialogLocationConfirmView.setReferenceZone(pair.first);
+                    dialogLocationConfirmView.isLoading(false);
+                }, Timber::e);
+        compositeDisposable.add(disposable);
     }
 
-    private void showSuccessLocationDialog() {
-        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
-        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
-        // Title and message
-        builder.setTitle("Renta localizada!!");
-        builder.setMessage("Coordenadas obtenidas con exito");
-        builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
-        builder.addButton("Cerrar mapa", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, (dialog, which) -> {
-            dialog.dismiss();
-            onBackPressed();
-        });
-        builder.show();
+    private Collection<PointOfInterest> getPointOfInterestByLocation(double mLatitude, double mLongitude) {
+        PoiCategoryManager categoryManager = mPersistenceManager.getCategoryManager();
+        PoiCategoryFilter categoryFilter = new ExactMatchPoiCategoryFilter();
+        for (String category : Constants.category) {
+            try {
+                categoryFilter.addCategory(categoryManager.getPoiCategoryByTitle(category));
+            } catch (UnknownPoiCategoryException e) {
+                e.printStackTrace();
+            }
+        }
+        return mPersistenceManager.findNearPosition(new LatLong(mLatitude, mLongitude), 1500, categoryFilter, null, 50);
     }
+
+    private String getReferenceNameByPoiCategory(Collection<PointOfInterest> pointOfInterests) {
+        String referenceZoneResult = "Barriada";
+        if (containBeach(pointOfInterests)) {
+            referenceZoneResult = "Playa";
+        }else if(containCategory(pointOfInterests,Constants.historic_category)){
+            referenceZoneResult = "Historia";
+        }else if(containCategory(pointOfInterests,Constants.natural_category)){
+            referenceZoneResult = "Natural";
+        }
+        return referenceZoneResult;
+    }
+
+    private boolean containBeach(Collection<PointOfInterest> pointOfInterests) {
+        for (PointOfInterest point : pointOfInterests) {
+            PoiCategory[] poiCategories = point.getCategories().toArray(new PoiCategory[point.getCategories().size()]);
+            for (PoiCategory poiCategory : poiCategories) {
+                if (poiCategory.getTitle().equals("Marinas")) {
+                    return true;
+                } else if (poiCategory.getTitle().equals("Attractions") && point.getName().contains("Playa")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean containCategory(Collection<PointOfInterest> pointOfInterests, String[] categories) {
+        for (PointOfInterest point : pointOfInterests) {
+            if (categoryIsInList(categories, point.getCategories())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean categoryIsInList(String[] categoriesArray, Set<PoiCategory> categories) {
+        PoiCategory[] poiCategories = categories.toArray(new PoiCategory[categories.size()]);
+        for (PoiCategory poiCategory : poiCategories) {
+            if (categoryExist(categoriesArray, poiCategory.getTitle())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean categoryExist(String[] categories, String category) {
+        for (String stringCategory : categories) {
+            if (stringCategory.equals(category))
+                return true;
+        }
+        return false;
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -391,7 +531,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                     mapFragment = MapFormFragment.newInstance("", "");
                 }
                 getSupportFragmentManager().beginTransaction().replace(R.id.map_content,
-                        mapFragment).runOnCommit(() -> binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED)).commit();
+                        mapFragment, "map").runOnCommit(() -> binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED)).commit();
                 break;
             case R.id.fl_municipalities:
                 showMunicipalitiesDialog();

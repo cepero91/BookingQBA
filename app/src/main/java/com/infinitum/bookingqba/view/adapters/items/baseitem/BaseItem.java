@@ -29,10 +29,6 @@ public class BaseItem implements ViewModel, Parcelable {
         }
 
         final BaseItem that = (BaseItem) o;
-
-        if (!name.equals(that.name)) {
-            return false;
-        }
         return id.equals(that.id);
     }
 

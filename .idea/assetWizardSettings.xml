@@ -81,9 +81,10 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_directions" />
+                            <entry key="outputName" value="ic_dollar_sign" />
                             <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/fontawesome-free-5.7.2-desktop/svgs/solid/directions.svg" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../FONT AWESOME/fontawesome-free-5.7.2-desktop/svgs/solid/dollar-sign.svg" />
+                            <entry key="width" value="12" />
                           </map>
                         </option>
                       </PersistentState>

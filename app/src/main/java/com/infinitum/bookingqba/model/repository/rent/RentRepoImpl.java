@@ -13,8 +13,10 @@ import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
+import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
+import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.util.DateUtils;
@@ -43,6 +45,7 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import timber.log.Timber;
 
@@ -240,10 +243,10 @@ public class RentRepoImpl implements RentRepository {
                 .addRent(token, rent).subscribeOn(Schedulers.io());
         Single<ResponseResult> newAmenitiesRent = retrofit.create(ApiInterface.class)
                 .addRentAmenities(token, rentAmenities).subscribeOn(Schedulers.io());
-        MultipartBody imagesRequestBody = getMultipartImagesBody(rent.getId(),imagesPath);
+        MultipartBody imagesRequestBody = getMultipartImagesBody(rent.getId(), imagesPath);
         Single<ResponseResult> newRentGalery = retrofit.create(ApiInterface.class)
                 .addRentGalery(token, imagesRequestBody).subscribeOn(Schedulers.io());
-        Single.concat(newRent, newAmenitiesRent,newRentGalery).doOnNext(new Consumer<ResponseResult>() {
+        Single.concat(newRent, newAmenitiesRent, newRentGalery).doOnNext(new Consumer<ResponseResult>() {
             @Override
             public void accept(ResponseResult responseResult) throws Exception {
                 Timber.e(responseResult.getMsg());
@@ -253,11 +256,23 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public Flowable<Resource<List<Rent>>> allRentByUserId(String token,String userid) {
+    public Flowable<Resource<List<RentEsential>>> allRentByUserId(String token, String userid) {
         return retrofit.create(ApiInterface.class)
-                .allRentByUserId(token,userid)
+                .allRentByUserId(token, userid)
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Single<Response<AddressResponse>> addressByLocation(double lat, double lon) {
+        String url = "http://nominatim.openstreetmap.org/"
+                + "reverse?"
+                + "format=json"
+                + "&accept-language=" + "es"
+                + "&lat=" + lat
+                + "&lon=" + lon;
+        return retrofit.create(ApiInterface.class)
+                .addressByLocationOSM(url);
     }
 
     private MultipartBody getMultipartImagesBody(String id, ArrayList<String> imagesPath) {

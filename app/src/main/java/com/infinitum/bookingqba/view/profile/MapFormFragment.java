@@ -75,12 +75,6 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
 
     private FragmentMapFormBinding binding;
     private MapRentLocation mapRentLocation;
-    private GeoPoint geoPointLocation;
-    private boolean isLocationEmpty;
-
-    private String mapFilePath;
-    private MarkerSymbol userMarker;
-    private ItemizedLayer<MarkerItem> mMarkerLayer;
 
     private String argLatitude;
     private String argLongitude;
@@ -88,8 +82,6 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
     private static final String LONGITUDE = "lon";
 
     private MapEventsReceiver mapEventsReceiver;
-    private Location currentLocation;
-    private Location lastKnowLocation;
     private boolean alreadyDoneShow;
 
 
@@ -104,6 +96,8 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
         mapFormFragment.setArguments(bundle);
         return mapFormFragment;
     }
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -167,7 +161,10 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
     protected void showViews() {
         binding.setIsLoading(false);
         if (!argLatitude.equals("") && !argLongitude.equals("")) {
-            updateGestureCurrentLocation(Float.parseFloat(argLatitude), Float.parseFloat(argLongitude),0);
+            locationLayer.setEnabled(true);
+            locationLayer.setPosition(Float.parseFloat(argLatitude), Float.parseFloat(argLongitude), 0);
+            mapView.map().setMapPosition(Float.parseFloat(argLatitude), Float.parseFloat(argLatitude), 2 << 12);
+            showDoneFAB();
         } else {
             mapView.map().setMapPosition(23.1165, -82.3882, 2 << 12);
         }
@@ -195,7 +192,8 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
                 }
                 break;
             case R.id.iv_done:
-                showDialogLocationConfirm();
+                mapRentLocation.onLocationUpdates(Float.parseFloat(argLatitude),Float.parseFloat(argLongitude));
+                mapRentLocation.showLocationConfirmDialog();
                 break;
 
         }
@@ -231,7 +229,6 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
         argLongitude = String.valueOf(location.getLongitude());
         locationLayer.setEnabled(true);
         locationLayer.setPosition(location.getLatitude(), location.getLongitude(), location.getAccuracy());
-        map.animator().animateTo(1000, getMapPositionWithZoom(new GeoPoint(Float.parseFloat(argLatitude),Float.parseFloat(argLongitude)), 15), Easing.Type.SINE_IN);
         showDoneFAB();
     }
 
@@ -250,20 +247,12 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
         }
     }
 
-    private void showDialogLocationConfirm() {
-        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(getActivity());
-        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
-        // Title and message
-        builder.setTitle("Ubicacion obtenida");
-        builder.setTextGravity(Gravity.START);
-        builder.setIcon(R.drawable.ic_map_marker_alt_blue_grey);
-        builder.setTextColor(Color.parseColor("#607D8B"));
-
-        DialogLocationConfirmView dialogLocationConfirmView = new DialogLocationConfirmView(getActivity());
-        builder.setFooterView(dialogLocationConfirmView);
-
-        builder.show();
+    @Override
+    public void onDestroyView() {
+        binding.mapview.map().layers().remove(mapEventsReceiver);
+        binding.mapview.map().layers().remove(locationLayer);
+        mapEventsReceiver = null;
+        binding.mapview.onDestroy();
+        super.onDestroyView();
     }
-
-
 }

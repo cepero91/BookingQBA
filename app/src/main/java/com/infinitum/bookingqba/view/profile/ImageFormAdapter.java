@@ -29,7 +29,7 @@ public class ImageFormAdapter extends RecyclerView.Adapter<ImageFormAdapter.View
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_new_rent_form, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_add_image_form, viewGroup, false);
         return new ViewHolder(view);
     }
 
