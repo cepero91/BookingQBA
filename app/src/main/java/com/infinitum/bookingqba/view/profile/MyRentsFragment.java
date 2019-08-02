@@ -23,6 +23,7 @@ import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentMyRentsBinding;
 import com.infinitum.bookingqba.view.adapters.items.addrent.MyRentItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
+import com.infinitum.bookingqba.viewmodel.RentFormViewModel;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.squareup.picasso.Picasso;
@@ -56,7 +57,7 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener {
     @Inject
     ViewModelFactory viewModelFactory;
 
-    private RentViewModel rentViewModel;
+    private RentFormViewModel rentViewModel;
 
     public static final String USERID_ARGS = "userid";
     public static final String USER_TOKEN = "token";
@@ -95,7 +96,7 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
+        rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentFormViewModel.class);
 
         binding.fabAddRent.setOnClickListener(this);
 
@@ -173,6 +174,7 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener {
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_rent_name, (ViewProvider<TextView>) view -> view.setText(model.getName()))
                         .find(R.id.tv_rent_mode, (ViewProvider<TextView>) view -> view.setText(" /" + model.getRentMode()))
+                        .find(R.id.tv_state, (ViewProvider<TextView>) view -> view.setText(model.isActive()?"Activada":"Desactivada"))
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format(String.format("$ %.2f", model.getPrice()))))
                         .find(R.id.siv_rent_image, (ViewProvider<RoundedImageView>) view -> {
                             String path = model.getPortrait();

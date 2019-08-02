@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel;
 import com.infinitum.bookingqba.viewmodel.HomeViewModel;
 import com.infinitum.bookingqba.viewmodel.InformationViewModel;
 import com.infinitum.bookingqba.viewmodel.RentAnaliticsViewModel;
+import com.infinitum.bookingqba.viewmodel.RentFormViewModel;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.SyncViewModel;
 import com.infinitum.bookingqba.viewmodel.UserViewModel;
@@ -86,6 +87,11 @@ public interface ViewModelModule {
     @Binds
     @ViewModelKey(InformationViewModel.class)
     ViewModel infoViewModel(InformationViewModel informationViewModel);
+
+    @IntoMap
+    @Binds
+    @ViewModelKey(RentFormViewModel.class)
+    ViewModel rentFormViewModel(RentFormViewModel rentFormViewModel);
 
 
 }

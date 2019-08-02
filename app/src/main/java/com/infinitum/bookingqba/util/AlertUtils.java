@@ -200,18 +200,17 @@ public class AlertUtils {
                 .show();
     }
 
-    public static void showCFInfoAlertWithAction(Context context, String message, String buttonTitle, CFAlertDialog.OnClickListener onClickListener, DialogInterface.OnDismissListener onDismissListener) {
+    public static void showCFInfoAlertWithAction(Context context, String message, String buttonTitle, CFAlertDialog.OnClickListener onClickListener) {
         SoftReference<Context> weakReference = new SoftReference<>(context);
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(weakReference.get());
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         // Title and message
-        builder.setTitle("Informacion");
+        builder.setTitle("Aviso!!");
         builder.setMessage(message);
-        builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
+        builder.setTextGravity(Gravity.CENTER);
         builder.setAutoDismissAfter(8000);
         builder.addButton(buttonTitle, -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
         builder.setTextColor(Color.parseColor("#607D8B"));
-        builder.onDismissListener(onDismissListener);
         builder.show();
     }
 

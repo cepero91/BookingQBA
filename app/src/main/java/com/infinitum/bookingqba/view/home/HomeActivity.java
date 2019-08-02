@@ -251,6 +251,12 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         homeBinding.navViewNotification.setLayoutParams(params);
 
         homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
+
+        if(sharedPreferences.getBoolean(USER_IS_AUTH,false)){
+            homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(false);
+            homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(true);
+            updateNavHeader(sharedPreferences.getString(USER_NAME,""),sharedPreferences.getString(USER_AVATAR,""));
+        }
     }
 
 
@@ -291,6 +297,8 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         if (data != null && data.hasExtra(USER_NAME)) {
+                            homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(true);
+                            homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(false);
                             showLoginSuccessAlert(data.getStringExtra(USER_NAME));
                             updateNavHeader(data.getStringExtra(USER_NAME), data.getStringExtra(USER_AVATAR));
                         }
@@ -357,8 +365,6 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
 
     public void checkMenuItemsVisibility(Menu menu) {
-        MenuItem menuFilter = menu.findItem(R.id.action_filter_panel);
-        menuFilter.setVisible(false);
         menu.findItem(R.id.action_filter_panel).setVisible(mFragment instanceof RentListFragment);
         menu.findItem(R.id.action_refresh).setVisible(mFragment instanceof ProfileFragment);
     }
@@ -382,33 +388,20 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     }
 
     private void confirmLogout() {
-        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-                .setTitleText("Aviso!")
-                .setContentText("Desea finalizar la sesión")
-                .hideConfirmButton()
-                .setCancelText("Si, lo deseo")
-                .setCancelClickListener(sweetAlertDialog1 -> {
-                    sweetAlertDialog1.dismissWithAnimation();
-                    new Handler().postDelayed(HomeActivity.this::logoutPetition, 400);
-                });
-        sweetAlertDialog.setOnShowListener(dialog -> {
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.gravity = CENTER;
-            sweetAlertDialog.getButton(SweetAlertDialog.BUTTON_CANCEL).setLayoutParams(params);
-            sweetAlertDialog.getButton(SweetAlertDialog.BUTTON_CANCEL).setPadding(15, 15, 15, 15);
+        AlertUtils.showCFInfoAlertWithAction(this, "Esta seguro que desea finalizar la sesion",
+                "Si", (dialog, which) -> {
+            logoutPetition();
+            dialog.dismiss();
         });
-        sweetAlertDialog.show();
     }
 
     private void logoutPetition() {
-        if (mFragment instanceof ProfileFragment) {
-            onNavigationItemSelected(homeBinding.navView.getMenu().findItem(R.id.nav_home));
-        }
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(USER_IS_AUTH, false);
-        editor.putBoolean(IS_PROFILE_ACTIVE, false);
         editor.apply();
-        invalidateOptionsMenu();
+        homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(true);
+        homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(false);
+        updateNavHeader("","");
     }
 
     @Override
@@ -434,12 +427,15 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         } else if (id == R.id.nav_info && !(mFragment instanceof InfoFragment)) {
             mFragment = InfoFragment.newInstance();
             sameFragment = false;
-        } else if (id == R.id.nav_auth && !(mFragment instanceof AuthFragment)) {
+        } else if (id == R.id.nav_auth) {
             new Handler().postDelayed(() -> {
                 Intent intent = new Intent(HomeActivity.this, UserAuthActivity.class);
                 startActivityForResult(intent, LOGIN_REQUEST_CODE);
             }, 500);
-        } else if (id == R.id.nav_my_rents && !(mFragment instanceof MyRentsFragment)) {
+        }else if (id == R.id.nav_logout) {
+            confirmLogout();
+        }
+        else if (id == R.id.nav_my_rents && !(mFragment instanceof MyRentsFragment)) {
             String userid = sharedPreferences.getString(USER_ID,"");
             String token = sharedPreferences.getString(USER_TOKEN,"");
             mFragment = MyRentsFragment.newInstance(userid,token);
@@ -502,18 +498,21 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         builder.show();
     }
 
-    private void updateNavHeader(String username, @Nullable String avatar) {
-        String url = null;
-        if (avatar != null)
-            url = BASE_URL_API + "/" + avatar;
+    private void updateNavHeader(String username, String avatar) {
         CutCornerView headerView = (CutCornerView) homeBinding.navView.getHeaderView(0);
         CircularImageView circularImageView = headerView.findViewById(R.id.user_avatar);
         TextView tvUsername = headerView.findViewById(R.id.tv_username);
-        Picasso.get()
-                .load(url)
-                .placeholder(R.drawable.user_placeholder)
-                .into(circularImageView);
-        tvUsername.setText(String.format(username));
+        if(!username.equals("") && !avatar.equals("")) {
+            String url = BASE_URL_API + "/" + avatar;
+            Picasso.get()
+                    .load(url)
+                    .placeholder(R.drawable.user_placeholder)
+                    .into(circularImageView);
+            tvUsername.setText(username);
+        }else{
+            circularImageView.setImageResource(R.drawable.user_placeholder);
+            tvUsername.setText("Hola invitado");
+        }
     }
 
     @Override

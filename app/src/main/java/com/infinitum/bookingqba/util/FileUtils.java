@@ -1,7 +1,15 @@
 package com.infinitum.bookingqba.util;
 
 import android.app.Activity;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 
 import com.wshunli.assets.CopyAssets;
 import com.wshunli.assets.CopyCreator;
@@ -56,4 +64,6 @@ public class FileUtils {
                 .setListener(copyListener)
                 .copy();
     }
+
+
 }

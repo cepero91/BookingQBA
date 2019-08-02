@@ -28,8 +28,13 @@
     <group android:id="@+id/group_2" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_auth"
-            android:icon="@drawable/ic_user_alt"
+            android:icon="@drawable/ic_sign_in"
             android:title="@string/iniciar_sesion" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_sign_out"
+            android:title="Cerrar Sesión"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_my_rents"
             android:icon="@drawable/ic_folder"

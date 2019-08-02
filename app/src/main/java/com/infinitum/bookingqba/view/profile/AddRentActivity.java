@@ -1,71 +1,48 @@
 package com.infinitum.bookingqba.view.profile;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
-import android.location.Address;
 import android.location.Location;
 import android.net.Uri;
-import android.os.SystemClock;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.asksira.bsimagepicker.BSImagePicker;
 import com.crowdfire.cfalertdialog.CFAlertDialog;
-import com.github.siyamed.shapeimageview.RoundedImageView;
-import com.github.siyamed.shapeimageview.mask.PorterShapeImageView;
-import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.LocationAvailability;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityAddRentBinding;
-import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.Constants;
-import com.infinitum.bookingqba.util.GeocodeNominatim;
-import com.infinitum.bookingqba.util.LocationHelpers;
 import com.infinitum.bookingqba.view.base.LocationActivity;
-import com.infinitum.bookingqba.view.map.MapFragment;
+import com.infinitum.bookingqba.view.profile.adapter.ImageFormAdapter;
+import com.infinitum.bookingqba.view.profile.adapter.OfferFormAdapter;
 import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
 import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
-import com.infinitum.bookingqba.view.profile.uploaditem.AmenitiesRentFormObject;
+import com.infinitum.bookingqba.view.profile.uploaditem.OfferFormObject;
 import com.infinitum.bookingqba.view.profile.uploaditem.RentFormObject;
+import com.infinitum.bookingqba.view.widgets.DialogAddOfferView;
 import com.infinitum.bookingqba.view.widgets.DialogLocationConfirmView;
-import com.infinitum.bookingqba.viewmodel.RentViewModel;
+import com.infinitum.bookingqba.viewmodel.RentFormViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
@@ -81,14 +58,12 @@ import org.mapsforge.poi.storage.PointOfInterest;
 import org.mapsforge.poi.storage.UnknownPoiCategoryException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -96,34 +71,27 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import io.reactivex.Completable;
-import io.reactivex.CompletableSource;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
-import ir.mirrajabi.searchdialog.core.SearchResultListener;
 import timber.log.Timber;
 
-import static android.view.Gravity.CENTER;
 import static com.infinitum.bookingqba.service.LocationService.KEY_REQUESTING_LOCATION_UPDATES;
-import static com.infinitum.bookingqba.util.Constants.LOCATION_REQUEST_CODE;
-import static com.infinitum.bookingqba.util.Constants.REQUEST_CHECK_SETTINGS;
-import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
-import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
 import static com.infinitum.bookingqba.util.Constants.WRITE_EXTERNAL_CODE;
 
 public class AddRentActivity extends LocationActivity implements HasSupportFragmentInjector,
-        MapRentLocation, View.OnClickListener, ImageFormAdapter.OnImageDeleteClick
-        , DialogLocationConfirmView.DialogLocationConfirmListener {
+        MapRentLocation, View.OnClickListener, ImageFormAdapter.OnImageDeleteClick,
+        DialogLocationConfirmView.DialogLocationConfirmListener, BSImagePicker.OnSingleImageSelectedListener,
+        BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate,
+        OfferFormAdapter.OnOfferInteraction, DialogAddOfferView.AddOfferClick {
 
     private ActivityAddRentBinding binding;
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
     private static final int PICK_PICTURE_CODE = 1560;
+
     //----Location
     private RentFormObject rentFormObject;
 
@@ -140,7 +108,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     private double mLatitude;
     private double mLongitude;
 
-    private RentViewModel rentViewModel;
+    private RentFormViewModel rentViewModel;
     private Disposable disposable;
     private CompositeDisposable compositeDisposable;
 
@@ -166,6 +134,11 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     private CFAlertDialog dialog;
     private boolean isBtnSaveClick;
 
+    //Offer
+    private DialogAddOfferView dialogAddOffer;
+    private List<OfferFormObject> offerFormObjects;
+    private OfferFormAdapter offerAdapter;
+
 
     //--------------------------------------------------------------------------------
 
@@ -175,28 +148,17 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_rent);
 
-        initPoiFile();
+        rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentFormViewModel.class);
 
-        compositeDisposable = new CompositeDisposable();
+        initObject();
 
-        imagesFilesPath = new ArrayList<>();
+        initViewOnClick();
 
-        binding.flLocationBar.setOnClickListener(this);
-        binding.flMunicipalityBar.setOnClickListener(this);
-        binding.flEsentialBar.setOnClickListener(this);
-        binding.flFinallyBar.setOnClickListener(this);
-        binding.btnLocation.setOnClickListener(this);
-        binding.flMunicipalities.setOnClickListener(this);
-        binding.flReferenceZone.setOnClickListener(this);
-        binding.flRentMode.setOnClickListener(this);
-        binding.flAmenities.setOnClickListener(this);
-        binding.flGalery.setOnClickListener(this);
-        binding.btnUpload.setOnClickListener(this);
+        initSlidingLayout();
 
-        rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
+    }
 
-        rentFormObject = new RentFormObject(UUID.randomUUID().toString());
-
+    private void initSlidingLayout() {
         binding.slidingLayout.setTouchEnabled(false);
         binding.slidingLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -212,13 +174,33 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                 }
             }
         });
-
     }
 
-    private void initPoiFile() {
-        String file = getFilesDir() + File.separator + "map" + File.separator + "cuba.poi";
-        mPersistenceManager = AndroidPoiPersistenceManagerFactory.getPoiPersistenceManager(file);
+    private void initObject() {
+        compositeDisposable = new CompositeDisposable();
+        rentFormObject = new RentFormObject(UUID.randomUUID().toString());
+        imagesFilesPath = new ArrayList<>();
+        offerFormObjects = new ArrayList<>();
+        offerAdapter = new OfferFormAdapter((ArrayList<OfferFormObject>) offerFormObjects,this);
+        binding.rvOffer.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+        binding.rvOffer.setAdapter(offerAdapter);
     }
+
+    private void initViewOnClick() {
+        binding.flLocationBar.setOnClickListener(this);
+        binding.flMunicipalityBar.setOnClickListener(this);
+        binding.flEsentialBar.setOnClickListener(this);
+        binding.flFinallyBar.setOnClickListener(this);
+        binding.btnLocation.setOnClickListener(this);
+        binding.flMunicipalities.setOnClickListener(this);
+        binding.flReferenceZone.setOnClickListener(this);
+        binding.flRentMode.setOnClickListener(this);
+        binding.flAmenities.setOnClickListener(this);
+        binding.flGalery.setOnClickListener(this);
+        binding.flOffer.setOnClickListener(this);
+        binding.btnUpload.setOnClickListener(this);
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -240,30 +222,6 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case PICK_PICTURE_CODE:
-                switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        if (data.getClipData() != null) {
-                            int count = data.getClipData().getItemCount();
-                            for (int i = 0; i < count; i++) {
-                                Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                                addImagePathToList(imageUri);
-                            }
-                            addImageToAdapter(imagesFilesPath);
-                        } else if (data.getData() != null) {
-                            Uri imagePath = data.getData();
-                            addImagePathToList(imagePath);
-                            addImageToAdapter(imagesFilesPath);
-                        }
-                        break;
-                }
-                break;
-        }
-    }
 
     @Override
     protected void updateLocation(Location location) {
@@ -386,8 +344,9 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         rentFormObject.setLatitude(String.valueOf(mLatitude));
         rentFormObject.setLongitude(String.valueOf(mLongitude));
         dialog.dismiss();
-        binding.ivArrowLocation.setImageResource(R.drawable.ic_map_localized);
+        binding.btnLocation.setImageResource(R.drawable.ic_map_localized);
         binding.tvTitleLocation.setText("Localizado");
+        getAddressByLocation();
     }
 
     @Override
@@ -410,6 +369,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     }
 
     private Collection<PointOfInterest> getPointOfInterestByLocation(double mLatitude, double mLongitude) {
+        String file = getFilesDir() + File.separator + "map" + File.separator + "cuba.poi";
+        mPersistenceManager = AndroidPoiPersistenceManagerFactory.getPoiPersistenceManager(file);
         PoiCategoryManager categoryManager = mPersistenceManager.getCategoryManager();
         PoiCategoryFilter categoryFilter = new ExactMatchPoiCategoryFilter();
         for (String category : Constants.category) {
@@ -426,9 +387,9 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         String referenceZoneResult = "Barriada";
         if (containBeach(pointOfInterests)) {
             referenceZoneResult = "Playa";
-        }else if(containCategory(pointOfInterests,Constants.historic_category)){
+        } else if (containCategory(pointOfInterests, Constants.historic_category)) {
             referenceZoneResult = "Historia";
-        }else if(containCategory(pointOfInterests,Constants.natural_category)){
+        } else if (containCategory(pointOfInterests, Constants.natural_category)) {
             referenceZoneResult = "Natural";
         }
         return referenceZoneResult;
@@ -550,6 +511,9 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                     pickGaleryFiles();
                 }
                 break;
+            case R.id.fl_offer:
+                showAddOfferDialog(new DialogAddOfferView(this));
+                break;
             case R.id.btn_upload:
                 uploadRent();
                 break;
@@ -598,34 +562,6 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
             }
         }
         return amenitiesRentFormObjects;
-    }
-
-    private void pickGaleryFiles() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        startActivityForResult(Intent.createChooser(intent, "Seleccione las imagenes"), PICK_PICTURE_CODE);
-    }
-
-
-    private void addImagePathToList(Uri uri) {
-        File file = new File(uri.getPath());
-        String[] filePath = file.getPath().split(":");
-        String imageId = filePath[filePath.length - 1];
-
-        Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + "=?", new String[]{imageId}, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            imagesFilesPath.add(imagePath);
-            cursor.close();
-        }
-    }
-
-    private void addImageToAdapter(ArrayList<String> filesPath) {
-        imageFormAdapter = new ImageFormAdapter(filesPath, this);
-        binding.rvGaleries.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        binding.rvGaleries.setAdapter(imageFormAdapter);
     }
 
     private void showAmenitiesDialog() {
@@ -758,8 +694,94 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     }
 
 
+    //--------------------------------- OFFER -------------------------------------
+
+    private void showAddOfferDialog(DialogAddOfferView dialogAddOffer) {
+        builder = new CFAlertDialog.Builder(this);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
+        // Title and message
+        builder.setTitle("Nueva Oferta");
+        builder.setTextGravity(Gravity.CENTER);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.setFooterView(dialogAddOffer);
+        dialog = builder.show();
+    }
+
+    @Override
+    public void onOfferEdit(OfferFormObject offerFormObject, int pos) {
+        dialogAddOffer = new DialogAddOfferView(this);
+        dialogAddOffer.setOfferFormObject(offerFormObject, pos);
+        showAddOfferDialog(dialogAddOffer);
+    }
+
+    @Override
+    public void onOfferDelete(int pos) {
+        offerFormObjects.remove(pos);
+    }
+
+    @Override
+    public void onButtonSaveClick(OfferFormObject offerFormObject, boolean isEdit, int pos) {
+        if(isEdit){
+            updateOffertoAdapter(offerFormObject,pos);
+        }else {
+            offerFormObjects.add(offerFormObject);
+            addOffertoAdapter(offerFormObject);
+        }
+        dialog.dismiss();
+    }
+
+    private void addOffertoAdapter(OfferFormObject offerFormObject) {
+        offerAdapter.addOffer(offerFormObject);
+    }
+
+    private void updateOffertoAdapter(OfferFormObject offerFormObject, int pos) {
+        offerAdapter.updateItem(offerFormObject,pos);
+    }
+
+
+    //--------------------------------- IMAGES ------------------------------------
+
     @Override
     public void onImageDelete(String imagePath, int pos) {
         imageFormAdapter.removeItem(pos);
     }
+
+
+    private void pickGaleryFiles() {
+        BSImagePicker pickerDialog = new BSImagePicker.Builder("com.infinitum.bookingqba.fileprovider")
+                .setMaximumDisplayingImages(Integer.MAX_VALUE)
+                .isMultiSelect()
+                .setMinimumMultiSelectCount(1)
+                .setMaximumMultiSelectCount(5)
+                .build();
+        pickerDialog.show(getSupportFragmentManager(), "picker");
+    }
+
+    @Override
+    public void onMultiImageSelected(List<Uri> uriList, String tag) {
+        if (uriList != null && uriList.size() > 0) {
+            for (Uri uri : uriList) {
+                String filepath = uri.toString().replace("file://", "");
+                imagesFilesPath.add(filepath);
+            }
+            addImageToAdapter(imagesFilesPath);
+        }
+    }
+
+    @Override
+    public void loadImage(File imageFile, ImageView ivImage) {
+        Picasso.get().load(imageFile).resize(Constants.THUMB_WIDTH, Constants.THUMB_HEIGHT).placeholder(R.drawable.placeholder).into(ivImage);
+    }
+
+    @Override
+    public void onSingleImageSelected(Uri uri, String tag) {
+
+    }
+
+    private void addImageToAdapter(ArrayList<String> filesPath) {
+        imageFormAdapter = new ImageFormAdapter(filesPath, this);
+        binding.rvGaleries.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        binding.rvGaleries.setAdapter(imageFormAdapter);
+    }
+
 }

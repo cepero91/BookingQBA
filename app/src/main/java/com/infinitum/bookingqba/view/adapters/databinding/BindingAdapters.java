@@ -87,15 +87,6 @@ public class BindingAdapters {
         view.setGravity(Gravity.CENTER);
     }
 
-    @BindingAdapter("setRentDetailImage")
-    public static void setRentDetailImage(AppCompatImageView view, String imagePath) {
-        Glide.with(view.getContext())
-                .load(imagePath)
-                .crossFade()
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.placeholder)
-                .into(view);
-    }
 
     @BindingAdapter("setMaxRooms")
     public static void setMaxRooms(TextView view, int maxRoom) {

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentPageThreeBinding;
+import com.squareup.picasso.Picasso;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,8 +50,6 @@ public class PageThreeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Glide.with(this)
-                .load(R.drawable.destination_use_case)
-                .into(pageThreeBinding.ivUseCase);
+        Picasso.get().load(R.drawable.destination_use_case).into(pageThreeBinding.ivUseCase);
     }
 }

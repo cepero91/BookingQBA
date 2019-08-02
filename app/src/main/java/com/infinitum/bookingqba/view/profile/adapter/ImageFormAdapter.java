@@ -1,4 +1,4 @@
-package com.infinitum.bookingqba.view.profile;
+package com.infinitum.bookingqba.view.profile.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;

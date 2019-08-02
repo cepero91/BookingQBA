@@ -247,6 +247,8 @@ dependencies {
     implementation 'com.github.iammert:ExpandableLayout:1.4.1'
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
 
+    implementation  'com.fxn769:pix:1.2.5'
+    implementation 'com.asksira.android:bsimagepicker:1.2.2'
 
     //Reporte de Fallos
 //    implementation "ch.acra:acra-core:$acraVersion"

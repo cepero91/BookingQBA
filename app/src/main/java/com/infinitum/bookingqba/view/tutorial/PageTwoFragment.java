@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentPageTwoBinding;
-
+import com.squareup.picasso.Picasso;
 
 
 public class PageTwoFragment extends Fragment {
@@ -48,10 +48,7 @@ public class PageTwoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Glide.with(this)
-                .load(R.drawable.compare_use_case)
-                .crossFade()
-                .into(pageTwoBinding.ivUseCase);
+        Picasso.get().load(R.drawable.compare_use_case).into(pageTwoBinding.ivUseCase);
     }
 
 

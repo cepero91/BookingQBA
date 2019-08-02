@@ -7,8 +7,8 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
     android:layout_marginBottom="5dp"
-    android:layout_marginStart="20dp"
-    android:layout_marginEnd="20dp"
+    android:layout_marginStart="25dp"
+    android:layout_marginEnd="25dp"
     app:cardCornerRadius="10dp"
     app:cardElevation="5dp">
 
@@ -19,12 +19,12 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp">
+            android:layout_height="130dp">
 
             <com.github.siyamed.shapeimageview.RoundedImageView
                 android:id="@+id/siv_rent_image"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="130dp"
                 android:src="@drawable/bedroom"
                 app:siShape="@drawable/shape_imageview_rounded_top" />
 
@@ -44,6 +44,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppinsbold"
                     android:textColor="@color/White_100"
+                    android:textSize="12sp"
                     android:text="Precio" />
 
                 <TextView
@@ -52,6 +53,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppinsregular"
                     android:textColor="@color/White_100"
+                    android:textSize="12sp"
                     android:text="Modo" />
 
             </LinearLayout>
@@ -81,6 +83,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppinsregular"
                 android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="12sp"
                 android:text="Desactivada" />
 
             <LinearLayout
