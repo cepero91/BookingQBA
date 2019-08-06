@@ -336,7 +336,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         for (RentPoiAndRelation item : rentPoiAndRelations) {
             PoiEntity poiEntity = item.getPoiAndRelationsObject().getPoiEntity();
             PoiTypeEntity poiTypeEntity = item.getPoiAndRelationsObject().getPoiTypeEntitySetObject();
-            detailPoiItems.add(new RentPoiItem(poiEntity.getName(), poiTypeEntity.getImage()));
+            detailPoiItems.add(new RentPoiItem(poiEntity.getName()));
         }
         return detailPoiItems;
     }

@@ -117,9 +117,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
             for(RentPoiItem rentPoiItem: argPois){
                 LinearLayout linearLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.recycler_rent_detail_pois_item,null);
                 TextView textView = linearLayout.findViewById(R.id.tv_name);
-                AppCompatImageView appCompatImageView = linearLayout.findViewById(R.id.iv_icon);
                 textView.setText(rentPoiItem.getmName());
-                appCompatImageView.setImageBitmap(BitmapFactory.decodeByteArray(rentPoiItem.getIconByte(),0,rentPoiItem.getIconByte().length));
                 params.setMargins(5,5,5,5);
                 linearLayout.setLayoutParams(params);
                 innerDetailBinding.fbPois.addView(linearLayout);
@@ -150,17 +148,6 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
             innerDetailBinding.setGaleries(adapter);
             ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvGaleries, false);
         }
-    }
-
-    private ViewBinder<?> getPoiVinder() {
-        return new ViewBinder<>(
-                R.layout.recycler_rent_detail_pois_item,
-                RentPoiItem.class,
-                (model, finder, payloads) -> finder
-                        .find(R.id.tv_name, (ViewProvider<TextView>) view -> view.setText(model.getmName()))
-                        .find(R.id.iv_icon, (ViewProvider<AppCompatImageView>) view -> {
-                            view.setImageBitmap(BitmapFactory.decodeByteArray(model.getIconByte(),0,model.getIconByte().length));
-                        }));
     }
 
 

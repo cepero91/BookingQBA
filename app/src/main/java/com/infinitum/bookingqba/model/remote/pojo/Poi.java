@@ -15,7 +15,23 @@ public class Poi {
 
     @SerializedName("poiType")
     @Expose
-    private String poiType;
+    private int category;
+
+    @SerializedName("latitude")
+    @Expose
+    private double minLat;
+
+    @SerializedName("longitude")
+    @Expose
+    private double minLon;
+
+    @SerializedName("maxLat")
+    @Expose
+    private double maxLat;
+
+    @SerializedName("maxLon")
+    @Expose
+    private double maxLon;
 
     public String getId() {
         return id;
@@ -33,11 +49,43 @@ public class Poi {
         this.name = name;
     }
 
-    public String getPoiType() {
-        return poiType;
+    public int getCategory() {
+        return category;
     }
 
-    public void setPoiType(String poiType) {
-        this.poiType = poiType;
+    public void setCategory(int category) {
+        this.category = category;
+    }
+
+    public double getMinLat() {
+        return minLat;
+    }
+
+    public void setMinLat(double minLat) {
+        this.minLat = minLat;
+    }
+
+    public double getMinLon() {
+        return minLon;
+    }
+
+    public void setMinLon(double minLon) {
+        this.minLon = minLon;
+    }
+
+    public double getMaxLat() {
+        return maxLat;
+    }
+
+    public void setMaxLat(double maxLat) {
+        this.maxLat = maxLat;
+    }
+
+    public double getMaxLon() {
+        return maxLon;
+    }
+
+    public void setMaxLon(double maxLon) {
+        this.maxLon = maxLon;
     }
 }

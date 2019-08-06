@@ -162,4 +162,11 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="dialog_before_run_message">Por favor, acepte los permisos para el correcto funcionamiento de la aplicación.</string>
     <string name="dialog_positive_button">ok, lo entiendo</string>
     <string name="ubication_perm_denied">Ubicación no disponible. Conceda los permisos</string>
+    <string name="localizar">Localizar</string>
+    <string name="direccion">Direccion</string>
+    <string name="municipio">Municipio</string>
+    <string name="zona_de_referencia">Zona de referencia</string>
+    <string name="nombre_de_renta">Nombre de Renta</string>
+    <string name="modo_de_renta">Modo de Renta</string>
+    <string name="precio">Precio</string>
 </resources>

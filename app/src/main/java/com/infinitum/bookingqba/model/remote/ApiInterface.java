@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.model.remote;
 
 
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
 import com.infinitum.bookingqba.model.remote.pojo.AnaliticsGroup;
@@ -20,9 +21,11 @@ import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentDrawType;
+import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
 import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoi;
+import com.infinitum.bookingqba.model.remote.pojo.RentPoiAdd;
 import com.infinitum.bookingqba.model.remote.pojo.RentVisitCountGroup;
 import com.infinitum.bookingqba.model.remote.pojo.RentWished;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
@@ -151,6 +154,9 @@ public interface ApiInterface {
 
     //------------------- RENTAS ---------------------//
 
+    @GET("/api/rentby-id")
+    Single<List<RentEdit>> rentById(@Header("Authorization") String token, @Query("uuid") String value);
+
     @GET
     Single<Response<AddressResponse>> addressByLocationOSM(@Url String url);
 
@@ -165,6 +171,12 @@ public interface ApiInterface {
 
     @POST("/api/rentAmenities-add")
     Single<ResponseResult> addRentAmenities(@Header("Authorization") String token, @Body RentAmenities rentAmenities);
+
+    @POST("/api/rentOffer-add")
+    Single<ResponseResult> addRentOffer(@Header("Authorization") String token, @Body List<Offer> offers);
+
+    @POST("/api/rentPoi-add")
+    Single<ResponseResult> addRentPoi(@Header("Authorization") String token, @Body RentPoiAdd rentPoiAdd);
 
     @POST("/api/rentGalery-add")
     Single<ResponseResult> addRentGalery(@Header("Authorization") String token, @Body RequestBody requestBody);

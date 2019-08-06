@@ -161,8 +161,8 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
     protected void showViews() {
         binding.setIsLoading(false);
         if (!argLatitude.equals("") && !argLongitude.equals("")) {
-            locationLayer.setEnabled(true);
-            locationLayer.setPosition(Float.parseFloat(argLatitude), Float.parseFloat(argLongitude), 0);
+            locationLayer.get().setEnabled(true);
+            locationLayer.get().setPosition(Float.parseFloat(argLatitude), Float.parseFloat(argLongitude), 0);
             mapView.map().setMapPosition(Float.parseFloat(argLatitude), Float.parseFloat(argLatitude), 2 << 12);
             showDoneFAB();
         } else {
@@ -227,16 +227,16 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
     public void updateGPSCurrentLocation(Location location) {
         argLatitude = String.valueOf(location.getLatitude());
         argLongitude = String.valueOf(location.getLongitude());
-        locationLayer.setEnabled(true);
-        locationLayer.setPosition(location.getLatitude(), location.getLongitude(), location.getAccuracy());
+        locationLayer.get().setEnabled(true);
+        locationLayer.get().setPosition(location.getLatitude(), location.getLongitude(), location.getAccuracy());
         showDoneFAB();
     }
 
     public void updateGestureCurrentLocation(double latitude, double longitude, double accuracy) {
         argLatitude = String.valueOf(latitude);
         argLongitude = String.valueOf(longitude);
-        locationLayer.setEnabled(true);
-        locationLayer.setPosition(latitude, longitude, accuracy);
+        locationLayer.get().setEnabled(true);
+        locationLayer.get().setPosition(latitude, longitude, accuracy);
         showDoneFAB();
     }
 
@@ -250,8 +250,7 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
     @Override
     public void onDestroyView() {
         binding.mapview.map().layers().remove(mapEventsReceiver);
-        binding.mapview.map().layers().remove(locationLayer);
-        mapEventsReceiver = null;
+        binding.mapview.map().layers().remove(locationLayer.get());
         binding.mapview.onDestroy();
         super.onDestroyView();
     }

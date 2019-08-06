@@ -14,15 +14,20 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
+import com.infinitum.bookingqba.model.remote.pojo.Offer;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
+import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
 import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
+import com.infinitum.bookingqba.model.remote.pojo.RentPoi;
+import com.infinitum.bookingqba.model.remote.pojo.RentPoiAdd;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.util.DateUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +45,7 @@ import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -238,21 +244,34 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public Single<OperationResult> addRent(String token, Rent rent, RentAmenities rentAmenities, ArrayList<String> imagesPath) {
+    public Single<List<ResponseResult>> addRent(String token, Map<String, Object> params) {
+        Collection<Single<ResponseResult>> collection = new ArrayList<>();
+        Rent rentParams = (Rent) params.get("rent");
         Single<ResponseResult> newRent = retrofit.create(ApiInterface.class)
-                .addRent(token, rent).subscribeOn(Schedulers.io());
+                .addRent(token, rentParams).subscribeOn(Schedulers.io());
         Single<ResponseResult> newAmenitiesRent = retrofit.create(ApiInterface.class)
-                .addRentAmenities(token, rentAmenities).subscribeOn(Schedulers.io());
-        MultipartBody imagesRequestBody = getMultipartImagesBody(rent.getId(), imagesPath);
-        Single<ResponseResult> newRentGalery = retrofit.create(ApiInterface.class)
-                .addRentGalery(token, imagesRequestBody).subscribeOn(Schedulers.io());
-        Single.concat(newRent, newAmenitiesRent, newRentGalery).doOnNext(new Consumer<ResponseResult>() {
-            @Override
-            public void accept(ResponseResult responseResult) throws Exception {
-                Timber.e(responseResult.getMsg());
-            }
-        }).subscribe();
-        return Single.just(OperationResult.success());
+                .addRentAmenities(token, (RentAmenities) params.get("amenities")).subscribeOn(Schedulers.io());
+
+        collection.add(newRent);
+        collection.add(newAmenitiesRent);
+        if(params.containsKey("galery")){
+            MultipartBody imagesRequestBody = getMultipartImagesBody(rentParams.getId(), (ArrayList<String>) params.get("galery"));
+            Single<ResponseResult> newRentGalery = retrofit.create(ApiInterface.class)
+                    .addRentGalery(token, imagesRequestBody).subscribeOn(Schedulers.io());
+            collection.add(newRentGalery);
+        }
+        if (params.containsKey("poi")) {
+            Single<ResponseResult> newRentPoi = retrofit.create(ApiInterface.class)
+                    .addRentPoi(token, (RentPoiAdd) params.get("poi")).subscribeOn(Schedulers.io());
+            collection.add(newRentPoi);
+        }
+        if (params.containsKey("offer")) {
+            Single<ResponseResult> newRentOffer = retrofit.create(ApiInterface.class)
+                    .addRentOffer(token, (List<Offer>) params.get("offer")).subscribeOn(Schedulers.io());
+            collection.add(newRentOffer);
+        }
+
+        return Single.concat(collection).onErrorReturn(throwable -> new ResponseResult(500,throwable.getMessage())).toList();
     }
 
     @Override
@@ -273,6 +292,14 @@ public class RentRepoImpl implements RentRepository {
                 + "&lon=" + lon;
         return retrofit.create(ApiInterface.class)
                 .addressByLocationOSM(url);
+    }
+
+    @Override
+    public Single<Resource<List<RentEdit>>> rentById(String token, String uuid) {
+        return retrofit.create(ApiInterface.class)
+                .rentById(token, uuid)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
     }
 
     private MultipartBody getMultipartImagesBody(String id, ArrayList<String> imagesPath) {

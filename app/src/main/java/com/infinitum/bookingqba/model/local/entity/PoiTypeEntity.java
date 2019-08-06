@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.model.local.entity;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
@@ -11,28 +12,23 @@ import static com.infinitum.bookingqba.util.Constants.POI_TYPE_TABLE_NAME;
 public class PoiTypeEntity {
     @PrimaryKey
     @ColumnInfo(name = "id")
-    @NonNull
-    private String id;
+    private int id;
 
     @ColumnInfo(name = "name")
     @NonNull
     private String name;
 
-    @NonNull
-    private byte[] image;
 
-    public PoiTypeEntity(@NonNull String id, @NonNull String name, @NonNull byte[] image) {
+    public PoiTypeEntity(int id, @NonNull String name) {
         this.id = id;
         this.name = name;
-        this.image = image;
     }
 
-    @NonNull
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(@NonNull String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -45,12 +41,4 @@ public class PoiTypeEntity {
         this.name = name;
     }
 
-    @NonNull
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(@NonNull byte[] image) {
-        this.image = image;
-    }
 }

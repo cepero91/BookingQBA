@@ -602,6 +602,14 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         startActivity(intent);
     }
 
+    @Override
+    public void onEditRent(String uuid) {
+        Intent intent = new Intent(this, AddRentActivity.class);
+        intent.putExtra("id",uuid);
+        intent.putExtra("edit",true);
+        startActivity(intent);
+    }
+
     // -------------------------- LIVECYCLE ACTIVITY METHOD -------------------------- //
 
     @Override

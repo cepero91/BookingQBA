@@ -10,9 +10,18 @@
             name="isLoading"
             type="Boolean" />
 
+        <variable
+            name="loadingAmenities"
+            type="Boolean" />
+
+        <variable
+            name="loadingMunicipality"
+            type="Boolean" />
+
     </data>
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -93,7 +102,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="@font/poppinsregular"
-                        android:text="Localizar"
+                        android:text="@string/localizar"
                         android:textColor="@color/material_color_blue_grey_500" />
 
 
@@ -150,14 +159,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:hint="Direccion"
+                        android:hint="@string/direccion"
                         app:boxStrokeColor="@color/colorPrimary">
 
                         <android.support.design.widget.TextInputEditText
                             android:id="@+id/et_address"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppinsregular"
+                            android:fontFamily="@font/robotoregular"
                             android:inputType="text"
                             android:padding="12dp"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
@@ -170,29 +179,33 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:background="@drawable/shape_btn_white_border"
-                        android:paddingBottom="12dp"
-                        android:paddingEnd="5dp"
-                        android:paddingStart="3dp"
-                        android:paddingTop="12dp">
+                        android:background="@drawable/shape_round_grey"
+                        android:padding="10dp">
 
                         <TextView
                             android:id="@+id/tv_municipality"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|start"
-                            android:layout_marginStart="12sp"
-                            android:text="Municipio"
-                            android:textColor="@color/Black_35"
+                            android:fontFamily="@font/robotoregular"
+                            android:text="@string/municipio"
+                            android:textColor="@color/material_color_blue_grey_500"
                             android:textSize="14sp" />
 
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|end"
-                            android:layout_marginEnd="12dp"
-                            android:layout_marginStart="12dp"
-                            app:srcCompat="@drawable/ic_search" />
+                            app:srcCompat="@drawable/ic_search"
+                            app:visibleGone="@{!safeUnbox(loadingMunicipality)}" />
+
+                        <ProgressBar
+                            android:id="@+id/pb_municipality"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="end|center"
+                            android:indeterminate="true"
+                            app:visibleGone="@{safeUnbox(loadingMunicipality)}" />
 
                     </FrameLayout>
 
@@ -201,28 +214,23 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:background="@drawable/shape_btn_white_border"
-                        android:paddingBottom="12dp"
-                        android:paddingEnd="5dp"
-                        android:paddingStart="3dp"
-                        android:paddingTop="12dp">
+                        android:background="@drawable/shape_round_grey"
+                       android:padding="10dp">
 
                         <TextView
                             android:id="@+id/tv_reference_zone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|start"
-                            android:layout_marginStart="12dp"
-                            android:text="Zona de referencia"
-                            android:textColor="@color/Black_35"
+                            android:text="@string/zona_de_referencia"
+                            android:fontFamily="@font/robotoregular"
+                            android:textColor="@color/material_color_blue_grey_500"
                             android:textSize="14sp" />
 
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|end"
-                            android:layout_marginEnd="12dp"
-                            android:layout_marginStart="12dp"
                             app:srcCompat="@drawable/ic_search" />
 
                     </FrameLayout>
@@ -279,7 +287,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:hint="Nombre de Renta"
+                        android:hint="@string/nombre_de_renta"
                         app:boxStrokeColor="@color/colorPrimary">
 
                         <android.support.design.widget.TextInputEditText
@@ -298,15 +306,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:weightSum="3">
+                        android:weightSum="5"
+                        android:baselineAligned="false">
 
                         <FrameLayout
                             android:id="@+id/fl_rent_mode"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="5dp"
-                            android:layout_weight="2"
-                            android:background="@drawable/shape_btn_white_border"
+                            android:layout_weight="3"
+                            android:background="@drawable/shape_round_grey"
                             android:paddingBottom="12dp"
                             android:paddingEnd="5dp"
                             android:paddingStart="3dp"
@@ -318,8 +327,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center|start"
                                 android:layout_marginStart="12sp"
-                                android:text="Modo de Renta"
-                                android:textColor="@color/Black_35"
+                                android:text="@string/modo_de_renta"
+                                android:textColor="@color/material_color_blue_grey_500"
                                 android:textSize="14sp" />
 
                             <android.support.v7.widget.AppCompatImageView
@@ -338,8 +347,8 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="5dp"
-                            android:layout_weight="1"
-                            android:hint="Precio"
+                            android:layout_weight="2"
+                            android:hint="@string/precio"
                             app:boxStrokeColor="@color/colorPrimary">
 
                             <android.support.design.widget.TextInputEditText
@@ -381,52 +390,6 @@
 
                     </android.support.design.widget.TextInputLayout>
 
-                </LinearLayout>
-
-                <FrameLayout
-                    android:id="@+id/fl_finally_bar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?actionBarSize"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start|center"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp"
-                        android:fontFamily="@font/poppinsbold"
-                        android:includeFontPadding="false"
-                        android:text="Informacion detallada"
-                        android:textColor="@color/material_color_blue_grey_500" />
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:id="@+id/iv_arrow_finally"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="end|center"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp"
-                        android:tint="@color/material_color_blue_grey_500"
-                        app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_gravity="bottom"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp"
-                        android:background="@color/Black_15" />
-
-                </FrameLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_finally_form"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -452,7 +415,7 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/robotoregular"
                                 android:inputType="number"
-                                android:padding="10dp"
+                                android:padding="12dp"
                                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
                                 android:textColor="@color/colorAccent" />
 
@@ -474,7 +437,7 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/robotoregular"
                                 android:inputType="number"
-                                android:padding="10dp"
+                                android:padding="12dp"
                                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
                                 android:textColor="@color/colorAccent" />
 
@@ -507,7 +470,7 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/robotoregular"
                                 android:inputType="number"
-                                android:padding="10dp"
+                                android:padding="12dp"
                                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
                                 android:textColor="@color/colorAccent" />
 
@@ -529,7 +492,7 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/robotoregular"
                                 android:inputType="number"
-                                android:padding="10dp"
+                                android:padding="12dp"
                                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
                                 android:textColor="@color/colorAccent" />
 
@@ -549,7 +512,7 @@
                         <android.support.design.widget.TextInputEditText
                             android:id="@+id/et_rules"
                             android:layout_width="match_parent"
-                            android:layout_height="80dp"
+                            android:layout_height="wrap_content"
                             android:fontFamily="@font/poppinsregular"
                             android:inputType="textMultiLine"
                             android:padding="12dp"
@@ -572,6 +535,7 @@
                             android:id="@+id/et_description"
                             android:layout_width="match_parent"
                             android:layout_height="80dp"
+                            android:gravity="top"
                             android:fontFamily="@font/poppinsregular"
                             android:inputType="textMultiLine"
                             android:padding="12dp"
@@ -622,140 +586,151 @@
 
                     </android.support.design.widget.TextInputLayout>
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:id="@+id/fl_amenities"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:padding="10dp"
-                        android:paddingEnd="1dp"
-                        android:paddingStart="1dp">
+                        android:background="@drawable/shape_round_grey"
+                        android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/tv_amenities"
-                            android:layout_width="wrap_content"
+                        <FrameLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginStart="12sp"
-                            android:text="Facilidades"
-                            android:textColor="@color/material_color_blue_grey_400"
-                            android:textSize="14sp" />
+                            android:padding="10dp">
 
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginEnd="12dp"
-                            android:layout_marginStart="12dp"
-                            android:tint="@color/material_color_blue_grey_400"
-                            app:srcCompat="@drawable/ic_add_black_24dp" />
+                            <TextView
+                                android:id="@+id/tv_amenities"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start|center"
+                                android:includeFontPadding="false"
+                                android:fontFamily="@font/robotoregular"
+                                android:text="Facilidades"
+                                android:textColor="@color/material_color_blue_grey_400"
+                                android:textSize="14sp" />
+
+                            <android.support.v7.widget.AppCompatImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end|center"
+                                android:tint="@color/material_color_blue_grey_400"
+                                app:srcCompat="@drawable/ic_add_black_24dp"
+                                app:visibleGone="@{!safeUnbox(loadingAmenities)}" />
+
+                            <ProgressBar
+                                android:id="@+id/pb_amenities"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="end|center"
+                                android:indeterminate="true"
+                                app:visibleGone="@{safeUnbox(loadingAmenities)}" />
+
+                        </FrameLayout>
 
                         <com.google.android.flexbox.FlexboxLayout
                             android:id="@+id/fb_amenities"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/tv_amenities"
-                            android:layout_marginEnd="3dp"
-                            android:layout_marginStart="3dp"
-                            android:layout_marginTop="5dp"
+                            android:paddingEnd="3dp"
+                            android:paddingStart="3dp"
                             app:alignContent="center"
                             app:flexWrap="wrap" />
 
-                    </RelativeLayout>
+                    </LinearLayout>
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:id="@+id/fl_galery"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:padding="10dp"
-                        android:paddingEnd="1dp"
-                        android:paddingStart="1dp">
+                        android:background="@drawable/shape_round_grey"
+                        android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/tv_galery"
-                            android:layout_width="wrap_content"
+                        <FrameLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginStart="12sp"
-                            android:text="Imagenes"
-                            android:textColor="@color/material_color_blue_grey_400"
-                            android:textSize="14sp" />
+                            android:padding="10dp">
 
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginEnd="12dp"
-                            android:layout_marginStart="12dp"
-                            android:tint="@color/material_color_blue_grey_400"
-                            app:srcCompat="@drawable/ic_add_black_24dp" />
+                            <TextView
+                                android:id="@+id/tv_galery"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start|center"
+                                android:includeFontPadding="false"
+                                android:fontFamily="@font/robotoregular"
+                                android:text="Imagenes"
+                                android:textColor="@color/material_color_blue_grey_400"
+                                android:textSize="14sp" />
+
+                            <android.support.v7.widget.AppCompatImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end|center"
+                                android:tint="@color/material_color_blue_grey_400"
+                                app:srcCompat="@drawable/ic_add_black_24dp" />
+
+                        </FrameLayout>
 
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/rv_galeries"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/tv_galery"
-                            android:layout_marginTop="8dp"
-                            android:paddingEnd="8dp"
-                            android:paddingStart="8dp" />
+                            android:layout_height="wrap_content" />
 
-                    </RelativeLayout>
+                    </LinearLayout>
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:id="@+id/fl_offer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:padding="10dp"
-                        android:paddingEnd="1dp"
-                        android:paddingStart="1dp">
+                        android:background="@drawable/shape_round_grey"
+                        android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/tv_offer"
-                            android:layout_width="wrap_content"
+                        <FrameLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginStart="12sp"
-                            android:text="Ofertas"
-                            android:textColor="@color/material_color_blue_grey_400"
-                            android:textSize="14sp" />
+                            android:padding="10dp">
 
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginEnd="12dp"
-                            android:layout_marginStart="12dp"
-                            android:tint="@color/material_color_blue_grey_400"
-                            app:srcCompat="@drawable/ic_add_black_24dp" />
+                            <TextView
+                                android:id="@+id/tv_offer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start|center"
+                                android:includeFontPadding="false"
+                                android:fontFamily="@font/robotoregular"
+                                android:text="Ofertas"
+                                android:textColor="@color/material_color_blue_grey_400"
+                                android:textSize="14sp" />
+
+                            <android.support.v7.widget.AppCompatImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end|center"
+                                android:tint="@color/material_color_blue_grey_400"
+                                app:srcCompat="@drawable/ic_add_black_24dp" />
+
+                        </FrameLayout>
 
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/rv_offer"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/tv_offer"
-                            android:layout_marginTop="8dp"
-                            android:paddingEnd="8dp"
-                            android:paddingStart="8dp" />
+                            android:layout_height="wrap_content" />
 
-                    </RelativeLayout>
+                    </LinearLayout>
 
                 </LinearLayout>
-
 
                 <TextView
                     android:id="@+id/btn_upload"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/shape_btn_color_primary"
-                    android:padding="10dp"
-                    android:textAlignment="center"
                     android:layout_margin="10dp"
+                    android:background="@drawable/shape_btn_color_primary"
                     android:fontFamily="@font/poppinsbold"
+                    android:padding="10dp"
                     android:text="Subir Renta"
+                    android:textAlignment="center"
                     android:textColor="@color/White_100"
                     android:textSize="14sp" />
 

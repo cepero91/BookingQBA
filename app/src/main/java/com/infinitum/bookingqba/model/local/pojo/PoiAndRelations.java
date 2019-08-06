@@ -13,7 +13,7 @@ public class PoiAndRelations {
     @Embedded
     public PoiEntity poiEntity;
 
-    @Relation(parentColumn = "poiType", entityColumn = "id", entity = PoiTypeEntity.class)
+    @Relation(parentColumn = "category", entityColumn = "id", entity = PoiTypeEntity.class)
     public Set<PoiTypeEntity>poiTypeEntitySet;
 
     public PoiEntity getPoiEntity() {

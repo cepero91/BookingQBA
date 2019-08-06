@@ -12,6 +12,7 @@ import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
+import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
 import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
@@ -62,10 +63,12 @@ public interface RentRepository {
 
     DataSource.Factory<Integer,RentAndGalery> filterRents(Map<String,List<String>> filterParams, String province);
 
-    Single<OperationResult> addRent(String token, Rent rent, RentAmenities rentAmenities, ArrayList<String> imagesPath);
+    Single<List<ResponseResult>>  addRent(String token, Map<String,Object> params);
 
     Flowable<Resource<List<RentEsential>>> allRentByUserId(String token, String userid);
 
     Single<Response<AddressResponse>> addressByLocation(double lat, double lon);
+
+    Single<Resource<List<RentEdit>>> rentById(String token, String uuid);
 
 }

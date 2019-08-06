@@ -5,23 +5,24 @@ import com.google.gson.annotations.SerializedName;
 
 public class PoiType {
 
-    @SerializedName("uui")
+    @SerializedName("poiId")
     @Expose
-    private String id;
+    private int id;
 
     @SerializedName("name")
     @Expose
     private String name;
 
-    @SerializedName("image")
-    @Expose
-    private String image;
+    public PoiType(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -31,13 +32,5 @@ public class PoiType {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
     }
 }

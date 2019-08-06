@@ -114,7 +114,7 @@
             android:fontFamily="@font/poppinsregular"
             android:includeFontPadding="false"
             android:padding="10dp"
-            android:text="Guardar y cerrar mapa"
+            android:text="Guardar"
             android:textAlignment="center"
             android:textColor="@color/White_100" />
 

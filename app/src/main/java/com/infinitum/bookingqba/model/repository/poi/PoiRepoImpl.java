@@ -46,7 +46,8 @@ public class PoiRepoImpl implements PoiRepository {
         ArrayList<PoiEntity> listEntity = new ArrayList<>();
         PoiEntity entity;
         for (Poi item : gsonList) {
-            entity = new PoiEntity(item.getId(), item.getName(), item.getPoiType());
+            entity = new PoiEntity(item.getId(), item.getName(), item.getCategory(),
+                    item.getMinLat(),item.getMinLon(),item.getMaxLat(),item.getMaxLon());
             listEntity.add(entity);
         }
         return listEntity;

@@ -44,7 +44,6 @@ public class OfferFormAdapter extends RecyclerView.Adapter<OfferFormAdapter.View
         viewHolder.price.setText(offerFormObject.getPrice());
         viewHolder.ivEdit.setOnClickListener(v -> onOfferInteraction.onOfferEdit(offerFormObject,i));
         viewHolder.ivTrash.setOnClickListener(v -> {
-                onOfferInteraction.onOfferDelete(i);
                 removeItem(i);
         });
     }
@@ -73,6 +72,10 @@ public class OfferFormAdapter extends RecyclerView.Adapter<OfferFormAdapter.View
         notifyDataSetChanged();
     }
 
+    public ArrayList<OfferFormObject> getOfferFormObjects() {
+        return offerFormObjects;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private AppCompatImageView ivEdit;
         private AppCompatImageView ivTrash;
@@ -90,6 +93,5 @@ public class OfferFormAdapter extends RecyclerView.Adapter<OfferFormAdapter.View
 
     public interface OnOfferInteraction {
         void onOfferEdit(OfferFormObject offerFormObject, int pos);
-        void onOfferDelete(int pos);
     }
 }

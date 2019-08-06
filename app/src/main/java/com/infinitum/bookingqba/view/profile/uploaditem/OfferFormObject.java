@@ -8,18 +8,19 @@ public class OfferFormObject extends FormObject{
     private String name;
     private String description;
     private String price;
+    private String rent;
 
     public OfferFormObject() {
         this.uuid = UUID.randomUUID().toString();
     }
 
-    public OfferFormObject(String uuid, String name, String description, String price) {
+    public OfferFormObject(String uuid, String name, String description, String price, String rent) {
         this.uuid = uuid;
         this.name = name;
         this.description = description;
         this.price = price;
+        this.rent = rent;
     }
-
 
     public String getUuid() {
         return uuid;
@@ -51,5 +52,13 @@ public class OfferFormObject extends FormObject{
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public String getRent() {
+        return rent;
+    }
+
+    public void setRent(String rent) {
+        this.rent = rent;
     }
 }

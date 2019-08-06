@@ -10,10 +10,10 @@ import android.support.annotation.NonNull;
 import static android.arch.persistence.room.ForeignKey.RESTRICT;
 import static com.infinitum.bookingqba.util.Constants.POI_TABLE_NAME;
 
-@Entity(tableName = POI_TABLE_NAME, indices = {@Index("poiType")},foreignKeys = {@ForeignKey(
+@Entity(tableName = POI_TABLE_NAME, indices = {@Index("category")},foreignKeys = {@ForeignKey(
         entity = PoiTypeEntity.class,
         parentColumns = "id",
-        childColumns = "poiType",
+        childColumns = "category",
         onDelete = RESTRICT
 )})
 public class PoiEntity {
@@ -26,14 +26,29 @@ public class PoiEntity {
     @NonNull
     private String name;
 
-    @ColumnInfo(name = "poiType")
-    @NonNull
-    private String poiType;
+    @ColumnInfo(name = "category")
+    private int category;
 
-    public PoiEntity(@NonNull String id, @NonNull String name, @NonNull String poiType) {
+    @ColumnInfo(name = "minLat")
+    private double minLat;
+
+    @ColumnInfo(name = "minLon")
+    private double minLon;
+
+    @ColumnInfo(name = "maxLat")
+    private double maxLat;
+
+    @ColumnInfo(name = "maxLon")
+    private double maxLon;
+
+    public PoiEntity(@NonNull String id, @NonNull String name, int category, double minLat, double minLon, double maxLat, double maxLon) {
         this.id = id;
         this.name = name;
-        this.poiType = poiType;
+        this.category = category;
+        this.minLat = minLat;
+        this.minLon = minLon;
+        this.maxLat = maxLat;
+        this.maxLon = maxLon;
     }
 
     @NonNull
@@ -54,12 +69,43 @@ public class PoiEntity {
         this.name = name;
     }
 
-    @NonNull
-    public String getPoiType() {
-        return poiType;
+    public int getCategory() {
+        return category;
     }
 
-    public void setPoiType(@NonNull String poiType) {
-        this.poiType = poiType;
+    public void setCategory(int category) {
+        this.category = category;
+    }
+
+    public double getMinLat() {
+        return minLat;
+    }
+
+    public void setMinLat(double minLat) {
+        this.minLat = minLat;
+    }
+
+    public double getMinLon() {
+        return minLon;
+    }
+
+    public void setMinLon(double minLon) {
+        this.minLon = minLon;
+    }
+
+    public double getMaxLat() {
+        return maxLat;
+    }
+
+    public void setMaxLat(double maxLat) {
+        this.maxLat = maxLat;
+    }
+
+    public double getMaxLon() {
+        return maxLon;
+    }
+
+    public void setMaxLon(double maxLon) {
+        this.maxLon = maxLon;
     }
 }

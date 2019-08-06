@@ -28,6 +28,7 @@ import org.oscim.theme.VtmThemes;
 import org.oscim.tiling.source.mapfile.MapFileTileSource;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -53,7 +54,7 @@ public abstract class BaseMapFragment extends Fragment {
 
     @Inject
     SharedPreferences sharedPreferences;
-    protected LocationLayer locationLayer;
+    protected WeakReference<LocationLayer> locationLayer;
 
     public BaseMapFragment() {
         // Required empty public constructor
@@ -72,7 +73,6 @@ public abstract class BaseMapFragment extends Fragment {
         mapFilePath = sharedPreferences.getString(MAP_PATH, "");
         mapView = getActivity().findViewById(R.id.mapview);
         map = mapView.map();
-
         initializeMap();
 
     }
@@ -85,6 +85,8 @@ public abstract class BaseMapFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        compositeDisposable.clear();
+        mapView.map().layers().remove(locationLayer.get());
         mapView.onDestroy();
         super.onDetach();
     }
@@ -143,11 +145,11 @@ public abstract class BaseMapFragment extends Fragment {
         String mapPath = new File(mapFilePath).getAbsolutePath();
         if (tileSource.setMapFile(mapPath)) {
 
-            locationLayer = new LocationLayer(map);
-            locationLayer.locationRenderer.setShader("location_1_reverse");
-            locationLayer.locationRenderer.setColor(Color.parseColor("#F44336"));
-            locationLayer.setEnabled(false);
-            map.layers().add(locationLayer);
+            locationLayer = new WeakReference<>(new LocationLayer(map));
+            locationLayer.get().locationRenderer.setShader("location_1_reverse");
+            locationLayer.get().locationRenderer.setColor(Color.parseColor("#F44336"));
+            locationLayer.get().setEnabled(false);
+            map.layers().add(locationLayer.get());
 
 
             map.viewport().setMinZoomLevel(10);
@@ -193,8 +195,7 @@ public abstract class BaseMapFragment extends Fragment {
     @Override
     public void onDestroyView() {
         compositeDisposable.clear();
-        mapView.map().layers().remove(locationLayer);
-        locationLayer = null;
+        mapView.map().layers().remove(locationLayer.get());
         mapView.onDestroy();
         super.onDestroyView();
     }

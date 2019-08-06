@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 
 import com.github.siyamed.shapeimageview.mask.PorterShapeImageView;
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.util.Constants;
+import com.infinitum.bookingqba.view.profile.uploaditem.GaleryFormObject;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -18,10 +20,10 @@ import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
 
 public class ImageFormAdapter extends RecyclerView.Adapter<ImageFormAdapter.ViewHolder> {
 
-    private ArrayList<String> imagesPath;
+    private ArrayList<GaleryFormObject> imagesPath;
     private OnImageDeleteClick onImageDeleteClick;
 
-    public ImageFormAdapter(ArrayList<String> imagesPath, OnImageDeleteClick onImageDeleteClick) {
+    public ImageFormAdapter(ArrayList<GaleryFormObject> imagesPath, OnImageDeleteClick onImageDeleteClick) {
         this.imagesPath = imagesPath;
         this.onImageDeleteClick = onImageDeleteClick;
     }
@@ -35,8 +37,8 @@ public class ImageFormAdapter extends RecyclerView.Adapter<ImageFormAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        String path = imagesPath.get(i);
-        if (!path.contains("http")) {
+        String path = imagesPath.get(i).getUrl();
+        if (!path.contains("static")) {
             path = "file:" + path;
         }
         Picasso.get()
@@ -44,7 +46,7 @@ public class ImageFormAdapter extends RecyclerView.Adapter<ImageFormAdapter.View
                 .resize(THUMB_WIDTH, THUMB_HEIGHT)
                 .placeholder(R.drawable.placeholder)
                 .into(viewHolder.porterShapeImageView);
-        viewHolder.ll_delete_item.setOnClickListener(v -> onImageDeleteClick.onImageDelete(imagesPath.get(i), i));
+        viewHolder.ll_delete_item.setOnClickListener(v -> onImageDeleteClick.onImageDelete(imagesPath.get(i).getUrl(), i));
     }
 
     @Override

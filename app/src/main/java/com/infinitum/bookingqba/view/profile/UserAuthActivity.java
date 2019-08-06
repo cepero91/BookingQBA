@@ -74,7 +74,7 @@ public class UserAuthActivity extends AppCompatActivity implements HasSupportFra
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(USER_IS_AUTH, true);
         editor.putBoolean(USER_IS_RENTS_OWNER, user.isRentOwner());
-        editor.putString(USER_TOKEN, user.getToken());
+        editor.putString(USER_TOKEN, "Token "+user.getToken());
         editor.putString(USER_NAME, user.getUsername());
         editor.putString(USER_ID, user.getUserid());
         editor.putString(USER_AVATAR, user.getAvatar());

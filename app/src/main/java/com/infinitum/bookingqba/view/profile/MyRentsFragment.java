@@ -112,7 +112,7 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listResource -> {
-                    if(listResource.data!=null){
+                    if (listResource.data != null) {
                         setItemsAdapter(listResource.data);
                     }
                 }, Timber::e);
@@ -147,6 +147,7 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener {
 
     public interface AddRentClick {
         void onAddRentClick();
+        void onEditRent(String uuid);
     }
 
     public void setItemsAdapter(List<MyRentItem> rendererViewModelList) {
@@ -174,20 +175,18 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener {
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_rent_name, (ViewProvider<TextView>) view -> view.setText(model.getName()))
                         .find(R.id.tv_rent_mode, (ViewProvider<TextView>) view -> view.setText(" /" + model.getRentMode()))
-                        .find(R.id.tv_state, (ViewProvider<TextView>) view -> view.setText(model.isActive()?"Activada":"Desactivada"))
+                        .find(R.id.tv_state, (ViewProvider<TextView>) view -> view.setText(model.isActive() ? "Activada" : "Desactivada"))
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format(String.format("$ %.2f", model.getPrice()))))
                         .find(R.id.siv_rent_image, (ViewProvider<RoundedImageView>) view -> {
                             String path = model.getPortrait();
-                            if (!path.contains("http")) {
-                                path = "file:" + path;
-                            }
                             Picasso.get()
                                     .load(path)
                                     .resize(THUMB_WIDTH, THUMB_HEIGHT)
                                     .placeholder(R.drawable.placeholder)
+                                    .error(R.drawable.placeholder)
                                     .into(view);
                         })
-//                        .setOnClickListener(R.id.cv_rent_content, (v -> mListener.onItemClick(v, model)))
+                        .setOnClickListener(R.id.btn_edit, (v -> addRentClick.onEditRent(model.getUuid())))
         );
     }
 }

@@ -351,8 +351,8 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     public void updateCurrentLocation(Location location) {
         currentLocation = location;
         lastKnowLocation = currentLocation;
-        locationLayer.setEnabled(true);
-        locationLayer.setPosition(location.getLatitude(), location.getLongitude(), location.getAccuracy());
+        locationLayer.get().setEnabled(true);
+        locationLayer.get().setPosition(location.getLatitude(), location.getLongitude(), location.getAccuracy());
     }
 
 

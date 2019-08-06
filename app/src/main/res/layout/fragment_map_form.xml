@@ -57,7 +57,6 @@
             android:layout_above="@+id/iv_location"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="24dp"
-            app:backgroundTint="@color/colorPrimary"
             app:fabSize="mini"
             app:srcCompat="@drawable/ic_check" />
 
@@ -69,8 +68,7 @@
             android:layout_alignParentBottom="true"
             android:layout_margin="@dimen/fab_margin"
             app:srcCompat="@drawable/ic_crosshairs"
-            app:fabSize="normal"
-            app:backgroundTint="@color/colorPrimary"/>
+            app:fabSize="normal" />
 
 
     </RelativeLayout>
