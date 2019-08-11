@@ -95,15 +95,4 @@ public class BaseItem implements ViewModel, Parcelable {
         this.wished = in.readInt();
     }
 
-    public static final Creator<BaseItem> CREATOR = new Creator<BaseItem>() {
-        @Override
-        public BaseItem createFromParcel(Parcel source) {
-            return new BaseItem(source);
-        }
-
-        @Override
-        public BaseItem[] newArray(int size) {
-            return new BaseItem[size];
-        }
-    };
 }

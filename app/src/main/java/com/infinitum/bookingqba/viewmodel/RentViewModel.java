@@ -21,7 +21,9 @@ import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
+import com.infinitum.bookingqba.model.local.pojo.PoiAndRelations;
 import com.infinitum.bookingqba.model.local.pojo.RentAmenitieAndRelation;
+import com.infinitum.bookingqba.model.local.pojo.RentAndDependencies;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
@@ -46,6 +48,7 @@ import com.infinitum.bookingqba.view.adapters.items.addrent.MyRentItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
+import com.infinitum.bookingqba.view.adapters.items.map.PoiItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentAmenitieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentCommentItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentGalerieItem;
@@ -357,23 +360,42 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return offerItems;
     }
 
-    private Resource<List<GeoRent>> transformToGeoRent(Resource<List<RentAndGalery>> listResource) {
+    private Resource<List<GeoRent>> transformToGeoRent(Resource<List<RentAndDependencies>> listResource) {
         List<GeoRent> geoRentList = new ArrayList<>();
         GeoRent geoRent;
         if (listResource.data != null && listResource.data.size() > 0) {
-            for (RentAndGalery rentAndGalery : listResource.data) {
-                String imagePath = rentAndGalery.getImageAtPos(0);
-                geoRent = new GeoRent(rentAndGalery.getId(), rentAndGalery.getName(), imagePath, rentAndGalery.getIsWished());
-                geoRent.setGeoPoint(new GeoPoint(rentAndGalery.getLatitude(), rentAndGalery.getLongitude()));
-                geoRent.setPrice(rentAndGalery.getPrice());
-                geoRent.setRating(rentAndGalery.getRating());
-                geoRent.setRentMode(rentAndGalery.getRentMode());
+            for (RentAndDependencies rentAndDependencies : listResource.data) {
+                String imagePath = rentAndDependencies.getImageAtPos(0);
+                geoRent = new GeoRent(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath, rentAndDependencies.getIsWished());
+                geoRent.setGeoPoint(new GeoPoint(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()));
+                geoRent.setPrice(rentAndDependencies.getPrice());
+                geoRent.setRating(rentAndDependencies.getRating());
+                geoRent.setRatingCount(rentAndDependencies.getRatingCount());
+                geoRent.setRentMode(rentAndDependencies.getRentMode());
+                geoRent.setPoiItems(transformPoiEntityToPoiItem(rentAndDependencies.getRentPoiAndRelations()));
                 geoRentList.add(geoRent);
             }
             return Resource.success(geoRentList);
         } else {
             return Resource.error("Datos nulos o vacios");
         }
+    }
+
+    private List<PoiItem> transformPoiEntityToPoiItem(List<RentPoiAndRelation> rentPoiAndRelations) {
+        List<PoiItem> poiItems = new ArrayList<>();
+        PoiItem poiItem;
+        for(RentPoiAndRelation rentPoiAndRelation: rentPoiAndRelations){
+            poiItem = new PoiItem();
+            PoiAndRelations poiAndRelations = rentPoiAndRelation.getPoiAndRelationsObject();
+            PoiTypeEntity poiTypeEntity = poiAndRelations.getPoiTypeEntitySetObject();
+            poiItem.setId(poiAndRelations.poiEntity.getId());
+            poiItem.setLatitude(poiAndRelations.poiEntity.getMinLat());
+            poiItem.setLongitude(poiAndRelations.poiEntity.getMinLon());
+            poiItem.setName(poiAndRelations.poiEntity.getName());
+            poiItem.setCategory(poiTypeEntity.getName());
+            poiItems.add(poiItem);
+        }
+        return poiItems;
     }
 
     private Resource<List<ListWishItem>> transformToWishList(Resource<List<RentAndGalery>> listResource) {

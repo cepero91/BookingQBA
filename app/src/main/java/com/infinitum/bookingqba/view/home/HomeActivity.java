@@ -536,7 +536,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     @Override
     protected void updateLocation(Location location) {
         currentLocation = location;
-        if (mFragment instanceof MapFragment && mFragment.getUserVisibleHint())
+        if (mFragment instanceof MapFragment && ((MapFragment) mFragment).isMarkerLayerLoaded())
             ((MapFragment) mFragment).updateCurrentLocation(location);
     }
 

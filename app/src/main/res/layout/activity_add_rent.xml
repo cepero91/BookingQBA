@@ -20,8 +20,7 @@
 
     </data>
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout
-        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -87,7 +86,6 @@
                     android:orientation="vertical"
                     android:padding="12dp">
 
-
                     <android.support.v7.widget.AppCompatImageView
                         android:id="@+id/btn_location"
                         android:layout_width="70dp"
@@ -151,14 +149,13 @@
                     android:layout_height="wrap_content"
                     android:focusableInTouchMode="true"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/til_address"
                         style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
                         android:hint="@string/direccion"
                         app:boxStrokeColor="@color/colorPrimary">
 
@@ -178,9 +175,9 @@
                         android:id="@+id/fl_municipalities"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
+                        android:layout_marginTop="5dp"
                         android:background="@drawable/shape_round_grey"
-                        android:padding="10dp">
+                        android:padding="12dp">
 
                         <TextView
                             android:id="@+id/tv_municipality"
@@ -213,17 +210,17 @@
                         android:id="@+id/fl_reference_zone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
+                        android:layout_marginTop="5dp"
                         android:background="@drawable/shape_round_grey"
-                       android:padding="10dp">
+                        android:padding="12dp">
 
                         <TextView
                             android:id="@+id/tv_reference_zone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|start"
-                            android:text="@string/zona_de_referencia"
                             android:fontFamily="@font/robotoregular"
+                            android:text="@string/zona_de_referencia"
                             android:textColor="@color/material_color_blue_grey_500"
                             android:textSize="14sp" />
 
@@ -279,14 +276,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/til_rent_name"
                         style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
                         android:hint="@string/nombre_de_renta"
                         app:boxStrokeColor="@color/colorPrimary">
 
@@ -294,7 +290,7 @@
                             android:id="@+id/et_rent_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppinsregular"
+                            android:fontFamily="@font/robotoregular"
                             android:inputType="text"
                             android:padding="12dp"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
@@ -302,77 +298,58 @@
 
                     </android.support.design.widget.TextInputLayout>
 
-                    <LinearLayout
+                    <FrameLayout
+                        android:id="@+id/fl_rent_mode"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="5"
-                        android:baselineAligned="false">
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/shape_round_grey"
+                        android:padding="12dp">
 
-                        <FrameLayout
-                            android:id="@+id/fl_rent_mode"
-                            android:layout_width="0dp"
+                        <TextView
+                            android:id="@+id/tv_rent_mode"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
-                            android:layout_weight="3"
-                            android:background="@drawable/shape_round_grey"
-                            android:paddingBottom="12dp"
-                            android:paddingEnd="5dp"
-                            android:paddingStart="3dp"
-                            android:paddingTop="12dp">
+                            android:layout_gravity="center|start"
+                            android:text="@string/modo_de_renta"
+                            android:textColor="@color/material_color_blue_grey_500"
+                            android:textSize="14sp" />
 
-                            <TextView
-                                android:id="@+id/tv_rent_mode"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center|start"
-                                android:layout_marginStart="12sp"
-                                android:text="@string/modo_de_renta"
-                                android:textColor="@color/material_color_blue_grey_500"
-                                android:textSize="14sp" />
-
-                            <android.support.v7.widget.AppCompatImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center|end"
-                                android:layout_marginEnd="12dp"
-                                android:layout_marginStart="12dp"
-                                app:srcCompat="@drawable/ic_search" />
-
-                        </FrameLayout>
-
-                        <android.support.design.widget.TextInputLayout
-                            android:id="@+id/til_price"
-                            style="@style/MyStyleUserInput"
-                            android:layout_width="0dp"
+                        <android.support.v7.widget.AppCompatImageView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="5dp"
-                            android:layout_weight="2"
-                            android:hint="@string/precio"
-                            app:boxStrokeColor="@color/colorPrimary">
+                            android:layout_gravity="center|end"
+                            app:srcCompat="@drawable/ic_search" />
 
-                            <android.support.design.widget.TextInputEditText
-                                android:id="@+id/et_price"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:drawablePadding="5dp"
-                                android:drawableStart="@drawable/ic_dollar_sign"
-                                android:fontFamily="@font/robotoregular"
-                                android:inputType="number"
-                                android:padding="10dp"
-                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                                android:textColor="@color/colorAccent" />
+                    </FrameLayout>
 
-                        </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_price"
+                        style="@style/MyStyleUserInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:hint="@string/precio"
+                        app:boxStrokeColor="@color/colorPrimary">
 
-                    </LinearLayout>
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/et_price"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/robotoregular"
+                            android:inputType="number"
+                            android:padding="12dp"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textColor="@color/colorAccent" />
+
+                    </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/til_email"
                         style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
+                        android:layout_marginTop="5dp"
                         android:hint="Email"
                         app:boxStrokeColor="@color/colorPrimary">
 
@@ -380,9 +357,7 @@
                             android:id="@+id/et_email"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:drawablePadding="5dp"
-                            android:drawableStart="@drawable/ic_envelope_input"
-                            android:fontFamily="@font/poppinsregular"
+                            android:fontFamily="@font/robotoregular"
                             android:inputType="textEmailAddress"
                             android:padding="12dp"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
@@ -393,8 +368,6 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="3dp"
-                        android:layout_marginStart="3dp"
                         android:baselineAligned="false"
                         android:orientation="horizontal"
                         android:weightSum="2">
@@ -404,9 +377,9 @@
                             style="@style/MyStyleUserInput"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_margin="2dp"
+                            android:layout_marginEnd="2dp"
                             android:layout_weight="1"
-                            android:hint="Max. Huespedes"
+                            android:hint="Capacidad"
                             app:boxStrokeColor="@color/colorPrimary">
 
                             <android.support.design.widget.TextInputEditText
@@ -426,9 +399,9 @@
                             style="@style/MyStyleUserInput"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_margin="2dp"
+                            android:layout_marginStart="2dp"
                             android:layout_weight="1"
-                            android:hint="Cant. Habitaciones"
+                            android:hint="Habitaciones"
                             app:boxStrokeColor="@color/colorPrimary">
 
                             <android.support.design.widget.TextInputEditText
@@ -448,8 +421,6 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="3dp"
-                        android:layout_marginStart="3dp"
                         android:baselineAligned="false"
                         android:orientation="horizontal"
                         android:weightSum="2">
@@ -459,9 +430,9 @@
                             style="@style/MyStyleUserInput"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_margin="2dp"
+                            android:layout_marginEnd="2dp"
                             android:layout_weight="1"
-                            android:hint="Cant. Camas"
+                            android:hint="Camas"
                             app:boxStrokeColor="@color/colorPrimary">
 
                             <android.support.design.widget.TextInputEditText
@@ -481,9 +452,9 @@
                             style="@style/MyStyleUserInput"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_margin="2dp"
+                            android:layout_marginStart="2dp"
                             android:layout_weight="1"
-                            android:hint="Cant. Baños"
+                            android:hint="Baños"
                             app:boxStrokeColor="@color/colorPrimary">
 
                             <android.support.design.widget.TextInputEditText
@@ -505,7 +476,7 @@
                         style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
+                        android:layout_marginTop="5dp"
                         android:hint="Reglas"
                         app:boxStrokeColor="@color/colorPrimary">
 
@@ -513,7 +484,7 @@
                             android:id="@+id/et_rules"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppinsregular"
+                            android:fontFamily="@font/robotoregular"
                             android:inputType="textMultiLine"
                             android:padding="12dp"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
@@ -527,7 +498,7 @@
                         style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
+                        android:layout_marginTop="5dp"
                         android:hint="Descripcion"
                         app:boxStrokeColor="@color/colorPrimary">
 
@@ -535,8 +506,8 @@
                             android:id="@+id/et_description"
                             android:layout_width="match_parent"
                             android:layout_height="80dp"
+                            android:fontFamily="@font/robotoregular"
                             android:gravity="top"
-                            android:fontFamily="@font/poppinsregular"
                             android:inputType="textMultiLine"
                             android:padding="12dp"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
@@ -549,15 +520,15 @@
                         style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:hint="Telefono movil (Opcional)"
+                        android:layout_marginTop="5dp"
+                        android:hint="Telefono movil"
                         app:boxStrokeColor="@color/colorPrimary">
 
                         <android.support.design.widget.TextInputEditText
                             android:id="@+id/et_personal_phone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppinsregular"
+                            android:fontFamily="@font/robotoregular"
                             android:inputType="phone"
                             android:padding="12dp"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
@@ -570,15 +541,15 @@
                         style="@style/MyStyleUserInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:hint="Telefono de la Renta (Opcional)"
+                        android:layout_marginTop="5dp"
+                        android:hint="Telefono de la Renta"
                         app:boxStrokeColor="@color/colorPrimary">
 
                         <android.support.design.widget.TextInputEditText
                             android:id="@+id/et_home_phone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppinsregular"
+                            android:fontFamily="@font/robotoregular"
                             android:inputType="phone"
                             android:padding="12dp"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
@@ -590,32 +561,32 @@
                         android:id="@+id/fl_amenities"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
+                        android:layout_marginTop="5dp"
                         android:background="@drawable/shape_round_grey"
                         android:orientation="vertical">
 
                         <FrameLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="10dp">
+                            android:padding="12dp">
 
                             <TextView
                                 android:id="@+id/tv_amenities"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="start|center"
-                                android:includeFontPadding="false"
                                 android:fontFamily="@font/robotoregular"
+                                android:includeFontPadding="false"
                                 android:text="Facilidades"
                                 android:textColor="@color/material_color_blue_grey_400"
                                 android:textSize="14sp" />
 
                             <android.support.v7.widget.AppCompatImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
                                 android:layout_gravity="end|center"
                                 android:tint="@color/material_color_blue_grey_400"
-                                app:srcCompat="@drawable/ic_add_black_24dp"
+                                app:srcCompat="@drawable/ic_plus"
                                 app:visibleGone="@{!safeUnbox(loadingAmenities)}" />
 
                             <ProgressBar
@@ -632,8 +603,8 @@
                             android:id="@+id/fb_amenities"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:paddingEnd="3dp"
-                            android:paddingStart="3dp"
+                            android:paddingEnd="5dp"
+                            android:paddingStart="5dp"
                             app:alignContent="center"
                             app:flexWrap="wrap" />
 
@@ -643,32 +614,32 @@
                         android:id="@+id/fl_galery"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
+                        android:layout_marginTop="5dp"
                         android:background="@drawable/shape_round_grey"
                         android:orientation="vertical">
 
                         <FrameLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="10dp">
+                            android:padding="12dp">
 
                             <TextView
                                 android:id="@+id/tv_galery"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="start|center"
-                                android:includeFontPadding="false"
                                 android:fontFamily="@font/robotoregular"
+                                android:includeFontPadding="false"
                                 android:text="Imagenes"
                                 android:textColor="@color/material_color_blue_grey_400"
                                 android:textSize="14sp" />
 
                             <android.support.v7.widget.AppCompatImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
                                 android:layout_gravity="end|center"
                                 android:tint="@color/material_color_blue_grey_400"
-                                app:srcCompat="@drawable/ic_add_black_24dp" />
+                                app:srcCompat="@drawable/ic_plus" />
 
                         </FrameLayout>
 
@@ -683,32 +654,31 @@
                         android:id="@+id/fl_offer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
+                        android:layout_marginTop="5dp"
                         android:background="@drawable/shape_round_grey"
                         android:orientation="vertical">
 
                         <FrameLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="10dp">
+                            android:padding="12dp">
 
                             <TextView
                                 android:id="@+id/tv_offer"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="start|center"
-                                android:includeFontPadding="false"
                                 android:fontFamily="@font/robotoregular"
                                 android:text="Ofertas"
                                 android:textColor="@color/material_color_blue_grey_400"
                                 android:textSize="14sp" />
 
                             <android.support.v7.widget.AppCompatImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
                                 android:layout_gravity="end|center"
                                 android:tint="@color/material_color_blue_grey_400"
-                                app:srcCompat="@drawable/ic_add_black_24dp" />
+                                app:srcCompat="@drawable/ic_plus" />
 
                         </FrameLayout>
 

@@ -149,7 +149,14 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
         super.onDetach();
     }
 
-    //-------------------------------------- MAP
+    @Override
+    public void onDestroyView() {
+        binding.mapview.map().layers().remove(mapEventsReceiver);
+        binding.mapview.onDestroy();
+        super.onDestroyView();
+    }
+
+    //-------------------------------------- METHODS
 
     @Override
     protected void initializeMarker() {
@@ -161,9 +168,8 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
     protected void showViews() {
         binding.setIsLoading(false);
         if (!argLatitude.equals("") && !argLongitude.equals("")) {
-            locationLayer.get().setEnabled(true);
-            locationLayer.get().setPosition(Float.parseFloat(argLatitude), Float.parseFloat(argLongitude), 0);
-            mapView.map().setMapPosition(Float.parseFloat(argLatitude), Float.parseFloat(argLatitude), 2 << 12);
+            //do something with location
+            map.animator().animateTo(1000, getMapPositionWithZoom(new GeoPoint(Float.parseFloat(argLatitude),Float.parseFloat(argLongitude)), 15), Easing.Type.SINE_IN);
             showDoneFAB();
         } else {
             mapView.map().setMapPosition(23.1165, -82.3882, 2 << 12);
@@ -199,6 +205,35 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
         }
     }
 
+    private MapPosition getMapPositionWithZoom(GeoPoint geoPoint, int zoom) {
+        MapPosition mapPosition = new MapPosition();
+        mapPosition.setPosition(geoPoint);
+        mapPosition.setZoomLevel(zoom);
+        return mapPosition;
+    }
+
+    public void updateGPSCurrentLocation(Location location) {
+        argLatitude = String.valueOf(location.getLatitude());
+        argLongitude = String.valueOf(location.getLongitude());
+        //do something with location
+        showDoneFAB();
+    }
+
+    public void updateGestureCurrentLocation(double latitude, double longitude, double accuracy) {
+        argLatitude = String.valueOf(latitude);
+        argLongitude = String.valueOf(longitude);
+        //do something with location
+        showDoneFAB();
+    }
+
+    private void showDoneFAB(){
+        if(!alreadyDoneShow) {
+            binding.ivDone.show();
+            alreadyDoneShow = true;
+        }
+    }
+
+    //------------------------------------ INNER CLASS --------------------------
     class MapEventsReceiver extends Layer implements GestureListener {
 
         MapEventsReceiver(Map map) {
@@ -215,43 +250,5 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
             return false;
         }
 
-    }
-
-    private MapPosition getMapPositionWithZoom(GeoPoint geoPoint, int zoom) {
-        MapPosition mapPosition = new MapPosition();
-        mapPosition.setPosition(geoPoint);
-        mapPosition.setZoomLevel(zoom);
-        return mapPosition;
-    }
-
-    public void updateGPSCurrentLocation(Location location) {
-        argLatitude = String.valueOf(location.getLatitude());
-        argLongitude = String.valueOf(location.getLongitude());
-        locationLayer.get().setEnabled(true);
-        locationLayer.get().setPosition(location.getLatitude(), location.getLongitude(), location.getAccuracy());
-        showDoneFAB();
-    }
-
-    public void updateGestureCurrentLocation(double latitude, double longitude, double accuracy) {
-        argLatitude = String.valueOf(latitude);
-        argLongitude = String.valueOf(longitude);
-        locationLayer.get().setEnabled(true);
-        locationLayer.get().setPosition(latitude, longitude, accuracy);
-        showDoneFAB();
-    }
-
-    private void showDoneFAB(){
-        if(!alreadyDoneShow) {
-            binding.ivDone.show();
-            alreadyDoneShow = true;
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        binding.mapview.map().layers().remove(mapEventsReceiver);
-        binding.mapview.map().layers().remove(locationLayer.get());
-        binding.mapview.onDestroy();
-        super.onDestroyView();
     }
 }

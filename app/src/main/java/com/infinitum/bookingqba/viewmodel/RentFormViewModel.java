@@ -372,7 +372,7 @@ public class RentFormViewModel extends ViewModel {
                 e.printStackTrace();
             }
         }
-        return mPersistenceManager.findNearPosition(new LatLong(mLatitude, mLongitude), 1500, categoryFilter, null, 50);
+        return mPersistenceManager.findNearPosition(new LatLong(mLatitude, mLongitude), 1000, categoryFilter, null, 50);
     }
 
     private String getReferenceNameByPoiCategory(Collection<PointOfInterest> pointOfInterests) {

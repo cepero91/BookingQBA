@@ -7,6 +7,7 @@ import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
+import com.infinitum.bookingqba.model.local.pojo.RentAndDependencies;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
@@ -31,7 +32,7 @@ public interface RentRepository {
 
     Completable insert(List<RentEntity> entities);
 
-    Flowable<Resource<List<RentAndGalery>>> allRent();
+    Flowable<Resource<List<RentAndDependencies>>> allRent();
 
     DataSource.Factory<Integer,RentAndGalery> allRentByOrderType(char orderType, String province);
 

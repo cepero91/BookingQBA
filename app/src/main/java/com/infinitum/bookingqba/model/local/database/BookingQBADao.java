@@ -31,6 +31,7 @@ import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 import com.infinitum.bookingqba.model.local.entity.RentVisitCountEntity;
 import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
+import com.infinitum.bookingqba.model.local.pojo.RentAndDependencies;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
@@ -419,9 +420,9 @@ public abstract class BookingQBADao {
 
 
     @Transaction
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.ratingCount, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) ")
-    public abstract Flowable<List<RentAndGalery>> getAllRents();
+    public abstract Flowable<List<RentAndDependencies>> getAllRents();
 
     /**
      * Este metodo devuelve solo la primera imagen de una renta

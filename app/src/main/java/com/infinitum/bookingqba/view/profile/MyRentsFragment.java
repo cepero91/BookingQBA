@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +45,7 @@ import timber.log.Timber;
 import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
 import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
 
-public class MyRentsFragment extends Fragment implements View.OnClickListener {
+public class MyRentsFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private FragmentMyRentsBinding binding;
     private AddRentClick addRentClick;
@@ -56,6 +57,7 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener {
 
     @Inject
     ViewModelFactory viewModelFactory;
+
 
     private RentFormViewModel rentViewModel;
 
@@ -99,23 +101,32 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener {
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentFormViewModel.class);
 
         binding.fabAddRent.setOnClickListener(this);
-
-        binding.setIsLoading(false);
-        binding.setIsEmpty(true);
-        binding.progressPvLinear.stop();
+        binding.srlRefresh.setOnRefreshListener(this);
 
         rentsByUserId();
     }
 
     private void rentsByUserId() {
+        binding.srlRefresh.setRefreshing(true);
+        binding.setIsEmpty(false);
+        binding.setIsLoading(true);
         disposable = rentViewModel.fetchRentByUserId(tokenArgs, useridArgs)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listResource -> {
-                    if (listResource.data != null) {
+                    if (listResource.data != null && listResource.data.size() > 0) {
+                        binding.setIsEmpty(false);
                         setItemsAdapter(listResource.data);
+                    } else {
+                        binding.setIsEmpty(true);
                     }
-                }, Timber::e);
+                    binding.setIsLoading(false);
+                    binding.srlRefresh.setRefreshing(false);
+                }, throwable -> {
+                    binding.setIsEmpty(true);
+                    binding.setIsLoading(false);
+                    binding.srlRefresh.setRefreshing(false);
+                });
         compositeDisposable.add(disposable);
     }
 
@@ -145,27 +156,23 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    @Override
+    public void onRefresh() {
+        rentsByUserId();
+    }
+
     public interface AddRentClick {
         void onAddRentClick();
+
         void onEditRent(String uuid);
     }
 
     public void setItemsAdapter(List<MyRentItem> rendererViewModelList) {
-        if (rendererViewModelList.size() > 0) {
-            RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
-            recyclerViewAdapter.registerRenderer(getMyRentBinder(R.layout.recycler_my_rent_list));
-            recyclerViewAdapter.setItems(rendererViewModelList);
-            binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            binding.recyclerView.setAdapter(recyclerViewAdapter);
-            OverScrollDecoratorHelper.setUpOverScroll(binding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
-            binding.setIsLoading(false);
-            binding.setIsEmpty(false);
-            binding.progressPvLinear.stop();
-        } else {
-            binding.setIsLoading(false);
-            binding.setIsEmpty(true);
-            binding.progressPvLinear.stop();
-        }
+        RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
+        recyclerViewAdapter.registerRenderer(getMyRentBinder(R.layout.recycler_my_rent_list));
+        recyclerViewAdapter.setItems(rendererViewModelList);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.recyclerView.setAdapter(recyclerViewAdapter);
     }
 
     private ViewBinder<?> getMyRentBinder(int layout) {

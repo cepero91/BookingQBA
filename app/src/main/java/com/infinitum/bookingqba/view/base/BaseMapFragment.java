@@ -15,6 +15,7 @@ import org.oscim.android.MapView;
 import org.oscim.backend.CanvasAdapter;
 import org.oscim.backend.canvas.Color;
 import org.oscim.layers.LocationLayer;
+import org.oscim.layers.marker.MarkerItem;
 import org.oscim.layers.tile.buildings.BuildingLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
 import org.oscim.layers.tile.vector.labeling.LabelLayer;
@@ -35,6 +36,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.Completable;
+import io.reactivex.CompletableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -54,7 +56,6 @@ public abstract class BaseMapFragment extends Fragment {
 
     @Inject
     SharedPreferences sharedPreferences;
-    protected WeakReference<LocationLayer> locationLayer;
 
     public BaseMapFragment() {
         // Required empty public constructor
@@ -85,8 +86,10 @@ public abstract class BaseMapFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        if(disposable!=null){
+            disposable.dispose();
+        }
         compositeDisposable.clear();
-        mapView.map().layers().remove(locationLayer.get());
         mapView.onDestroy();
         super.onDetach();
     }
@@ -145,12 +148,6 @@ public abstract class BaseMapFragment extends Fragment {
         String mapPath = new File(mapFilePath).getAbsolutePath();
         if (tileSource.setMapFile(mapPath)) {
 
-            locationLayer = new WeakReference<>(new LocationLayer(map));
-            locationLayer.get().locationRenderer.setShader("location_1_reverse");
-            locationLayer.get().locationRenderer.setColor(Color.parseColor("#F44336"));
-            locationLayer.get().setEnabled(false);
-            map.layers().add(locationLayer.get());
-
 
             map.viewport().setMinZoomLevel(10);
 
@@ -195,8 +192,9 @@ public abstract class BaseMapFragment extends Fragment {
     @Override
     public void onDestroyView() {
         compositeDisposable.clear();
-        mapView.map().layers().remove(locationLayer.get());
         mapView.onDestroy();
         super.onDestroyView();
     }
+
+
 }

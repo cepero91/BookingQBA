@@ -34,6 +34,7 @@ import com.infinitum.bookingqba.databinding.ActivityAddRentBinding;
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
 import com.infinitum.bookingqba.model.remote.pojo.Galerie;
 import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
+import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.Constants;
 import com.infinitum.bookingqba.view.base.LocationActivity;
@@ -150,6 +151,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     private boolean edit;
     private String uuid;
+    private AlertDialog loadingDialog;
+    private AlertDialog.Builder loadingBuilder;
 
 
     //--------------------------------------------------------------------------------
@@ -493,12 +496,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     }
 
     private void uploadRent() {
-//        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-//        LayoutInflater inflater = this.getLayoutInflater();
-//        View dialogView = inflater.inflate(R.layout.dialog_upload_rent, null);
-//        dialogBuilder.setView(dialogView);
-//        AlertDialog alertDialog = dialogBuilder.create();
-//        alertDialog.show();
+        showLoadingDialog();
         updateRentFormFromInput();
         Map<String, Object> params = new HashMap<>();
         params.put("rent", rentFormObject);
@@ -510,9 +508,31 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(list -> {
-                    Timber.e("si");
+                    boolean isCorrect = true;
+                    for(ResponseResult responseResult: list){
+                        if(responseResult.getCode()!=200){
+                            isCorrect = false;
+                            break;
+                        }
+                    }
+                    if(isCorrect)
+                        hideLoadingDialog();
                 }, Timber::e);
         compositeDisposable.add(disposable);
+    }
+
+    private void showLoadingDialog() {
+        loadingBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_upload_rent, null);
+        loadingBuilder.setView(dialogView);
+        loadingBuilder.setCancelable(false);
+        loadingDialog = loadingBuilder.create();
+        loadingDialog.show();
+    }
+
+    private void hideLoadingDialog(){
+        loadingDialog.hide();
     }
 
     private void updateRentFormFromInput() {
