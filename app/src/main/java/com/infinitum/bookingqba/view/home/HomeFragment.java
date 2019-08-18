@@ -272,12 +272,7 @@ public class HomeFragment extends BaseNavigationFragment {
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %.2f", model.getPrice())))
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view -> {
-                                    String path;
-                                    if (!model.getImagePath().contains("http")) {
-                                        path = "file:" + model.getImagePath();
-                                    } else {
-                                        path = model.getImagePath();
-                                    }
+                                    String path = "file:" + model.getImagePath();
                                     Picasso.get().load(path)
                                             .resize(THUMB_WIDTH, THUMB_HEIGHT)
                                             .placeholder(R.drawable.placeholder)
@@ -294,17 +289,11 @@ public class HomeFragment extends BaseNavigationFragment {
                 (model, finder, payloads) -> finder
                         .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getName()))
                         .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
-                        .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view ->
-                        {
-                            String path;
-                            if (!model.getImagePath().contains("http")) {
-                                path = "file:" + model.getImagePath();
-                            } else {
-                                path = model.getImagePath();
-                            }
+                        .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view -> {
+                            String path = "file:" + model.getImagePath();
                             Picasso.get()
                                     .load(path)
-                                    .resize(THUMB_WIDTH,THUMB_HEIGHT)
+                                    .resize(THUMB_WIDTH, THUMB_HEIGHT)
                                     .placeholder(R.drawable.placeholder)
                                     .into(view);
                         })

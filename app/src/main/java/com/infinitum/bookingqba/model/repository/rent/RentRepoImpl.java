@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.model.repository.rent;
 import android.arch.paging.DataSource;
 import android.arch.persistence.db.SimpleSQLiteQuery;
 import android.arch.persistence.db.SupportSQLiteQuery;
+import android.graphics.PointF;
 
 import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
@@ -25,6 +26,8 @@ import com.infinitum.bookingqba.model.remote.pojo.RentPoi;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoiAdd;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.util.DateUtils;
+
+import org.mapsforge.core.model.LatLong;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -312,6 +315,69 @@ public class RentRepoImpl implements RentRepository {
             builder.addFormDataPart("file[]", file.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), file));
         }
         return builder.build();
+    }
+
+    @Override
+    public Flowable<Resource<List<RentAndDependencies>>> rentNearLocation(LatLong latLong, double range) {
+        PointF center = new PointF((float) latLong.latitude, (float) latLong.longitude);
+        final double mult = 1; // mult = 1.1; is more reliable
+        PointF p1 = calculateDerivedPosition(center, mult * range, 0);
+        PointF p2 = calculateDerivedPosition(center, mult * range, 90);
+        PointF p3 = calculateDerivedPosition(center, mult * range, 180);
+        PointF p4 = calculateDerivedPosition(center, mult * range, 270);
+
+        String strWhere =  "SELECT * FROM Rent WHERE "
+                + "Rent.latitude > " + String.valueOf(p3.x) + " AND "
+                + "Rent.latitude < " + String.valueOf(p1.x) + " AND "
+                + "Rent.longitude < " + String.valueOf(p2.y) + " AND "
+                + "Rent.longitude > " + String.valueOf(p4.y);
+        SupportSQLiteQuery simpleQuery = new SimpleSQLiteQuery(strWhere);
+        return qbaDao.getRentNearLatLon(simpleQuery)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    /**
+     * Calculates the end-point from a given source at a given range (meters)
+     * and bearing (degrees). This methods uses simple geometry equations to
+     * calculate the end-point.
+     *
+     * @param point
+     *           Point of origin
+     * @param range
+     *           Range in meters
+     * @param bearing
+     *           Bearing in degrees
+     * @return End-point from the source given the desired range and bearing.
+     */
+    public static PointF calculateDerivedPosition(PointF point,
+                                                  double range, double bearing)
+    {
+        double EarthRadius = 6371000; // m
+
+        double latA = Math.toRadians(point.x);
+        double lonA = Math.toRadians(point.y);
+        double angularDistance = range / EarthRadius;
+        double trueCourse = Math.toRadians(bearing);
+
+        double lat = Math.asin(
+                Math.sin(latA) * Math.cos(angularDistance) +
+                        Math.cos(latA) * Math.sin(angularDistance)
+                                * Math.cos(trueCourse));
+
+        double dlon = Math.atan2(
+                Math.sin(trueCourse) * Math.sin(angularDistance)
+                        * Math.cos(latA),
+                Math.cos(angularDistance) - Math.sin(latA) * Math.sin(lat));
+
+        double lon = ((lonA + dlon + Math.PI) % (Math.PI * 2)) - Math.PI;
+
+        lat = Math.toDegrees(lat);
+        lon = Math.toDegrees(lon);
+
+        return new PointF((float) lat, (float) lon);
+
     }
 
 

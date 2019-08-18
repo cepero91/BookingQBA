@@ -18,6 +18,8 @@ import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 
+import org.mapsforge.core.model.LatLong;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -71,5 +73,7 @@ public interface RentRepository {
     Single<Response<AddressResponse>> addressByLocation(double lat, double lon);
 
     Single<Resource<List<RentEdit>>> rentById(String token, String uuid);
+
+    Flowable<Resource<List<RentAndDependencies>>> rentNearLocation(LatLong latLong, double range);
 
 }

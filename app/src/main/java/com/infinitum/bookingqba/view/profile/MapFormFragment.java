@@ -21,9 +21,6 @@ import com.infinitum.bookingqba.databinding.FragmentMapFormBinding;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.view.base.BaseMapFragment;
 import com.infinitum.bookingqba.view.widgets.DialogLocationConfirmView;
-import com.wshunli.assets.CopyAssets;
-import com.wshunli.assets.CopyCreator;
-import com.wshunli.assets.CopyListener;
 
 import org.oscim.android.MapView;
 import org.oscim.backend.CanvasAdapter;
@@ -57,6 +54,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -67,8 +65,8 @@ import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
 import static com.infinitum.bookingqba.util.Constants.USER_GPS;
 import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
 
-public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.OnItemGestureListener<MarkerItem>
-        , View.OnClickListener {
+public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.OnItemGestureListener<MarkerItem>,
+        View.OnClickListener {
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -83,6 +81,9 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
 
     private MapEventsReceiver mapEventsReceiver;
     private boolean alreadyDoneShow;
+
+    private MarkerSymbol rentMarkerUnpressed;
+    private ItemizedLayer<MarkerItem> mMarkerLayer;
 
 
     public MapFormFragment() {
@@ -150,6 +151,11 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
     }
 
     @Override
+    protected void publishProgress(String msgProgress) {
+
+    }
+
+    @Override
     public void onDestroyView() {
         binding.mapview.map().layers().remove(mapEventsReceiver);
         binding.mapview.onDestroy();
@@ -162,6 +168,13 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
     protected void initializeMarker() {
         mapEventsReceiver = new MapEventsReceiver(map);
         map.layers().add(mapEventsReceiver);
+
+        //Marker
+        Bitmap rentOff = drawableToBitmap(getResources().getDrawable(R.drawable.casa_placeholder_off));
+        rentMarkerUnpressed = new MarkerSymbol(rentOff, MarkerSymbol.HotspotPlace.BOTTOM_CENTER);
+
+        mMarkerLayer = new ItemizedLayer<>(map, new ArrayList<>(), rentMarkerUnpressed, this);
+        map.layers().add(mMarkerLayer);
     }
 
     @Override
@@ -215,14 +228,18 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
     public void updateGPSCurrentLocation(Location location) {
         argLatitude = String.valueOf(location.getLatitude());
         argLongitude = String.valueOf(location.getLongitude());
-        //do something with location
+
+        updateCurrentLocation(location.getLatitude(),location.getLongitude());
+
         showDoneFAB();
     }
 
-    public void updateGestureCurrentLocation(double latitude, double longitude, double accuracy) {
+    public void updateGestureCurrentLocation(double latitude, double longitude) {
         argLatitude = String.valueOf(latitude);
         argLongitude = String.valueOf(longitude);
-        //do something with location
+
+        updateCurrentLocation(latitude,longitude);
+
         showDoneFAB();
     }
 
@@ -231,6 +248,37 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
             binding.ivDone.show();
             alreadyDoneShow = true;
         }
+    }
+
+    //------------------------------------ USER LOCATION ------------------------
+
+    public void updateCurrentLocation(double latitude, double longitude) {
+        disposable = Single.just(findPosUserMarker())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(integer -> {
+                    if (integer != -1) {
+                        mMarkerLayer.removeItem(integer);
+                    }
+                    addUserMarker(latitude, longitude);
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private int findPosUserMarker() {
+        for (int i = 0; i < mMarkerLayer.getItemList().size(); i++) {
+            if (mMarkerLayer.getItemList().get(i).title.equals("rent")) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private void addUserMarker(double latitude, double longitude) {
+        MarkerItem userMarker = new MarkerItem("rent", "", new GeoPoint(latitude, longitude));
+        userMarker.setMarker(rentMarkerUnpressed);
+        mMarkerLayer.addItem(userMarker);
+        map.render();
     }
 
     //------------------------------------ INNER CLASS --------------------------
@@ -244,7 +292,7 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
         public boolean onGesture(Gesture g, MotionEvent e) {
             if (g instanceof Gesture.LongPress) {
                 GeoPoint p = mMap.viewport().fromScreenPoint(e.getX(), e.getY());
-                updateGestureCurrentLocation(p.getLatitude(), p.getLongitude(),0);
+                updateGestureCurrentLocation(p.getLatitude(), p.getLongitude());
                 return true;
             }
             return false;

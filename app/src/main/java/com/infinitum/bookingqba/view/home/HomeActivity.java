@@ -184,10 +184,10 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         super.onCreate(savedInstanceState);
         homeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
 
-        String uuid = sharedPreferences.getString(IMEI,"");
-        if(uuid.equals("")){
+        String uuid = sharedPreferences.getString(IMEI, "");
+        if (uuid.equals("")) {
             uuid = UUID.randomUUID().toString();
-            sharedPreferences.edit().putString(IMEI,uuid).apply();
+            sharedPreferences.edit().putString(IMEI, uuid).apply();
         }
 
         setupToolbar();
@@ -252,10 +252,10 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
         homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
 
-        if(sharedPreferences.getBoolean(USER_IS_AUTH,false)){
+        if (sharedPreferences.getBoolean(USER_IS_AUTH, false)) {
             homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(false);
             homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(true);
-            updateNavHeader(sharedPreferences.getString(USER_NAME,""),sharedPreferences.getString(USER_AVATAR,""));
+            updateNavHeader(sharedPreferences.getString(USER_NAME, ""), sharedPreferences.getString(USER_AVATAR, ""));
         }
     }
 
@@ -390,9 +390,9 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     private void confirmLogout() {
         AlertUtils.showCFInfoAlertWithAction(this, "Esta seguro que desea finalizar la sesion",
                 "Si", (dialog, which) -> {
-            logoutPetition();
-            dialog.dismiss();
-        });
+                    logoutPetition();
+                    dialog.dismiss();
+                });
     }
 
     private void logoutPetition() {
@@ -401,7 +401,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         editor.apply();
         homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(true);
         homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(false);
-        updateNavHeader("","");
+        updateNavHeader("", "");
     }
 
     @Override
@@ -432,13 +432,12 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                 Intent intent = new Intent(HomeActivity.this, UserAuthActivity.class);
                 startActivityForResult(intent, LOGIN_REQUEST_CODE);
             }, 500);
-        }else if (id == R.id.nav_logout) {
+        } else if (id == R.id.nav_logout) {
             confirmLogout();
-        }
-        else if (id == R.id.nav_my_rents && !(mFragment instanceof MyRentsFragment)) {
-            String userid = sharedPreferences.getString(USER_ID,"");
-            String token = sharedPreferences.getString(USER_TOKEN,"");
-            mFragment = MyRentsFragment.newInstance(userid,token);
+        } else if (id == R.id.nav_my_rents && !(mFragment instanceof MyRentsFragment)) {
+            String userid = sharedPreferences.getString(USER_ID, "");
+            String token = sharedPreferences.getString(USER_TOKEN, "");
+            mFragment = MyRentsFragment.newInstance(userid, token);
             sameFragment = false;
         }
         if (mFragment != null && !sameFragment) {
@@ -472,13 +471,13 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             return;
         }
         if (mFragment instanceof HomeFragment) {
-           if(timeToGo == 0){
-               Toast.makeText(this, "Presione de nuevo para salir", Toast.LENGTH_SHORT).show();
-               timeToGo = 1;
-               new Handler().postDelayed(() -> timeToGo = 0,5000);
-           }else{
-               super.onBackPressed();
-           }
+            if (timeToGo == 0) {
+                Toast.makeText(this, "Presione de nuevo para salir", Toast.LENGTH_SHORT).show();
+                timeToGo = 1;
+                new Handler().postDelayed(() -> timeToGo = 0, 5000);
+            } else {
+                super.onBackPressed();
+            }
         } else {
             MenuItem menuItem = homeBinding.navView.getMenu().findItem(R.id.nav_home);
             onNavigationItemSelected(menuItem);
@@ -502,14 +501,14 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         CutCornerView headerView = (CutCornerView) homeBinding.navView.getHeaderView(0);
         CircularImageView circularImageView = headerView.findViewById(R.id.user_avatar);
         TextView tvUsername = headerView.findViewById(R.id.tv_username);
-        if(!username.equals("") && !avatar.equals("")) {
+        if (!username.equals("") && !avatar.equals("")) {
             String url = BASE_URL_API + "/" + avatar;
             Picasso.get()
                     .load(url)
                     .placeholder(R.drawable.user_placeholder)
                     .into(circularImageView);
             tvUsername.setText(username);
-        }else{
+        } else {
             circularImageView.setImageResource(R.drawable.user_placeholder);
             tvUsername.setText("Hola invitado");
         }
@@ -526,9 +525,9 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
     @Override
     public void getLastLocation() {
-        if (sharedPreferences.getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false) && currentLocation == null) {
+        if (sharedPreferences.getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false)) {
             AlertUtils.showSuccessLocationToast(this, "Ubicando...");
-        } else if (!sharedPreferences.getBoolean(KEY_REQUESTING_LOCATION_UPDATES, false)) {
+        } else {
             startLocationRequestUnknowPermission();
         }
     }
@@ -605,8 +604,8 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     @Override
     public void onEditRent(String uuid) {
         Intent intent = new Intent(this, AddRentActivity.class);
-        intent.putExtra("id",uuid);
-        intent.putExtra("edit",true);
+        intent.putExtra("id", uuid);
+        intent.putExtra("edit", true);
         startActivity(intent);
     }
 

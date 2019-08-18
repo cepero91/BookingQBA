@@ -169,4 +169,6 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="nombre_de_renta">Nombre de Renta</string>
     <string name="modo_de_renta">Modo de Renta</string>
     <string name="precio">Precio</string>
+    <string name="distance_msg">Su destino se encuentra a %.2f km de distancia, con un tiempo de llegada aproximado de: %s</string>
+    <string name="min_msg">%d min</string>
 </resources>

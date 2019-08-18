@@ -507,6 +507,10 @@ public abstract class BookingQBADao {
     @RawQuery(observedEntities = RentEntity.class)
     public abstract Single<List<RentAndGalery>> getRentByUuidList(SupportSQLiteQuery query);
 
+    @Transaction
+    @RawQuery(observedEntities = RentEntity.class)
+    public abstract Flowable<List<RentAndDependencies>> getRentNearLatLon(SupportSQLiteQuery query);
+
     //------------------------- RATING ---------------------------//
 
     //Use in AndroidTest

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -9,53 +10,71 @@
             type="com.infinitum.bookingqba.view.adapters.items.map.GeoRent" />
     </data>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/fl_rent_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone">
+        android:animateLayoutChanges="true"
+        android:background="@color/White_100"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:animateLayoutChanges="true"
-            android:background="@color/White_100"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-
-            <TextView
-                android:id="@+id/tv_rent_name"
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_btn_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="100dp"
-                android:fontFamily="@font/poppinsbold"
-                android:text="@{item.getName()}"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="14sp" />
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="8dp">
 
-            <com.willy.ratingbar.BaseRatingBar
-                android:id="@+id/sr_scale_rating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="98dp"
-                app:setRating="@{item.getRating()}"
-                app:srb_clickable="false"
-                app:srb_drawableEmpty="@drawable/ic_star_o"
-                app:srb_drawableFilled="@drawable/ic_star"
-                app:srb_rating="4"
-                app:srb_scrollable="false"
-                app:srb_starHeight="16dp"
-                app:srb_starPadding="2dp"
-                app:srb_starWidth="16dp"
-                app:srb_stepSize="0.5" />
+                <com.github.siyamed.shapeimageview.RoundedImageView
+                    android:id="@+id/siv_rent_image"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_gravity="start|top"
+                    android:scaleType="centerCrop"
+                    app:setRoundedImage="@{item.getImagePath()}"
+                    app:siBorderAlpha="0" />
+
+            </android.support.v7.widget.CardView>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="100dp"
-                android:orientation="horizontal">
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/cv_btn_view"
+                android:layout_toStartOf="@+id/ll_content_poi_route_btn"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_rent_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsbold"
+                    android:maxLines="1"
+                    android:text="@{item.getName()}"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp" />
+
+                <com.willy.ratingbar.BaseRatingBar
+                    android:id="@+id/sr_scale_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:setRating="@{item.getRating()}"
+                    app:srb_clickable="false"
+                    app:srb_drawableEmpty="@drawable/ic_star_o"
+                    app:srb_drawableFilled="@drawable/ic_star"
+                    app:srb_rating="4"
+                    app:srb_scrollable="false"
+                    app:srb_starHeight="16dp"
+                    app:srb_starPadding="2dp"
+                    app:srb_starWidth="16dp"
+                    app:srb_stepSize="0.5" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -65,100 +84,242 @@
                     android:textSize="14sp"
                     app:setPriceText="@{item.getPrice()}" />
 
-                <TextView
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_content_poi_route_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/shape_round_grey"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/iv_point_of_interest"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
-                    android:fontFamily="@font/poppinsitalic"
-                    android:text="@{item.getRentMode()}"
-                    android:textColor="@color/material_color_blue_grey_300"
-                    android:textSize="12sp" />
+                    android:layout_gravity="center"
+                    android:padding="8dp"
+                    android:tint="@color/material_color_blue_grey_200"
+                    app:srcCompat="@drawable/ic_flag_jam" />
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/iv_route"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="8dp"
+                    android:tint="@color/material_color_blue_grey_200"
+                    app:srcCompat="@drawable/ic_gps_jam" />
 
             </LinearLayout>
 
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_poi_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center"
+                android:fontFamily="@font/poppinsbold"
+                android:text="Lugares de Interes"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="12sp" />
+
 
             <LinearLayout
-                android:id="@+id/ll_poi_content"
+                android:id="@+id/fl_poi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginStart="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start|center"
-                        android:fontFamily="@font/poppinsbold"
-                        android:text="Puntos de Interes"
-                        android:textSize="12sp"
-                        android:textColor="@color/material_color_blue_grey_500" />
-
-                    <com.rey.material.widget.CheckBox
-                        android:id="@+id/cb_show_all"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Mostrar todos"
-                        android:layout_gravity="end|center"
-                        android:gravity="center"
-                        android:textSize="12sp"
-                        android:textColor="@color/material_color_blue_grey_500"/>
-
-                </FrameLayout>
+                android:orientation="vertical">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_poi"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <com.rey.material.widget.CheckBox
+                    android:id="@+id/cb_show_all"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_gravity="end|center"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginStart="5dp"
+                    android:gravity="center"
+                    android:text="Mostrar todos"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="12sp" />
+
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/cv_btn_view"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/ll_route_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
-            app:cardCornerRadius="5dp"
-            app:cardElevation="8dp">
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
+            android:animateLayoutChanges="true"
+            android:visibility="gone">
 
-            <com.github.siyamed.shapeimageview.RoundedImageView
-                android:id="@+id/siv_rent_image"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_gravity="start|top"
-                android:scaleType="centerCrop"
-                app:setRoundedImage="@{item.getImagePath()}"
-                app:siBorderAlpha="0" />
-
-        </android.support.v7.widget.CardView>
-
-        <FrameLayout
-            android:id="@+id/fl_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|top"
-            android:background="@drawable/shape_btn_rounded_white">
-
-            <android.support.v7.widget.AppCompatImageView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:tint="@color/material_color_blue_grey_500"
-                app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
+                android:layout_gravity="start|center"
+                android:fontFamily="@font/poppinsbold"
+                android:text="Ruta"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="12sp" />
 
-        </FrameLayout>
+            <RelativeLayout
+                android:id="@+id/rl_from"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-    </FrameLayout>
+                <TextView
+                    android:id="@+id/tv_from"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/poppinsregular"
+                    android:text="Desde:"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_rb_my_rent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsregular"
+                    android:layout_margin="3dp"
+                    android:layout_toRightOf="@+id/tv_from"
+                    android:background="@drawable/shape_filter_small_ship_unselected"
+                    android:text="La Renta" />
+
+                <TextView
+                    android:id="@+id/tv_rb_my_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsregular"
+                    android:layout_margin="3dp"
+                    android:layout_toRightOf="@+id/tv_rb_my_rent"
+                    android:background="@drawable/shape_filter_small_ship_unselected"
+                    android:text="Mi Ubicacion"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_to"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tv_to"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="10dp"
+                    android:fontFamily="@font/poppinsregular"
+                    android:text="Hasta:"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_rb_my_rent_to"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsregular"
+                    android:includeFontPadding="false"
+                    android:layout_margin="3dp"
+                    android:layout_toRightOf="@+id/tv_to"
+                    android:background="@drawable/shape_filter_small_ship_unselected"
+                    android:text="La Renta" />
+
+                <TextView
+                    android:id="@+id/tv_rb_poi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsregular"
+                    android:includeFontPadding="false"
+                    android:layout_margin="3dp"
+                    android:layout_toRightOf="@+id/tv_rb_my_rent_to"
+                    android:background="@drawable/shape_filter_small_ship_unselected"
+                    android:text="Lugar de Interes" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_route_validation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppinsregular"
+                android:layout_marginTop="5dp"
+                android:textAlignment="center"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_route_btn_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            android:background="@color/material_color_blue_grey_50"
+            android:animateLayoutChanges="true">
+
+            <TextView
+                android:id="@+id/tv_btn_play_route"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/colorPrimary"
+                android:padding="10dp"
+                android:gravity="center"
+                android:text="Hallar ruta"/>
+
+            <View
+                android:id="@+id/line"
+                android:layout_width="0.5dp"
+                android:layout_height="match_parent"
+                android:background="@color/Black_10"/>
+
+            <TextView
+                android:id="@+id/tv_btn_remove_route"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/material_color_red_500"
+                android:gravity="center"
+                android:text="Borrar ruta"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 
 </layout>

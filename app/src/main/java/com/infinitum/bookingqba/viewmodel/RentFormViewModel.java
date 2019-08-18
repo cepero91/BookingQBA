@@ -23,6 +23,7 @@ import com.infinitum.bookingqba.model.repository.municipality.MunicipalityReposi
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.util.Constants;
+import com.infinitum.bookingqba.util.geo.POIEntitySort;
 import com.infinitum.bookingqba.view.adapters.items.addrent.MyRentItem;
 import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
 import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
@@ -43,7 +44,9 @@ import org.mapsforge.poi.storage.UnknownPoiCategoryException;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -169,6 +172,8 @@ public class RentFormViewModel extends ViewModel {
                 } else if (id2 != 396) {
                     poi.setCategory(id2);
                 }
+            }else if(poiCategories.length == 1){
+                poi.setCategory(poiCategories[0].getID());
             }
             poiList.add(poi);
         }
@@ -343,7 +348,14 @@ public class RentFormViewModel extends ViewModel {
 
     public Single<Map<String, Object>> poiAndReferenceZone(String token, String filePoi, double mLatitude, double mLongitude) {
         return Single.just(getPointOfInterestByLocation(filePoi, mLatitude, mLongitude))
-                .subscribeOn(Schedulers.io())
+                .map(pointOfInterests -> {
+                    List<PointOfInterest> result = new ArrayList<>(pointOfInterests);
+                    Collections.sort(result, new POIEntitySort(new LatLong(mLatitude, mLongitude)));
+                    if (result.size() > 30) {
+                        return result.subList(0, 30);
+                    }
+                    return result;
+                })
                 .flatMap(pointOfInterests -> {
                     String referenceZone = getReferenceNameByPoiCategory(pointOfInterests);
                     mPersistenceManager.close();
@@ -354,6 +366,7 @@ public class RentFormViewModel extends ViewModel {
                         transformPointOfInterestToPOI((Collection<PointOfInterest>) map.get("poi"));
                     return map;
                 })
+                .subscribeOn(Schedulers.io())
                 .onErrorReturn(throwable -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("error", throwable);
@@ -372,7 +385,7 @@ public class RentFormViewModel extends ViewModel {
                 e.printStackTrace();
             }
         }
-        return mPersistenceManager.findNearPosition(new LatLong(mLatitude, mLongitude), 1000, categoryFilter, null, 50);
+        return mPersistenceManager.findNearPosition(new LatLong(mLatitude, mLongitude), 1000, categoryFilter, null, Integer.MAX_VALUE);
     }
 
     private String getReferenceNameByPoiCategory(Collection<PointOfInterest> pointOfInterests) {

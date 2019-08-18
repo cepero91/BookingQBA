@@ -1,91 +1,80 @@
 package com.infinitum.bookingqba.view.map;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.CompoundButton;
-import android.widget.Toast;
+import android.widget.TextView;
 
+import com.github.siyamed.shapeimageview.RoundedImageView;
+import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
+import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
+import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
+import com.graphhopper.GHRequest;
+import com.graphhopper.GHResponse;
+import com.graphhopper.PathWrapper;
+import com.graphhopper.util.Parameters;
+import com.graphhopper.util.PointList;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.CafeBarMapMarkerBinding;
 import com.infinitum.bookingqba.databinding.FragmentMapBinding;
+import com.infinitum.bookingqba.databinding.NearMapLayoutBinding;
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.view.adapters.MapPoiAdapter;
+import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.map.PoiItem;
 import com.infinitum.bookingqba.view.base.BaseMapFragment;
 import com.infinitum.bookingqba.view.widgets.CenterSmoothScroller;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
-import com.wshunli.assets.CopyAssets;
-import com.wshunli.assets.CopyCreator;
-import com.wshunli.assets.CopyListener;
+import com.squareup.picasso.Picasso;
+import com.willy.ratingbar.BaseRatingBar;
 
-import org.oscim.backend.CanvasAdapter;
+import org.mapsforge.core.model.LatLong;
 import org.oscim.backend.canvas.Bitmap;
-import org.oscim.backend.canvas.Color;
 import org.oscim.core.GeoPoint;
 import org.oscim.core.MapPosition;
-import org.oscim.layers.LocationLayer;
-import org.oscim.layers.marker.ClusterMarkerRenderer;
 import org.oscim.layers.marker.ItemizedLayer;
 import org.oscim.layers.marker.MarkerItem;
-import org.oscim.layers.marker.MarkerLayer;
-import org.oscim.layers.marker.MarkerRenderer;
-import org.oscim.layers.marker.MarkerRendererFactory;
 import org.oscim.layers.marker.MarkerSymbol;
-import org.oscim.layers.tile.MapTile;
-import org.oscim.layers.tile.buildings.BuildingLayer;
-import org.oscim.layers.tile.vector.VectorTileLayer;
-import org.oscim.layers.tile.vector.labeling.LabelLayer;
-import org.oscim.renderer.GLViewport;
-import org.oscim.renderer.MapRenderer;
-import org.oscim.scalebar.DefaultMapScaleBar;
-import org.oscim.scalebar.MapScaleBar;
-import org.oscim.scalebar.MapScaleBarLayer;
-import org.oscim.theme.VtmThemes;
-import org.oscim.tiling.source.mapfile.MapFileTileSource;
+import org.oscim.layers.vector.PathLayer;
+import org.oscim.layers.vector.geometries.Style;
 import org.oscim.utils.animation.Easing;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
 import io.reactivex.Completable;
-import io.reactivex.CompletableSource;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 
-import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
-import static com.infinitum.bookingqba.util.Constants.USER_GPS;
+import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
+import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
 import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
 
 
-public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItemGestureListener<MarkerItem>, View.OnClickListener {
+public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItemGestureListener<MarkerItem>
+        , View.OnClickListener, MapPoiAdapter.MapPoiClick {
 
     //Location variables
     private Location lastKnowLocation;
@@ -108,6 +97,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     //Databinding
     private FragmentMapBinding mapBinding;
     private CafeBarMapMarkerBinding cafeBarMapMarkerBinding;
+    private NearMapLayoutBinding nearMapLayoutBinding;
 
     //Marker
     private MarkerSymbol rentMarkerPressed, rentMarkerUnpressed, userMarkerPressed, userMarkerUnpressed, poiMarkerPressed, poiMarkerUnpressed;
@@ -116,14 +106,21 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     private int currentMarkerIndex = -1;
     private int userMarkerIndex = -1;
 
+    public static final String USER_INFO = "user_info";
+    public static final String RENT_INFO = "rent_info";
     private static final String GEORENTS_PARAM = "param1";
     private static final String IS_FROM_DETAIL_PARAM = "param2";
     private ArrayList<GeoRent> geoRentArrayList;
     private boolean isFromDetail;
     private boolean isRentPoiOpen;
     private MapPoiAdapter mapPoiAdapter;
-
-
+    private LatLong from;
+    private PoiItem lastPoiSelected;
+    private boolean isRouteOpen;
+    private PathLayer pathLayer;
+    private LatLong to;
+    private RendererRecyclerViewAdapter nearAdapter;
+    private boolean isRouteActive;
 
 
     public MapFragment() {
@@ -198,6 +195,11 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     }
 
     @Override
+    protected void publishProgress(String msgProgress) {
+        mapBinding.tvProgress.setText(msgProgress);
+    }
+
+    @Override
     public void onDestroyView() {
         mMarkerLayer.removeAllItems();
         mapView.onDestroy();
@@ -218,39 +220,112 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
 
     private void setupMarkerView() {
         isRentPoiOpen = false;
+        isRouteOpen = false;
         cafeBarMapMarkerBinding = DataBindingUtil.inflate(getActivity().getLayoutInflater(), R.layout.cafe_bar_map_marker, mapBinding.flContentMap, false);
-        cafeBarMapMarkerBinding.cvBtnView.setOnClickListener(v -> {
-            if (fragmentMapInteraction != null) {
-                if (currentMarkerIndex != -1 && geoRentArrayList != null && geoRentArrayList.size() > 0)
-                    fragmentMapInteraction.onMapInteraction(geoRentArrayList.get(currentMarkerIndex));
-            }
-        });
-        cafeBarMapMarkerBinding.flArrow.setOnClickListener(v -> {
-            if (isRentPoiOpen) {
-                isRentPoiOpen = false;
-                cafeBarMapMarkerBinding.llPoiContent.setVisibility(View.GONE);
-            } else {
-                isRentPoiOpen = true;
-                cafeBarMapMarkerBinding.llPoiContent.setVisibility(View.VISIBLE);
-            }
-        });
+        cafeBarMapMarkerBinding.cvBtnView.setOnClickListener(this);
+        cafeBarMapMarkerBinding.ivPointOfInterest.setOnClickListener(this);
         cafeBarMapMarkerBinding.cbShowAll.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(!isChecked){
+            if (!isChecked) {
                 removeAllPoiMarker();
                 mapPoiAdapter.hideAll();
-            }else{
+            } else {
                 mapPoiAdapter.showAll();
                 addAfterRemoveAllPoiMarker();
             }
         });
+        cafeBarMapMarkerBinding.ivRoute.setOnClickListener(this);
+        cafeBarMapMarkerBinding.tvRbMyRent.setOnClickListener(this);
+        cafeBarMapMarkerBinding.tvRbMyLocation.setOnClickListener(this);
+        cafeBarMapMarkerBinding.tvRbMyRentTo.setOnClickListener(this);
+        cafeBarMapMarkerBinding.tvRbPoi.setOnClickListener(this);
+        cafeBarMapMarkerBinding.tvBtnPlayRoute.setOnClickListener(this);
+        cafeBarMapMarkerBinding.tvBtnRemoveRoute.setOnClickListener(this);
+        mapBinding.ivNearRent.setOnClickListener(this);
+    }
+
+    private void showOrHideRouteContent(boolean b, int gone, String s) {
+        isRouteOpen = b;
+        cafeBarMapMarkerBinding.llRouteContent.setVisibility(gone);
+        cafeBarMapMarkerBinding.ivRoute.setImageTintList(ColorStateList.valueOf(Color.parseColor(s)));
+    }
+
+    private void showOrHidePoiContent(boolean b, int gone, String s) {
+        isRentPoiOpen = b;
+        cafeBarMapMarkerBinding.llPoiContent.setVisibility(gone);
+        cafeBarMapMarkerBinding.ivPointOfInterest.setImageTintList(ColorStateList.valueOf(Color.parseColor(s)));
+    }
+
+    private void findPath(LatLong from, LatLong to) {
+        disposable = Single.just(map.layers().contains(pathLayer))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(aBoolean -> {
+                    if (aBoolean) {
+                        map.layers().remove(pathLayer);
+                    }
+                    return Single.just(calcPath(from, to));
+                })
+                .map(pathWrapper -> {
+                    if (!pathWrapper.hasErrors()) {
+                        createDistanceMessage(pathWrapper);
+                        return createPathLayer(pathWrapper);
+                    } else {
+                        return null;
+                    }
+                })
+                .subscribe(pathLayer -> {
+                    if (pathLayer != null) {
+                        isRouteActive = true;
+                        map.layers().add(pathLayer);
+                        map.render();
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void createDistanceMessage(PathWrapper pathWrapper) {
+        String routeMsg = String.format(getString(R.string.distance_msg), (int) (pathWrapper.getDistance() / 100) / 10f, getMinFromLong(pathWrapper.getTime()));
+        cafeBarMapMarkerBinding.tvRouteValidation.setTextColor(getResources().getColor(R.color.material_color_blue_grey_500));
+        cafeBarMapMarkerBinding.tvRouteValidation.setText(routeMsg);
+        cafeBarMapMarkerBinding.tvRouteValidation.setVisibility(View.VISIBLE);
+        cafeBarMapMarkerBinding.tvBtnRemoveRoute.setVisibility(View.VISIBLE);
+    }
+
+    private String getMinFromLong(long time) {
+        return String.format(getString(R.string.min_msg), TimeUnit.MILLISECONDS.toMinutes(time));
+    }
+
+    private PathWrapper calcPath(LatLong from, LatLong to) {
+        GHRequest req = new GHRequest(from.latitude, from.longitude, to.latitude, to.longitude).
+                setAlgorithm(Parameters.Algorithms.DIJKSTRA_BI);
+        req.getHints().
+                put(Parameters.Routing.INSTRUCTIONS, "false");
+        GHResponse resp = graphHopper.route(req);
+        return resp.getBest();
+    }
+
+    private PathLayer createPathLayer(PathWrapper response) {
+        Style style = Style.builder()
+                .fixed(true)
+                .generalization(Style.GENERALIZATION_SMALL)
+                .strokeColor(0x9900cc33)
+                .strokeWidth(4 * getResources().getDisplayMetrics().density)
+                .build();
+        pathLayer = new PathLayer(map, style);
+        List<GeoPoint> geoPoints = new ArrayList<>();
+        PointList pointList = response.getPoints();
+        for (int i = 0; i < pointList.getSize(); i++)
+            geoPoints.add(new GeoPoint(pointList.getLatitude(i), pointList.getLongitude(i)));
+        pathLayer.setPoints(geoPoints);
+        return pathLayer;
     }
 
     private void showAllPoiMarker() {
         GeoRent geoRent = geoRentArrayList.get(currentMarkerIndex);
-        if(geoRent!=null){
+        if (geoRent != null) {
             MarkerItem poiMarker;
-            for(PoiItem poiItem:geoRent.getPoiItems()){
-                poiMarker = new MarkerItem(poiItem.getId(), "poi", poiItem.getName(), new GeoPoint(poiItem.getLatitude(),poiItem.getLongitude()));
+            for (PoiItem poiItem : geoRent.getPoiItems()) {
+                poiMarker = new MarkerItem(poiItem.getId(), "poi", poiItem.getName(), new GeoPoint(poiItem.getLatitude(), poiItem.getLongitude()));
                 poiMarker.setMarker(poiMarkerUnpressed);
                 mMarkerLayer.addItem(poiMarker);
             }
@@ -303,14 +378,15 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     @Override
     protected void showViews() {
         mapBinding.setIsLoading(false);
-        mapBinding.progressPvLinear.stop();
+        mapBinding.progressPvCircularInout.stop();
         if (isFromDetail && geoRentArrayList != null) {
             MapPosition mapPosition = new MapPosition();
             mapPosition.setPosition(geoRentArrayList.get(0).getGeoPoint());
             mapPosition.setZoomLevel(15);
             map.setMapPosition(mapPosition);
-            mMarkerLayer.getItemList().get(0).setMarker(rentMarkerUnpressed);
-            showMarkerView(0);
+            mMarkerLayer.getItemList().get(0).setMarker(rentMarkerPressed);
+            currentMarkerIndex = 0;
+            showMarkerView();
         } else {
             // Position Habana
             map.setMapPosition(23.1165, -82.3882, 2 << 12);
@@ -344,39 +420,23 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     }
 
     private void rentMarkerClick(int index, MarkerItem item) {
-        if (userMarkerIndex != -1)
-            mMarkerLayer.getItemList().get(userMarkerIndex).setMarker(userMarkerUnpressed);
         if (item.getMarker() == null) {
-            if (lastMarkerFocus != -1) {
-                mMarkerLayer.getItemList().get(lastMarkerFocus).setMarker(null);
+            if (currentMarkerIndex != -1) {
+                mMarkerLayer.getItemList().get(currentMarkerIndex).setMarker(null);
             }
-            lastMarkerFocus = index;
+            currentMarkerIndex = index;
             item.setMarker(rentMarkerPressed);
-            map.animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 16), Easing.Type.SINE_IN);
-            showMarkerView(index);
+            map.animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 15), Easing.Type.SINE_IN);
+            showMarkerView();
         } else {
             item.setMarker(null);
-            lastMarkerFocus = -1;
-//            map.animator().animateTo(500, getMapPositionWithZoom(item.getPoint(), 15), Easing.Type.SINE_IN);
+            currentMarkerIndex = -1;
             hideMarkerView();
         }
     }
 
     private void userMarkerClick(MarkerItem item) {
-        if (lastMarkerFocus != -1) {
-            mMarkerLayer.getItemList().get(lastMarkerFocus).setMarker(null);
-            hideMarkerView();
-            lastMarkerFocus = -1;
-        }
-        if (item.getMarker() == userMarkerUnpressed) {
-            item.setMarker(userMarkerPressed);
-            map.animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 15), Easing.Type.SINE_IN);
-            //do something to show a view
-        } else {
-            item.setMarker(userMarkerUnpressed);
-//            map.animator().animateTo(500, getMapPositionWithZoom(item.getPoint(), 15), Easing.Type.SINE_IN);
-            //do something to hide a view
-        }
+        map.animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 15), Easing.Type.SINE_IN);
     }
 
     private MapPosition getMapPositionWithZoom(GeoPoint geoPoint, int zoom) {
@@ -392,87 +452,95 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     }
 
 
-    private void showMarkerView(int markerIndex) {
-        mapBinding.vOverlap.setBackgroundResource(R.color.Black_20);
-        if (geoRentArrayList != null && geoRentArrayList.size() > 0) {
-            GeoRent geoRent = geoRentArrayList.get(markerIndex);
-            cafeBarMapMarkerBinding.setItem(geoRent);
-            currentMarkerIndex = markerIndex;
-            if (mapBinding.flMarker.getChildCount() > 0) {
-                mapBinding.flMarker.removeAllViews();
-                mapBinding.flMarker.addView(cafeBarMapMarkerBinding.getRoot());
-                cafeBarMapMarkerBinding.flRentContent.setVisibility(View.VISIBLE);
-            } else {
-                mapBinding.flMarker.addView(cafeBarMapMarkerBinding.getRoot());
-                cafeBarMapMarkerBinding.flRentContent.setVisibility(View.VISIBLE);
-            }
-            mapBinding.ivLocation.hide();
-
-            mapPoiAdapter = new MapPoiAdapter(geoRent.getPoiItems(), new MapPoiAdapter.MapPoiClick() {
-                @Override
-                public void onPoiSelected(PoiItem item, boolean selected) {
-                    if (selected) {
-                        GeoPoint geoPoint = new GeoPoint(item.getLatitude(), item.getLongitude());
-                        map.animator().animateTo(1000, getMapPositionWithZoom(geoPoint, 15), Easing.Type.SINE_IN);
-                        MarkerItem poiMarker = new MarkerItem(item.getId(), "poi", item.getName(), geoPoint);
-                        poiMarker.setMarker(poiMarkerUnpressed);
-                        mMarkerLayer.addItem(poiMarker);
-                        map.render();
-                    } else {
-                        int pos = findPoiMarker(item.getId());
-                        if (pos != -1) {
-                            mMarkerLayer.removeItem(pos);
-                            map.render();
-                        }
-                    }
-                }
-            });
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-            cafeBarMapMarkerBinding.rvPoi.setLayoutManager(linearLayoutManager);
-            cafeBarMapMarkerBinding.rvPoi.setAdapter(mapPoiAdapter);
-        }
+    private void showMarkerView() {
+        GeoRent geoRent = geoRentArrayList.get(currentMarkerIndex);
+        cafeBarMapMarkerBinding.setItem(geoRent);
+        mapBinding.flMarker.addView(cafeBarMapMarkerBinding.getRoot());
+        cafeBarMapMarkerBinding.flRentContent.setVisibility(View.VISIBLE);
+        mapPoiAdapter = new MapPoiAdapter(geoRent.getPoiItems(), this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        cafeBarMapMarkerBinding.rvPoi.setLayoutManager(linearLayoutManager);
+        cafeBarMapMarkerBinding.rvPoi.setAdapter(mapPoiAdapter);
+        mapBinding.llContentFloating.setVisibility(View.GONE);
     }
 
     private void hideMarkerView() {
-        mapBinding.vOverlap.setBackgroundResource(R.color.White_0);
-        cafeBarMapMarkerBinding.flRentContent.setVisibility(View.GONE);
+        isRentPoiOpen = false;
+        isRouteOpen = false;
+        isRouteActive = false;
+        cafeBarMapMarkerBinding.ivPointOfInterest.setImageTintList(ColorStateList.valueOf(Color.parseColor("#B0BEC5")));
+        cafeBarMapMarkerBinding.ivRoute.setImageTintList(ColorStateList.valueOf(Color.parseColor("#B0BEC5")));
+        cafeBarMapMarkerBinding.cbShowAll.setChecked(false);
+        resetRouteParams();
+        cafeBarMapMarkerBinding.llRouteContent.setVisibility(View.GONE);
         cafeBarMapMarkerBinding.llPoiContent.setVisibility(View.GONE);
+        cafeBarMapMarkerBinding.flRentContent.setVisibility(View.GONE);
         mapBinding.flMarker.removeAllViews();
-        mapBinding.ivLocation.show();
         currentMarkerIndex = -1;
         removeAllPoiMarker();
+        removePathLayer();
+        mapBinding.llContentFloating.setVisibility(View.GONE);
+    }
+
+    private void resetRouteParams() {
+        cafeBarMapMarkerBinding.tvRouteValidation.setText("");
+        cafeBarMapMarkerBinding.tvRouteValidation.setVisibility(View.GONE);
+        cafeBarMapMarkerBinding.tvBtnRemoveRoute.setVisibility(View.GONE);
+        cafeBarMapMarkerBinding.llRouteBtnBar.setVisibility(View.GONE);
+        shipUnselected(cafeBarMapMarkerBinding.tvRbMyRent);
+        shipUnselected(cafeBarMapMarkerBinding.tvRbMyLocation);
+        shipUnselected(cafeBarMapMarkerBinding.tvRbMyRentTo);
+        shipUnselected(cafeBarMapMarkerBinding.tvRbPoi);
+        if (currentLocation == null)
+            cafeBarMapMarkerBinding.tvRbMyLocation.setVisibility(View.GONE);
+        cafeBarMapMarkerBinding.rlTo.setVisibility(View.GONE);
     }
 
     private void removeAllPoiMarker() {
-        disposable = Single.just(toRemovePoiMarker())
+        disposable = Single.just(prepareToRemovePOIMarker())
                 .subscribeOn(Schedulers.io())
-                .flatMapCompletable(markerItems-> Completable.fromAction(()->removePoiMarker(markerItems)))
+                .flatMapCompletable(markerItems -> Completable.fromAction(() -> removePoiMarker(markerItems)).subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(()->map.render(), Timber::e);
+                .subscribe(() -> map.render(), Timber::e);
         compositeDisposable.add(disposable);
     }
 
     private void addAfterRemoveAllPoiMarker() {
-        disposable = Single.just(toRemovePoiMarker())
+        disposable = Single.just(prepareToRemovePOIMarker())
                 .subscribeOn(Schedulers.io())
-                .flatMapCompletable(markerItems-> Completable.fromAction(()->removePoiMarker(markerItems)))
+                .flatMapCompletable(markerItems -> Completable.fromAction(() -> removePoiMarker(markerItems)))
                 .andThen(Completable.fromAction(this::showAllPoiMarker))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(()->map.render(), Timber::e);
+                .subscribe(() -> map.render(), Timber::e);
         compositeDisposable.add(disposable);
     }
 
     private void removePoiMarker(List<MarkerItem> markerItems) {
-        for(MarkerItem markerItem: markerItems){
-            mMarkerLayer.removeItem(markerItem);
+        if (markerItems.size() > 0) {
+            for (MarkerItem markerItem : markerItems) {
+                mMarkerLayer.removeItem(markerItem);
+            }
         }
     }
 
-    private List<MarkerItem> toRemovePoiMarker() {
+    private void removePathLayer() {
+        disposable = Single.just(map.layers().contains(pathLayer))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aBoolean -> {
+                    if (aBoolean) {
+                        map.layers().remove(pathLayer);
+                        map.render();
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private List<MarkerItem> prepareToRemovePOIMarker() {
         List<MarkerItem> markerItemList = new ArrayList<>();
         for (MarkerItem markerItem : mMarkerLayer.getItemList()) {
             if (markerItem.getTitle().equals("poi")) {
-              markerItemList.add(markerItem);
+                markerItemList.add(markerItem);
             }
         }
         return markerItemList;
@@ -480,6 +548,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
 
     @Override
     public void onClick(View v) {
+        GeoRent geoRent;
         switch (v.getId()) {
             case R.id.iv_location:
                 if (lastKnowLocation != null) {
@@ -487,34 +556,151 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
                 } else {
                     fragmentMapInteraction.getLastLocation();
                 }
+                break;
+            case R.id.iv_route:
+                showOrHidePoiContent(false, View.GONE, "#B0BEC5");
+                if (isRouteOpen) {
+                    cafeBarMapMarkerBinding.tvRbMyLocation.setVisibility(View.GONE);
+                    cafeBarMapMarkerBinding.llRouteBtnBar.setVisibility(View.GONE);
+                    showOrHideRouteContent(false, View.GONE, "#B0BEC5");
+                } else {
+                    if (currentLocation != null) {
+                        cafeBarMapMarkerBinding.tvRbMyLocation.setVisibility(View.VISIBLE);
+                    }
+                    if (isRouteActive) {
+                        cafeBarMapMarkerBinding.llRouteBtnBar.setVisibility(View.VISIBLE);
+                    }
+                    showOrHideRouteContent(true, View.VISIBLE, "#26A69A");
+                }
+                break;
+            case R.id.tv_rb_my_rent:
+                geoRent = cafeBarMapMarkerBinding.getItem();
+                from = new LatLong(geoRent.getGeoPoint().getLatitude(), geoRent.getGeoPoint().getLongitude());
+                shipSelected(cafeBarMapMarkerBinding.tvRbMyRent);
+                shipUnselected(cafeBarMapMarkerBinding.tvRbMyLocation);
+                cafeBarMapMarkerBinding.tvRbMyRentTo.setVisibility(View.GONE);
+                cafeBarMapMarkerBinding.rlTo.setVisibility(View.VISIBLE);
+                break;
+            case R.id.tv_rb_my_location:
+                from = new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude());
+                shipSelected(cafeBarMapMarkerBinding.tvRbMyLocation);
+                shipUnselected(cafeBarMapMarkerBinding.tvRbMyRent);
+                cafeBarMapMarkerBinding.tvRbMyRentTo.setVisibility(View.VISIBLE);
+                cafeBarMapMarkerBinding.rlTo.setVisibility(View.VISIBLE);
+                break;
+            case R.id.tv_rb_my_rent_to:
+                geoRent = cafeBarMapMarkerBinding.getItem();
+                to = new LatLong(geoRent.getGeoPoint().getLatitude(), geoRent.getGeoPoint().getLongitude());
+                shipSelected(cafeBarMapMarkerBinding.tvRbMyRentTo);
+                shipUnselected(cafeBarMapMarkerBinding.tvRbPoi);
+                cafeBarMapMarkerBinding.llRouteBtnBar.setVisibility(View.VISIBLE);
+                break;
+            case R.id.tv_rb_poi:
+                if (mapPoiAdapter.isOnlyOneSelected()) {
+                    PoiItem poiItem = mapPoiAdapter.getOnlyOneSelected();
+                    to = new LatLong(poiItem.getLatitude(), poiItem.getLongitude());
+                    shipSelected(cafeBarMapMarkerBinding.tvRbPoi);
+                    shipUnselected(cafeBarMapMarkerBinding.tvRbMyRentTo);
+                    cafeBarMapMarkerBinding.llRouteBtnBar.setVisibility(View.VISIBLE);
+                } else {
+                    cafeBarMapMarkerBinding.tvRouteValidation.setVisibility(View.VISIBLE);
+                    cafeBarMapMarkerBinding.tvRouteValidation.setTextColor(getResources().getColor(R.color.material_color_red_500));
+                    cafeBarMapMarkerBinding.tvRouteValidation.setText("Error: Debe estar seleccionado solo un lugar de interes");
+                }
+                break;
+            case R.id.tv_btn_play_route:
+                if (from != null && to != null) {
+                    findPath(from, to);
+                } else {
+                    cafeBarMapMarkerBinding.tvRouteValidation.setText("Imposible trazar ruta");
+                }
+                break;
+            case R.id.tv_btn_remove_route:
+                removePathLayer();
+                resetRouteParams();
+                break;
+            case R.id.iv_near_rent:
+                searchRentNearLocation();
+                break;
+            case R.id.cv_btn_view:
+                if (fragmentMapInteraction != null) {
+                    if (currentMarkerIndex != -1 && geoRentArrayList != null && geoRentArrayList.size() > 0)
+                        fragmentMapInteraction.onMapInteraction(geoRentArrayList.get(currentMarkerIndex));
+                }
+                break;
+            case R.id.iv_point_of_interest:
+                showOrHideRouteContent(false, View.GONE, "#B0BEC5");
+                if (isRentPoiOpen) {
+                    showOrHidePoiContent(false, View.GONE, "#B0BEC5");
+                } else {
+                    showOrHidePoiContent(true, View.VISIBLE, "#26A69A");
+                }
+                break;
         }
+    }
+
+    private void searchRentNearLocation() {
+        mapBinding.llContentFloating.setVisibility(View.GONE);
+        if (mapBinding.flNear.getChildCount() > 0) {
+            mapBinding.flNear.removeAllViews();
+        }
+        nearMapLayoutBinding = DataBindingUtil.inflate(getActivity().getLayoutInflater(), R.layout.near_map_layout, mapBinding.flNear, false);
+        mapBinding.flNear.addView(nearMapLayoutBinding.getRoot());
+        nearMapLayoutBinding.setLoading(true);
+        nearMapLayoutBinding.tvProgress.setText("Buscando...");
+        nearAdapter = new RendererRecyclerViewAdapter();
+        nearAdapter.registerRenderer(viewBinderNearRent(R.layout.recycler_rent_near_item));
+
+        LatLong latLong = new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude());
+        disposable = rentViewModel.getGeoRentNearLatLon(latLong, 3000)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listResource -> {
+                    showRentNear(listResource);
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void shipSelected(TextView textView) {
+        textView.setBackgroundResource(R.drawable.shape_filter_small_ship_selected);
+        textView.setTextColor(getResources().getColor(R.color.White_100));
+    }
+
+    private void shipUnselected(TextView textView) {
+        textView.setBackgroundResource(R.drawable.shape_filter_small_ship_unselected);
+        textView.setTextColor(getResources().getColor(R.color.material_color_grey_500));
     }
 
     public void updateCurrentLocation(Location location) {
         currentLocation = location;
         lastKnowLocation = currentLocation;
+        disposable = Single.just(findPosUserMarker())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(integer -> {
+                    if (integer != -1) {
+                        mMarkerLayer.removeItem(integer);
+                    }
+                    addUserMarker(location);
+                    mapBinding.ivNearRent.show();
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private void addUserMarker(Location location) {
         MarkerItem userMarker = new MarkerItem("user", "", new GeoPoint(location.getLatitude(), location.getLongitude()));
         userMarker.setMarker(userMarkerUnpressed);
         mMarkerLayer.addItem(userMarker);
         map.render();
-        if (userMarkerIndex == -1) {
-            userMarkerIndex = mMarkerLayer.getItemList().size() - 1;
-        } else {
-            mMarkerLayer.removeItem(userMarkerIndex);
-            userMarkerIndex = mMarkerLayer.getItemList().size() - 1;
-        }
     }
 
     private int findPosUserMarker() {
-        int pos = -1;
-        List<MarkerItem> markerItemList = mMarkerLayer.getItemList();
-        for (int i = 0; i < markerItemList.size(); i++) {
-            if (markerItemList.get(i).title.equals("user")) {
-                pos = i;
-                break;
+        for (int i = 0; i < mMarkerLayer.getItemList().size(); i++) {
+            if (mMarkerLayer.getItemList().get(i).title.equals("user")) {
+                return i;
             }
         }
-        return pos;
+        return -1;
     }
 
     private int findPoiMarker(String uuid) {
@@ -533,6 +719,62 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
         return mMarkerLayer != null && mMarkerLayer.getItemList() != null;
     }
 
+    //-------------------------------- ADAPTER CLICKS ----------------------
+
+    @Override
+    public void onPoiSelected(PoiItem poiItem, boolean selected) {
+        if (selected) {
+            GeoPoint geoPoint = new GeoPoint(poiItem.getLatitude(), poiItem.getLongitude());
+            map.animator().animateTo(1000, getMapPositionWithZoom(geoPoint, 15), Easing.Type.SINE_IN);
+            MarkerItem poiMarker = new MarkerItem(poiItem.getId(), "poi", poiItem.getName(), geoPoint);
+            poiMarker.setMarker(poiMarkerUnpressed);
+            mMarkerLayer.addItem(poiMarker);
+            map.render();
+        } else {
+            int pos = findPoiMarker(poiItem.getId());
+            if (pos != -1) {
+                mMarkerLayer.removeItem(pos);
+                map.render();
+            }
+        }
+    }
+
+
+    //--------------------------------------- NEAR RENT -----------------------
+
+    private void showRentNear(Resource<List<GeoRent>> listResource) {
+        if (listResource.data != null && listResource.data.size() > 0) {
+            nearAdapter.setItems(listResource.data);
+            nearMapLayoutBinding.setLoading(false);
+            nearMapLayoutBinding.rvNearRents.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+            nearMapLayoutBinding.rvNearRents.setAdapter(nearAdapter);
+        }
+    }
+
+    private ViewBinder<?> viewBinderNearRent(int layout) {
+        return new ViewBinder<>(
+                layout,
+                GeoRent.class,
+                (model, finder, payloads) -> finder
+                        .find(R.id.tv_title, (ViewProvider<TextView>) view -> view.setText(model.getName()))
+                        .find(R.id.tv_rating, (ViewProvider<TextView>) view -> view.setText(String.format("%.1f", model.getRating())))
+                        .find(R.id.tv_rating_count, (ViewProvider<TextView>) view -> view.setText(String.format("(%s voto/s)", model.getRating())))
+                        .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %.2f", model.getPrice())))
+                        .find(R.id.tv_distance, (ViewProvider<TextView>) view -> {
+                            double km = model.getDistanceBetween(currentLocation) / 1000;
+                            view.setText(String.format("%.1f Km", km));
+                        })
+                        .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view -> {
+                                    String path = "file:" + model.getImagePath();
+                                    Picasso.get().load(path)
+                                            .resize(THUMB_WIDTH, THUMB_HEIGHT)
+                                            .placeholder(R.drawable.placeholder)
+                                            .into(view);
+                                }
+                        ).setOnClickListener(R.id.cl_rent_home_content, (v -> {
+                        }))
+        );
+    }
 
     //--------------------------------------- INTERFACE -----------------------
     public interface OnFragmentMapInteraction {

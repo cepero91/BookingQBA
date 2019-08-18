@@ -1,10 +1,12 @@
 package com.infinitum.bookingqba.view.adapters.items.map;
 
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 
+import org.mapsforge.core.model.LatLong;
 import org.oscim.core.GeoPoint;
 
 import java.util.ArrayList;
@@ -79,6 +81,13 @@ public class GeoRent extends BaseItem {
 
     public void setPoiItems(List<PoiItem> poiItems) {
         this.poiItems = poiItems;
+    }
+
+    public double getDistanceBetween(Location userLocation){
+        Location rentLocation = new Location("");
+        rentLocation.setLatitude(geoPoint.getLatitude());
+        rentLocation.setLongitude(geoPoint.getLongitude());
+        return userLocation.distanceTo(rentLocation);
     }
 
 

@@ -44,6 +44,7 @@ import com.infinitum.bookingqba.model.repository.municipality.MunicipalityReposi
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.util.DateUtils;
+import com.infinitum.bookingqba.util.geo.POISort;
 import com.infinitum.bookingqba.view.adapters.items.addrent.MyRentItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
@@ -62,9 +63,11 @@ import com.infinitum.bookingqba.view.profile.uploaditem.RentFormObject;
 import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
 import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
 
+import org.mapsforge.core.model.LatLong;
 import org.oscim.core.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +136,15 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
     public Flowable<Resource<List<GeoRent>>> getGeoRent() {
-        return rentRepository.allRent().map(this::transformToGeoRent);
+        return rentRepository
+                .allRent()
+                .map(this::transformToGeoRent);
+    }
+
+    public Flowable<Resource<List<GeoRent>>> getGeoRentNearLatLon(LatLong latLong, double range){
+        return rentRepository
+                .rentNearLocation(latLong,range)
+                .map(this::transformToGeoRent);
     }
 
     // --------------------------- RENT WISHED ---------------------------------------------//
@@ -372,7 +383,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 geoRent.setRating(rentAndDependencies.getRating());
                 geoRent.setRatingCount(rentAndDependencies.getRatingCount());
                 geoRent.setRentMode(rentAndDependencies.getRentMode());
-                geoRent.setPoiItems(transformPoiEntityToPoiItem(rentAndDependencies.getRentPoiAndRelations()));
+                geoRent.setPoiItems(transformPoiEntityToPoiItem(new LatLong(rentAndDependencies.getLatitude(),rentAndDependencies.getLongitude()),rentAndDependencies.getRentPoiAndRelations()));
                 geoRentList.add(geoRent);
             }
             return Resource.success(geoRentList);
@@ -381,7 +392,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         }
     }
 
-    private List<PoiItem> transformPoiEntityToPoiItem(List<RentPoiAndRelation> rentPoiAndRelations) {
+    private List<PoiItem> transformPoiEntityToPoiItem(LatLong latLong,List<RentPoiAndRelation> rentPoiAndRelations) {
         List<PoiItem> poiItems = new ArrayList<>();
         PoiItem poiItem;
         for(RentPoiAndRelation rentPoiAndRelation: rentPoiAndRelations){

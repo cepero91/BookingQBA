@@ -14,13 +14,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.map.MapFragment">
+        tools:context=".view.map.MapFragment"
+        android:animateLayoutChanges="true">
 
         <FrameLayout
             android:id="@+id/fl_content_map"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
 
             <org.oscim.android.MapView
                 android:id="@+id/mapview"
@@ -31,8 +31,8 @@
             <View
                 android:id="@+id/v_overlap"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                />
+                android:layout_height="match_parent" />
+
 
             <FrameLayout
                 android:id="@+id/fl_marker"
@@ -41,33 +41,69 @@
                 android:layout_gravity="bottom"
                 android:animateLayoutChanges="true" />
 
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top">
-
-            <com.rey.material.widget.ProgressView
-                android:id="@+id/progress_pv_linear"
+            <FrameLayout
+                android:id="@+id/fl_near"
                 android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_gravity="center"
-                app:pv_autostart="true"
-                app:v_styleId="@array/pv_linear_query"/>
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:animateLayoutChanges="true" />
+
 
         </FrameLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/iv_location"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            app:visibleGone="@{safeUnbox(isLoading)}">
+
+            <com.rey.material.widget.ProgressView
+                android:id="@+id/progress_pv_circular_inout"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_gravity="center"
+                app:pv_autostart="true"
+                app:v_styleId="@array/pv_circular_in" />
+
+            <TextView
+                android:id="@+id/tv_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppinsregular" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_content_floating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/ic_crosshairs"
-            app:fabSize="normal"
-            app:backgroundTint="@color/colorPrimary"/>
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/iv_near_rent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_map_signs"
+                android:visibility="gone"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/iv_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_crosshairs" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 

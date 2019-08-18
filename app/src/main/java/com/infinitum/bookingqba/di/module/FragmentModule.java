@@ -8,13 +8,9 @@ import com.infinitum.bookingqba.view.listwish.ListWishFragment;
 import com.infinitum.bookingqba.view.map.MapFragment;
 import com.infinitum.bookingqba.view.profile.AuthFragment;
 import com.infinitum.bookingqba.view.profile.MapFormFragment;
-import com.infinitum.bookingqba.view.profile.FiveStepFragment;
-import com.infinitum.bookingqba.view.profile.FourStepFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.profile.MyRentsFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
-import com.infinitum.bookingqba.view.profile.SecondStepFragment;
-import com.infinitum.bookingqba.view.profile.ThreeStepFragment;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 
 
@@ -53,18 +49,6 @@ public interface FragmentModule {
 
     @ContributesAndroidInjector
     MapFormFragment bindMapFormFragment();
-
-    @ContributesAndroidInjector
-    SecondStepFragment bindSecondStepFragment();
-
-    @ContributesAndroidInjector
-    ThreeStepFragment bindThreeStepFragment();
-
-    @ContributesAndroidInjector
-    FourStepFragment bindFourStepFragment();
-
-    @ContributesAndroidInjector
-    FiveStepFragment bindFiveStepFragment();
 
     @ContributesAndroidInjector
     MyRentsFragment bindMyRentsFragment();

@@ -123,6 +123,7 @@ dependencies {
     implementation "org.mapsforge:vtm-android:$vtm_map:natives-arm64-v8a"
     implementation "org.mapsforge:vtm-android:$vtm_map:natives-x86"
     implementation "org.mapsforge:vtm-android:$vtm_map:natives-x86_64"
+    implementation 'org.mapsforge:vtm-jts:0.11.1'
     implementation "com.caverock:androidsvg:1.3"
 
     implementation "org.mapsforge:vtm-mvt:$vtm_map"
@@ -141,14 +142,12 @@ dependencies {
     implementation "org.mapsforge:sqlite-android:$mapforge:natives-x86"
     implementation "org.mapsforge:sqlite-android:$mapforge:natives-x86_64"
 
-    implementation(group: 'com.graphhopper', name: 'graphhopper-core', version: '0.13-SNAPSHOT') {
+    implementation(group: 'com.graphhopper', name: 'graphhopper-core', version: '0.10-SNAPSHOT') {
         exclude group: 'com.google.protobuf', module: 'protobuf-java'
         exclude group: 'org.openstreetmap.osmosis', module: 'osmosis-osm-binary'
         exclude group: 'org.apache.xmlgraphics', module: 'xmlgraphics-commons'
     }
 
-    //Copy Assets
-    implementation "com.wshunli.android:android-copy-assets:$android_copy_assets"
 
     //Timber
     implementation "com.jakewharton.timber:timber:$timber"
@@ -173,8 +172,6 @@ dependencies {
 
     //Timeago
     implementation "com.github.marlonlom:timeago:$timeago"
-
-    implementation 'com.flaviofaria:kenburnsview:1.0.7'
 
     implementation 'com.github.sujithkanna:smileyrating:1.6.8'
 
@@ -235,19 +232,12 @@ dependencies {
     //horizontal scrollview
     implementation "com.yarolegovich:discrete-scrollview:1.4.9"
 
-    implementation 'com.stepstone.stepper:material-stepper:4.3.1'
-
-    implementation 'com.github.HITGIF:TextFieldBoxes:1.4.5'
-
-    implementation 'com.yarolegovich:lovely-dialog:1.1.0'
     implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.1.0'
     implementation 'com.github.Shashank02051997:FancyAlertDialog-Android:0.1'
     implementation 'com.github.mirrajabi:search-dialog:1.2.3'
-    implementation 'com.libizo:customedittext:1.0.6'
     implementation 'com.github.iammert:ExpandableLayout:1.4.1'
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
 
-    implementation  'com.fxn769:pix:1.2.5'
     implementation 'com.asksira.android:bsimagepicker:1.2.2'
 
     //Reporte de Fallos
