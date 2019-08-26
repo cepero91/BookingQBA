@@ -8,6 +8,7 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
 
@@ -74,6 +75,12 @@ public class RentEntity {
 
     private double price;
 
+    @Nullable
+    private String checkin;
+
+    @Nullable
+    private String checkout;
+
     @NonNull
     private Date created;
 
@@ -96,7 +103,7 @@ public class RentEntity {
         this.id = id;
     }
 
-    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, @NonNull String description, @NonNull String email, String phoneNumber, String phoneHomeNumber, double latitude, double longitude, float rating, int ratingCount, int maxRooms, int capability, int maxBeds, int maxBath, double price, @NonNull Date created, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, int isWished) {
+    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, @NonNull String description, @NonNull String email, String phoneNumber, String phoneHomeNumber, double latitude, double longitude, float rating, int ratingCount, int maxRooms, int capability, int maxBeds, int maxBath, double price, String checkin, String checkout, @NonNull Date created, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, int isWished) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -113,6 +120,8 @@ public class RentEntity {
         this.maxBeds = maxBeds;
         this.maxBath = maxBath;
         this.price = price;
+        this.checkin = checkin;
+        this.checkout = checkout;
         this.created = created;
         this.rentMode = rentMode;
         this.rules = rules;
@@ -305,5 +314,23 @@ public class RentEntity {
 
     public void setRatingCount(int ratingCount) {
         this.ratingCount = ratingCount;
+    }
+
+    @Nullable
+    public String getCheckin() {
+        return checkin;
+    }
+
+    public void setCheckin(@Nullable String checkin) {
+        this.checkin = checkin;
+    }
+
+    @Nullable
+    public String getCheckout() {
+        return checkout;
+    }
+
+    public void setCheckout(@Nullable String checkout) {
+        this.checkout = checkout;
     }
 }

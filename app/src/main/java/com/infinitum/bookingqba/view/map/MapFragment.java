@@ -31,7 +31,6 @@ import com.infinitum.bookingqba.databinding.FragmentMapBinding;
 import com.infinitum.bookingqba.databinding.NearMapLayoutBinding;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.view.adapters.MapPoiAdapter;
-import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.map.PoiItem;
 import com.infinitum.bookingqba.view.base.BaseMapFragment;
@@ -39,7 +38,6 @@ import com.infinitum.bookingqba.view.widgets.CenterSmoothScroller;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.squareup.picasso.Picasso;
-import com.willy.ratingbar.BaseRatingBar;
 
 import org.mapsforge.core.model.LatLong;
 import org.oscim.backend.canvas.Bitmap;
@@ -247,6 +245,8 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
         isRouteOpen = b;
         cafeBarMapMarkerBinding.llRouteContent.setVisibility(gone);
         cafeBarMapMarkerBinding.ivRoute.setImageTintList(ColorStateList.valueOf(Color.parseColor(s)));
+        if (isRouteActive)
+            cafeBarMapMarkerBinding.llRouteBtnBar.setVisibility(gone);
     }
 
     private void showOrHidePoiContent(boolean b, int gone, String s) {
@@ -455,6 +455,9 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     private void showMarkerView() {
         GeoRent geoRent = geoRentArrayList.get(currentMarkerIndex);
         cafeBarMapMarkerBinding.setItem(geoRent);
+        if (mapBinding.flMarker.getChildCount() > 0) {
+            mapBinding.flMarker.removeAllViews();
+        }
         mapBinding.flMarker.addView(cafeBarMapMarkerBinding.getRoot());
         cafeBarMapMarkerBinding.flRentContent.setVisibility(View.VISIBLE);
         mapPoiAdapter = new MapPoiAdapter(geoRent.getPoiItems(), this);
@@ -467,7 +470,6 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     private void hideMarkerView() {
         isRentPoiOpen = false;
         isRouteOpen = false;
-        isRouteActive = false;
         cafeBarMapMarkerBinding.ivPointOfInterest.setImageTintList(ColorStateList.valueOf(Color.parseColor("#B0BEC5")));
         cafeBarMapMarkerBinding.ivRoute.setImageTintList(ColorStateList.valueOf(Color.parseColor("#B0BEC5")));
         cafeBarMapMarkerBinding.cbShowAll.setChecked(false);
@@ -479,10 +481,11 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
         currentMarkerIndex = -1;
         removeAllPoiMarker();
         removePathLayer();
-        mapBinding.llContentFloating.setVisibility(View.GONE);
+        mapBinding.llContentFloating.setVisibility(View.VISIBLE);
     }
 
     private void resetRouteParams() {
+        isRouteActive = false;
         cafeBarMapMarkerBinding.tvRouteValidation.setText("");
         cafeBarMapMarkerBinding.tvRouteValidation.setVisibility(View.GONE);
         cafeBarMapMarkerBinding.tvBtnRemoveRoute.setVisibility(View.GONE);
@@ -636,8 +639,12 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
                     showOrHidePoiContent(true, View.VISIBLE, "#26A69A");
                 }
                 break;
+            case R.id.iv_near_close:
+                hideRentNear();
+                break;
         }
     }
+
 
     private void searchRentNearLocation() {
         mapBinding.llContentFloating.setVisibility(View.GONE);
@@ -646,6 +653,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
         }
         nearMapLayoutBinding = DataBindingUtil.inflate(getActivity().getLayoutInflater(), R.layout.near_map_layout, mapBinding.flNear, false);
         mapBinding.flNear.addView(nearMapLayoutBinding.getRoot());
+        nearMapLayoutBinding.ivNearClose.setOnClickListener(this);
         nearMapLayoutBinding.setLoading(true);
         nearMapLayoutBinding.tvProgress.setText("Buscando...");
         nearAdapter = new RendererRecyclerViewAdapter();
@@ -668,7 +676,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
 
     private void shipUnselected(TextView textView) {
         textView.setBackgroundResource(R.drawable.shape_filter_small_ship_unselected);
-        textView.setTextColor(getResources().getColor(R.color.material_color_grey_500));
+        textView.setTextColor(getResources().getColor(R.color.material_color_blue_grey_500));
     }
 
     public void updateCurrentLocation(Location location) {
@@ -751,6 +759,11 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
         }
     }
 
+    private void hideRentNear() {
+        mapBinding.flNear.removeAllViews();
+        mapBinding.llContentFloating.setVisibility(View.VISIBLE);
+    }
+
     private ViewBinder<?> viewBinderNearRent(int layout) {
         return new ViewBinder<>(
                 layout,
@@ -762,7 +775,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
                         .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format("$ %.2f", model.getPrice())))
                         .find(R.id.tv_distance, (ViewProvider<TextView>) view -> {
                             double km = model.getDistanceBetween(currentLocation) / 1000;
-                            view.setText(String.format("%.1f Km", km));
+                            view.setText(String.format(getString(R.string.km_msg), km));
                         })
                         .find(R.id.iv_rent, (ViewProvider<RoundedImageView>) view -> {
                                     String path = "file:" + model.getImagePath();

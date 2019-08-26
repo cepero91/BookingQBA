@@ -89,7 +89,13 @@ public class Rent {
     @Expose
     private String userid;
 
+    @SerializedName("checkin")
+    @Expose
+    private String checkin;
 
+    @SerializedName("checkout")
+    @Expose
+    private String checkout;
 
     public String getId() {
         return id;
@@ -257,5 +263,21 @@ public class Rent {
 
     public void setUserid(String userid) {
         this.userid = userid;
+    }
+
+    public String getCheckin() {
+        return checkin;
+    }
+
+    public void setCheckin(String checkin) {
+        this.checkin = checkin;
+    }
+
+    public String getCheckout() {
+        return checkout;
+    }
+
+    public void setCheckout(String checkout) {
+        this.checkout = checkout;
     }
 }

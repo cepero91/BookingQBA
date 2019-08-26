@@ -24,7 +24,8 @@ import com.infinitum.bookingqba.viewmodel.RentViewModel;
 
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
-import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
+import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_COMMENTED;
+import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_RATING;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,12 +37,10 @@ public class RentListFragment extends BaseNavigationFragment {
     private FragmentRentListBinding rentListBinding;
 
     private static final String PROVINCE_PARAM = "param1";
-    private static final String REFERENCE_ZONE_PARAM = "param2";
     private static final String ORDER_TYPE_PARAM = "param3";
 
     private String mProvinceParam;
-    private String mReferenceZoneParam;
-    private char mOrderType = ORDER_TYPE_POPULAR;
+    private char mOrderType = ORDER_TYPE_MOST_COMMENTED;
 
     private RentViewModel rentViewModel;
 
@@ -53,11 +52,10 @@ public class RentListFragment extends BaseNavigationFragment {
     }
 
 
-    public static RentListFragment newInstance(String province, String reference, char orderType) {
+    public static RentListFragment newInstance(String province, char orderType) {
         RentListFragment fragment = new RentListFragment();
         Bundle args = new Bundle();
         args.putString(PROVINCE_PARAM, province);
-        args.putString(REFERENCE_ZONE_PARAM, reference);
         args.putChar(ORDER_TYPE_PARAM, orderType);
         fragment.setArguments(args);
         return fragment;
@@ -68,7 +66,6 @@ public class RentListFragment extends BaseNavigationFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mProvinceParam = getArguments().getString(PROVINCE_PARAM);
-            mReferenceZoneParam = getArguments().getString(REFERENCE_ZONE_PARAM);
             mOrderType = getArguments().getChar(ORDER_TYPE_PARAM);
         }
     }
@@ -84,12 +81,12 @@ public class RentListFragment extends BaseNavigationFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        rentListBinding.setIsLoading(true);
+        rentListBinding.setIsEmpty(false);
+
         setHasOptionsMenu(true);
 
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
-
-        rentListBinding.setIsLoading(true);
-        rentListBinding.setIsEmpty(false);
 
         loadPaginatedData();
 
@@ -104,26 +101,22 @@ public class RentListFragment extends BaseNavigationFragment {
 
     private void loadPaginatedData() {
         pagerAdapter = new RentListAdapter(getActivity().getLayoutInflater(), mListener);
-        if(mReferenceZoneParam!=null && mReferenceZoneParam.length()>0){
-            rentViewModel.getAllRentByZone(mProvinceParam,mReferenceZoneParam).observe(this, this::setupPagerAdapter);
-        }else {
-            rentViewModel.getLiveDataRentList(mOrderType, mProvinceParam).observe(this, this::setupPagerAdapter);
-        }
+        rentViewModel.getLiveDataRentList(mOrderType, mProvinceParam).observe(this, this::setupPagerAdapter);
     }
 
-    public void needToRefresh(boolean refresh){
-        if(refresh){
+    public void needToRefresh(boolean refresh) {
+        if (refresh) {
             rentListBinding.setIsLoading(true);
             loadPaginatedData();
         }
     }
 
-    public void filterListResult(PagedList<RentListItem> pagedList){
+    public void filterListResult(PagedList<RentListItem> pagedList) {
         setupPagerAdapter(pagedList);
     }
 
     private void setupPagerAdapter(PagedList<RentListItem> pagedList) {
-        if(pagedList.size()>0) {
+        if (pagedList.size() > 0) {
             pagerAdapter.submitList(pagedList);
             rentListBinding.recyclerView.setAdapter(pagerAdapter);
             rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
@@ -131,7 +124,7 @@ public class RentListFragment extends BaseNavigationFragment {
             rentListBinding.setIsLoading(false);
             rentListBinding.setIsEmpty(false);
             rentListBinding.progressPvLinear.stop();
-        }else{
+        } else {
             rentListBinding.setIsLoading(false);
             rentListBinding.setIsEmpty(true);
             rentListBinding.progressPvLinear.stop();
@@ -145,8 +138,6 @@ public class RentListFragment extends BaseNavigationFragment {
     }
 
 
-
-
     @Override
     public void onDestroyView() {
         rentListBinding.recyclerView.setAdapter(null);
@@ -157,6 +148,7 @@ public class RentListFragment extends BaseNavigationFragment {
     public void onDestroy() {
         super.onDestroy();
     }
+
 
 
 }

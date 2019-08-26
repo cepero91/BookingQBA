@@ -14,6 +14,8 @@ import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndDependencies;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
+import com.infinitum.bookingqba.model.local.pojo.RentMostComment;
+import com.infinitum.bookingqba.model.local.pojo.RentMostRating;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.Offer;
@@ -22,7 +24,6 @@ import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
 import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
-import com.infinitum.bookingqba.model.remote.pojo.RentPoi;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoiAdd;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.util.DateUtils;
@@ -34,32 +35,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.Observer;
 import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import timber.log.Timber;
 
-import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
+import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_COMMENTED;
+import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_RATING;
 
 public class RentRepoImpl implements RentRepository {
 
@@ -112,6 +104,10 @@ public class RentRepoImpl implements RentRepository {
             entity.setMunicipality(item.getMunicipality());
             entity.setReferenceZone(item.getReferenceZone());
             entity.setCreated(DateUtils.dateStringToDate(item.getCreated()));
+            if (item.getCheckin() != null)
+                entity.setCheckin(item.getCheckin());
+            if (item.getCheckout() != null)
+                entity.setCheckout(item.getCheckout());
             listEntity.add(entity);
         }
         return listEntity;
@@ -140,11 +136,21 @@ public class RentRepoImpl implements RentRepository {
 
     @Override
     public DataSource.Factory<Integer, RentAndGalery> allRentByOrderType(char orderType, String province) {
-        if (orderType == ORDER_TYPE_POPULAR) {
-            return qbaDao.getAllPopRent(province);
-        } else {
-            return qbaDao.getAllNewRent(province);
+        if (orderType == ORDER_TYPE_MOST_RATING) {
+            return qbaDao.getAllMostRatingRent(province);
+        } else if(orderType == ORDER_TYPE_MOST_COMMENTED) {
+            String query = "SELECT Rent.id,Rent.name,Rent.price, Rent.rentMode, AVG(Comment.emotion) as emotionAvg, COUNT(Comment.id) as totalComment FROM Rent " +
+                    "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
+                    "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
+                    "LEFT JOIN Comment ON Comment.rent = Rent.id "+
+                    "LEFT JOIN Province ON Municipality.province = Province.id " +
+                    "WHERE Province.id = '"+province+"'"+
+                    "GROUP BY Rent.id "+
+                    "ORDER BY emotionAvg DESC, totalComment DESC";
+            SupportSQLiteQuery supportSQLiteQuery = new SimpleSQLiteQuery(query);
+            return qbaDao.getAllMostCommentedRent(supportSQLiteQuery);
         }
+        return qbaDao.getAllMostRatingRent(province);
     }
 
     @Override
@@ -153,8 +159,26 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public Flowable<Resource<List<RentAndGalery>>> fivePopRentByProvince(String province) {
-        return qbaDao.getFivePopRents(province)
+    public Flowable<Resource<List<RentMostRating>>> fiveMostRatingRents(String province) {
+        return qbaDao.getFiveMostRatingRents(province)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Flowable<Resource<List<RentMostComment>>> fiveMostCommentRents(String province) {
+        String query = "SELECT Rent.id,Rent.name,Rent.price, Rent.rentMode, AVG(Comment.emotion) as emotionAvg, COUNT(Comment.id) as totalComment FROM Rent " +
+                "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
+                "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
+                "LEFT JOIN Comment ON Comment.rent = Rent.id "+
+                "LEFT JOIN Province ON Municipality.province = Province.id " +
+                "WHERE Province.id = '"+province+"'"+
+                "GROUP BY Rent.id "+
+                "ORDER BY emotionAvg DESC, totalComment DESC LIMIT 5";
+        SupportSQLiteQuery supportSQLiteQuery = new SimpleSQLiteQuery(query);
+        return qbaDao.getFiveMostCommentRent(supportSQLiteQuery)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(Resource::success)
@@ -242,7 +266,7 @@ public class RentRepoImpl implements RentRepository {
 
     @Override
     public DataSource.Factory<Integer, RentAndGalery> filterRents(Map<String, List<String>> filterParams, String province) {
-        String query = FilterRepositoryUtil.generalQuery(filterParams, province);
+        String query = FilterRepositoryUtil.buildFilterQuery(filterParams, province);
         SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query);
         return qbaDao.filterRents(simpleSQLiteQuery);
     }
@@ -258,7 +282,7 @@ public class RentRepoImpl implements RentRepository {
 
         collection.add(newRent);
         collection.add(newAmenitiesRent);
-        if(params.containsKey("galery")){
+        if (params.containsKey("galery")) {
             MultipartBody imagesRequestBody = getMultipartImagesBody(rentParams.getId(), (ArrayList<String>) params.get("galery"));
             Single<ResponseResult> newRentGalery = retrofit.create(ApiInterface.class)
                     .addRentGalery(token, imagesRequestBody).subscribeOn(Schedulers.io());
@@ -275,7 +299,7 @@ public class RentRepoImpl implements RentRepository {
             collection.add(newRentOffer);
         }
 
-        return Single.concat(collection).onErrorReturn(throwable -> new ResponseResult(500,throwable.getMessage())).toList();
+        return Single.concat(collection).onErrorReturn(throwable -> new ResponseResult(500, throwable.getMessage())).toList();
     }
 
     @Override
@@ -326,7 +350,7 @@ public class RentRepoImpl implements RentRepository {
         PointF p3 = calculateDerivedPosition(center, mult * range, 180);
         PointF p4 = calculateDerivedPosition(center, mult * range, 270);
 
-        String strWhere =  "SELECT * FROM Rent WHERE "
+        String strWhere = "SELECT * FROM Rent WHERE "
                 + "Rent.latitude > " + String.valueOf(p3.x) + " AND "
                 + "Rent.latitude < " + String.valueOf(p1.x) + " AND "
                 + "Rent.longitude < " + String.valueOf(p2.y) + " AND "
@@ -338,22 +362,30 @@ public class RentRepoImpl implements RentRepository {
                 .onErrorReturn(Resource::error);
     }
 
+    @Override
+    public Flowable<Double> maxRentPrice() {
+        return qbaDao.getAllRentOrderPrice().subscribeOn(Schedulers.io())
+                .map(rentEntityList -> {
+                    if(rentEntityList.size()>0){
+                        return rentEntityList.get(0).getPrice();
+                    }else{
+                        return 0d;
+                    }
+                }).onErrorReturn(throwable -> 0d);
+    }
+
     /**
      * Calculates the end-point from a given source at a given range (meters)
      * and bearing (degrees). This methods uses simple geometry equations to
      * calculate the end-point.
      *
-     * @param point
-     *           Point of origin
-     * @param range
-     *           Range in meters
-     * @param bearing
-     *           Bearing in degrees
+     * @param point   Point of origin
+     * @param range   Range in meters
+     * @param bearing Bearing in degrees
      * @return End-point from the source given the desired range and bearing.
      */
     public static PointF calculateDerivedPosition(PointF point,
-                                                  double range, double bearing)
-    {
+                                                  double range, double bearing) {
         double EarthRadius = 6371000; // m
 
         double latA = Math.toRadians(point.x);

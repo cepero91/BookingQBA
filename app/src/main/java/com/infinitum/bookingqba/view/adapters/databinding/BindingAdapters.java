@@ -34,9 +34,9 @@ public class BindingAdapters {
 
     @BindingAdapter("visibleByLength")
     public static void visibleByLength(View view, String text) {
-        if(text!=null) {
+        if (text != null) {
             view.setVisibility(text.length() > 0 ? View.VISIBLE : View.GONE);
-        }else{
+        } else {
             view.setVisibility(View.GONE);
         }
     }
@@ -83,7 +83,7 @@ public class BindingAdapters {
 
     @BindingAdapter("setMaxGaleriePictures")
     public static void setMaxGaleriePictures(TextView view, int size) {
-        view.setText(String.format("%s Foto%s",size,size>1?"s":""));
+        view.setText(String.format("%s Foto%s", size, size > 1 ? "s" : ""));
         view.setGravity(Gravity.CENTER);
     }
 
@@ -91,7 +91,7 @@ public class BindingAdapters {
     @BindingAdapter("setMaxRooms")
     public static void setMaxRooms(TextView view, int maxRoom) {
         String maxRoomString = String.valueOf(maxRoom);
-        view.setText(String.format("%s Cuarto%s", maxRoomString,maxRoom>1?"s":""));
+        view.setText(String.format("%s Cuarto%s", maxRoomString, maxRoom > 1 ? "s" : ""));
     }
 
     @BindingAdapter("setCapability")
@@ -103,34 +103,29 @@ public class BindingAdapters {
     @BindingAdapter("setMaxBath")
     public static void setMaxBath(TextView view, int maxBath) {
         String maxBathString = String.valueOf(maxBath);
-        view.setText(String.format("%s Baño%s", maxBathString,maxBath>1?"s":""));
+        view.setText(String.format("%s Baño%s", maxBathString, maxBath > 1 ? "s" : ""));
     }
 
     @BindingAdapter("setMaxBeds")
     public static void setMaxBeds(TextView view, int maxBeds) {
         String maxBedsString = String.valueOf(maxBeds);
-        view.setText(String.format("%s Cama%s", maxBedsString,maxBeds>1?"s":""));
+        view.setText(String.format("%s Cama%s", maxBedsString, maxBeds > 1 ? "s" : ""));
     }
 
     @BindingAdapter("setRentListImage")
     public static void setRentListImage(RoundedImageView view, String imagePath) {
-        String path;
-        if (!imagePath.contains("http")) {
-            path = "file:" + imagePath;
-        } else {
-            path = imagePath;
-        }
+        String path = "file:" + imagePath;
         Picasso.get()
                 .load(path)
-                .resize(480,320)
+                .resize(420, 280)
                 .placeholder(R.drawable.placeholder)
                 .into(view);
     }
 
     @BindingAdapter("setFlexBoxItem")
     public static void setFlexBoxItem(FlexboxLayout view, List<View> items) {
-        if(items!=null && items.size()>0){
-            for(View item: items){
+        if (items != null && items.size() > 0) {
+            for (View item : items) {
                 view.addView(item);
             }
         }
@@ -143,14 +138,14 @@ public class BindingAdapters {
 
     @BindingAdapter("setMbSize")
     public static void setMbSize(TextView view, long size) {
-        float fileSizeKb = ((float)size/1024);
-        float fileSizeMb = ((float)fileSizeKb/1024);
-        view.setText(String.format("%.2f Mb",fileSizeMb));
+        float fileSizeKb = ((float) size / 1024);
+        float fileSizeMb = ((float) fileSizeKb / 1024);
+        view.setText(String.format("%.2f Mb", fileSizeMb));
     }
 
     @BindingAdapter("setPercent")
     public static void setPercent(TextView view, float percent) {
-        view.setText(String.format("%.1f %s",percent,"%"));
+        view.setText(String.format("%.1f %s", percent, "%"));
     }
 
     @BindingAdapter("setProgress")
@@ -160,7 +155,7 @@ public class BindingAdapters {
 
     @BindingAdapter("setOverlayGone")
     public static void setOverlayGone(View view, boolean show) {
-        view.setVisibility(show?View.VISIBLE:View.INVISIBLE);
+        view.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
     @BindingAdapter("setRoundedImage")
@@ -173,38 +168,43 @@ public class BindingAdapters {
         }
         Picasso.get()
                 .load(path)
-                .resize(480,320)
+                .resize(480, 320)
                 .placeholder(R.drawable.placeholder)
                 .into(view);
     }
 
     @BindingAdapter("setWished")
     public static void setWished(AppCompatImageView view, int wished) {
-        if(wished == 1){
+        if (wished == 1) {
             view.setVisibility(View.VISIBLE);
             view.setImageResource(R.drawable.ic_bookmark_orange);
-        }else if(wished == 0){
+        } else if (wished == 0) {
             view.setVisibility(View.GONE);
         }
     }
 
     @BindingAdapter("setVotes")
     public static void setVotes(TextView view, int votes) {
-        view.setText(String.format("(%s voto%s)",votes,votes>1?"s":""));
+        view.setText(String.format("(%s voto%s)", votes, votes > 1 ? "s" : ""));
     }
 
     @BindingAdapter("negativeMargin")
     public static void negativeMargin(View view, boolean needNegativeMargin) {
         int overlapTop = view.getResources().getDimensionPixelSize(R.dimen.overlap_top);
-        if(needNegativeMargin) {
+        if (needNegativeMargin) {
             CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
             AppBarLayout.ScrollingViewBehavior behavior = (AppBarLayout.ScrollingViewBehavior) params.getBehavior();
             behavior.setOverlayTop(overlapTop);
-        }else{
+        } else {
             CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) view.getLayoutParams();
             AppBarLayout.ScrollingViewBehavior behavior = (AppBarLayout.ScrollingViewBehavior) params.getBehavior();
             behavior.setOverlayTop(0);
         }
+    }
+
+    @BindingAdapter("setIconResource")
+    public static void setIconResource(AppCompatImageView view, int resource) {
+        view.setImageResource(resource);
     }
 
 

@@ -43,12 +43,13 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
+import static com.infinitum.bookingqba.util.Constants.ROUTE_PATH;
 
 public abstract class BaseMapFragment extends Fragment {
 
     protected Disposable disposable;
     protected CompositeDisposable compositeDisposable;
-    private String mapFile, poiFile, routeZipFile;
+    private String mapFile, routeZipFile, routeDir;
     protected GraphHopper graphHopper;
 
     protected MapView mapView;
@@ -72,6 +73,8 @@ public abstract class BaseMapFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mapFile = sharedPreferences.getString(MAP_PATH, "");
+        routeDir = sharedPreferences.getString(ROUTE_PATH, "");
+
         mapView = getActivity().findViewById(R.id.mapview);
         map = mapView.map();
         initializeMap();
@@ -103,11 +106,7 @@ public abstract class BaseMapFragment extends Fragment {
                     .andThen(Completable.fromAction(this::setupMapView).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
                     .andThen(Completable.fromAction(this::initializeMarker))
                     .doOnComplete(this::showViews)
-                    .andThen(Completable.fromAction(this::copyAssetRoute).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
-                    .doOnComplete(()-> Toast.makeText(getActivity(),"Configurando ruta...",Toast.LENGTH_SHORT).show())
-                    .andThen(Completable.fromAction(this::unzipFile).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
-                    .andThen(Completable.fromAction(this::setupGraph).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
-                    .doOnComplete(() -> Toast.makeText(getActivity(), "Ruta lista", Toast.LENGTH_SHORT).show())
+                    .andThen(configurateGraph())
                     .subscribe(() -> {
                         File zipFile = new File(routeZipFile);
                         if (zipFile.delete()) {
@@ -122,12 +121,29 @@ public abstract class BaseMapFragment extends Fragment {
                     .observeOn(AndroidSchedulers.mainThread())
                     .andThen(Completable.fromAction(this::initializeMarker))
                     .doOnComplete(this::showViews)
-                    .andThen(Completable.fromAction(this::setupGraph).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
-                    .doOnComplete(() -> {
-                        Toast.makeText(getActivity(), "Ruta lista", Toast.LENGTH_SHORT).show();
-                    })
+                    .andThen(configurateGraph())
                     .subscribe();
             compositeDisposable.add(disposable);
+        }
+    }
+
+    private Completable configurateGraph() {
+        if (routeDir.isEmpty()) {
+            return Completable.fromAction(this::copyAssetRoute)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnComplete(() -> Toast.makeText(getActivity(), "Configurando ruta...", Toast.LENGTH_SHORT).show())
+                    .andThen(Completable.fromAction(this::unzipFile).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
+                    .doOnComplete(() -> saveRouteFilePath(getActivity().getFilesDir().getAbsolutePath() + File.separator + "route-gh"))
+                    .andThen(Completable.fromAction(this::setupGraph).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
+                    .doOnComplete(() -> Toast.makeText(getActivity(), "Ruta lista", Toast.LENGTH_SHORT).show());
+        } else {
+            return Completable.fromAction(this::setupGraph)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnComplete(() -> {
+                        Toast.makeText(getActivity(), "Ruta lista", Toast.LENGTH_SHORT).show();
+                    });
         }
     }
 
@@ -177,8 +193,8 @@ public abstract class BaseMapFragment extends Fragment {
                 .setListener(new CopyListener() {
                     @Override
                     public void completed(CopyCreator copyCreator, java.util.Map<File, Boolean> results) {
-                        if (results.size() > 0) {
-                            mapFile = ((File) results.keySet().toArray()[0]).getAbsolutePath();
+                        mapFile = getActivity().getFilesDir().getAbsolutePath()+File.separator+"map"+File.separator+"central-america_cuba.map";
+                        if (results.containsKey(new File(mapFile))) {
                             saveMapFilePath(mapFile);
                         }
                     }
@@ -197,12 +213,17 @@ public abstract class BaseMapFragment extends Fragment {
         edit.apply();
     }
 
+    private void saveRouteFilePath(String path) {
+        SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit.putString(ROUTE_PATH, path);
+        edit.apply();
+    }
+
     public void setupMapView() {
         MapRenderer.setBackgroundColor(Color.WHITE);
         MapFileTileSource tileSource = new MapFileTileSource();
         String mapPath = new File(mapFile).getAbsolutePath();
         if (tileSource.setMapFile(mapPath)) {
-
 
             map.viewport().setMinZoomLevel(10);
 

@@ -21,18 +21,25 @@ public class GeoRent extends BaseItem {
     private String rentMode;
     private List<PoiItem> poiItems;
 
-    public GeoRent(String id, String name, String imagePath, int wished) {
-        super(id, name, imagePath, wished);
+    public GeoRent(String id, String name, String imagePath) {
+        super(id, name, imagePath);
     }
 
-    public GeoRent(String id, String name, String imagePath, int wished, float rating, int ratingCount, double price, GeoPoint geoPoint, String rentMode, List<PoiItem> poiItems) {
-        super(id, name, imagePath, wished);
+    public GeoRent(String id, String name, String imagePath, float rating, int ratingCount, double price, GeoPoint geoPoint, String rentMode, List<PoiItem> poiItems) {
+        super(id, name, imagePath);
         this.rating = rating;
         this.ratingCount = ratingCount;
         this.price = price;
         this.geoPoint = geoPoint;
         this.rentMode = rentMode;
         this.poiItems = poiItems;
+    }
+
+    public double getDistanceBetween(Location userLocation){
+        Location rentLocation = new Location("");
+        rentLocation.setLatitude(geoPoint.getLatitude());
+        rentLocation.setLongitude(geoPoint.getLongitude());
+        return userLocation.distanceTo(rentLocation);
     }
 
     public float getRating() {
@@ -83,13 +90,6 @@ public class GeoRent extends BaseItem {
         this.poiItems = poiItems;
     }
 
-    public double getDistanceBetween(Location userLocation){
-        Location rentLocation = new Location("");
-        rentLocation.setLatitude(geoPoint.getLatitude());
-        rentLocation.setLongitude(geoPoint.getLongitude());
-        return userLocation.distanceTo(rentLocation);
-    }
-
 
     @Override
     public int describeContents() {
@@ -104,7 +104,7 @@ public class GeoRent extends BaseItem {
         dest.writeDouble(this.price);
         dest.writeSerializable(this.geoPoint);
         dest.writeString(this.rentMode);
-        dest.writeList(this.poiItems);
+        dest.writeTypedList(this.poiItems);
     }
 
     protected GeoRent(Parcel in) {
@@ -114,8 +114,7 @@ public class GeoRent extends BaseItem {
         this.price = in.readDouble();
         this.geoPoint = (GeoPoint) in.readSerializable();
         this.rentMode = in.readString();
-        this.poiItems = new ArrayList<PoiItem>();
-        in.readList(this.poiItems, PoiItem.class.getClassLoader());
+        this.poiItems = in.createTypedArrayList(PoiItem.CREATOR);
     }
 
     public static final Creator<GeoRent> CREATOR = new Creator<GeoRent>() {

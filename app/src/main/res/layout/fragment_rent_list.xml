@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -12,49 +13,93 @@
             type="Boolean" />
     </data>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".view.rents.RentListFragment">
+        android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layoutAnimation="@anim/layout_anim_fall_down"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/cv_content_conf_map_root"
+            app:layout_constraintTop_toTopOf="parent"
             app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; !safeUnbox(isEmpty)}"
-            />
+            tools:layout_editor_absoluteX="8dp" />
 
-
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top">
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:visibleGone="@{safeUnbox(isEmpty)}">
 
-            <com.rey.material.widget.ProgressView
-                android:id="@+id/progress_pv_linear"
+            <com.github.siyamed.shapeimageview.RoundedImageView
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:scaleType="fitCenter"
+                app:siBorderColor="@color/material_color_grey_50"
+                app:siBorderWidth="2dp"
+                app:siRadius="150dp"
+                android:src="@drawable/fogg_no_comments"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:fontFamily="@font/poppinsbold"
+                android:textColor="@color/material_color_blue_grey_100"
+                android:text="Nada que mostrar"/>
+
+        </LinearLayout>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cv_content_conf_map_root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:cardElevation="5dp"
+            app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; !safeUnbox(isEmpty)}">
+
+            <FrameLayout
+                android:id="@+id/fl_content_conf_map"
                 android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_gravity="center"
-                app:pv_autostart="true"
-                app:v_styleId="@array/pv_linear_query"/>
+                android:layout_height="?attr/actionBarSize">
 
-        </FrameLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|start"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/poppinsbold"
+                    android:text="Mostrar en Mapa"
+                    android:textColor="@color/material_color_blue_grey_500" />
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:layout_gravity="center"
-            app:visibleGone="@{safeUnbox(isEmpty)}"
-            app:lottie_loop="true"
-            app:lottie_repeatMode="restart"
-            app:lottie_autoPlay="true"
-            app:lottie_enableMergePathsForKitKatAndAbove="true"
-            app:lottie_fileName="lottie/empty.json"/>
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    app:srcCompat="@drawable/ic_fa_cog_line"
+                    app:tint="@color/material_color_blue_grey_500" />
+
+            </FrameLayout>
+
+        </android.support.v7.widget.CardView>
 
 
-    </FrameLayout>
-
+    </android.support.constraint.ConstraintLayout>
 
 </layout>

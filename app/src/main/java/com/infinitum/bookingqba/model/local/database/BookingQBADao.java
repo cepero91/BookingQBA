@@ -34,6 +34,8 @@ import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.local.pojo.RentAndDependencies;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
+import com.infinitum.bookingqba.model.local.pojo.RentMostComment;
+import com.infinitum.bookingqba.model.local.pojo.RentMostRating;
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
 
 import java.util.List;
@@ -424,19 +426,6 @@ public abstract class BookingQBADao {
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) ")
     public abstract Flowable<List<RentAndDependencies>> getAllRents();
 
-    /**
-     * Este metodo devuelve solo la primera imagen de una renta
-     *
-     * @return
-     */
-    @Transaction
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
-            "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
-            "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
-            "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.id = :province ORDER BY Rent.rating DESC, Rent.ratingCount DESC LIMIT 3")
-    public abstract Flowable<List<RentAndGalery>> getFivePopRents(String province);
-
     @Transaction
     @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
@@ -444,6 +433,24 @@ public abstract class BookingQBADao {
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
             "Province.id = :province ORDER BY Rent.created DESC LIMIT 3")
     public abstract Flowable<List<RentAndGalery>> getFiveNewRents(String province);
+
+    @Transaction
+    @RawQuery(observedEntities = RentEntity.class)
+    public abstract Flowable<List<RentMostComment>> getFiveMostCommentRent(SupportSQLiteQuery query);
+
+    /**
+     * Este metodo devuelve solo la primera imagen de una renta
+     *
+     * @return
+     */
+    @Transaction
+    @Query("SELECT Rent.id,Rent.name,Rent.price,Rent.rating, Rent.ratingCount, Rent.rentMode FROM Rent " +
+            "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
+            "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
+            "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
+            "Province.id = :province ORDER BY Rent.rating DESC, Rent.ratingCount DESC LIMIT 5")
+    public abstract Flowable<List<RentMostRating>> getFiveMostRatingRents(String province);
+
 
     /**
      * Metodo de listado con paginado
@@ -456,15 +463,11 @@ public abstract class BookingQBADao {
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
             "Province.id = :province ORDER BY Rent.rating DESC, Rent.ratingCount DESC")
-    public abstract DataSource.Factory<Integer, RentAndGalery> getAllPopRent(String province);
+    public abstract DataSource.Factory<Integer, RentAndGalery> getAllMostRatingRent(String province);
 
     @Transaction
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
-            "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
-            "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
-            "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.id = :province ORDER BY Rent.created DESC")
-    public abstract DataSource.Factory<Integer, RentAndGalery> getAllNewRent(String province);
+    @RawQuery(observedEntities = RentEntity.class)
+    public abstract DataSource.Factory<Integer, RentAndGalery> getAllMostCommentedRent(SupportSQLiteQuery query);
 
     @Transaction
     @TypeConverters(DateTypeConverter.class)
@@ -510,6 +513,10 @@ public abstract class BookingQBADao {
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
     public abstract Flowable<List<RentAndDependencies>> getRentNearLatLon(SupportSQLiteQuery query);
+
+    @Transaction
+    @Query("SELECT * FROM Rent ORDER BY price DESC")
+    public abstract Flowable<List<RentEntity>> getAllRentOrderPrice();
 
     //------------------------- RATING ---------------------------//
 

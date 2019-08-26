@@ -196,7 +196,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
     }
 
     private void createGeoRent() {
-        GeoRent geoRent = new GeoRent(rentInnerDetail.getId(), rentInnerDetail.getName(), rentInnerDetail.firstImage(), rentInnerDetail.getWished());
+        GeoRent geoRent = new GeoRent(rentInnerDetail.getId(), rentInnerDetail.getName(), rentInnerDetail.firstImage());
         geoRent.setRentMode(rentInnerDetail.getRentMode());
         geoRent.setRating(rentInnerDetail.getRating());
         geoRent.setGeoPoint(new GeoPoint(rentInnerDetail.getLatitude(), rentInnerDetail.getLongitude()));

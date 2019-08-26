@@ -99,13 +99,14 @@ public class DBCommonOperationRepoImpl implements DBCommonOperationRepository {
 
     @Override
     public Single<OperationResult> deleteAll(String dateValue) {
-        return fetchRemoved(dateValue)
-                .subscribeOn(Schedulers.io())
-                .map(this::getCompletableToDelete)
-                .flatMapCompletable(simpleSQLiteQueries -> Observable.fromIterable(simpleSQLiteQueries)
-                        .flatMapCompletable(simpleSQLiteQuery -> Completable.fromAction(() -> qbaDao.deleteAll(simpleSQLiteQuery))))
-                .toSingle(OperationResult::success)
-                .onErrorReturn(OperationResult::error);
+        return Single.just(OperationResult.success()).subscribeOn(Schedulers.io());
+//        return fetchRemoved(dateValue)
+//                .subscribeOn(Schedulers.io())
+//                .map(this::getCompletableToDelete)
+//                .flatMapCompletable(simpleSQLiteQueries -> Observable.fromIterable(simpleSQLiteQueries)
+//                        .flatMapCompletable(simpleSQLiteQuery -> Completable.fromAction(() -> qbaDao.deleteAll(simpleSQLiteQuery))))
+//                .toSingle(OperationResult::success)
+//                .onErrorReturn(OperationResult::error);
     }
 
     private List<SimpleSQLiteQuery> getCompletableToDelete(List<RemovedList> removedLists) {

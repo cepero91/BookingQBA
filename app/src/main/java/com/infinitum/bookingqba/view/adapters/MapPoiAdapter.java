@@ -110,8 +110,8 @@ public class MapPoiAdapter extends RecyclerView.Adapter<MapPoiAdapter.MyViewHold
             myViewHolder.tvPoi.setTextColor(Color.WHITE);
         } else {
             myViewHolder.llContentPoi.setBackgroundResource(R.drawable.shape_filter_small_ship_unselected);
-            myViewHolder.tvCategory.setTextColor(Color.parseColor("#9E9E9E"));
-            myViewHolder.tvPoi.setTextColor(Color.parseColor("#9E9E9E"));
+            myViewHolder.tvCategory.setTextColor(Color.parseColor("#607D8B"));
+            myViewHolder.tvPoi.setTextColor(Color.parseColor("#90A4AE"));
         }
     }
 

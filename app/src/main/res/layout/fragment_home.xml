@@ -52,47 +52,143 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        app:srcCompat="@drawable/ic_search" />
+                        app:srcCompat="@drawable/ic_fa_search_line"
+                        app:tint="@color/material_color_blue_grey_500" />
 
                 </FrameLayout>
 
             </android.support.v7.widget.CardView>
 
-            <FrameLayout
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center">
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:clipToPadding="false">
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recycler_view"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:paddingBottom="15dp"
-                    android:paddingTop="10dp"
-                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                    app:discreteVisibility="@{!safeUnbox(isLoading)}" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            </FrameLayout>
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center|start"
+                            android:fontFamily="@font/poppinsbold"
+                            android:includeFontPadding="true"
+                            android:text="Lo mas comentado"
+                            android:textColor="@color/material_color_blue_grey_300" />
+
+                        <TextView
+                            android:id="@+id/tv_most_commented_view_all"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|center"
+                            android:background="@drawable/shape_btn_ship_view_more"
+                            android:fontFamily="@font/poppinsregular"
+                            android:includeFontPadding="false"
+                            android:text="Ver todos"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/home_header_pop_btn_size" />
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true">
+
+                        <ProgressBar
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="45dp"
+                            android:layout_marginBottom="45dp"
+                            android:layout_gravity="center"
+                            android:indeterminate="true"
+                            app:discreteVisibility="@{safeUnbox(isLoading)}" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rv_most_commented"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:paddingEnd="8dp"
+                            android:paddingStart="8dp"
+                            app:discreteVisibility="@{!safeUnbox(isLoading)}" />
+
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center|start"
+                            android:fontFamily="@font/poppinsbold"
+                            android:includeFontPadding="false"
+                            android:text="Lo mas votado"
+                            android:textColor="@color/material_color_blue_grey_300" />
+
+                        <TextView
+                            android:id="@+id/tv_most_rating_view_all"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|center"
+                            android:background="@drawable/shape_btn_ship_view_more"
+                            android:fontFamily="@font/poppinsregular"
+                            android:includeFontPadding="false"
+                            android:text="Ver todos"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/home_header_pop_btn_size" />
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true">
+
+                        <ProgressBar
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="45dp"
+                            android:layout_marginBottom="45dp"
+                            android:layout_gravity="center"
+                            android:indeterminate="true"
+                            app:discreteVisibility="@{safeUnbox(isLoading)}" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rv_most_rating"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            app:discreteVisibility="@{!safeUnbox(isLoading)}" />
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+
+            </android.support.v4.widget.NestedScrollView>
 
         </LinearLayout>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top">
-
-            <com.rey.material.widget.ProgressView
-                android:id="@+id/progress_pv_linear"
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_gravity="center"
-                app:pv_autostart="true"
-                app:v_styleId="@array/pv_linear_query"/>
-
-        </FrameLayout>
-
     </android.support.design.widget.CoordinatorLayout>
-
 
 </layout>

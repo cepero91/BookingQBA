@@ -1,12 +1,9 @@
 package com.infinitum.bookingqba.view.filter;
 
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.arch.paging.PagedList;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,25 +11,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.RadioGroup;
+import android.widget.SeekBar;
 
-import com.github.guilhe.views.SeekBarRangedView;
 import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
-import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentFilterBinding;
-import com.infinitum.bookingqba.model.Resource;
-import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
-import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.view.adapters.FilterAdapter;
-import com.infinitum.bookingqba.view.adapters.items.filter.AmenitieViewItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
-import com.infinitum.bookingqba.view.adapters.items.filter.ReferenceZoneViewItem;
-import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
-import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
@@ -48,8 +35,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.ResourceSubscriber;
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
 
 /**
@@ -77,6 +62,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
     FilterAdapter rentModeAdapter;
     FilterAdapter amenitiesAdapter;
     FilterAdapter munAdapter;
+    private FilterAdapter poiTypeAdapter;
 
     public static final String PROVINCE = "province";
     private String argProvince;
@@ -121,23 +107,8 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
 
         filterBinding.setIsLoading(true);
 
-        filterBinding.priceSeek.setOnSeekBarRangedChangeListener(new SeekBarRangedView.OnSeekBarRangedChangeListener() {
-            @Override
-            public void onChanged(SeekBarRangedView view, float minValue, float maxValue) {
-                onShipClick();
-            }
-
-            @Override
-            public void onChanging(SeekBarRangedView view, float minValue, float maxValue) {
-                filterBinding.tvMinMax.setText(String.format("min: $%2.0f  max: $%2.0f", minValue, maxValue));
-            }
-        });
-
-
-        testingFilter();
-
-
     }
+
 
     @Override
     public void onAttach(Context context) {
@@ -156,7 +127,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
         compositeDisposable.clear();
     }
 
-    private void testingFilter() {
+    public void loadFilterParams() {
         disposable = rentViewModel.getMapFilterItems(argProvince)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -174,28 +145,67 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
         if (mapResourse.containsKey("RentMode")) {
             setRentModeAdapter(mapResourse.get("RentMode"));
         }
+        if (mapResourse.containsKey("PoiType")) {
+            setPoiTypeAdapter(mapResourse.get("PoiType"));
+        }
+        if (mapResourse.containsKey("Price")) {
+            updateSeekBarPrice(mapResourse.get("Price").get(0).getName());
+        }
+        setupOrderingRadioGroup();
         filterBinding.setIsLoading(false);
+    }
+
+    private void updateSeekBarPrice(String price) {
+        filterBinding.sbMaxPrice.setMax((int) Double.parseDouble(price));
+        filterBinding.sbMaxPrice.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                filterBinding.tvMaxPrice.setText(String.format("$ %s",progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                onShipClick();
+            }
+        });
+    }
+
+    private void setupOrderingRadioGroup(){
+        filterBinding.rgOrdering.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                onShipClick();
+            }
+        });
+    }
+
+    private void setPoiTypeAdapter(List<CheckableItem> checkableItems) {
+        poiTypeAdapter = new FilterAdapter(checkableItems, this);
+        filterBinding.rvPoiCategory.setAdapter(poiTypeAdapter);
+        filterBinding.rvPoiCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
     }
 
     public void setAmenitiesAdapter(List<CheckableItem> items) {
         amenitiesAdapter = new FilterAdapter(items, this);
         filterBinding.rvAmenities.setAdapter(amenitiesAdapter);
         filterBinding.rvAmenities.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        OverScrollDecoratorHelper.setUpOverScroll(filterBinding.rvAmenities, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
     }
 
     public void setReferenceZoneAdapter(List<CheckableItem> items) {
         munAdapter = new FilterAdapter(items, this);
         filterBinding.rvMunicipality.setAdapter(munAdapter);
         filterBinding.rvMunicipality.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        OverScrollDecoratorHelper.setUpOverScroll(filterBinding.rvMunicipality, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
     }
 
     public void setRentModeAdapter(List<CheckableItem> items) {
         rentModeAdapter = new FilterAdapter(items, this);
         filterBinding.rvRentMode.setAdapter(rentModeAdapter);
         filterBinding.rvRentMode.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        OverScrollDecoratorHelper.setUpOverScroll(filterBinding.rvRentMode, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
     }
 
 
@@ -209,8 +219,10 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
                 rentModeAdapter.resetSelectedItem();
                 munAdapter.resetSelectedItem();
                 amenitiesAdapter.resetSelectedItem();
-                filterBinding.priceSeek.setSelectedMinValue(0f);
-                filterBinding.priceSeek.setSelectedMaxValue(0f);
+                poiTypeAdapter.resetSelectedItem();
+                filterBinding.sbMaxPrice.setProgress(0);
+                filterBinding.tvMaxPrice.setText("$ 0");
+                filterBinding.rgOrdering.clearCheck();
                 interaction.onFilterClean();
                 break;
         }
@@ -227,21 +239,32 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
         if (rentModeAdapter.getSelectedItems().size() > 0) {
             filterParams.put("RentMode", rentModeAdapter.getSelectedItems());
         }
-        if (filterBinding.priceSeek.getSelectedMaxValue() > 0) {
-            float min = filterBinding.priceSeek.getSelectedMinValue();
-            float max = filterBinding.priceSeek.getSelectedMaxValue();
+        if (poiTypeAdapter.getSelectedItems().size() > 0) {
+            filterParams.put("Poi", poiTypeAdapter.getSelectedItems());
+        }
+        if (filterBinding.sbMaxPrice.getProgress() > 0) {
             List<String> params = new ArrayList<>();
-            params.add(String.valueOf(min));
-            params.add(String.valueOf(max));
+            params.add(String.valueOf(filterBinding.sbMaxPrice.getProgress()));
             filterParams.put("Price", params);
+        }
+        if(filterBinding.rbComment.isChecked()){
+            List<String> params = new ArrayList<>();
+            params.add("c");
+            filterParams.put("Order", params);
+        }
+        if(filterBinding.rbRating.isChecked()){
+            List<String> params = new ArrayList<>();
+            params.add("r");
+            filterParams.put("Order", params);
         }
         return filterParams;
     }
 
     @Override
     public void onShipClick() {
-        if (getFilterParams().size() > 0) {
-            rentViewModel.filter(getFilterParams(),argProvince).observe(this, pagedList ->
+        Map<String,List<String>> filterParams = getFilterParams();
+        if (filterParams.size() > 0) {
+            rentViewModel.filter(filterParams, argProvince).observe(this, pagedList ->
                     interaction.onFilterElement(pagedList));
         } else {
             interaction.onFilterClean();

@@ -14,10 +14,10 @@
         android:id="@+id/tv_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/poppinsbold"
+        android:fontFamily="@font/poppinsmedium"
         android:layout_gravity="center"
         android:includeFontPadding="false"
-        android:textColor="@color/material_color_grey_500"
+        android:textColor="@color/material_color_blue_grey_500"
         android:text="Category"
         android:textSize="12sp" />
 
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:fontFamily="@font/poppinslight"
-        android:textColor="@color/material_color_grey_400"
+        android:textColor="@color/material_color_blue_grey_300"
         android:text="poi"
         android:layout_gravity="center"
         android:textSize="12sp" />

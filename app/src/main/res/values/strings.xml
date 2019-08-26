@@ -171,4 +171,5 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="precio">Precio</string>
     <string name="distance_msg">Su destino se encuentra a %.2f km de distancia, con un tiempo de llegada aproximado de: %s</string>
     <string name="min_msg">%d min</string>
+    <string name="km_msg">- %.1f Km</string>
 </resources>

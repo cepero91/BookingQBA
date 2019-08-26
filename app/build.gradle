@@ -148,6 +148,9 @@ dependencies {
         exclude group: 'org.apache.xmlgraphics', module: 'xmlgraphics-commons'
     }
 
+    //Calendar
+    implementation 'com.aminography:primedatepicker:1.0.7'
+    implementation 'com.github.adawoud:BottomSheetTimeRangePicker:1.11'
 
     //Timber
     implementation "com.jakewharton.timber:timber:$timber"

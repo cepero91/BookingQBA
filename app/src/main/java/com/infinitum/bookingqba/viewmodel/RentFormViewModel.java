@@ -322,6 +322,8 @@ public class RentFormViewModel extends ViewModel {
         rent.setLongitude(rentFormObject.getLongitude());
         rent.setMunicipality(rentFormObject.getMunicipality());
         rent.setReferenceZone(rentFormObject.getReferenceZone());
+        rent.setCheckin(rentFormObject.getCheckin());
+        rent.setCheckout(rentFormObject.getCheckout());
         rent.setUserid(rentFormObject.getUserid());
         return rent;
     }

@@ -4,44 +4,44 @@
     <group android:id="@+id/group_1" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_home"
+            android:icon="@drawable/ic_fa_home_line"
             android:title="@string/inicio" />
         <item
             android:id="@+id/nav_list"
-            android:icon="@drawable/ic_th_list"
+            android:icon="@drawable/ic_fa_list_line"
             android:title="@string/rentas" />
         <item
             android:id="@+id/nav_wish_list"
-            android:icon="@drawable/ic_scroll"
+            android:icon="@drawable/ic_fa_bookmark_line"
             android:title="@string/lista_de_deseo" />
         <item
             android:id="@+id/nav_map"
-            android:icon="@drawable/ic_map_marked"
+            android:icon="@drawable/ic_fa_map_marker_line"
             android:title="@string/mapa" />
 
         <item
             android:id="@+id/nav_info"
-            android:icon="@drawable/ic_info"
+            android:icon="@drawable/ic_fa_info_line"
             android:title="@string/informacion" />
     </group>
 
     <group android:id="@+id/group_2" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_auth"
-            android:icon="@drawable/ic_sign_in"
+            android:icon="@drawable/ic_fa_sign_in_line"
             android:title="@string/iniciar_sesion" />
         <item
             android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_sign_out"
+            android:icon="@drawable/ic_fa_sign_out_line"
             android:title="Cerrar Sesión"
             android:visible="false"/>
         <item
             android:id="@+id/nav_my_rents"
-            android:icon="@drawable/ic_folder"
+            android:icon="@drawable/ic_fa_cloud_upload_line"
             android:title="Mis Rentas" />
         <item
             android:id="@+id/nav_profile"
-            android:icon="@drawable/ic_chart_bar"
+            android:icon="@drawable/ic_fa_bar_chart_line"
             android:title="Analitica"
             android:visible="false"/>
     </group>

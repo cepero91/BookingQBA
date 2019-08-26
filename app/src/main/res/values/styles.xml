@@ -154,5 +154,26 @@
         <item name="android:padding">8dp</item>
     </style>
 
+    <style name="text_12sp_regular_blue_grey_500">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/material_color_blue_grey_500</item>
+        <item name="android:fontFamily">@font/poppinsregular</item>
+    </style>
+
+    <style name="text_12sp_bold_blue_grey_500">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/material_color_blue_grey_500</item>
+        <item name="android:fontFamily">@font/poppinsbold</item>
+    </style>
+
+    <style name="text_12sp_light_blue_grey_500">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/material_color_blue_grey_500</item>
+        <item name="android:fontFamily">@font/poppinslight</item>
+    </style>
+
 
 </resources>

@@ -7,31 +7,28 @@ import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.ProvinceEntity;
 import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
-import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
+import com.infinitum.bookingqba.model.local.pojo.RentMostComment;
+import com.infinitum.bookingqba.model.local.pojo.RentMostRating;
 import com.infinitum.bookingqba.model.repository.province.ProvinceRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
+import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.RecyclerViewItem;
-import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
-import com.infinitum.bookingqba.view.adapters.items.home.RentNewItem;
-import com.infinitum.bookingqba.view.adapters.items.home.RentPopItem;
-import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
+import com.infinitum.bookingqba.view.adapters.items.home.RentMostRatingItem;
+import com.infinitum.bookingqba.view.adapters.items.home.RentMostCommentItem;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.infinitum.bookingqba.util.Constants.HEADER_NEW;
-import static com.infinitum.bookingqba.util.Constants.HEADER_POP;
-import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_NEW;
-import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
 
 public class HomeViewModel extends android.arch.lifecycle.ViewModel {
 
@@ -60,106 +57,78 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
     }
 
 
-    public Flowable<Resource<List<ViewModel>>> getReferencesZone(String province) {
-        return referenceZoneRepository.allLocalReferencesZone(province)
-                .map(this::transformRZoneEntity)
+
+    public Flowable<Resource<List<BaseItem>>> getFiveMostCommentRent(String province) {
+        return rentRepository.fiveMostCommentRents(province)
+                .map(this::transformMostCommentRentEntity)
                 .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());
     }
 
-
-    public Flowable<Resource<List<ViewModel>>> getPopRents(String province) {
-        return rentRepository.fivePopRentByProvince(province)
-                .map(this::transformPopRentEntity)
+    public Flowable<Resource<List<BaseItem>>> getFiveMostRatingRents(String province) {
+        return rentRepository.fiveMostRatingRents(province)
+                .map(this::transformMostRatingRentEntity)
                 .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());
     }
 
-    public Flowable<Resource<List<ViewModel>>> getNewRents(String province) {
-        return rentRepository.fiveNewRentByProvince(province)
-                .map(this::transformNewRentEntity)
-                .onErrorReturn(Resource::error)
-                .subscribeOn(Schedulers.io());
-    }
-
-    public Flowable<Resource<List<ViewModel>>> getAllItems(String province) {
-        return Flowable.combineLatest(getReferencesZone(province), getPopRents(province), getNewRents(province),
+    public Flowable<Resource<Map<String,List<BaseItem>>>> getAllItems(String province) {
+        return Flowable.combineLatest(getFiveMostCommentRent(province), getFiveMostRatingRents(province),
                 this::getCompositeRecyclerViewModels)
                 .subscribeOn(Schedulers.io())
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
     }
 
+
     @NonNull
-    private List<ViewModel> getCompositeRecyclerViewModels(Resource<List<ViewModel>> listResource, Resource<List<ViewModel>> listResource2, Resource<List<ViewModel>> listResource3) {
-        List<ViewModel> allItems = new ArrayList<>();
-        if (listResource.data != null && listResource2.data != null && listResource3.data != null) {
-            allItems.addAll(listResource.data);
-            allItems.add(new HeaderItem(UUID.randomUUID().toString(), HEADER_POP, ORDER_TYPE_POPULAR));
-            allItems.addAll(listResource2.data);
-            allItems.add(new HeaderItem(UUID.randomUUID().toString(), HEADER_NEW, ORDER_TYPE_NEW));
-            allItems.addAll(listResource3.data);
-        }
-        return allItems;
+    private Map<String,List<BaseItem>> getCompositeRecyclerViewModels(Resource<List<BaseItem>> listResource, Resource<List<BaseItem>> listResource2) {
+        Map<String,List<BaseItem>> listMap = new HashMap<>();
+        listMap.put("MostCommented", listResource.data);
+        listMap.put("MostRating", listResource2.data);
+        return listMap;
     }
 
 
     //----------------------------------- TRANSFORM METHOD -------------------------------------//
 
-    private Resource<List<ViewModel>> transformNewRentEntity(Resource<List<RentAndGalery>> listResource) {
-        List<ViewModel> compositeList = new ArrayList<>();
-        List<RentNewItem> items = new ArrayList<>();
-        RentNewItem tempItem;
+    private Resource<List<BaseItem>> transformMostRatingRentEntity(Resource<List<RentMostRating>> listResource) {
+        List<BaseItem> compositeList = new ArrayList<>();
+        RentMostRatingItem tempItem;
         if (listResource.data != null && listResource.data.size() > 0) {
-            for (RentAndGalery entity : listResource.data) {
+            for (RentMostRating entity : listResource.data) {
                 String imagePath = entity.getImageAtPos(0);
-                tempItem = new RentNewItem(entity.getId(), entity.getName(), imagePath, entity.getIsWished());
+                tempItem = new RentMostRatingItem(entity.getId(), entity.getName(), imagePath);
                 tempItem.setRating(entity.getRating());
-                tempItem.setImagePath(imagePath);
-                tempItem.setWished(entity.getIsWished());
-                items.add(tempItem);
+                tempItem.setRatingCount(entity.getRatingCount());
+                tempItem.setRentMode(entity.getRentMode());
+                compositeList.add(tempItem);
             }
-            compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(), items));
             return Resource.success(compositeList);
         } else {
             return Resource.error("Null or empty values");
         }
     }
 
-    private Resource<List<ViewModel>> transformPopRentEntity(Resource<List<RentAndGalery>> listResource) {
-        List<ViewModel> compositeList = new ArrayList<>();
-        List<RentPopItem> items = new ArrayList<>();
-        RentPopItem tempItem;
+    private Resource<List<BaseItem>> transformMostCommentRentEntity(Resource<List<RentMostComment>> listResource) {
+        List<BaseItem> items = new ArrayList<>();
+        RentMostCommentItem tempItem;
         if (listResource.data != null && listResource.data.size() > 0) {
-            for (RentAndGalery entity : listResource.data) {
+            for (RentMostComment entity : listResource.data) {
                 String imagePath = entity.getImageAtPos(0);
-                tempItem = new RentPopItem(entity.getId(), entity.getName(), imagePath, entity.getIsWished());
+                tempItem = new RentMostCommentItem(entity.getId(), entity.getName(), imagePath);
                 tempItem.setPrice(entity.getPrice());
-                tempItem.setWished(entity.getIsWished());
-                tempItem.setImagePath(imagePath);
-                tempItem.setRating(entity.getRating());
+                tempItem.setRentMode(entity.getRentMode());
+                tempItem.setTotalComment(entity.getTotalComment());
+                tempItem.setEmotionAvg((int)entity.getEmotionAvg());
                 items.add(tempItem);
             }
-            compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(), items));
-            return Resource.success(compositeList);
+            return Resource.success(items);
         } else {
             return Resource.error("Null or empty values");
         }
     }
 
-    private Resource<List<ViewModel>> transformRZoneEntity(Resource<List<ReferenceZoneEntity>> listResource) {
-        List<ViewModel> compositeList = new ArrayList<>();
-        List<RZoneItem> items = new ArrayList<>();
-        if (listResource.data != null && listResource.data.size() > 0) {
-            for (ReferenceZoneEntity entity : listResource.data) {
-                items.add(new RZoneItem(entity.getId(), entity.getName(), entity.getImage()));
-            }
-            compositeList.add(new RecyclerViewItem(UUID.randomUUID().hashCode(), items));
-            return Resource.success(compositeList);
-        } else {
-            return Resource.error("Null or empty values");
-        }
-    }
 
     private CommonSpinnerList transformProvinces(Resource<List<ProvinceEntity>> listResource) {
         List<CommonSpinnerItem> spinnerProvinceItemList =  new ArrayList<>();

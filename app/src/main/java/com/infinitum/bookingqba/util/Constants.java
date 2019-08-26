@@ -80,8 +80,8 @@ public final class Constants {
     public static final String PROVINCE_UUID = "province";
     public static final String PROVINCE_SPINNER_INDEX = "spinnerIndex";
     public static final String PROVINCE_UUID_DEFAULT = "cfa7f0d7-2b67-4245-9157-48ba2117f63c";
-    public static final char ORDER_TYPE_POPULAR = 'r'; // Represent attrib rating
-    public static final char ORDER_TYPE_NEW = 'c'; // Represent attrib created
+    public static final char ORDER_TYPE_MOST_COMMENTED = 'c'; // Represent attrib rating
+    public static final char ORDER_TYPE_MOST_RATING = 'r'; // Represent attrib created
     public static final int FROM_DETAIL_TO_MAP = 6;
     public static final int FROM_DETAIL_REFRESH = 12;
     public static final int FROM_DETAIL_REFRESH_SHOW_GROUP = 18;
@@ -99,6 +99,7 @@ public final class Constants {
     public static final String LAST_EMAIL_REGISTER = "lastEmailRegister";
 
     public static final String MAP_PATH = "mapDir";
+    public static final String ROUTE_PATH = "routeDir";
 
     //BASIC
     public static final String LEVEL_ENTITY = "entity";

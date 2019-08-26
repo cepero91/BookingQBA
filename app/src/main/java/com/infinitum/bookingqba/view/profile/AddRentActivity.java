@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.view.profile;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.format.DateFormat;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -26,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.asksira.bsimagepicker.BSImagePicker;
 import com.crowdfire.cfalertdialog.CFAlertDialog;
@@ -84,6 +87,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
+import me.adawoud.bottomsheettimepicker.BottomSheetTimeRangePicker;
+import me.adawoud.bottomsheettimepicker.OnTimeRangeSelectedListener;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.service.LocationService.KEY_REQUESTING_LOCATION_UPDATES;
@@ -261,8 +266,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         binding.rvOffer.setAdapter(offerAdapter);
         GaleryFormObject galeryFormObject;
         imagesFilesPath = new ArrayList<>();
-        for (Galerie galerie:rentEdit.getGalerie()) {
-            String filepath = Constants.BASE_URL_API+"/"+galerie.getImage();
+        for (Galerie galerie : rentEdit.getGalerie()) {
+            String filepath = Constants.BASE_URL_API + "/" + galerie.getImage();
             galeryFormObject = new GaleryFormObject(UUID.randomUUID().toString());
             galeryFormObject.setRemote(true);
             galeryFormObject.setUrl(filepath);
@@ -301,6 +306,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         binding.flGalery.setOnClickListener(this);
         binding.flOffer.setOnClickListener(this);
         binding.btnUpload.setOnClickListener(this);
+        binding.flCheckin.setOnClickListener(this);
+        binding.flCheckout.setOnClickListener(this);
     }
 
 
@@ -492,7 +499,43 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
             case R.id.btn_upload:
                 uploadRent();
                 break;
+            case R.id.fl_checkin:
+                showCheckinDialog();
+                break;
+            case R.id.fl_checkout:
+                showCheckoutDialog();
+                break;
         }
+    }
+
+    private void showCheckinDialog() {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                StringBuilder timeBuilder = new StringBuilder();
+                timeBuilder.append(hourOfDay).append(":").append(minute>0?minute:"00");
+                binding.tvCheckin.setText(String.format("%s",timeBuilder.toString()));
+                binding.tvCheckin.setTextColor(getResources().getColor(R.color.colorAccent));
+                rentFormObject.setCheckin(timeBuilder.toString());
+            }
+        }, 12, 0, true);
+        timePickerDialog.setTitle("Entrada");
+        timePickerDialog.show();
+    }
+
+    private void showCheckoutDialog() {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                StringBuilder timeBuilder = new StringBuilder();
+                timeBuilder.append(hourOfDay).append(":").append(minute>0?minute:"00");
+                binding.tvCheckout.setText(String.format("%s",timeBuilder.toString()));
+                binding.tvCheckout.setTextColor(getResources().getColor(R.color.colorAccent));
+                rentFormObject.setCheckout(timeBuilder.toString());
+            }
+        }, 12, 0, true);
+        timePickerDialog.setTitle("Salida");
+        timePickerDialog.show();
     }
 
     private void uploadRent() {
@@ -509,13 +552,13 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(list -> {
                     boolean isCorrect = true;
-                    for(ResponseResult responseResult: list){
-                        if(responseResult.getCode()!=200){
+                    for (ResponseResult responseResult : list) {
+                        if (responseResult.getCode() != 200) {
                             isCorrect = false;
                             break;
                         }
                     }
-                    if(isCorrect)
+                    if (isCorrect)
                         hideLoadingDialog();
                 }, Timber::e);
         compositeDisposable.add(disposable);
@@ -531,7 +574,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         loadingDialog.show();
     }
 
-    private void hideLoadingDialog(){
+    private void hideLoadingDialog() {
         loadingDialog.hide();
     }
 

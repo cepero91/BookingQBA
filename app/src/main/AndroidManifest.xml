@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
+        android:networkSecurityConfig="@xml/network_secure_config"
         android:name=".BookingQBApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher_official"

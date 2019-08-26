@@ -10,36 +10,11 @@ public class BaseItem implements ViewModel, Parcelable {
     private String id;
     private String name;
     private String imagePath;
-    private int wished;
 
-    public BaseItem(String id, String name, String imagePath, int wished) {
+    public BaseItem(String id, String name, String imagePath) {
         this.id = id;
         this.name = name;
         this.imagePath = imagePath;
-        this.wished = wished;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        final BaseItem that = (BaseItem) o;
-        return id.equals(that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return name;
     }
 
     public String getId() {
@@ -66,14 +41,17 @@ public class BaseItem implements ViewModel, Parcelable {
         this.imagePath = imagePath;
     }
 
-    public int getWished() {
-        return wished;
-    }
+    public static final Creator<BaseItem> CREATOR = new Creator<BaseItem>() {
+        @Override
+        public BaseItem createFromParcel(Parcel in) {
+            return new BaseItem(in);
+        }
 
-    public void setWished(int wished) {
-        this.wished = wished;
-    }
-
+        @Override
+        public BaseItem[] newArray(int size) {
+            return new BaseItem[size];
+        }
+    };
 
     @Override
     public int describeContents() {
@@ -85,14 +63,12 @@ public class BaseItem implements ViewModel, Parcelable {
         dest.writeString(this.id);
         dest.writeString(this.name);
         dest.writeString(this.imagePath);
-        dest.writeInt(this.wished);
     }
 
     protected BaseItem(Parcel in) {
         this.id = in.readString();
         this.name = in.readString();
         this.imagePath = in.readString();
-        this.wished = in.readInt();
     }
 
 }

@@ -182,10 +182,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center"
-                android:fontFamily="@font/poppinsbold"
                 android:text="Ruta"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="12sp" />
+                style="@style/text_12sp_bold_blue_grey_500"/>
 
             <RelativeLayout
                 android:id="@+id/rl_from"
@@ -198,31 +196,29 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:layout_centerVertical="true"
-                    android:fontFamily="@font/poppinsregular"
                     android:text="Desde:"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp" />
+                    style="@style/text_12sp_regular_blue_grey_500"/>
 
                 <TextView
                     android:id="@+id/tv_rb_my_rent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsregular"
                     android:layout_margin="3dp"
                     android:layout_toRightOf="@+id/tv_from"
                     android:background="@drawable/shape_filter_small_ship_unselected"
-                    android:text="La Renta" />
+                    android:text="La Renta"
+                    style="@style/text_12sp_regular_blue_grey_500"/>
 
                 <TextView
                     android:id="@+id/tv_rb_my_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsregular"
                     android:layout_margin="3dp"
                     android:layout_toRightOf="@+id/tv_rb_my_rent"
                     android:background="@drawable/shape_filter_small_ship_unselected"
                     android:text="Mi Ubicacion"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    style="@style/text_12sp_regular_blue_grey_500"/>
 
             </RelativeLayout>
 
@@ -238,32 +234,28 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="10dp"
-                    android:fontFamily="@font/poppinsregular"
                     android:text="Hasta:"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp" />
+                    style="@style/text_12sp_regular_blue_grey_500" />
 
                 <TextView
                     android:id="@+id/tv_rb_my_rent_to"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsregular"
-                    android:includeFontPadding="false"
                     android:layout_margin="3dp"
                     android:layout_toRightOf="@+id/tv_to"
                     android:background="@drawable/shape_filter_small_ship_unselected"
-                    android:text="La Renta" />
+                    android:text="La Renta"
+                    style="@style/text_12sp_regular_blue_grey_500"/>
 
                 <TextView
                     android:id="@+id/tv_rb_poi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsregular"
-                    android:includeFontPadding="false"
                     android:layout_margin="3dp"
                     android:layout_toRightOf="@+id/tv_rb_my_rent_to"
                     android:background="@drawable/shape_filter_small_ship_unselected"
-                    android:text="Lugar de Interes" />
+                    android:text="Lugar de Interes"
+                    style="@style/text_12sp_regular_blue_grey_500"/>
 
             </RelativeLayout>
 
@@ -271,10 +263,10 @@
                 android:id="@+id/tv_route_validation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppinsregular"
                 android:layout_marginTop="5dp"
                 android:textAlignment="center"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                style="@style/text_12sp_light_blue_grey_500"/>
 
         </LinearLayout>
 

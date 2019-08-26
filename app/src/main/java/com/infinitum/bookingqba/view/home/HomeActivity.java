@@ -1,85 +1,39 @@
 package com.infinitum.bookingqba.view.home;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.arch.paging.PagedList;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Looper;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.github.florent37.shapeofview.shapes.CutCornerView;
-import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationAvailability;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.infinitum.bookingqba.BuildConfig;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
-import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.util.AlertUtils;
-import com.infinitum.bookingqba.util.LocationHelpers;
-import com.infinitum.bookingqba.util.PermissionHelper;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
-import com.infinitum.bookingqba.view.adapters.items.home.HeaderItem;
-import com.infinitum.bookingqba.view.adapters.items.home.RZoneItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.base.LocationActivity;
@@ -89,12 +43,9 @@ import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.view.filter.FilterFragment;
 import com.infinitum.bookingqba.view.interaction.InfoInteraction;
-import com.infinitum.bookingqba.view.interaction.LoginInteraction;
 import com.infinitum.bookingqba.view.listwish.ListWishFragment;
 import com.infinitum.bookingqba.view.map.MapFragment;
 import com.infinitum.bookingqba.view.profile.AddRentActivity;
-import com.infinitum.bookingqba.view.profile.AuthFragment;
-import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.profile.MyRentsFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.profile.UserAuthActivity;
@@ -105,10 +56,7 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
 
-import java.lang.ref.WeakReference;
-import java.security.Permission;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -119,15 +67,11 @@ import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.HasSupportFragmentInjector;
-import timber.log.Timber;
 
-import static android.view.Gravity.CENTER;
 import static com.infinitum.bookingqba.service.LocationService.KEY_REQUESTING_LOCATION_UPDATES;
 import static com.infinitum.bookingqba.util.Constants.ALTERNATIVE_SYNC;
 import static com.infinitum.bookingqba.util.Constants.BASE_URL_API;
@@ -136,24 +80,16 @@ import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH_SHOW_G
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_SHOW_GROUP;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.IMEI;
-import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
-import static com.infinitum.bookingqba.util.Constants.LOCATION_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.LOGIN_REQUEST_CODE;
-import static com.infinitum.bookingqba.util.Constants.LOGIN_TAG;
 import static com.infinitum.bookingqba.util.Constants.MY_REQUEST_CODE;
-import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_DEFAULT;
-import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_ID;
-import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_POPULAR;
+import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_COMMENTED;
 import static com.infinitum.bookingqba.util.Constants.PERIODICAL_WORK_NAME;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID_DEFAULT;
-import static com.infinitum.bookingqba.util.Constants.READ_PHONE_REQUEST_CODE;
-import static com.infinitum.bookingqba.util.Constants.REQUEST_CHECK_SETTINGS;
 import static com.infinitum.bookingqba.util.Constants.USER_AVATAR;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
-import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
 public class HomeActivity extends LocationActivity implements HasSupportFragmentInjector,
@@ -218,6 +154,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                 mFragment).commit();
     }
 
+
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return fragmentDispatchingAndroidInjector;
@@ -257,6 +194,17 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(true);
             updateNavHeader(sharedPreferences.getString(USER_NAME, ""), sharedPreferences.getString(USER_AVATAR, ""));
         }
+
+        homeBinding.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                if (drawerView.getId() == R.id.nav_view_notification && filterFragment != null
+                        && filterFragment.isVisible()) {
+                    filterFragment.loadFilterParams();
+                }
+            }
+        });
     }
 
 
@@ -319,24 +267,15 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     // ------------------------ USER CLICKS EVENTS ---------------------------- //
 
     @Override
-    public void onItemClick(View view, ViewModel baseItem) {
-        if (baseItem instanceof HeaderItem) {
-            String provinceName = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
-            mFragment = RentListFragment.newInstance(provinceName, "", ((HeaderItem) baseItem).getOrderType());
-            fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.frame_container,
-                    mFragment).commit();
-            homeBinding.navView.getMenu().getItem(1).setChecked(true);
-        } else if (baseItem instanceof RZoneItem) {
-            String provinceName = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
-            mFragment = RentListFragment.newInstance(provinceName, ((RZoneItem) baseItem).getId(), ORDER_TYPE_POPULAR);
-            fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.frame_container,
-                    mFragment).commit();
-            homeBinding.navView.getMenu().getItem(1).setChecked(true);
-        } else if (baseItem instanceof BaseItem) {
-            navigateToDetailActivity((BaseItem) baseItem, view);
+    public void onItemClick(View view, BaseItem baseItem) {
+        if (baseItem != null) {
+            navigateToDetailActivity(baseItem, view);
         }
+    }
+
+    @Override
+    public void onViewAllClick(char orderType) {
+        goToRentListWithOrderType(orderType);
     }
 
 
@@ -344,7 +283,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
         intent.putExtra("uuid", baseItem.getId());
         intent.putExtra("url", baseItem.getImagePath());
-        intent.putExtra("wished", baseItem.getWished());
+        intent.putExtra("wished", 0);
         startActivityForResult(intent, MY_REQUEST_CODE);
     }
 
@@ -381,7 +320,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                 }
                 fragmentManager.beginTransaction().replace(R.id.filter_container, filterFragment).commit();
                 homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
-                homeBinding.drawerLayout.postDelayed(() -> homeBinding.drawerLayout.openDrawer(Gravity.END), 200);
+                homeBinding.drawerLayout.openDrawer(Gravity.END);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -413,7 +352,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             sameFragment = false;
         } else if (id == R.id.nav_list && !(mFragment instanceof RentListFragment)) {
             String provinceName = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
-            mFragment = RentListFragment.newInstance(provinceName, "", ORDER_TYPE_POPULAR);
+            mFragment = RentListFragment.newInstance(provinceName, ORDER_TYPE_MOST_COMMENTED);
             sameFragment = false;
         } else if (id == R.id.nav_profile && !(mFragment instanceof ProfileFragment)) {
             mFragment = ProfileFragment.newInstance();
@@ -519,7 +458,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
         intent.putExtra("uuid", geoRent.getId());
         intent.putExtra("url", geoRent.getImagePath());
-        intent.putExtra("wished", geoRent.getWished());
+        intent.putExtra("wished", 0);
         startActivityForResult(intent, MY_REQUEST_CODE);
     }
 
@@ -607,6 +546,15 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         intent.putExtra("id", uuid);
         intent.putExtra("edit", true);
         startActivity(intent);
+    }
+
+    private void goToRentListWithOrderType(char orderType) {
+        String provinceName = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
+        mFragment = RentListFragment.newInstance(provinceName, orderType);
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.frame_container,
+                mFragment).commit();
+        homeBinding.navView.getMenu().getItem(1).setChecked(true);
     }
 
     // -------------------------- LIVECYCLE ACTIVITY METHOD -------------------------- //

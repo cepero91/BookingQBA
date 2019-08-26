@@ -19,6 +19,8 @@ public class RentFormObject {
     private String longitude;
     private String municipality;
     private String referenceZone;
+    private String checkin;
+    private String checkout;
     private String userid;
 
     public RentFormObject(String uuid) {
@@ -175,5 +177,21 @@ public class RentFormObject {
 
     public void setUserid(String userid) {
         this.userid = userid;
+    }
+
+    public String getCheckin() {
+        return checkin;
+    }
+
+    public void setCheckin(String checkin) {
+        this.checkin = checkin;
+    }
+
+    public String getCheckout() {
+        return checkout;
+    }
+
+    public void setCheckout(String checkout) {
+        this.checkout = checkout;
     }
 }

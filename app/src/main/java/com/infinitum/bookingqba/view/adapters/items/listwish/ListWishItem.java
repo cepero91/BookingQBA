@@ -1,5 +1,7 @@
 package com.infinitum.bookingqba.view.adapters.items.listwish;
 
+import android.os.Parcel;
+
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 
 public class ListWishItem extends BaseItem{
@@ -9,12 +11,12 @@ public class ListWishItem extends BaseItem{
     private double price;
     private String rentMode;
 
-    public ListWishItem(String id, String name, String imagePath, int wished) {
-        super(id, name, imagePath, wished);
+    public ListWishItem(String id, String name, String imagePath) {
+        super(id, name, imagePath);
     }
 
-    public ListWishItem(String id, String name, String imagePath, int wished, String address, float rating, double price, String rentMode) {
-        super(id, name, imagePath, wished);
+    public ListWishItem(String id, String name, String imagePath, String address, float rating, double price, String rentMode) {
+        super(id, name, imagePath);
         this.address = address;
         this.rating = rating;
         this.price = price;
@@ -53,4 +55,38 @@ public class ListWishItem extends BaseItem{
         this.rentMode = rentMode;
     }
 
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(this.address);
+        dest.writeFloat(this.rating);
+        dest.writeDouble(this.price);
+        dest.writeString(this.rentMode);
+    }
+
+    protected ListWishItem(Parcel in) {
+        super(in);
+        this.address = in.readString();
+        this.rating = in.readFloat();
+        this.price = in.readDouble();
+        this.rentMode = in.readString();
+    }
+
+    public static final Creator<ListWishItem> CREATOR = new Creator<ListWishItem>() {
+        @Override
+        public ListWishItem createFromParcel(Parcel source) {
+            return new ListWishItem(source);
+        }
+
+        @Override
+        public ListWishItem[] newArray(int size) {
+            return new ListWishItem[size];
+        }
+    };
 }

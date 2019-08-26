@@ -10,6 +10,7 @@
         <variable
             name="isLoading"
             type="Boolean" />
+
     </data>
 
 
@@ -19,212 +20,15 @@
         android:background="@color/White_100"
         tools:context=".view.filter.FilterFragment">
 
-        <com.xw.repo.widget.BounceScrollView
-            android:id="@+id/bv_filter_params"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="50dp"
-            android:layout_alignParentTop="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <FrameLayout
-                    android:id="@+id/ll_bar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?actionBarSize"
-                    android:background="@color/material_color_grey_200"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:fontFamily="@font/poppinsregular"
-                        android:includeFontPadding="false"
-                        android:text="@string/busqueda_avanzada"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="18sp" />
-
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:layout_marginTop="5dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:paddingTop="5dp"
-                        android:text="Modo de Renta"
-                        android:textAlignment="center"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="16sp" />
-
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center">
-
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/rv_rent_mode"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:nestedScrollingEnabled="false"
-                            android:paddingEnd="10dp"
-                            android:paddingStart="10dp"
-                            app:visibleGone="@{!safeUnbox(isLoading)}" />
-
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:paddingTop="5dp"
-                        android:text="Municipio"
-                        android:textAlignment="center"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="16sp" />
-
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center">
-
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/rv_municipality"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:paddingEnd="10dp"
-                            android:paddingStart="10dp"
-                            app:visibleGone="@{!safeUnbox(isLoading)}" />
-
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:paddingTop="5dp"
-                        android:text="Facilidades"
-                        android:textAlignment="center"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="16sp" />
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/rv_amenities"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:nestedScrollingEnabled="false"
-                            android:paddingEnd="10dp"
-                            android:paddingStart="10dp"
-                            app:visibleGone="@{!safeUnbox(isLoading)}" />
-
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:paddingTop="5dp"
-                        android:text="Precio"
-                        android:textAlignment="center"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="16sp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <com.github.guilhe.views.SeekBarRangedView
-                            android:id="@+id/price_seek"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="15dp"
-                            android:layout_marginStart="15dp"
-                            custom:backgroundColor="@color/material_color_grey_300"
-                            custom:backgroundHeight="10dp"
-                            custom:currentMax="0"
-                            custom:currentMin="0"
-                            custom:max="1000"
-                            custom:min="0"
-                            custom:progressColor="@color/colorPrimary"
-                            custom:progressHeight="20dp"
-                            custom:rounded="true" />
-
-                        <TextView
-                            android:id="@+id/tv_min_max"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsregular"
-                            android:padding="5dp"
-                            android:text="min: $0  max: $0"
-                            android:textSize="12sp" />
-
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-
-            </LinearLayout>
-
-        </com.xw.repo.widget.BounceScrollView>
-
-
         <LinearLayout
             android:id="@+id/ll_btn_content"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
+            android:layout_alignParentTop="true"
             android:background="@color/material_color_grey_200"
             android:gravity="center"
             android:orientation="horizontal"
-            android:weightSum="2"
-            android:layout_alignParentBottom="true">
+            android:weightSum="2">
 
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/btn_filter"
@@ -254,6 +58,251 @@
 
         </LinearLayout>
 
+        <ScrollView
+            android:id="@+id/bv_filter_params"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/ll_btn_content"
+            android:paddingBottom="20dp"
+            android:clipToPadding="false"
+            app:discreteVisibility="@{!safeUnbox(isLoading)}">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:paddingTop="5dp"
+                        android:text="Por modo de renta"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_rent_mode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:clipToPadding="false"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingEnd="12dp"
+                        android:paddingStart="12dp"
+                        app:visibleGone="@{!safeUnbox(isLoading)}" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:paddingTop="5dp"
+                        android:text="Por municipio"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_municipality"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:clipToPadding="false"
+                        android:paddingEnd="12dp"
+                        android:paddingStart="12dp"
+                        app:visibleGone="@{!safeUnbox(isLoading)}" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:paddingTop="5dp"
+                        android:text="Por facilidades"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_amenities"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingEnd="12dp"
+                        android:paddingStart="12dp"
+                        android:clipToPadding="false"
+                        app:visibleGone="@{!safeUnbox(isLoading)}" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:paddingTop="5dp"
+                        android:text="Cercana a:"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_poi_category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingEnd="12dp"
+                        android:paddingStart="12dp"
+                        android:clipToPadding="false"
+                        app:visibleGone="@{!safeUnbox(isLoading)}" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:paddingTop="5dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="Con precio maximo"
+                        android:layout_gravity="start"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                    <android.support.v7.widget.AppCompatSeekBar
+                        android:id="@+id/sb_max_price"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"/>
+
+                    <TextView
+                        android:id="@+id/tv_max_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|center"
+                        android:text="$ 0"
+                        style="@style/text_12sp_regular_blue_grey_500"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:paddingTop="5dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="Ordenado descendentemente por:"
+                        android:layout_gravity="start"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                    <RadioGroup
+                        android:id="@+id/rg_ordering"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
+
+                        <android.support.v7.widget.AppCompatRadioButton
+                            android:id="@+id/rb_comment"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Comentarios"/>
+
+                        <android.support.v7.widget.AppCompatRadioButton
+                            android:id="@+id/rb_rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Rating"/>
+
+                    </RadioGroup>
+
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_centerInParent="true"
+            app:visibleGone="@{safeUnbox(isLoading)}">
+
+            <com.rey.material.widget.ProgressView
+                android:id="@+id/progress_pv_circular_inout"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_gravity="center"
+                app:pv_autostart="true"
+                app:v_styleId="@array/pv_circular_in" />
+
+        </FrameLayout>
 
     </RelativeLayout>
 

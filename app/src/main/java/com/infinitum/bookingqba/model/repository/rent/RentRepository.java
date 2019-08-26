@@ -10,6 +10,8 @@ import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndDependencies;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
+import com.infinitum.bookingqba.model.local.pojo.RentMostComment;
+import com.infinitum.bookingqba.model.local.pojo.RentMostRating;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
@@ -17,6 +19,7 @@ import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
 import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
+import com.infinitum.bookingqba.view.adapters.items.home.RentMostCommentItem;
 
 import org.mapsforge.core.model.LatLong;
 
@@ -40,7 +43,9 @@ public interface RentRepository {
 
     DataSource.Factory<Integer,RentAndGalery> allRentByZone(String province, String zone);
 
-    Flowable<Resource<List<RentAndGalery>>> fivePopRentByProvince(String province);
+    Flowable<Resource<List<RentMostRating>>> fiveMostRatingRents(String province);
+
+    Flowable<Resource<List<RentMostComment>>> fiveMostCommentRents(String province);
 
     Flowable<Resource<List<RentAndGalery>>> fiveNewRentByProvince(String province);
 
@@ -75,5 +80,7 @@ public interface RentRepository {
     Single<Resource<List<RentEdit>>> rentById(String token, String uuid);
 
     Flowable<Resource<List<RentAndDependencies>>> rentNearLocation(LatLong latLong, double range);
+
+    Flowable<Double> maxRentPrice();
 
 }

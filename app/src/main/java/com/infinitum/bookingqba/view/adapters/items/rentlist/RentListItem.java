@@ -11,17 +11,19 @@ public class RentListItem extends BaseItem {
     private String rentMode;
     private String address;
     private float rating;
+    private int wished;
 
-    public RentListItem(String id, String name, String imagePath, int wished) {
-        super(id, name, imagePath, wished);
+    public RentListItem(String id, String name, String imagePath) {
+        super(id, name, imagePath);
     }
 
-    public RentListItem(String id, String name, String imagePath, int wished, double price, String rentMode, String address, float rating) {
-        super(id, name, imagePath, wished);
+    public RentListItem(String id, String name, String imagePath, double price, String rentMode, String address, float rating, int wished) {
+        super(id, name, imagePath);
         this.price = price;
         this.rentMode = rentMode;
         this.address = address;
         this.rating = rating;
+        this.wished = wished;
     }
 
     public double getPrice() {
@@ -56,6 +58,14 @@ public class RentListItem extends BaseItem {
         this.rating = rating;
     }
 
+    public int getWished() {
+        return wished;
+    }
+
+    public void setWished(int wished) {
+        this.wished = wished;
+    }
+
 
     @Override
     public int describeContents() {
@@ -69,6 +79,7 @@ public class RentListItem extends BaseItem {
         dest.writeString(this.rentMode);
         dest.writeString(this.address);
         dest.writeFloat(this.rating);
+        dest.writeInt(this.wished);
     }
 
     protected RentListItem(Parcel in) {
@@ -77,6 +88,7 @@ public class RentListItem extends BaseItem {
         this.rentMode = in.readString();
         this.address = in.readString();
         this.rating = in.readFloat();
+        this.wished = in.readInt();
     }
 
     public static final Creator<RentListItem> CREATOR = new Creator<RentListItem>() {

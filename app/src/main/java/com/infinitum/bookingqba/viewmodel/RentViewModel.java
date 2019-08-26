@@ -32,6 +32,7 @@ import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.Municipality;
+import com.infinitum.bookingqba.model.remote.pojo.PoiType;
 import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
@@ -41,6 +42,7 @@ import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.comment.CommentRepository;
 import com.infinitum.bookingqba.model.repository.municipality.MunicipalityRepository;
+import com.infinitum.bookingqba.model.repository.poitype.PoiTypeRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.util.DateUtils;
@@ -92,18 +94,20 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private ReferenceZoneRepository rzoneRepository;
     private MunicipalityRepository municipalityRepository;
     private CommentRepository commentRepository;
+    private PoiTypeRepository poiTypeRepository;
     private Map<String, List<CheckableItem>> filterMap;
     private LiveData<PagedList<RentListItem>> ldRentsList;
 
     @Inject
     public RentViewModel(AmenitiesRepository amenitiesRepository, RentRepository rentRepository
             , ReferenceZoneRepository rzoneRepository, CommentRepository commentRepository
-            , MunicipalityRepository municipalityRepository) {
+            , MunicipalityRepository municipalityRepository, PoiTypeRepository poiTypeRepository) {
         this.amenitiesRepository = amenitiesRepository;
         this.rentRepository = rentRepository;
         this.rzoneRepository = rzoneRepository;
         this.commentRepository = commentRepository;
         this.municipalityRepository = municipalityRepository;
+        this.poiTypeRepository = poiTypeRepository;
         filterMap = new HashMap<>();
     }
 
@@ -183,13 +187,27 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         Flowable<List<CheckableItem>> municipalityFlow = municipalityRepository.allMunicipalitiesByProvince(province)
                 .subscribeOn(Schedulers.io())
                 .map(this::transformMunToMap);
-        return Flowable.combineLatest(amenitieFlow, rentModeFlow, municipalityFlow, (amenities, rentmode, municipalities) -> {
+        Flowable<List<CheckableItem>> poiTypeFlow = poiTypeRepository.allLocalPoiType()
+                .subscribeOn(Schedulers.io())
+                .map(this::transformPoiTypeToMap);
+        Flowable<List<CheckableItem>> maxPrice = rentRepository.maxRentPrice()
+                .subscribeOn(Schedulers.io())
+                .map(aDouble -> {
+                    List<CheckableItem> checkableItems = new ArrayList<>();
+                    checkableItems.add(new CheckableItem(UUID.randomUUID().toString(),String.valueOf(aDouble),false));
+                    return checkableItems; });
+        return Flowable.zip(amenitieFlow, rentModeFlow, municipalityFlow, poiTypeFlow, maxPrice,
+                (amenities, rentmode, municipalities, poitypes, max) -> {
             filterMap.put("Amenities", amenities);
             filterMap.put("RentMode", rentmode);
             filterMap.put("Municipality", municipalities);
+            filterMap.put("PoiType", poitypes);
+            filterMap.put("Price", max);
             return filterMap;
         }).subscribeOn(Schedulers.io());
     }
+
+
 
     public LiveData<PagedList<RentListItem>> filter(Map<String, List<String>> filterParams, String province) {
         DataSource.Factory<Integer, RentListItem> dataSource = rentRepository.filterRents(filterParams, province)
@@ -198,6 +216,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         ldRentsList = pagedListBuilder.build();
         return ldRentsList;
     }
+
 
     // ------------------------ RENT DETAIL --------------------------------------------- //
 
@@ -328,6 +347,16 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return viewItemList;
     }
 
+    private List<CheckableItem> transformPoiTypeToMap(Resource<List<PoiTypeEntity>> listResource) {
+        ArrayList<CheckableItem> viewItemList = new ArrayList<>();
+        if (listResource.data != null) {
+            for (PoiTypeEntity entity : listResource.data) {
+                viewItemList.add(new CheckableItem(String.valueOf(entity.getId()), entity.getName(), false));
+            }
+        }
+        return viewItemList;
+    }
+
     private ArrayList<RentGalerieItem> convertGaleriePojoToParcel(List<GalerieEntity> galerieEntities) {
         ArrayList<RentGalerieItem> detailGalerieItems = new ArrayList<>();
         for (GalerieEntity item : galerieEntities) {
@@ -377,7 +406,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndDependencies rentAndDependencies : listResource.data) {
                 String imagePath = rentAndDependencies.getImageAtPos(0);
-                geoRent = new GeoRent(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath, rentAndDependencies.getIsWished());
+                geoRent = new GeoRent(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath);
                 geoRent.setGeoPoint(new GeoPoint(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()));
                 geoRent.setPrice(rentAndDependencies.getPrice());
                 geoRent.setRating(rentAndDependencies.getRating());
@@ -414,7 +443,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         ListWishItem item;
         for (RentAndGalery rentAndGalery : listResource.data) {
             String imagePath = rentAndGalery.getImageAtPos(0);
-            item = new ListWishItem(rentAndGalery.getId(), rentAndGalery.getName(), imagePath, rentAndGalery.getIsWished());
+            item = new ListWishItem(rentAndGalery.getId(), rentAndGalery.getName(), imagePath);
             item.setAddress(rentAndGalery.getAddress());
             item.setPrice(rentAndGalery.getPrice());
             item.setRating(rentAndGalery.getRating());
@@ -430,7 +459,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         RentListItem tempItem;
         for (RentAndGalery entity : input) {
             String imagePath = entity.getImageAtPos(0);
-            tempItem = new RentListItem(entity.getId(), entity.getName(), imagePath, entity.getIsWished());
+            tempItem = new RentListItem(entity.getId(), entity.getName(), imagePath);
             tempItem.setRating(entity.getRating());
             tempItem.setAddress(entity.getAddress());
             tempItem.setRentMode(entity.getRentMode());

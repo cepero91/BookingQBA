@@ -90,8 +90,9 @@
                 android:layout_gravity="center"
                 android:layout_margin="10dp"
                 app:fabSize="mini"
-                app:srcCompat="@drawable/ic_map_signs"
-                android:visibility="gone"/>
+                app:srcCompat="@drawable/ic_fa_map_signs_line"
+                android:visibility="gone"
+                android:tint="@color/White_100"/>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/iv_location"
@@ -101,7 +102,8 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 app:fabSize="normal"
-                app:srcCompat="@drawable/ic_crosshairs" />
+                app:srcCompat="@drawable/ic_fa_crosshairs_line"
+                android:tint="@color/White_100"/>
 
         </LinearLayout>
 
