@@ -51,12 +51,14 @@ import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.profile.UserAuthActivity;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
+import com.infinitum.bookingqba.view.reservation.ReservationListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -195,16 +197,6 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             updateNavHeader(sharedPreferences.getString(USER_NAME, ""), sharedPreferences.getString(USER_AVATAR, ""));
         }
 
-        homeBinding.drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                if (drawerView.getId() == R.id.nav_view_notification && filterFragment != null
-                        && filterFragment.isVisible()) {
-                    filterFragment.loadFilterParams();
-                }
-            }
-        });
     }
 
 
@@ -318,9 +310,9 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                     String provinceId = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
                     filterFragment = FilterFragment.newInstance(provinceId);
                 }
-                fragmentManager.beginTransaction().replace(R.id.filter_container, filterFragment).commit();
                 homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
-                homeBinding.drawerLayout.openDrawer(Gravity.END);
+                homeBinding.drawerLayout.openDrawer(Gravity.END, false);
+                fragmentManager.beginTransaction().replace(R.id.filter_container, filterFragment).commit();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -377,6 +369,11 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             String userid = sharedPreferences.getString(USER_ID, "");
             String token = sharedPreferences.getString(USER_TOKEN, "");
             mFragment = MyRentsFragment.newInstance(userid, token);
+            sameFragment = false;
+        } else if (id == R.id.nav_reservation_request && !(mFragment instanceof ReservationListFragment)) {
+            String userid = sharedPreferences.getString(USER_ID, "");
+            String token = sharedPreferences.getString(USER_TOKEN, "");
+            mFragment = ReservationListFragment.newInstance(userid, token);
             sameFragment = false;
         }
         if (mFragment != null && !sameFragment) {
@@ -453,6 +450,17 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         }
     }
 
+    //---------------------------- MAP ----------------------------------------
+
+    @Override
+    public void shortCutToMap(List<GeoRent> geoRentList) {
+        mFragment = MapFragment.newInstance(new ArrayList<>(geoRentList), false);
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.frame_container,
+                mFragment).commit();
+        homeBinding.navView.getMenu().getItem(3).setChecked(true);
+    }
+
     @Override
     public void onMapInteraction(GeoRent geoRent) {
         Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
@@ -489,7 +497,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     }
 
     @Override
-    public void onFilterElement(PagedList<RentListItem> resourceResult) {
+    public void onFilterElement(PagedList<GeoRent> resourceResult) {
         if (mFragment instanceof RentListFragment) {
             ((RentListFragment) mFragment).filterListResult(resourceResult);
         }

@@ -135,11 +135,11 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public DataSource.Factory<Integer, RentAndGalery> allRentByOrderType(char orderType, String province) {
+    public DataSource.Factory<Integer, RentAndDependencies> allRentByOrderType(char orderType, String province) {
         if (orderType == ORDER_TYPE_MOST_RATING) {
             return qbaDao.getAllMostRatingRent(province);
         } else if(orderType == ORDER_TYPE_MOST_COMMENTED) {
-            String query = "SELECT Rent.id,Rent.name,Rent.price, Rent.rentMode, AVG(Comment.emotion) as emotionAvg, COUNT(Comment.id) as totalComment FROM Rent " +
+            String query = "SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.ratingCount, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished, AVG(Comment.emotion) as emotionAvg, COUNT(Comment.id) as totalComment FROM Rent " +
                     "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
                     "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
                     "LEFT JOIN Comment ON Comment.rent = Rent.id "+
@@ -265,7 +265,7 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public DataSource.Factory<Integer, RentAndGalery> filterRents(Map<String, List<String>> filterParams, String province) {
+    public DataSource.Factory<Integer, RentAndDependencies> filterRents(Map<String, List<String>> filterParams, String province) {
         String query = FilterRepositoryUtil.buildFilterQuery(filterParams, province);
         SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query);
         return qbaDao.filterRents(simpleSQLiteQuery);

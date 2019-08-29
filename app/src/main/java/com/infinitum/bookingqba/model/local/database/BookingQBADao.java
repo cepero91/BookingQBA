@@ -458,16 +458,16 @@ public abstract class BookingQBADao {
      * @return
      */
     @Transaction
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
+    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.ratingCount, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
             "Province.id = :province ORDER BY Rent.rating DESC, Rent.ratingCount DESC")
-    public abstract DataSource.Factory<Integer, RentAndGalery> getAllMostRatingRent(String province);
+    public abstract DataSource.Factory<Integer, RentAndDependencies> getAllMostRatingRent(String province);
 
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
-    public abstract DataSource.Factory<Integer, RentAndGalery> getAllMostCommentedRent(SupportSQLiteQuery query);
+    public abstract DataSource.Factory<Integer, RentAndDependencies> getAllMostCommentedRent(SupportSQLiteQuery query);
 
     @Transaction
     @TypeConverters(DateTypeConverter.class)
@@ -500,7 +500,7 @@ public abstract class BookingQBADao {
 
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
-    public abstract DataSource.Factory<Integer, RentAndGalery> filterRents(SupportSQLiteQuery query);
+    public abstract DataSource.Factory<Integer, RentAndDependencies> filterRents(SupportSQLiteQuery query);
 
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)

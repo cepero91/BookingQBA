@@ -37,6 +37,7 @@ import com.infinitum.bookingqba.view.base.BaseMapFragment;
 import com.infinitum.bookingqba.view.widgets.CenterSmoothScroller;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
+import com.mikhaellopez.rxanimation.RxAnimation;
 import com.squareup.picasso.Picasso;
 
 import org.mapsforge.core.model.LatLong;
@@ -114,11 +115,10 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     private MapPoiAdapter mapPoiAdapter;
     private LatLong from;
     private PoiItem lastPoiSelected;
-    private boolean isRouteOpen;
     private PathLayer pathLayer;
     private LatLong to;
     private RendererRecyclerViewAdapter nearAdapter;
-    private boolean isRouteActive;
+    private boolean isRouteActive, isRouteOpen, isNearOpen;
 
 
     public MapFragment() {
@@ -217,6 +217,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     //------------------------------------ METHODS -----------------------
 
     private void setupMarkerView() {
+        isNearOpen = false;
         isRentPoiOpen = false;
         isRouteOpen = false;
         cafeBarMapMarkerBinding = DataBindingUtil.inflate(getActivity().getLayoutInflater(), R.layout.cafe_bar_map_marker, mapBinding.flContentMap, false);
@@ -367,7 +368,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
         map.layers().add(mMarkerLayer);
 
         List<MarkerItem> pts = new ArrayList<>();
-        if (geoRentList != null && geoRentList.size() > 0) {
+        if (geoRentArrayList != null && geoRentArrayList.size() > 0) {
             for (GeoRent geoRent : geoRentList) {
                 pts.add(new MarkerItem(geoRent.getId(), "rent", geoRent.getName(), geoRent.getGeoPoint()));
             }
@@ -386,6 +387,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
             map.setMapPosition(mapPosition);
             mMarkerLayer.getItemList().get(0).setMarker(rentMarkerPressed);
             currentMarkerIndex = 0;
+            mapBinding.llContentFloating.setVisibility(View.GONE);
             showMarkerView();
         } else {
             // Position Habana
@@ -420,18 +422,25 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     }
 
     private void rentMarkerClick(int index, MarkerItem item) {
-        if (item.getMarker() == null) {
-            if (currentMarkerIndex != -1) {
-                mMarkerLayer.getItemList().get(currentMarkerIndex).setMarker(null);
+        if (!isNearOpen) {
+            if (item.getMarker() == null) {
+                mapBinding.llContentFloating.setVisibility(View.GONE);
+                if (currentMarkerIndex != -1) {
+                    mMarkerLayer.getItemList().get(currentMarkerIndex).setMarker(null);
+                }
+                currentMarkerIndex = index;
+                item.setMarker(rentMarkerPressed);
+                map.animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 15), Easing.Type.SINE_IN);
+                showMarkerView();
+            } else {
+                item.setMarker(null);
+                currentMarkerIndex = -1;
+                hideMarkerView();
+                mapBinding.llContentFloating.setVisibility(View.VISIBLE);
             }
-            currentMarkerIndex = index;
-            item.setMarker(rentMarkerPressed);
-            map.animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 15), Easing.Type.SINE_IN);
-            showMarkerView();
         } else {
-            item.setMarker(null);
-            currentMarkerIndex = -1;
-            hideMarkerView();
+            hideNearRent();
+            mapBinding.llContentFloating.setVisibility(View.VISIBLE);
         }
     }
 
@@ -459,12 +468,13 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
             mapBinding.flMarker.removeAllViews();
         }
         mapBinding.flMarker.addView(cafeBarMapMarkerBinding.getRoot());
-        cafeBarMapMarkerBinding.flRentContent.setVisibility(View.VISIBLE);
         mapPoiAdapter = new MapPoiAdapter(geoRent.getPoiItems(), this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         cafeBarMapMarkerBinding.rvPoi.setLayoutManager(linearLayoutManager);
         cafeBarMapMarkerBinding.rvPoi.setAdapter(mapPoiAdapter);
-        mapBinding.llContentFloating.setVisibility(View.GONE);
+        
+        cafeBarMapMarkerBinding.flRentContent.animate().alpha(1).setDuration(500).start();
+
     }
 
     private void hideMarkerView() {
@@ -476,16 +486,17 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
         resetRouteParams();
         cafeBarMapMarkerBinding.llRouteContent.setVisibility(View.GONE);
         cafeBarMapMarkerBinding.llPoiContent.setVisibility(View.GONE);
-        cafeBarMapMarkerBinding.flRentContent.setVisibility(View.GONE);
+        cafeBarMapMarkerBinding.flRentContent.setAlpha(0);
         mapBinding.flMarker.removeAllViews();
         currentMarkerIndex = -1;
         removeAllPoiMarker();
-        removePathLayer();
-        mapBinding.llContentFloating.setVisibility(View.VISIBLE);
+        if (isRouteActive) {
+            isRouteActive = false;
+            removePathLayer();
+        }
     }
 
     private void resetRouteParams() {
-        isRouteActive = false;
         cafeBarMapMarkerBinding.tvRouteValidation.setText("");
         cafeBarMapMarkerBinding.tvRouteValidation.setVisibility(View.GONE);
         cafeBarMapMarkerBinding.tvBtnRemoveRoute.setVisibility(View.GONE);
@@ -623,6 +634,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
                 resetRouteParams();
                 break;
             case R.id.iv_near_rent:
+                mapBinding.llContentFloating.setVisibility(View.GONE);
                 searchRentNearLocation();
                 break;
             case R.id.cv_btn_view:
@@ -640,14 +652,14 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
                 }
                 break;
             case R.id.iv_near_close:
-                hideRentNear();
+                hideNearRent();
+                mapBinding.llContentFloating.setVisibility(View.VISIBLE);
                 break;
         }
     }
 
 
     private void searchRentNearLocation() {
-        mapBinding.llContentFloating.setVisibility(View.GONE);
         if (mapBinding.flNear.getChildCount() > 0) {
             mapBinding.flNear.removeAllViews();
         }
@@ -664,7 +676,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listResource -> {
-                    showRentNear(listResource);
+                    showNearRent(listResource);
                 }, Timber::e);
         compositeDisposable.add(disposable);
     }
@@ -750,7 +762,8 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
 
     //--------------------------------------- NEAR RENT -----------------------
 
-    private void showRentNear(Resource<List<GeoRent>> listResource) {
+    private void showNearRent(Resource<List<GeoRent>> listResource) {
+        isNearOpen = true;
         if (listResource.data != null && listResource.data.size() > 0) {
             nearAdapter.setItems(listResource.data);
             nearMapLayoutBinding.setLoading(false);
@@ -759,9 +772,9 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
         }
     }
 
-    private void hideRentNear() {
+    private void hideNearRent() {
+        isNearOpen = false;
         mapBinding.flNear.removeAllViews();
-        mapBinding.llContentFloating.setVisibility(View.VISIBLE);
     }
 
     private ViewBinder<?> viewBinderNearRent(int layout) {

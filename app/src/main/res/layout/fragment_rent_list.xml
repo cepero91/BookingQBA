@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -13,29 +14,29 @@
             type="Boolean" />
     </data>
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/cv_content_conf_map_root"
-            app:layout_constraintTop_toTopOf="parent"
-            app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; !safeUnbox(isEmpty)}"
-            tools:layout_editor_absoluteX="8dp" />
-
-        <LinearLayout
+        <com.infinitum.bookingqba.view.customview.RentListShortCutMapView
+            android:id="@+id/short_cut_map_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; !safeUnbox(isEmpty)}"/>
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -46,59 +47,31 @@
                 android:layout_width="250dp"
                 android:layout_height="250dp"
                 android:scaleType="fitCenter"
+                android:src="@drawable/fogg_no_comments"
                 app:siBorderColor="@color/material_color_grey_50"
                 app:siBorderWidth="2dp"
-                app:siRadius="150dp"
-                android:src="@drawable/fogg_no_comments"/>
+                app:siRadius="150dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
                 android:fontFamily="@font/poppinsbold"
+                android:text="Nada que mostrar"
                 android:textColor="@color/material_color_blue_grey_100"
-                android:text="Nada que mostrar"/>
+                android:textSize="22sp" />
 
         </LinearLayout>
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/cv_content_conf_map_root"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:cardElevation="5dp"
-            app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; !safeUnbox(isEmpty)}">
-
-            <FrameLayout
-                android:id="@+id/fl_content_conf_map"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center|start"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:fontFamily="@font/poppinsbold"
-                    android:text="Mostrar en Mapa"
-                    android:textColor="@color/material_color_blue_grey_500" />
-
-                <android.support.v7.widget.AppCompatImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end|center"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    app:srcCompat="@drawable/ic_fa_cog_line"
-                    app:tint="@color/material_color_blue_grey_500" />
-
-            </FrameLayout>
-
-        </android.support.v7.widget.CardView>
-
+            app:layout_constraintTop_toBottomOf="@+id/short_cut_map_view"
+            app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; !safeUnbox(isEmpty)}" />
 
     </android.support.constraint.ConstraintLayout>
 

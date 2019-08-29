@@ -110,8 +110,8 @@
                         <ProgressBar
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:layout_marginTop="45dp"
-                            android:layout_marginBottom="45dp"
+                            android:layout_marginTop="75dp"
+                            android:layout_marginBottom="75dp"
                             android:layout_gravity="center"
                             android:indeterminate="true"
                             app:discreteVisibility="@{safeUnbox(isLoading)}" />
@@ -167,8 +167,8 @@
                         <ProgressBar
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:layout_marginTop="45dp"
-                            android:layout_marginBottom="45dp"
+                            android:layout_marginTop="75dp"
+                            android:layout_marginBottom="75dp"
                             android:layout_gravity="center"
                             android:indeterminate="true"
                             app:discreteVisibility="@{safeUnbox(isLoading)}" />

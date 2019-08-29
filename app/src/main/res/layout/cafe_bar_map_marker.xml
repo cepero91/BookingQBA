@@ -16,7 +16,8 @@
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         android:background="@color/White_100"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:alpha="0">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -61,28 +62,69 @@
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="14sp" />
 
-                <com.willy.ratingbar.BaseRatingBar
-                    android:id="@+id/sr_scale_rating"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:setRating="@{item.getRating()}"
-                    app:srb_clickable="false"
-                    app:srb_drawableEmpty="@drawable/ic_star_o"
-                    app:srb_drawableFilled="@drawable/ic_star"
-                    app:srb_rating="4"
-                    app:srb_scrollable="false"
-                    app:srb_starHeight="16dp"
-                    app:srb_starPadding="2dp"
-                    app:srb_starWidth="16dp"
-                    app:srb_stepSize="0.5" />
+                    android:orientation="horizontal"
+                    android:gravity="start|center">
 
-                <TextView
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="start|center"
+                        app:tint="@color/colorAccent"
+                        app:srcCompat="@drawable/ic_fa_star_line"/>
+
+                    <TextView
+                        android:id="@+id/tv_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:includeFontPadding="false"
+                        android:fontFamily="@font/poppinsbold"
+                        android:textSize="14sp"
+                        android:textColor="@color/material_color_blue_grey_300"
+                        android:text="4.5"/>
+
+                    <TextView
+                        android:id="@+id/tv_rating_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:includeFontPadding="false"
+                        android:fontFamily="@font/poppinslight"
+                        android:textSize="12sp"
+                        android:textColor="@color/material_color_blue_grey_300"
+                        android:text="@{item.humanRatingCount()}"/>
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsregular"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="14sp"
-                    app:setPriceText="@{item.getPrice()}" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsbold"
+                        android:textColor="@color/material_color_blue_grey_300"
+                        android:textSize="14sp"
+                        app:setPriceText="@{item.getPrice()}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinslight"
+                        android:textColor="@color/material_color_blue_grey_300"
+                        android:textSize="12sp"
+                        android:text="@{item.humanRentMode()}"/>
+
+                </LinearLayout>
+
+
 
             </LinearLayout>
 
@@ -104,7 +146,7 @@
                     android:layout_gravity="center"
                     android:padding="8dp"
                     android:tint="@color/material_color_blue_grey_200"
-                    app:srcCompat="@drawable/ic_flag_jam" />
+                    app:srcCompat="@drawable/ic_fa_flag_o_line" />
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/iv_route"
@@ -113,7 +155,7 @@
                     android:layout_gravity="center"
                     android:padding="8dp"
                     android:tint="@color/material_color_blue_grey_200"
-                    app:srcCompat="@drawable/ic_gps_jam" />
+                    app:srcCompat="@drawable/ic_fa_car_line" />
 
             </LinearLayout>
 

@@ -40,6 +40,10 @@
             android:icon="@drawable/ic_fa_cloud_upload_line"
             android:title="Mis Rentas" />
         <item
+            android:id="@+id/nav_reservation_request"
+            android:icon="@drawable/ic_fa_calendar_check_line"
+            android:title="Reservaciones" />
+        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_fa_bar_chart_line"
             android:title="Analitica"

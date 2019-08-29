@@ -1,26 +1,16 @@
 package com.infinitum.bookingqba.view.profile;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.text.format.DateFormat;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +24,6 @@ import com.asksira.bsimagepicker.BSImagePicker;
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityAddRentBinding;
-import com.infinitum.bookingqba.model.remote.pojo.Amenities;
 import com.infinitum.bookingqba.model.remote.pojo.Galerie;
 import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
@@ -48,31 +37,22 @@ import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
 import com.infinitum.bookingqba.view.profile.uploaditem.GaleryFormObject;
 import com.infinitum.bookingqba.view.profile.uploaditem.OfferFormObject;
 import com.infinitum.bookingqba.view.profile.uploaditem.RentFormObject;
-import com.infinitum.bookingqba.view.widgets.DialogAddOfferView;
+import com.infinitum.bookingqba.view.customview.DialogAddOfferView;
 import com.infinitum.bookingqba.view.widgets.DialogLocationConfirmView;
 import com.infinitum.bookingqba.viewmodel.RentFormViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
 
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.poi.android.storage.AndroidPoiPersistenceManagerFactory;
-import org.mapsforge.poi.storage.ExactMatchPoiCategoryFilter;
-import org.mapsforge.poi.storage.PoiCategory;
-import org.mapsforge.poi.storage.PoiCategoryFilter;
-import org.mapsforge.poi.storage.PoiCategoryManager;
 import org.mapsforge.poi.storage.PoiPersistenceManager;
 import org.mapsforge.poi.storage.PointOfInterest;
-import org.mapsforge.poi.storage.UnknownPoiCategoryException;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -81,20 +61,16 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
-import me.adawoud.bottomsheettimepicker.BottomSheetTimeRangePicker;
-import me.adawoud.bottomsheettimepicker.OnTimeRangeSelectedListener;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.service.LocationService.KEY_REQUESTING_LOCATION_UPDATES;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
-import static com.infinitum.bookingqba.util.Constants.WRITE_EXTERNAL_CODE;
 
 public class AddRentActivity extends LocationActivity implements HasSupportFragmentInjector,
         MapRentLocation, View.OnClickListener, ImageFormAdapter.OnImageDeleteClick,

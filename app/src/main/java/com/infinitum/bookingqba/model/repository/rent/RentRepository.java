@@ -39,7 +39,7 @@ public interface RentRepository {
 
     Flowable<Resource<List<RentAndDependencies>>> allRent();
 
-    DataSource.Factory<Integer,RentAndGalery> allRentByOrderType(char orderType, String province);
+    DataSource.Factory<Integer,RentAndDependencies> allRentByOrderType(char orderType, String province);
 
     DataSource.Factory<Integer,RentAndGalery> allRentByZone(String province, String zone);
 
@@ -69,7 +69,7 @@ public interface RentRepository {
 
     Single<Resource<List<RentMode>>> allRemoteRentMode(String token);
 
-    DataSource.Factory<Integer,RentAndGalery> filterRents(Map<String,List<String>> filterParams, String province);
+    DataSource.Factory<Integer,RentAndDependencies> filterRents(Map<String,List<String>> filterParams, String province);
 
     Single<List<ResponseResult>>  addRent(String token, Map<String,Object> params);
 

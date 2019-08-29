@@ -16,10 +16,12 @@ public class GeoRent extends BaseItem {
 
     private float rating;
     private int ratingCount;
+    private String address;
     private double price;
     private GeoPoint geoPoint;
     private String rentMode;
     private List<PoiItem> poiItems;
+    private int wished;
 
     public GeoRent(String id, String name, String imagePath) {
         super(id, name, imagePath);
@@ -35,7 +37,7 @@ public class GeoRent extends BaseItem {
         this.poiItems = poiItems;
     }
 
-    public double getDistanceBetween(Location userLocation){
+    public double getDistanceBetween(Location userLocation) {
         Location rentLocation = new Location("");
         rentLocation.setLatitude(geoPoint.getLatitude());
         rentLocation.setLongitude(geoPoint.getLongitude());
@@ -90,6 +92,37 @@ public class GeoRent extends BaseItem {
         this.poiItems = poiItems;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public int getWished() {
+        return wished;
+    }
+
+    public void setWished(int wished) {
+        this.wished = wished;
+    }
+
+    public String humanRatingCount() {
+        if (ratingCount > 0) {
+            return String.format("(%s voto%s)", ratingCount, ratingCount > 1 ? "s" : "");
+        } else {
+            return "(sin votos)";
+        }
+    }
+
+    public String humanRating() {
+        return String.format("%.1f", rating);
+    }
+
+    public String humanRentMode() {
+        return "/"+rentMode;
+    }
 
     @Override
     public int describeContents() {

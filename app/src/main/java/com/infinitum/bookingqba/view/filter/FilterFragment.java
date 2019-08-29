@@ -107,8 +107,8 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
 
         filterBinding.setIsLoading(true);
 
+        loadFilterParams();
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -216,16 +216,24 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
                 interaction.closeFilter();
                 break;
             case R.id.btn_clean:
-                rentModeAdapter.resetSelectedItem();
-                munAdapter.resetSelectedItem();
-                amenitiesAdapter.resetSelectedItem();
-                poiTypeAdapter.resetSelectedItem();
-                filterBinding.sbMaxPrice.setProgress(0);
-                filterBinding.tvMaxPrice.setText("$ 0");
-                filterBinding.rgOrdering.clearCheck();
-                interaction.onFilterClean();
+                resetAllParams();
                 break;
         }
+    }
+
+    private void resetAllParams() {
+        rentModeAdapter.resetSelectedItem();
+        filterBinding.rvRentMode.scrollToPosition(0);
+        munAdapter.resetSelectedItem();
+        filterBinding.rvMunicipality.scrollToPosition(0);
+        amenitiesAdapter.resetSelectedItem();
+        filterBinding.rvAmenities.scrollToPosition(0);
+        poiTypeAdapter.resetSelectedItem();
+        filterBinding.rvPoiCategory.scrollToPosition(0);
+        filterBinding.sbMaxPrice.setProgress(0);
+        filterBinding.tvMaxPrice.setText("$ 0");
+        filterBinding.rgOrdering.clearCheck();
+        interaction.onFilterClean();
     }
 
     private Map<String, List<String>> getFilterParams() {

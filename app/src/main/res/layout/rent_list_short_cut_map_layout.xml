@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/fl_content_conf_map"
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|start"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/poppinsbold"
+            android:text="Mostrar en Mapa"
+            android:textColor="@color/material_color_blue_grey_500" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/iv_short_cut_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            app:srcCompat="@drawable/ic_fa_cog_line"
+            app:tint="@color/material_color_blue_grey_500" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_content_short_cut_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:visibility="visible">
+
+
+        <TextView
+            android:id="@+id/button_five"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppinsregular"
+            android:background="@drawable/shape_btn_rounded_white"
+            android:includeFontPadding="false"
+            android:padding="8dp"
+            android:layout_margin="5dp"
+            android:elevation="3dp"
+            android:text="Primeros 5"
+            android:textColor="@color/material_color_blue_grey_500" />
+
+
+        <TextView
+            android:id="@+id/button_ten"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_btn_rounded_white"
+            android:fontFamily="@font/poppinsregular"
+            android:includeFontPadding="false"
+            android:padding="8dp"
+            android:layout_margin="5dp"
+            android:elevation="3dp"
+            android:text="Primeros 10"
+            android:textColor="@color/material_color_blue_grey_500" />
+
+
+        <TextView
+            android:id="@+id/button_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_btn_rounded_white"
+            android:elevation="3dp"
+            android:fontFamily="@font/poppinsregular"
+            android:includeFontPadding="false"
+            android:padding="8dp"
+            android:layout_margin="5dp"
+            android:text="Todos"
+            android:textColor="@color/material_color_blue_grey_500" />
+
+    </LinearLayout>
+
+</LinearLayout>
+

@@ -5,9 +5,11 @@ import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.Oauth;
+import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -87,6 +89,26 @@ public class UserRepoImp implements UserRepository {
                 .resendActivationCode(map)
                 .map(Resource::success)
                 .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<Resource<List<Reservation>>> allReservationByUser(String token, String userid,  Reservation.ReservationStatus status) {
+        Reservation item1 = new Reservation("cepero91","10-Agosto-2019","15-Agosto-2019","",4, Reservation.ReservationStatus.ACCEPTED);
+        Reservation item2 = new Reservation("hectorAlonso","15-Agosto-2019","23-Agosto-2019","",4, Reservation.ReservationStatus.ACCEPTED);
+        Reservation item3 = new Reservation("Laura","23-Agosto-2019","31-Agosto-2019","",3, Reservation.ReservationStatus.ACCEPTED);
+        Reservation item4 = new Reservation("jose91","31-Agosto-2019","3-Septiembre-2019","",4, Reservation.ReservationStatus.PENDING);
+        Reservation item5 = new Reservation("jm21","3-Septiembre-2019","15-Septiembre-2019","",3, Reservation.ReservationStatus.PENDING);
+        Reservation item6 = new Reservation("jjdominquez","15-Septiembre-2019","18-Septiembre-2019","",4, Reservation.ReservationStatus.PENDING);
+        List<Reservation> reservations = new ArrayList<>();
+        reservations.add(item1);
+        reservations.add(item2);
+        reservations.add(item3);
+        reservations.add(item4);
+        reservations.add(item5);
+        reservations.add(item6);
+        return Single.just(Resource.success(reservations))
+                .delay(2000,TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io());
     }
 

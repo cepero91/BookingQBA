@@ -17,10 +17,14 @@ import android.view.ViewGroup;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentRentListBinding;
+import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.adapters.RentListAdapter;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
+import com.infinitum.bookingqba.view.customview.RentListShortCutMapView;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
+
+import java.util.ArrayList;
 
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
@@ -32,7 +36,7 @@ import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_RATING;
  * Use the {@link RentListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RentListFragment extends BaseNavigationFragment {
+public class RentListFragment extends BaseNavigationFragment implements RentListShortCutMapView.ShortCutMapInteraction {
 
     private FragmentRentListBinding rentListBinding;
 
@@ -83,6 +87,7 @@ public class RentListFragment extends BaseNavigationFragment {
 
         rentListBinding.setIsLoading(true);
         rentListBinding.setIsEmpty(false);
+        rentListBinding.shortCutMapView.setShortCutMapInteraction(this);
 
         setHasOptionsMenu(true);
 
@@ -111,23 +116,20 @@ public class RentListFragment extends BaseNavigationFragment {
         }
     }
 
-    public void filterListResult(PagedList<RentListItem> pagedList) {
+    public void filterListResult(PagedList<GeoRent> pagedList) {
         setupPagerAdapter(pagedList);
     }
 
-    private void setupPagerAdapter(PagedList<RentListItem> pagedList) {
+    private void setupPagerAdapter(PagedList<GeoRent> pagedList) {
         if (pagedList.size() > 0) {
             pagerAdapter.submitList(pagedList);
             rentListBinding.recyclerView.setAdapter(pagerAdapter);
             rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
-            OverScrollDecoratorHelper.setUpOverScroll(rentListBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
             rentListBinding.setIsLoading(false);
             rentListBinding.setIsEmpty(false);
-            rentListBinding.progressPvLinear.stop();
         } else {
             rentListBinding.setIsLoading(false);
             rentListBinding.setIsEmpty(true);
-            rentListBinding.progressPvLinear.stop();
         }
     }
 
@@ -150,5 +152,27 @@ public class RentListFragment extends BaseNavigationFragment {
     }
 
 
-
+    @Override
+    public void onButtonClick(View view) {
+        int listSize = pagerAdapter.getCurrentList() != null ? pagerAdapter.getCurrentList().size() : 0;
+        switch (view.getId()) {
+            case R.id.button_five:
+                if (listSize >= 5) {
+                    mListener.shortCutToMap(pagerAdapter.getCurrentList().subList(0, 5));
+                } else {
+                    mListener.shortCutToMap(pagerAdapter.getCurrentList() != null ? pagerAdapter.getCurrentList().subList(0, listSize) : new ArrayList<>());
+                }
+                break;
+            case R.id.button_ten:
+                if (listSize >= 10) {
+                    mListener.shortCutToMap(pagerAdapter.getCurrentList().subList(0, 10));
+                } else {
+                    mListener.shortCutToMap(pagerAdapter.getCurrentList() != null ? pagerAdapter.getCurrentList().subList(0, listSize) : new ArrayList<>());
+                }
+                break;
+            case R.id.button_all:
+                mListener.shortCutToMap(pagerAdapter.getCurrentList() != null ? pagerAdapter.getCurrentList().subList(0, listSize) : new ArrayList<>());
+                break;
+        }
+    }
 }

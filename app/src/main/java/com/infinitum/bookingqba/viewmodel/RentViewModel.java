@@ -96,7 +96,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private CommentRepository commentRepository;
     private PoiTypeRepository poiTypeRepository;
     private Map<String, List<CheckableItem>> filterMap;
-    private LiveData<PagedList<RentListItem>> ldRentsList;
+    private LiveData<PagedList<GeoRent>> ldRentsList;
 
     @Inject
     public RentViewModel(AmenitiesRepository amenitiesRepository, RentRepository rentRepository
@@ -118,19 +118,13 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
      *
      * @return
      */
-    public LiveData<PagedList<RentListItem>> getLiveDataRentList(char orderType, String province) {
-        DataSource.Factory<Integer, RentListItem> dataSource = rentRepository.allRentByOrderType(orderType, province).mapByPage(this::transformPaginadedData);
-        LivePagedListBuilder<Integer, RentListItem> pagedListBuilder = new LivePagedListBuilder<>(dataSource, 10);
+    public LiveData<PagedList<GeoRent>> getLiveDataRentList(char orderType, String province) {
+        DataSource.Factory<Integer, GeoRent> dataSource = rentRepository.allRentByOrderType(orderType, province).mapByPage(this::transformPaginadedData);
+        LivePagedListBuilder<Integer, GeoRent> pagedListBuilder = new LivePagedListBuilder<>(dataSource, 10);
         ldRentsList = pagedListBuilder.build();
         return ldRentsList;
     }
 
-    public LiveData<PagedList<RentListItem>> getAllRentByZone(String province, String zone) {
-        DataSource.Factory<Integer, RentListItem> dataSource = rentRepository.allRentByZone(province, zone).mapByPage(this::transformPaginadedData);
-        LivePagedListBuilder<Integer, RentListItem> pagedListBuilder = new LivePagedListBuilder<>(dataSource, 10);
-        ldRentsList = pagedListBuilder.build();
-        return ldRentsList;
-    }
 
     public Flowable<Resource<List<ListWishItem>>> getRentListWish(String province) {
         return rentRepository.allWishedRent(province)
@@ -145,9 +139,9 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 .map(this::transformToGeoRent);
     }
 
-    public Flowable<Resource<List<GeoRent>>> getGeoRentNearLatLon(LatLong latLong, double range){
+    public Flowable<Resource<List<GeoRent>>> getGeoRentNearLatLon(LatLong latLong, double range) {
         return rentRepository
-                .rentNearLocation(latLong,range)
+                .rentNearLocation(latLong, range)
                 .map(this::transformToGeoRent);
     }
 
@@ -194,25 +188,25 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 .subscribeOn(Schedulers.io())
                 .map(aDouble -> {
                     List<CheckableItem> checkableItems = new ArrayList<>();
-                    checkableItems.add(new CheckableItem(UUID.randomUUID().toString(),String.valueOf(aDouble),false));
-                    return checkableItems; });
+                    checkableItems.add(new CheckableItem(UUID.randomUUID().toString(), String.valueOf(aDouble), false));
+                    return checkableItems;
+                });
         return Flowable.zip(amenitieFlow, rentModeFlow, municipalityFlow, poiTypeFlow, maxPrice,
                 (amenities, rentmode, municipalities, poitypes, max) -> {
-            filterMap.put("Amenities", amenities);
-            filterMap.put("RentMode", rentmode);
-            filterMap.put("Municipality", municipalities);
-            filterMap.put("PoiType", poitypes);
-            filterMap.put("Price", max);
-            return filterMap;
-        }).subscribeOn(Schedulers.io());
+                    filterMap.put("Amenities", amenities);
+                    filterMap.put("RentMode", rentmode);
+                    filterMap.put("Municipality", municipalities);
+                    filterMap.put("PoiType", poitypes);
+                    filterMap.put("Price", max);
+                    return filterMap;
+                }).subscribeOn(Schedulers.io());
     }
 
 
-
-    public LiveData<PagedList<RentListItem>> filter(Map<String, List<String>> filterParams, String province) {
-        DataSource.Factory<Integer, RentListItem> dataSource = rentRepository.filterRents(filterParams, province)
+    public LiveData<PagedList<GeoRent>> filter(Map<String, List<String>> filterParams, String province) {
+        DataSource.Factory<Integer, GeoRent> dataSource = rentRepository.filterRents(filterParams, province)
                 .mapByPage(this::transformPaginadedData);
-        LivePagedListBuilder<Integer, RentListItem> pagedListBuilder = new LivePagedListBuilder<>(dataSource, 10);
+        LivePagedListBuilder<Integer, GeoRent> pagedListBuilder = new LivePagedListBuilder<>(dataSource, 10);
         ldRentsList = pagedListBuilder.build();
         return ldRentsList;
     }
@@ -412,7 +406,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 geoRent.setRating(rentAndDependencies.getRating());
                 geoRent.setRatingCount(rentAndDependencies.getRatingCount());
                 geoRent.setRentMode(rentAndDependencies.getRentMode());
-                geoRent.setPoiItems(transformPoiEntityToPoiItem(new LatLong(rentAndDependencies.getLatitude(),rentAndDependencies.getLongitude()),rentAndDependencies.getRentPoiAndRelations()));
+                geoRent.setPoiItems(transformPoiEntityToPoiItem(new LatLong(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()), rentAndDependencies.getRentPoiAndRelations()));
                 geoRentList.add(geoRent);
             }
             return Resource.success(geoRentList);
@@ -421,10 +415,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         }
     }
 
-    private List<PoiItem> transformPoiEntityToPoiItem(LatLong latLong,List<RentPoiAndRelation> rentPoiAndRelations) {
+    private List<PoiItem> transformPoiEntityToPoiItem(LatLong latLong, List<RentPoiAndRelation> rentPoiAndRelations) {
         List<PoiItem> poiItems = new ArrayList<>();
         PoiItem poiItem;
-        for(RentPoiAndRelation rentPoiAndRelation: rentPoiAndRelations){
+        for (RentPoiAndRelation rentPoiAndRelation : rentPoiAndRelations) {
             poiItem = new PoiItem();
             PoiAndRelations poiAndRelations = rentPoiAndRelation.getPoiAndRelationsObject();
             PoiTypeEntity poiTypeEntity = poiAndRelations.getPoiTypeEntitySetObject();
@@ -453,20 +447,25 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return Resource.success(listWishItems);
     }
 
-    @NonNull
-    private List<RentListItem> transformPaginadedData(List<RentAndGalery> input) {
-        List<RentListItem> itemsUi = new ArrayList<>();
-        RentListItem tempItem;
-        for (RentAndGalery entity : input) {
-            String imagePath = entity.getImageAtPos(0);
-            tempItem = new RentListItem(entity.getId(), entity.getName(), imagePath);
-            tempItem.setRating(entity.getRating());
-            tempItem.setAddress(entity.getAddress());
-            tempItem.setRentMode(entity.getRentMode());
-            tempItem.setPrice(entity.getPrice());
-            itemsUi.add(tempItem);
+
+    private List<GeoRent> transformPaginadedData(List<RentAndDependencies> listResource) {
+        List<GeoRent> geoRentList = new ArrayList<>();
+        GeoRent geoRent;
+        for (RentAndDependencies rentAndDependencies : listResource) {
+            String imagePath = rentAndDependencies.getImageAtPos(0);
+            geoRent = new GeoRent(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath);
+            geoRent.setAddress(rentAndDependencies.getAddress());
+            geoRent.setGeoPoint(new GeoPoint(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()));
+            geoRent.setPrice(rentAndDependencies.getPrice());
+            geoRent.setRating(rentAndDependencies.getRating());
+            geoRent.setRatingCount(rentAndDependencies.getRatingCount());
+            geoRent.setRentMode(rentAndDependencies.getRentMode());
+            geoRent.setPoiItems(transformPoiEntityToPoiItem(new LatLong(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()), rentAndDependencies.getRentPoiAndRelations()));
+            geoRent.setWished(rentAndDependencies.getIsWished());
+            geoRentList.add(geoRent);
         }
-        return itemsUi;
+        return geoRentList;
+
     }
 
 

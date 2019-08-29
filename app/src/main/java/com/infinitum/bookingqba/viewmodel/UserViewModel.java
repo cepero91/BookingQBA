@@ -4,10 +4,13 @@ import android.arch.lifecycle.ViewModel;
 
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.remote.Oauth;
+import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.model.repository.user.UserRepository;
+import com.infinitum.bookingqba.view.adapters.items.reservation.ReservationItem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,23 +44,43 @@ public class UserViewModel extends ViewModel{
     }
 
     public Single<Response<User>> login(Map<String, String> map){
-//        User user = new User("qwertyuiop", "cepero91");
         return userRepository.login(map);
-//        return Single.just(Response.success(201, user));
     }
 
     public Single<Resource<ResponseResult>> register(Map<String, String> map){
         return userRepository.register(map);
-//        return Single.just(Resource.success(new ResponseResult(200,"Un codigo de activacion ha sido enviado a su correo")));
     }
 
     public Single<Resource<ResponseResult>> activate(Map<String, String> map){
         return userRepository.activationUser(map);
-//        return Single.just(Resource.success(new ResponseResult(200,"Usuario activado con exito")));
     }
 
     public Single<Resource<ResponseResult>> resendCode(Map<String, String> map){
         return userRepository.resendActivationUser(map);
+    }
+
+    public Single<Resource<List<ReservationItem>>> getReservationByUserId(String token, String userId, Reservation.ReservationStatus status){
+        return userRepository.allReservationByUser(token, userId, status)
+                .map(this::transformToReservationItem)
+                .onErrorReturn(Resource::error);
+    }
+
+    private Resource<List<ReservationItem>> transformToReservationItem(Resource<List<Reservation>> listResource) {
+        List<ReservationItem> resultItems = new ArrayList<>();
+        if(listResource.data!=null){
+            ReservationItem item;
+            for(Reservation reservation: listResource.data){
+                item = new ReservationItem();
+                item.setUserName(reservation.getUsername());
+                item.setStartDate(reservation.getStartDate());
+                item.setEndDate(reservation.getEndDate());
+                item.setCapability(String.valueOf(reservation.getCapability()));
+                resultItems.add(item);
+            }
+            return Resource.success(resultItems);
+        }else{
+            return Resource.error(listResource.message);
+        }
     }
 
 }

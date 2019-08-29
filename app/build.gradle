@@ -148,6 +148,14 @@ dependencies {
         exclude group: 'org.apache.xmlgraphics', module: 'xmlgraphics-commons'
     }
 
+    //Sequence Animation
+    implementation 'com.fujiyuu75:sequent:0.2.1'
+    implementation 'com.mikhaellopez:rxanimation:0.0.7'
+    implementation 'com.ramijemli:easings:1.0.0'
+
+    //Counter
+    implementation 'com.github.gildaswise:HorizontalCounter:1.3.0'
+
     //Calendar
     implementation 'com.aminography:primedatepicker:1.0.7'
     implementation 'com.github.adawoud:BottomSheetTimeRangePicker:1.11'

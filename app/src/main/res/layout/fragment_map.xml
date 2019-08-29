@@ -14,8 +14,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.map.MapFragment"
-        android:animateLayoutChanges="true">
+        tools:context=".view.map.MapFragment">
 
         <FrameLayout
             android:id="@+id/fl_content_map"
@@ -34,19 +33,23 @@
                 android:layout_height="match_parent" />
 
 
-            <FrameLayout
-                android:id="@+id/fl_marker"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:animateLayoutChanges="true" />
+                app:cardElevation="5dp">
 
-            <FrameLayout
-                android:id="@+id/fl_near"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:animateLayoutChanges="true" />
+                <FrameLayout
+                    android:id="@+id/fl_marker"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <FrameLayout
+                    android:id="@+id/fl_near"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </android.support.v7.widget.CardView>
 
 
         </FrameLayout>
@@ -89,10 +92,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="10dp"
-                app:fabSize="mini"
-                app:srcCompat="@drawable/ic_fa_map_signs_line"
+                android:tint="@color/White_100"
                 android:visibility="gone"
-                android:tint="@color/White_100"/>
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_fa_compass_line" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/iv_location"
@@ -101,9 +104,9 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
+                android:tint="@color/White_100"
                 app:fabSize="normal"
-                app:srcCompat="@drawable/ic_fa_crosshairs_line"
-                android:tint="@color/White_100"/>
+                app:srcCompat="@drawable/ic_fa_crosshairs_line" />
 
         </LinearLayout>
 

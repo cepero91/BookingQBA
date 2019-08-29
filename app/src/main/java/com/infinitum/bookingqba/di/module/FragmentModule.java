@@ -12,6 +12,7 @@ import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.profile.MyRentsFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
+import com.infinitum.bookingqba.view.reservation.ReservationListFragment;
 
 
 import dagger.Module;
@@ -55,6 +56,9 @@ public interface FragmentModule {
 
     @ContributesAndroidInjector
     BaseMapFragment bindBaseMapFragment();
+
+    @ContributesAndroidInjector
+    ReservationListFragment bindReservationListFragment();
 
 
 }

@@ -14,11 +14,11 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:networkSecurityConfig="@xml/network_secure_config"
         android:name=".BookingQBApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher_official"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_secure_config"
         android:roundIcon="@drawable/isotype"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -30,12 +30,13 @@
             android:name=".view.splash.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
+
         <activity
             android:name=".view.sync.SyncActivity"
             android:screenOrientation="portrait"
@@ -71,13 +72,22 @@
             android:exported="false"
             tools:node="remove" />
 
-        <activity android:name=".view.GpsTest">
+        <activity android:name=".view.GpsTest"></activity>
 
-        </activity>
-
-        <activity android:name=".view.SecondActivity"></activity>
+        <activity android:name=".view.SecondActivity" />
 
         <service android:name=".service.LocationService" />
+
+        <activity android:name=".view.rents.ReservationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

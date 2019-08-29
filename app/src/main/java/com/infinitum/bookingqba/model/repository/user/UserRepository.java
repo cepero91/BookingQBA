@@ -5,6 +5,7 @@ package com.infinitum.bookingqba.model.repository.user;
 import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.remote.Oauth;
+import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 
@@ -29,5 +30,7 @@ public interface UserRepository {
     Single<Resource<ResponseResult>> activationUser(Map<String, String> map);
 
     Single<Resource<ResponseResult>> resendActivationUser(Map<String, String> map);
+
+    Single<Resource<List<Reservation>>> allReservationByUser(String token, String userid, Reservation.ReservationStatus status);
 
 }

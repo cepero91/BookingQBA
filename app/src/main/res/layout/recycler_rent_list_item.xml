@@ -6,7 +6,7 @@
     <data>
         <variable
             name="item"
-            type="com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem"/>
+            type="com.infinitum.bookingqba.view.adapters.items.map.GeoRent"/>
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -51,6 +51,7 @@
                     android:layout_height="0dp"
                     android:layout_marginStart="10dp"
                     android:orientation="vertical"
+                    android:gravity="start|center"
                     android:paddingEnd="5dp"
                     android:paddingTop="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
