@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.view.reservation;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentReservationListBinding;
-import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.view.adapters.RentBookAdapter;
 import com.infinitum.bookingqba.view.adapters.items.reservation.ReservationItem;
@@ -30,36 +30,30 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class ReservationListFragment extends BaseNavigationFragment implements RentBookAdapter.RentBookInteraction,
-        SwipeRefreshLayout.OnRefreshListener {
+import static com.infinitum.bookingqba.util.Constants.USER_ID;
+import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
+
+public class ReservationListFragment extends BaseNavigationFragment implements
+        SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
     private FragmentReservationListBinding reservationListBinding;
-    private String token;
-    private String userId;
-    private static final String USER_ID = "userid";
-    private static final String TOKEN = "token";
     private UserViewModel userViewModel;
     private Disposable disposable;
+    private ReservationType reservationType;
 
     @Inject
     NetworkHelper networkHelper;
 
-    public static ReservationListFragment newInstance(String token, String userId) {
-        ReservationListFragment fragment = new ReservationListFragment();
-        Bundle args = new Bundle();
-        args.putString(USER_ID, userId);
-        args.putString(TOKEN, token);
-        fragment.setArguments(args);
-        return fragment;
+    @Inject
+    SharedPreferences sharedPreferences;
+
+    public static ReservationListFragment newInstance() {
+        return new ReservationListFragment();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            token = getArguments().getString(TOKEN);
-            userId = getArguments().getString(USER_ID);
-        }
     }
 
     @Nullable
@@ -75,33 +69,62 @@ public class ReservationListFragment extends BaseNavigationFragment implements R
 
         initLoading(true, StateView.Status.LOADING, true);
         reservationListBinding.swipeRefresh.setOnRefreshListener(this);
+        reservationListBinding.tvBtnPending.setOnClickListener(this);
+        reservationListBinding.tvBtnAccepted.setOnClickListener(this);
 
         userViewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel.class);
 
-        loadReservationData();
+        reservationType = ReservationType.PENDING;
+        loadPendingReservation();
 
     }
 
-    private void loadReservationData() {
-//        if (networkHelper.isNetworkAvailable()) {
-        disposable = userViewModel.getReservationByUserId(token, userId, Reservation.ReservationStatus.PENDING)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(listResource -> {
-                    if (listResource.data != null && listResource.data.size() > 0) {
-                        initLoading(false, StateView.Status.SUCCESS, false);
-                        setupReservationAdapter(listResource.data);
-                    } else {
+    private void loadPendingReservation() {
+        if (networkHelper.isNetworkAvailable()) {
+            String token = sharedPreferences.getString(USER_TOKEN, "");
+            String userId = sharedPreferences.getString(USER_ID, "");
+            disposable = userViewModel.getPendingReservationByUser(token, userId)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(listResource -> {
+                        if (listResource.data != null && listResource.data.size() > 0) {
+                            initLoading(false, StateView.Status.SUCCESS, false);
+                            setupReservationAdapter(listResource.data);
+                        } else {
+                            initLoading(false, StateView.Status.EMPTY, true);
+                        }
+                    }, throwable -> {
                         initLoading(false, StateView.Status.EMPTY, true);
-                    }
-                }, throwable -> {
-                    initLoading(false, StateView.Status.EMPTY, true);
-                    Timber.e(throwable);
-                });
-        compositeDisposable.add(disposable);
-//        } else {
-//        stopLoading(StateView.Status.NO_CONNECTION);
-//        }
+                        Timber.e(throwable);
+                    });
+            compositeDisposable.add(disposable);
+        } else {
+            initLoading(false, StateView.Status.NO_CONNECTION, true);
+        }
+    }
+
+    private void loadAcceptedReservation() {
+        if (networkHelper.isNetworkAvailable()) {
+            String token = sharedPreferences.getString(USER_TOKEN, "");
+            String userId = sharedPreferences.getString(USER_ID, "");
+            disposable = userViewModel.getAcceptedReservationByUser(token, userId)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(listResource -> {
+                        if (listResource.data != null && listResource.data.size() > 0) {
+                            initLoading(false, StateView.Status.SUCCESS, false);
+                            setupReservationAdapter(listResource.data);
+                        } else {
+                            initLoading(false, StateView.Status.EMPTY, true);
+                        }
+                    }, throwable -> {
+                        initLoading(false, StateView.Status.EMPTY, true);
+                        Timber.e(throwable);
+                    });
+            compositeDisposable.add(disposable);
+        } else {
+            initLoading(false, StateView.Status.NO_CONNECTION, true);
+        }
     }
 
     private void initLoading(boolean loading, StateView.Status status, boolean isEmpty) {
@@ -113,14 +136,9 @@ public class ReservationListFragment extends BaseNavigationFragment implements R
 
 
     private void setupReservationAdapter(List<ReservationItem> data) {
-        RentBookAdapter rentBookAdapter = new RentBookAdapter(getLayoutInflater(), data, this);
+        RentBookAdapter rentBookAdapter = new RentBookAdapter(getLayoutInflater(), data, (RentBookAdapter.RentBookInteraction) getActivity());
         reservationListBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         reservationListBinding.recyclerView.setAdapter(rentBookAdapter);
-    }
-
-    @Override
-    public void onBookReservationClick(ReservationItem item) {
-
     }
 
     @Override
@@ -132,7 +150,35 @@ public class ReservationListFragment extends BaseNavigationFragment implements R
 
     @Override
     public void onRefresh() {
-        reservationListBinding.swipeRefresh.setRefreshing(true);
-        loadReservationData();
+        switch (reservationType) {
+            case PENDING:
+                reservationListBinding.swipeRefresh.setRefreshing(true);
+                loadPendingReservation();
+                break;
+            case ACCEPTED:
+                reservationListBinding.swipeRefresh.setRefreshing(true);
+                loadAcceptedReservation();
+                break;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tv_btn_pending:
+                reservationType = ReservationType.PENDING;
+                reservationListBinding.swipeRefresh.setRefreshing(true);
+                loadPendingReservation();
+                break;
+            case R.id.tv_btn_accepted:
+                reservationType = ReservationType.ACCEPTED;
+                reservationListBinding.swipeRefresh.setRefreshing(true);
+                loadPendingReservation();
+                break;
+        }
+    }
+
+    private enum ReservationType {
+        PENDING, ACCEPTED
     }
 }

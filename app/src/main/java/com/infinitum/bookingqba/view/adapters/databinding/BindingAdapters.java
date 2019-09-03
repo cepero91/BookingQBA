@@ -122,6 +122,14 @@ public class BindingAdapters {
                 .into(view);
     }
 
+    @BindingAdapter("setRemoteCircleImage")
+    public static void setRemoteCircleImage(RoundedImageView view, String imagePath) {
+        Picasso.get()
+                .load(imagePath)
+                .placeholder(R.drawable.placeholder)
+                .into(view);
+    }
+
     @BindingAdapter("setFlexBoxItem")
     public static void setFlexBoxItem(FlexboxLayout view, List<View> items) {
         if (items != null && items.size() > 0) {

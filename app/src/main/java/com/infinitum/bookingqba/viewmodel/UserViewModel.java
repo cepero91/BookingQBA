@@ -18,8 +18,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.MediaType;
-import okhttp3.ResponseBody;
 import retrofit2.Response;
 
 public class UserViewModel extends ViewModel{
@@ -59,8 +57,23 @@ public class UserViewModel extends ViewModel{
         return userRepository.resendActivationUser(map);
     }
 
-    public Single<Resource<List<ReservationItem>>> getReservationByUserId(String token, String userId, Reservation.ReservationStatus status){
-        return userRepository.allReservationByUser(token, userId, status)
+
+    public Single<Resource<ResponseResult>> acceptReservation(String token, String uuid){
+        return userRepository.acceptReservation(token, uuid);
+    }
+
+    public Single<Resource<ResponseResult>> deniedReservation(String token, String uuid){
+        return userRepository.deniedReservation(token, uuid);
+    }
+
+    public Single<Resource<List<ReservationItem>>> getPendingReservationByUser(String token, String userId){
+        return userRepository.allPendingReservationByUser(token, userId)
+                .map(this::transformToReservationItem)
+                .onErrorReturn(Resource::error);
+    }
+
+    public Single<Resource<List<ReservationItem>>> getAcceptedReservationByUser(String token, String userId){
+        return userRepository.allAcceptedReservationByUser(token, userId)
                 .map(this::transformToReservationItem)
                 .onErrorReturn(Resource::error);
     }
@@ -71,9 +84,11 @@ public class UserViewModel extends ViewModel{
             ReservationItem item;
             for(Reservation reservation: listResource.data){
                 item = new ReservationItem();
+                item.setId(reservation.getId());
                 item.setUserName(reservation.getUsername());
                 item.setStartDate(reservation.getStartDate());
                 item.setEndDate(reservation.getEndDate());
+                item.setUserAvatar(reservation.getAvatar());
                 item.setCapability(String.valueOf(reservation.getCapability()));
                 resultItems.add(item);
             }

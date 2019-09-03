@@ -7,26 +7,36 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentRentListBinding;
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.adapters.RentListAdapter;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.customview.RentListShortCutMapView;
+import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_COMMENTED;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_RATING;
@@ -50,6 +60,7 @@ public class RentListFragment extends BaseNavigationFragment implements RentList
 
     private RentListAdapter pagerAdapter;
 
+    private Disposable disposable;
 
     public RentListFragment() {
         // Required empty public constructor
@@ -98,15 +109,43 @@ public class RentListFragment extends BaseNavigationFragment implements RentList
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        MenuItem search = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(search);
+        initSearch(searchView);
+    }
+
+    private void initSearch(SearchView searchView) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                pagerAdapter.getFilter().filter(newText);
+                return true;
+            }
+        });
+    }
+
+    @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem menuItem = menu.findItem(R.id.action_filter_panel);
-        menuItem.setVisible(true);
+        menu.findItem(R.id.action_filter_panel).setVisible(true);
+        menu.findItem(R.id.action_search).setVisible(true);
         super.onPrepareOptionsMenu(menu);
     }
 
     private void loadPaginatedData() {
-        pagerAdapter = new RentListAdapter(getActivity().getLayoutInflater(), mListener);
-        rentViewModel.getLiveDataRentList(mOrderType, mProvinceParam).observe(this, this::setupPagerAdapter);
+        disposable = rentViewModel.getLiveDataRentList(mOrderType, mProvinceParam)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listResource -> {
+                    setupPagerAdapter(listResource);
+                }, Timber::e);
+        compositeDisposable.add(disposable);
     }
 
     public void needToRefresh(boolean refresh) {
@@ -116,13 +155,13 @@ public class RentListFragment extends BaseNavigationFragment implements RentList
         }
     }
 
-    public void filterListResult(PagedList<GeoRent> pagedList) {
+    public void filterListResult(Resource<List<GeoRent>> pagedList) {
         setupPagerAdapter(pagedList);
     }
 
-    private void setupPagerAdapter(PagedList<GeoRent> pagedList) {
-        if (pagedList.size() > 0) {
-            pagerAdapter.submitList(pagedList);
+    private void setupPagerAdapter(Resource<List<GeoRent>> pagedList) {
+        if (pagedList.data != null && pagedList.data.size() > 0) {
+            pagerAdapter = new RentListAdapter(getLayoutInflater(), (FragmentNavInteraction) getActivity(), pagedList.data);
             rentListBinding.recyclerView.setAdapter(pagerAdapter);
             rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
             rentListBinding.setIsLoading(false);
@@ -148,30 +187,33 @@ public class RentListFragment extends BaseNavigationFragment implements RentList
 
     @Override
     public void onDestroy() {
+        if (disposable != null && disposable.isDisposed()) {
+            disposable.dispose();
+        }
         super.onDestroy();
     }
 
 
     @Override
     public void onButtonClick(View view) {
-        int listSize = pagerAdapter.getCurrentList() != null ? pagerAdapter.getCurrentList().size() : 0;
+        int listSize = pagerAdapter.getFilteredList() != null ? pagerAdapter.getFilteredList().size() : 0;
         switch (view.getId()) {
             case R.id.button_five:
                 if (listSize >= 5) {
-                    mListener.shortCutToMap(pagerAdapter.getCurrentList().subList(0, 5));
+                    mListener.shortCutToMap(pagerAdapter.getFilteredList().subList(0, 5));
                 } else {
-                    mListener.shortCutToMap(pagerAdapter.getCurrentList() != null ? pagerAdapter.getCurrentList().subList(0, listSize) : new ArrayList<>());
+                    mListener.shortCutToMap(pagerAdapter.getFilteredList() != null ? pagerAdapter.getFilteredList().subList(0, listSize) : new ArrayList<>());
                 }
                 break;
             case R.id.button_ten:
                 if (listSize >= 10) {
-                    mListener.shortCutToMap(pagerAdapter.getCurrentList().subList(0, 10));
+                    mListener.shortCutToMap(pagerAdapter.getFilteredList().subList(0, 10));
                 } else {
-                    mListener.shortCutToMap(pagerAdapter.getCurrentList() != null ? pagerAdapter.getCurrentList().subList(0, listSize) : new ArrayList<>());
+                    mListener.shortCutToMap(pagerAdapter.getFilteredList() != null ? pagerAdapter.getFilteredList().subList(0, listSize) : new ArrayList<>());
                 }
                 break;
             case R.id.button_all:
-                mListener.shortCutToMap(pagerAdapter.getCurrentList() != null ? pagerAdapter.getCurrentList().subList(0, listSize) : new ArrayList<>());
+                mListener.shortCutToMap(pagerAdapter.getFilteredList() != null ? pagerAdapter.getFilteredList().subList(0, listSize) : new ArrayList<>());
                 break;
         }
     }

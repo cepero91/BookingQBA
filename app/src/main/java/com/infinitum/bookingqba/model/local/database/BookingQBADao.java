@@ -12,6 +12,7 @@ import android.arch.persistence.room.Transaction;
 import android.arch.persistence.room.TypeConverters;
 import android.arch.persistence.room.Update;
 
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
@@ -463,11 +464,11 @@ public abstract class BookingQBADao {
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
             "Province.id = :province ORDER BY Rent.rating DESC, Rent.ratingCount DESC")
-    public abstract DataSource.Factory<Integer, RentAndDependencies> getAllMostRatingRent(String province);
+    public abstract Flowable<List<RentAndDependencies>> getAllMostRatingRent(String province);
 
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
-    public abstract DataSource.Factory<Integer, RentAndDependencies> getAllMostCommentedRent(SupportSQLiteQuery query);
+    public abstract Flowable<List<RentAndDependencies>> getAllMostCommentedRent(SupportSQLiteQuery query);
 
     @Transaction
     @TypeConverters(DateTypeConverter.class)
@@ -500,7 +501,7 @@ public abstract class BookingQBADao {
 
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
-    public abstract DataSource.Factory<Integer, RentAndDependencies> filterRents(SupportSQLiteQuery query);
+    public abstract Flowable<List<RentAndDependencies>> filterRents(SupportSQLiteQuery query);
 
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)

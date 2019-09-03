@@ -1,15 +1,11 @@
 package com.infinitum.bookingqba.view.rents;
 
 import android.app.Dialog;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -27,16 +23,8 @@ import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentCommentBinding;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.util.DateUtils;
-import com.infinitum.bookingqba.viewmodel.UserViewModel;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
-
-import javax.inject.Inject;
 
 public class DialogComment extends DialogFragment implements View.OnClickListener {
 
@@ -157,7 +145,7 @@ public class DialogComment extends DialogFragment implements View.OnClickListene
         comment.setDescription(decription);
         comment.setActive(false);
         comment.setAvatar(null);
-        comment.setIs_owner(false);
+        comment.setOwner(false);
         comment.setEmotion(emotionLevel);
         comment.setCreated(DateUtils.currentDateToString());
         return comment;

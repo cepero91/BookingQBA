@@ -19,6 +19,6 @@ public interface InnerDetailInteraction {
 
     void phoneEmailClick(String email);
 
-
+    void onBookRequestClick();
 
 }

@@ -18,6 +18,9 @@ import com.infinitum.bookingqba.model.local.pojo.RentMostComment;
 import com.infinitum.bookingqba.model.local.pojo.RentMostRating;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
+import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
+import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
+import com.infinitum.bookingqba.model.remote.pojo.DrawChange;
 import com.infinitum.bookingqba.model.remote.pojo.Offer;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
@@ -104,6 +107,7 @@ public class RentRepoImpl implements RentRepository {
             entity.setMunicipality(item.getMunicipality());
             entity.setReferenceZone(item.getReferenceZone());
             entity.setCreated(DateUtils.dateStringToDate(item.getCreated()));
+            entity.setUserId(item.getUserid());
             if (item.getCheckin() != null)
                 entity.setCheckin(item.getCheckin());
             if (item.getCheckout() != null)
@@ -135,22 +139,22 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public DataSource.Factory<Integer, RentAndDependencies> allRentByOrderType(char orderType, String province) {
+    public Flowable<Resource<List<RentAndDependencies>>> allRentByOrderType(char orderType, String province) {
         if (orderType == ORDER_TYPE_MOST_RATING) {
-            return qbaDao.getAllMostRatingRent(province);
-        } else if(orderType == ORDER_TYPE_MOST_COMMENTED) {
+            return qbaDao.getAllMostRatingRent(province).map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
+        } else if (orderType == ORDER_TYPE_MOST_COMMENTED) {
             String query = "SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.ratingCount, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished, AVG(Comment.emotion) as emotionAvg, COUNT(Comment.id) as totalComment FROM Rent " +
                     "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
                     "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
-                    "LEFT JOIN Comment ON Comment.rent = Rent.id "+
+                    "LEFT JOIN Comment ON Comment.rent = Rent.id " +
                     "LEFT JOIN Province ON Municipality.province = Province.id " +
-                    "WHERE Province.id = '"+province+"'"+
-                    "GROUP BY Rent.id "+
+                    "WHERE Province.id = '" + province + "'" +
+                    "GROUP BY Rent.id " +
                     "ORDER BY emotionAvg DESC, totalComment DESC";
             SupportSQLiteQuery supportSQLiteQuery = new SimpleSQLiteQuery(query);
-            return qbaDao.getAllMostCommentedRent(supportSQLiteQuery);
+            return qbaDao.getAllMostCommentedRent(supportSQLiteQuery).map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
         }
-        return qbaDao.getAllMostRatingRent(province);
+        return qbaDao.getAllMostRatingRent(province).map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
     }
 
     @Override
@@ -172,10 +176,10 @@ public class RentRepoImpl implements RentRepository {
         String query = "SELECT Rent.id,Rent.name,Rent.price, Rent.rentMode, AVG(Comment.emotion) as emotionAvg, COUNT(Comment.id) as totalComment FROM Rent " +
                 "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
                 "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
-                "LEFT JOIN Comment ON Comment.rent = Rent.id "+
+                "LEFT JOIN Comment ON Comment.rent = Rent.id " +
                 "LEFT JOIN Province ON Municipality.province = Province.id " +
-                "WHERE Province.id = '"+province+"'"+
-                "GROUP BY Rent.id "+
+                "WHERE Province.id = '" + province + "'" +
+                "GROUP BY Rent.id " +
                 "ORDER BY emotionAvg DESC, totalComment DESC LIMIT 5";
         SupportSQLiteQuery supportSQLiteQuery = new SimpleSQLiteQuery(query);
         return qbaDao.getFiveMostCommentRent(supportSQLiteQuery)
@@ -265,10 +269,10 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public DataSource.Factory<Integer, RentAndDependencies> filterRents(Map<String, List<String>> filterParams, String province) {
+    public Flowable<Resource<List<RentAndDependencies>>> filterRents(Map<String, List<String>> filterParams, String province) {
         String query = FilterRepositoryUtil.buildFilterQuery(filterParams, province);
         SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query);
-        return qbaDao.filterRents(simpleSQLiteQuery);
+        return qbaDao.filterRents(simpleSQLiteQuery).map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
     }
 
     @Override
@@ -366,12 +370,39 @@ public class RentRepoImpl implements RentRepository {
     public Flowable<Double> maxRentPrice() {
         return qbaDao.getAllRentOrderPrice().subscribeOn(Schedulers.io())
                 .map(rentEntityList -> {
-                    if(rentEntityList.size()>0){
+                    if (rentEntityList.size() > 0) {
                         return rentEntityList.get(0).getPrice();
-                    }else{
+                    } else {
                         return 0d;
                     }
                 }).onErrorReturn(throwable -> 0d);
+    }
+
+    @Override
+    public Single<Resource<ResponseResult>> sendBookRequest(String token, BookRequest bookRequest) {
+        return retrofit.create(ApiInterface.class)
+                .sendBookRequest(token, bookRequest)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Single<Resource<List<DrawChange>>> drawChangeByFinalPrice(String token, double finalPrice) {
+        return retrofit.create(ApiInterface.class)
+                .drawChangeByFinalPrice(token, finalPrice)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Single<Resource<DisabledDays>> disabledDaysByRent(String token, String uuid) {
+        return retrofit.create(ApiInterface.class)
+                .disabledDaysByRent(token, uuid)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
     }
 
     /**

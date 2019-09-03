@@ -98,12 +98,14 @@ public class RentEntity {
 
     private int isWished;
 
+    private String userId;
+
     @Ignore
     public RentEntity(@NonNull String id) {
         this.id = id;
     }
 
-    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, @NonNull String description, @NonNull String email, String phoneNumber, String phoneHomeNumber, double latitude, double longitude, float rating, int ratingCount, int maxRooms, int capability, int maxBeds, int maxBath, double price, String checkin, String checkout, @NonNull Date created, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, int isWished) {
+    public RentEntity(@NonNull String id, @NonNull String name, @NonNull String address, @NonNull String description, @NonNull String email, String phoneNumber, String phoneHomeNumber, double latitude, double longitude, float rating, int ratingCount, int maxRooms, int capability, int maxBeds, int maxBath, double price, String checkin, String checkout, @NonNull Date created, @NonNull String rentMode, @NonNull String rules, @NonNull String municipality, @NonNull String referenceZone, int isWished, String userId) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -128,6 +130,7 @@ public class RentEntity {
         this.municipality = municipality;
         this.referenceZone = referenceZone;
         this.isWished = isWished;
+        this.userId = userId;
     }
 
     @NonNull
@@ -332,5 +335,13 @@ public class RentEntity {
 
     public void setCheckout(@Nullable String checkout) {
         this.checkout = checkout;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.view.rents;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,9 +12,11 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -25,10 +28,12 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityRentDetailBinding;
 import com.infinitum.bookingqba.model.Resource;
@@ -40,6 +45,7 @@ import com.infinitum.bookingqba.util.ColorUtil;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem;
 import com.infinitum.bookingqba.view.adapters.InnerViewPagerAdapter;
+import com.infinitum.bookingqba.view.customview.SuccessDialogContentView;
 import com.infinitum.bookingqba.view.galery.GaleryActivity;
 import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.interaction.InnerDetailInteraction;
@@ -47,6 +53,7 @@ import com.infinitum.bookingqba.view.interaction.LoginInteraction;
 import com.infinitum.bookingqba.view.map.MapFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
+import com.infinitum.bookingqba.view.profile.UserAuthActivity;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
@@ -86,7 +93,9 @@ import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_SHOW_GROUP;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
+import static com.infinitum.bookingqba.util.Constants.LOGIN_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.LOGIN_TAG;
+import static com.infinitum.bookingqba.util.Constants.NAV_HEADER_REQUIRED_UPDATE;
 import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_DEFAULT;
 import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_AVATAR;
@@ -100,7 +109,7 @@ import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
 public class RentDetailActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector,
         DialogComment.CommentInteraction, DialogRating.RatingInteraction,
-        InnerDetailInteraction, LoginInteraction {
+        InnerDetailInteraction {
 
     public static final int HAS_COMMENT_ONLY = 0;
     public static final int HAS_OFFER_ONLY = 1;
@@ -143,7 +152,7 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
 
         rentDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_rent_detail);
 
-        deviceID = sharedPreferences.getString(IMEI,"");
+        deviceID = sharedPreferences.getString(IMEI, "");
 
         rentDetailBinding.setIsLoading(true);
         rentDetailBinding.setHasTab(false);
@@ -197,7 +206,7 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
         disposable = viewModel.getRentDetailById(rentUuid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onSuccess,Timber::e);
+                .subscribe(this::onSuccess, Timber::e);
         compositeDisposable.add(disposable);
     }
 
@@ -302,74 +311,27 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        checkMenuItemsVisibility(menu);
-        checkIsWished(menu);
         return super.onPrepareOptionsMenu(menu);
     }
 
-    private void checkIsWished(Menu menu) {
-        if (isWished == 1) {
-            menu.findItem(R.id.action_list_wish).setIcon(R.drawable.ic_bookmark_orange);
-        } else if (isWished == 0) {
-            menu.findItem(R.id.action_list_wish).setIcon(R.drawable.ic_bookmark_white);
-        }
-    }
-
-    public void checkMenuItemsVisibility(Menu menu) {
-        boolean loginVisibility = sharedPreferences.getBoolean(USER_IS_AUTH, false);
-        MenuItem login = menu.findItem(R.id.action_login);
-        login.setVisible(!loginVisibility);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_list_wish:
-                setIsWished();
-                return true;
-            case R.id.action_vote:
-                disposable = viewModel.getLastRentVote(rentUuid)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(pair -> {
-                            DialogRating lf = DialogRating.newInstance(pair.first,pair.second);
-                            lf.show(getSupportFragmentManager(), "RatingDialog");
-                        }, Timber::e);
-                compositeDisposable.add(disposable);
-                return true;
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.action_comment:
-                showDialogComment();
-                return true;
-            case R.id.action_login:
-                if (!loginIsClicked) {
-                    loginIsClicked = true;
-                    showLoginDialog();
-                }
-                return true;
+            case R.id.action_menu:
+                showFragmentMenuDialog();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setIsWished() {
-        if (isWished == 1) {
-            isWished = 0;
-            updateEntity(rentUuid, isWished);
-        } else if (isWished == 0) {
-            isWished = 1;
-            updateEntity(rentUuid, isWished);
-        }
+    private void showFragmentMenuDialog() {
+        int wished = rentItem.getRentInnerDetail().getWished();
+        String userId = sharedPreferences.getBoolean(USER_IS_AUTH, false) ? sharedPreferences.getString(USER_ID, "") : "";
+        DialogDetailMenu dialogDetailMenu = DialogDetailMenu.newInstance(wished, userId, rentUuid);
+        dialogDetailMenu.show(getSupportFragmentManager(), "dialogMenu");
     }
 
-    private void updateEntity(String rentUuid, int wished) {
-        disposable = viewModel.updateRent(rentUuid, wished)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::invalidateOptionsMenu, Timber::e);
-        compositeDisposable.add(disposable);
-    }
 
     @Override
     public void onBackPressed() {
@@ -434,7 +396,7 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
     public void phoneCallClick(String phone) {
         Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phone));
         if (ContextCompat.checkSelfPermission(RentDetailActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(RentDetailActivity.this, new String[]{Manifest.permission.CALL_PHONE},REQUEST_PHONE_CALL);
+            ActivityCompat.requestPermissions(RentDetailActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
         } else {
             startActivity(intent);
         }
@@ -442,9 +404,9 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
 
     @Override
     public void phoneSMSClick(String phone) {
-        Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse("sms:"+phone));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + phone));
         if (ContextCompat.checkSelfPermission(RentDetailActivity.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(RentDetailActivity.this, new String[]{Manifest.permission.SEND_SMS},REQUEST_PHONE_SMS);
+            ActivityCompat.requestPermissions(RentDetailActivity.this, new String[]{Manifest.permission.SEND_SMS}, REQUEST_PHONE_SMS);
         } else {
             startActivity(intent);
         }
@@ -454,7 +416,7 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
     public void phoneHomeClick(String phone) {
         Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phone));
         if (ContextCompat.checkSelfPermission(RentDetailActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(RentDetailActivity.this, new String[]{Manifest.permission.SEND_SMS},REQUEST_PHONE_CALL);
+            ActivityCompat.requestPermissions(RentDetailActivity.this, new String[]{Manifest.permission.SEND_SMS}, REQUEST_PHONE_CALL);
         } else {
             startActivity(intent);
         }
@@ -463,63 +425,48 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
     @Override
     public void phoneEmailClick(String email) {
         Intent mailIntent = new Intent(Intent.ACTION_VIEW);
-        Uri data = Uri.parse("mailto:"+email);
+        Uri data = Uri.parse("mailto:" + email);
         mailIntent.setData(data);
         startActivity(Intent.createChooser(mailIntent, "Send mail..."));
     }
 
+    @Override
+    public void onBookRequestClick() {
+        String userId = sharedPreferences.getString(USER_ID, "");
+        String token = sharedPreferences.getString(USER_TOKEN, "");
+        String rentId = rentUuid;
+        Intent intent = new Intent(this, ReservationActivity.class);
+        intent.putExtra(USER_ID, userId);
+        intent.putExtra(USER_TOKEN, token);
+        intent.putExtra("price", rentItem.getRentInnerDetail().getPrice());
+        intent.putExtra("rentId", rentId);
+        intent.putExtra("maxcapability", rentItem.getRentInnerDetail().getCapability());
+        startActivity(intent);
+    }
+
     //------------------------------------- Login -------------------------------------//
-    void showLoginDialog() {
-        if (!deviceID.equals("")) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            Fragment prev = getSupportFragmentManager().findFragmentByTag(LOGIN_TAG);
-            if (prev != null) {
-                ft.remove(prev);
-            }
-            ft.addToBackStack(null);
-
-            // Create and show the dialog.
-            LoginFragment loginFragment = LoginFragment.newInstance();
-            loginFragment.show(ft, LOGIN_TAG);
-        } else {
-            loginIsClicked = false;
-            AlertUtils.showErrorAlert(this,"Esta operación no se puede efectuar");
-        }
-    }
 
 
-    @Override
-    public void onLogin(User user) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(USER_IS_AUTH, true);
-        editor.putString(USER_TOKEN, user.getToken());
-        editor.putString(USER_NAME, user.getUsername());
-        editor.putString(USER_ID, user.getUserid());
-        editor.putString(USER_AVATAR, user.getAvatar());
-        editor.apply();
-        invalidateOptionsMenu();
-    }
-
-    @Override
-    public void showNotificationToUpdate(String msg) {
-        AlertUtils.notifyPendingProfileActivate(getApplication(),msg);
-    }
-
-    @Override
-    public void showGroupMenuProfile(boolean show) {
-        showMenuGroup = show;
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(IS_PROFILE_ACTIVE, show);
-        editor.apply();
-    }
-
-    @Override
-    public void dismissDialog() {
-        loginIsClicked = false;
-    }
-
-
-
+    //menu
+//    case R.id.action_list_wish:
+//    setIsWished();
+//                return true;
+//            case R.id.action_vote:
+//    disposable = viewModel.getLastRentVote(rentUuid)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe(pair -> {
+//        DialogRating lf = DialogRating.newInstance(pair.first, pair.second);
+//        lf.show(getSupportFragmentManager(), "RatingDialog");
+//    }, Timber::e);
+//                compositeDisposable.add(disposable);
+//                return true;
+//            case android.R.id.home:
+//    onBackPressed();
+//                return true;
+//            case R.id.action_comment:
+//    showDialogComment();
+//                return true;
 }
 
 

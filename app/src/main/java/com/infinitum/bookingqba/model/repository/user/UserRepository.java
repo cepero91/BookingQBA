@@ -31,6 +31,12 @@ public interface UserRepository {
 
     Single<Resource<ResponseResult>> resendActivationUser(Map<String, String> map);
 
-    Single<Resource<List<Reservation>>> allReservationByUser(String token, String userid, Reservation.ReservationStatus status);
+    Single<Resource<List<Reservation>>> allPendingReservationByUser(String token, String userid);
+
+    Single<Resource<List<Reservation>>> allAcceptedReservationByUser(String token, String userid);
+
+    Single<Resource<ResponseResult>> acceptReservation(String token, String resUuid);
+
+    Single<Resource<ResponseResult>> deniedReservation(String token, String resUuid);
 
 }

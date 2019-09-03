@@ -3,4 +3,13 @@
     <declare-styleable name="SearchableSpinner">
         <attr name="hintText" format="string"/>
     </declare-styleable>
+    <declare-styleable name="QuantityPicker">
+        <attr name="minQuantity" format="integer" />
+        <attr name="maxQuantity" format="integer"/>
+        <attr name="enable" format="boolean"/>
+        <attr name="quantityColor" format="color"/>
+        <attr name="buttonColor" format="color"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="textStyle" format="string"/>
+    </declare-styleable>
 </resources>

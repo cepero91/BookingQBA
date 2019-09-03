@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
+    android:background="@color/White_100"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/user_avatar"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:tint="@color/material_color_red_500"
+        app:srcCompat="@drawable/ic_fa_calendar_times_line" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppinsbold"
+        android:text="Error al enviar"
+        android:textColor="@color/material_color_red_500"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/poppinslight"
+        android:textAlignment="center"
+        android:text="Por favor intente más tarde."
+        android:textColor="@color/material_color_blue_grey_300"
+        android:textSize="14sp" />
+
+</LinearLayout>
+

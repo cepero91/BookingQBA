@@ -3,28 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_list_wish"
-        android:icon="@drawable/ic_bookmark_white"
-        android:title="@string/deseada"
+        android:id="@+id/action_menu"
+        android:icon="@drawable/ic_fa_ellipsis_line_white"
+        android:title="Menu"
         app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_vote"
-        android:icon="@drawable/ic_star_white"
-        android:title="@string/votar"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_comment"
-        android:icon="@drawable/ic_comment"
-        android:title="@string/comentar"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_login"
-        android:icon="@drawable/ic_user_alt"
-        android:title="@string/iniciar_sesion"
-        app:showAsAction="never" />
-
 
 </menu>

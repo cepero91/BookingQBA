@@ -91,6 +91,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
         innerDetailBinding.llBtnSms.setOnClickListener(this);
         innerDetailBinding.llBtnHome.setOnClickListener(this);
         innerDetailBinding.llBtnEmail.setOnClickListener(this);
+        innerDetailBinding.llBookRequest.setOnClickListener(this);
     }
 
     @Override
@@ -191,6 +192,9 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.ll_btn_email:
                 innerDetailInteraction.phoneEmailClick(rentInnerDetail.getEmail());
+                break;
+            case R.id.ll_book_request:
+                innerDetailInteraction.onBookRequestClick();
                 break;
         }
     }

@@ -29,14 +29,19 @@ import android.widget.Toast;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.github.florent37.shapeofview.shapes.CutCornerView;
+import com.github.florent37.shapeofview.shapes.RoundRectView;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.util.AlertUtils;
+import com.infinitum.bookingqba.view.adapters.RentBookAdapter;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
+import com.infinitum.bookingqba.view.adapters.items.reservation.ReservationItem;
 import com.infinitum.bookingqba.view.base.LocationActivity;
+import com.infinitum.bookingqba.view.customview.SuccessDialogContentView;
 import com.infinitum.bookingqba.view.info.DialogFeedback;
 import com.infinitum.bookingqba.view.info.InfoFragment;
 import com.infinitum.bookingqba.view.interaction.FilterInteraction;
@@ -51,6 +56,7 @@ import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.profile.UserAuthActivity;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
+import com.infinitum.bookingqba.view.reservation.ReservationDetailActivity;
 import com.infinitum.bookingqba.view.reservation.ReservationListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.mikhaellopez.circularimageview.CircularImageView;
@@ -84,6 +90,7 @@ import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.LOGIN_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.MY_REQUEST_CODE;
+import static com.infinitum.bookingqba.util.Constants.NAV_HEADER_REQUIRED_UPDATE;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_COMMENTED;
 import static com.infinitum.bookingqba.util.Constants.PERIODICAL_WORK_NAME;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
@@ -97,7 +104,7 @@ import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 public class HomeActivity extends LocationActivity implements HasSupportFragmentInjector,
         FragmentNavInteraction, NavigationView.OnNavigationItemSelectedListener,
         FilterInteraction, MapFragment.OnFragmentMapInteraction, InfoInteraction,
-        DialogFeedback.FeedbackInteraction, MyRentsFragment.AddRentClick {
+        DialogFeedback.FeedbackInteraction, MyRentsFragment.AddRentClick, RentBookAdapter.RentBookInteraction {
 
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
     private ActivityHomeBinding homeBinding;
@@ -191,12 +198,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
         homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
 
-        if (sharedPreferences.getBoolean(USER_IS_AUTH, false)) {
-            homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(false);
-            homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(true);
-            updateNavHeader(sharedPreferences.getString(USER_NAME, ""), sharedPreferences.getString(USER_AVATAR, ""));
-        }
-
+        updateNavHeader(sharedPreferences.getString(USER_NAME, ""), sharedPreferences.getString(USER_AVATAR, ""));
     }
 
 
@@ -239,8 +241,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                         if (data != null && data.hasExtra(USER_NAME)) {
                             homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(true);
                             homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(false);
-                            showLoginSuccessAlert(data.getStringExtra(USER_NAME));
-                            updateNavHeader(data.getStringExtra(USER_NAME), data.getStringExtra(USER_AVATAR));
+                            showLoginSuccessAlert();
                         }
                         break;
                 }
@@ -297,6 +298,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
     public void checkMenuItemsVisibility(Menu menu) {
         menu.findItem(R.id.action_filter_panel).setVisible(mFragment instanceof RentListFragment);
+        menu.findItem(R.id.action_search).setVisible(mFragment instanceof RentListFragment);
         menu.findItem(R.id.action_refresh).setVisible(mFragment instanceof ProfileFragment);
     }
 
@@ -371,9 +373,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             mFragment = MyRentsFragment.newInstance(userid, token);
             sameFragment = false;
         } else if (id == R.id.nav_reservation_request && !(mFragment instanceof ReservationListFragment)) {
-            String userid = sharedPreferences.getString(USER_ID, "");
-            String token = sharedPreferences.getString(USER_TOKEN, "");
-            mFragment = ReservationListFragment.newInstance(userid, token);
+            mFragment = ReservationListFragment.newInstance();
             sameFragment = false;
         }
         if (mFragment != null && !sameFragment) {
@@ -421,22 +421,19 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     }
 
 
-    private void showLoginSuccessAlert(String username) {
-        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
-        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
-        // Title and message
-        builder.setTitle("En hora buena");
-        builder.setMessage(String.format("%s, es un gusto recibirlo/a", username));
-        builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
-        builder.setAutoDismissAfter(3000);
-        builder.setTextColor(Color.parseColor("#607D8B"));
-        builder.show();
+    private void showLoginSuccessAlert() {
+        SuccessDialogContentView successDialogContentView = new SuccessDialogContentView(this);
+        String avatar = sharedPreferences.getString(USER_AVATAR, "");
+        String name = sharedPreferences.getString(USER_NAME, "");
+        successDialogContentView.updateUserView(avatar, name);
+        AlertUtils.showSuccessLogin(HomeActivity.this, successDialogContentView);
+        updateNavHeader(name, avatar);
     }
 
     private void updateNavHeader(String username, String avatar) {
-        CutCornerView headerView = (CutCornerView) homeBinding.navView.getHeaderView(0);
-        CircularImageView circularImageView = headerView.findViewById(R.id.user_avatar);
-        TextView tvUsername = headerView.findViewById(R.id.tv_username);
+        RoundRectView roundRectView = (RoundRectView) homeBinding.navView.getHeaderView(0);
+        CircularImageView circularImageView = roundRectView.findViewById(R.id.user_avatar);
+        TextView tvUsername = roundRectView.findViewById(R.id.tv_username);
         if (!username.equals("") && !avatar.equals("")) {
             String url = BASE_URL_API + "/" + avatar;
             Picasso.get()
@@ -448,6 +445,14 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             circularImageView.setImageResource(R.drawable.user_placeholder);
             tvUsername.setText("Hola invitado");
         }
+    }
+
+
+    @Override
+    public void onBookReservationClick(ReservationItem item) {
+        Intent intent = new Intent(HomeActivity.this, ReservationDetailActivity.class);
+        intent.putExtra("uuid",item.getId());
+        startActivity(intent);
     }
 
     //---------------------------- MAP ----------------------------------------
@@ -497,7 +502,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     }
 
     @Override
-    public void onFilterElement(PagedList<GeoRent> resourceResult) {
+    public void onFilterElement(Resource<List<GeoRent>> resourceResult) {
         if (mFragment instanceof RentListFragment) {
             ((RentListFragment) mFragment).filterListResult(resourceResult);
         }

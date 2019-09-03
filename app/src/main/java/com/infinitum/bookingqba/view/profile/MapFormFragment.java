@@ -266,9 +266,11 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
     }
 
     private int findPosUserMarker() {
-        for (int i = 0; i < mMarkerLayer.getItemList().size(); i++) {
-            if (mMarkerLayer.getItemList().get(i).title.equals("rent")) {
-                return i;
+        if(mMarkerLayer.getItemList()!=null) {
+            for (int i = 0; i < mMarkerLayer.getItemList().size(); i++) {
+                if (mMarkerLayer.getItemList().get(i).title.equals("rent")) {
+                    return i;
+                }
             }
         }
         return -1;

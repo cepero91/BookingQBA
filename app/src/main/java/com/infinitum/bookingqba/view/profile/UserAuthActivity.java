@@ -26,6 +26,7 @@ import dagger.android.support.HasSupportFragmentInjector;
 
 import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.LAST_EMAIL_REGISTER;
+import static com.infinitum.bookingqba.util.Constants.NAV_HEADER_REQUIRED_UPDATE;
 import static com.infinitum.bookingqba.util.Constants.USER_AVATAR;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;

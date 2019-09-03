@@ -172,4 +172,44 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="distance_msg">Su destino se encuentra a %.2f km de distancia, con un tiempo de llegada aproximado de: %s</string>
     <string name="min_msg">%d min</string>
     <string name="km_msg">- %.1f Km</string>
+
+
+    <!-- MENU -->
+    <string name="select_all_fridays">Select All Fridays</string>
+    <string name="unselect_all_fridays">Unselect All Fridays</string>
+    <string name="select_three_months">Select Prev/Curr/Next Months</string>
+    <string name="unselect_three_months">Unselect Prev/Curr/Next Months</string>
+    <string name="clear_selections">Clear selections</string>
+    <string name="log_selected_days">Log selected days</string>
+
+    <!--Calendar Material-->
+    <string name="material_calendar_monday">L</string>
+    <string name="material_calendar_tuesday">M</string>
+    <string name="material_calendar_wednesday">M</string>
+    <string name="material_calendar_thursday">J</string>
+    <string name="material_calendar_friday">V</string>
+    <string name="material_calendar_saturday">S</string>
+    <string name="material_calendar_sunday">D</string>
+    <string name="solicitud_de_reserva">Solicitud de Reserva</string>
+
+    <array name="material_calendar_months_array">
+        <item>Enero</item>
+        <item>Febrero</item>
+        <item>Marzo</item>
+        <item>Abril</item>
+        <item>Mayo</item>
+        <item>Junio</item>
+        <item>Julio</item>
+        <item>Agosto</item>
+        <item>Septiembre</item>
+        <item>Octubre</item>
+        <item>Noviembre</item>
+        <item>Diciembre</item>
+    </array>
+
+    <string name="material_calendar_today_button">Hoy</string>
+    <string name="material_calendar_positive_button">Ok</string>
+    <string name="material_calendar_negative_button">Cancelar</string>
+    <string name="end_sesion">Esta seguro que desea finalizar la sesión</string>
+
 </resources>

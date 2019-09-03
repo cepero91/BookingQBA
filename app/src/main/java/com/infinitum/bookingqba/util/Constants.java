@@ -89,6 +89,7 @@ public final class Constants {
 
     //USER LOGIN
     public static final String USER_IS_AUTH = "userIsAuth";
+    public static final String NAV_HEADER_REQUIRED_UPDATE = "navHeaderReqUpdate";
     public static final String USER_IS_RENTS_OWNER = "userIsRentOwner";
     public static final String IS_PROFILE_ACTIVE = "profileActive";
     public static final String USER_NAME = "userName";

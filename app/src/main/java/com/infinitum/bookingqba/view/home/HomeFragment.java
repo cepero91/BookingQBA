@@ -148,14 +148,17 @@ public class HomeFragment extends BaseNavigationFragment implements View.OnClick
     public void setItemsAdapter(Map<String,List<BaseItem>> listMap) {
         fragmentHomeBinding.setIsLoading(false);
 
-        MostCommentRentAdapter mostCommentRentAdapter = new MostCommentRentAdapter(listMap.get("MostCommented"), getLayoutInflater(), mListener);
-        fragmentHomeBinding.rvMostCommented.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        fragmentHomeBinding.rvMostCommented.setAdapter(mostCommentRentAdapter);
+        if(listMap.containsKey("MostCommented") && listMap.get("MostCommented")!=null){
+            MostCommentRentAdapter mostCommentRentAdapter = new MostCommentRentAdapter(listMap.get("MostCommented"), getLayoutInflater(), mListener);
+            fragmentHomeBinding.rvMostCommented.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+            fragmentHomeBinding.rvMostCommented.setAdapter(mostCommentRentAdapter);
+        }
 
-        MostRatingRentAdapter mostRatingRentAdapter = new MostRatingRentAdapter(listMap.get("MostRating"),getLayoutInflater(),mListener);
-        fragmentHomeBinding.rvMostRating.setLayoutManager(new LinearLayoutManager(getActivity()));
-        fragmentHomeBinding.rvMostRating.setAdapter(mostRatingRentAdapter);
-
+        if(listMap.containsKey("MostRating") && listMap.get("MostRating")!=null) {
+            MostRatingRentAdapter mostRatingRentAdapter = new MostRatingRentAdapter(listMap.get("MostRating"), getLayoutInflater(), mListener);
+            fragmentHomeBinding.rvMostRating.setLayoutManager(new LinearLayoutManager(getActivity()));
+            fragmentHomeBinding.rvMostRating.setAdapter(mostRatingRentAdapter);
+        }
     }
 
 

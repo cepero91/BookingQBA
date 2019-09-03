@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.view.adapters.items.reservation;
 
 public class ReservationItem {
 
+    private String id;
     private String startDate;
     private String endDate;
     private String userName;
@@ -11,7 +12,8 @@ public class ReservationItem {
     public ReservationItem() {
     }
 
-    public ReservationItem(String startDate, String endDate, String userName, String capability, String userAvatar) {
+    public ReservationItem(String id, String startDate, String endDate, String userName, String capability, String userAvatar) {
+        this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.userName = userName;
@@ -57,5 +59,13 @@ public class ReservationItem {
 
     public void setUserAvatar(String userAvatar) {
         this.userAvatar = userAvatar;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

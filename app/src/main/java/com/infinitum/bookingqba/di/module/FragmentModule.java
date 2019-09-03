@@ -11,6 +11,7 @@ import com.infinitum.bookingqba.view.profile.MapFormFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.profile.MyRentsFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
+import com.infinitum.bookingqba.view.rents.DialogDetailMenu;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.reservation.ReservationListFragment;
 
@@ -59,6 +60,9 @@ public interface FragmentModule {
 
     @ContributesAndroidInjector
     ReservationListFragment bindReservationListFragment();
+
+    @ContributesAndroidInjector
+    DialogDetailMenu bindDialogDetailMenu();
 
 
 }

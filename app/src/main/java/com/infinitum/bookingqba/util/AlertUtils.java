@@ -15,6 +15,7 @@ import android.media.RingtoneManager;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.LayoutRes;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewCompat;
 import android.view.Gravity;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.view.customview.SuccessDialogContentView;
 import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.muddzdev.styleabletoast.StyleableToast;
@@ -309,6 +311,27 @@ public class AlertUtils {
         builder.setTextColor(Color.parseColor("#607D8B"));
         builder.show();
     }
+
+    public static void showSuccessLogin(Context context, SuccessDialogContentView successDialogContentView){
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // Title and message
+        builder.setHeaderView(successDialogContentView);
+        builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
+        builder.setAutoDismissAfter(3000);
+        builder.show();
+    }
+
+    public static void showCFDialogWithCustomViewAndAction(Context context, @LayoutRes int layout, String buttonText, DialogInterface.OnClickListener onClickListener){
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // Title and message
+        builder.setHeaderView(layout);
+        builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
+        builder.addButton(buttonText, -1, Color.parseColor("#26A69A"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
+        builder.show();
+    }
+
 
 
 

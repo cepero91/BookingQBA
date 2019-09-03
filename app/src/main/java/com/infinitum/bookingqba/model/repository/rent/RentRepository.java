@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.model.repository.rent;
 
 import android.arch.paging.DataSource;
+import android.util.Pair;
 
 import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
@@ -13,6 +14,9 @@ import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.pojo.RentMostComment;
 import com.infinitum.bookingqba.model.local.pojo.RentMostRating;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
+import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
+import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
+import com.infinitum.bookingqba.model.remote.pojo.DrawChange;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
@@ -39,9 +43,9 @@ public interface RentRepository {
 
     Flowable<Resource<List<RentAndDependencies>>> allRent();
 
-    DataSource.Factory<Integer,RentAndDependencies> allRentByOrderType(char orderType, String province);
+    Flowable<Resource<List<RentAndDependencies>>> allRentByOrderType(char orderType, String province);
 
-    DataSource.Factory<Integer,RentAndGalery> allRentByZone(String province, String zone);
+    DataSource.Factory<Integer, RentAndGalery> allRentByZone(String province, String zone);
 
     Flowable<Resource<List<RentMostRating>>> fiveMostRatingRents(String province);
 
@@ -69,9 +73,9 @@ public interface RentRepository {
 
     Single<Resource<List<RentMode>>> allRemoteRentMode(String token);
 
-    DataSource.Factory<Integer,RentAndDependencies> filterRents(Map<String,List<String>> filterParams, String province);
+    Flowable<Resource<List<RentAndDependencies>>> filterRents(Map<String, List<String>> filterParams, String province);
 
-    Single<List<ResponseResult>>  addRent(String token, Map<String,Object> params);
+    Single<List<ResponseResult>> addRent(String token, Map<String, Object> params);
 
     Flowable<Resource<List<RentEsential>>> allRentByUserId(String token, String userid);
 
@@ -82,5 +86,11 @@ public interface RentRepository {
     Flowable<Resource<List<RentAndDependencies>>> rentNearLocation(LatLong latLong, double range);
 
     Flowable<Double> maxRentPrice();
+
+    Single<Resource<ResponseResult>> sendBookRequest(String token, BookRequest bookRequest);
+
+    Single<Resource<List<DrawChange>>> drawChangeByFinalPrice(String token, double finalPrice);
+
+    Single<Resource<DisabledDays>> disabledDaysByRent(String token, String uuid);
 
 }

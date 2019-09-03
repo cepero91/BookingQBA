@@ -14,7 +14,7 @@ public interface FilterInteraction {
 
     void closeFilter();
 
-    void onFilterElement(PagedList<GeoRent> resourceResult);
+    void onFilterElement(Resource<List<GeoRent>> resourceResult);
 
     void onFilterClean();
 

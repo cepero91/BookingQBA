@@ -9,7 +9,10 @@ import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.tconverter.CommentEmotion;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
+import com.infinitum.bookingqba.model.remote.pojo.CommentGroup;
+import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.util.DateUtils;
+import com.infinitum.bookingqba.util.NetworkHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +49,7 @@ public class CommentRepoImpl implements CommentRepository {
         for (Comment item : comments) {
             entity = new CommentEntity(item.getId(), item.getUsername(), item.getDescription(),item.getRent(), item.getUserid());
             entity.setAvatar(Base64.decode(item.getAvatar(), Base64.DEFAULT));
-            entity.setOwner(item.isIs_owner());
+            entity.setOwner(item.isOwner());
             entity.setCreated(DateUtils.dateStringToDate(item.getCreated()));
             entity.setActive(item.isActive());
             entity.setEmotion(CommentEmotion.fromLevel(item.getEmotion()));
@@ -58,6 +61,23 @@ public class CommentRepoImpl implements CommentRepository {
     @Override
     public Completable insert(List<CommentEntity> entities) {
         return Completable.fromAction(() -> qbaDao.upsertComment(entities))
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<Resource<ResponseResult>> send(String token, Comment comment) {
+        CommentGroup commentGroup = new CommentGroup(token);
+        commentGroup.addComment(comment);
+        //TODO hacer una url come esta que esta comentariada
+//        return retrofit.create(ApiInterface.class)
+//                .sendComment(token, comment)
+//                .map(Resource::success)
+//                .onErrorReturn(Resource::error)
+//                .subscribeOn(Schedulers.io());
+        return retrofit.create(ApiInterface.class)
+                .updateRentComment(token, commentGroup)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());
     }
 

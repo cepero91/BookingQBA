@@ -8,7 +8,6 @@ import android.arch.paging.PagedList;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
-import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.CommentEntity;
@@ -28,16 +27,10 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
 import com.infinitum.bookingqba.model.local.tconverter.CommentEmotion;
-import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
-import com.infinitum.bookingqba.model.remote.pojo.Amenities;
+import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
-import com.infinitum.bookingqba.model.remote.pojo.Municipality;
-import com.infinitum.bookingqba.model.remote.pojo.PoiType;
-import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
-import com.infinitum.bookingqba.model.remote.pojo.Rent;
-import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
-import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
-import com.infinitum.bookingqba.model.remote.pojo.RentMode;
+import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
+import com.infinitum.bookingqba.model.remote.pojo.DrawChange;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.comment.CommentRepository;
@@ -46,8 +39,6 @@ import com.infinitum.bookingqba.model.repository.poitype.PoiTypeRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.util.DateUtils;
-import com.infinitum.bookingqba.util.geo.POISort;
-import com.infinitum.bookingqba.view.adapters.items.addrent.MyRentItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
@@ -59,17 +50,13 @@ import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentInnerDetail;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentOfferItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
-import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
-import com.infinitum.bookingqba.view.profile.uploaditem.AmenitiesRentFormObject;
-import com.infinitum.bookingqba.view.profile.uploaditem.RentFormObject;
-import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
-import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
 
 import org.mapsforge.core.model.LatLong;
 import org.oscim.core.GeoPoint;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,9 +67,7 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Response;
 import timber.log.Timber;
 
 public class RentViewModel extends android.arch.lifecycle.ViewModel {
@@ -118,11 +103,8 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
      *
      * @return
      */
-    public LiveData<PagedList<GeoRent>> getLiveDataRentList(char orderType, String province) {
-        DataSource.Factory<Integer, GeoRent> dataSource = rentRepository.allRentByOrderType(orderType, province).mapByPage(this::transformPaginadedData);
-        LivePagedListBuilder<Integer, GeoRent> pagedListBuilder = new LivePagedListBuilder<>(dataSource, 10);
-        ldRentsList = pagedListBuilder.build();
-        return ldRentsList;
+    public Flowable<Resource<List<GeoRent>>> getLiveDataRentList(char orderType, String province) {
+        return rentRepository.allRentByOrderType(orderType, province).map(this::transformPaginadedData).map(Resource::success).onErrorReturn(Resource::error);
     }
 
 
@@ -203,12 +185,9 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
 
-    public LiveData<PagedList<GeoRent>> filter(Map<String, List<String>> filterParams, String province) {
-        DataSource.Factory<Integer, GeoRent> dataSource = rentRepository.filterRents(filterParams, province)
-                .mapByPage(this::transformPaginadedData);
-        LivePagedListBuilder<Integer, GeoRent> pagedListBuilder = new LivePagedListBuilder<>(dataSource, 10);
-        ldRentsList = pagedListBuilder.build();
-        return ldRentsList;
+    public Flowable<Resource<List<GeoRent>>> filter(Map<String, List<String>> filterParams, String province) {
+        return rentRepository.filterRents(filterParams, province)
+                .map(this::transformPaginadedData).map(Resource::success).onErrorReturn(Resource::error);
     }
 
 
@@ -255,22 +234,21 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return rentItem;
     }
 
-    /**
-     * TODO TODABIA NO HAY USERID CUANDO SE EFECTUA EL LOGIN
-     *
-     * @param comment
-     * @return
-     */
+
     public Completable addComment(Comment comment) {
         CommentEntity entity = new CommentEntity(comment.getId(), comment.getUsername(), comment.getDescription(), comment.getRent(), comment.getUserid());
         entity.setEmotion(CommentEmotion.fromLevel(comment.getEmotion()));
         entity.setActive(comment.isActive());
-        entity.setOwner(comment.isIs_owner());
+        entity.setOwner(comment.isOwner());
         entity.setAvatar(null);
         entity.setCreated(DateUtils.dateStringToDate(comment.getCreated()));
         List<CommentEntity> list = new ArrayList<>();
         list.add(entity);
         return commentRepository.insert(list);
+    }
+
+    public Single<Resource<ResponseResult>> sendComment(String token, Comment comment) {
+        return commentRepository.send(token, comment);
     }
 
     public Completable addRating(float rating, String comment, String rent) {
@@ -291,6 +269,34 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                     Timber.e(throwable);
                     return new Pair<>(0f, "");
                 });
+    }
+
+    //-------------------------- RENT RESERVATION ---------------------------------------//
+
+    public Single<Resource<ResponseResult>> sendBookRequest(String token, BookRequest bookRequest) {
+        return rentRepository.sendBookRequest(token, bookRequest);
+    }
+
+    public Single<Resource<Map<String, Double>>> drawChangeByFinalPrice(String token, double finalPrice) {
+        return rentRepository.drawChangeByFinalPrice(token, finalPrice)
+                .map(this::getStringDoubleMap).map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
+    }
+
+    @NonNull
+    private Map<String, Double> getStringDoubleMap(Resource<List<DrawChange>> listResource) {
+        Map<String, Double> hashMap = new HashMap<>();
+        if (listResource.data != null) {
+            for (DrawChange drawChange : listResource.data) {
+                hashMap.put(drawChange.getName(), drawChange.getValue());
+            }
+            return hashMap;
+        } else {
+            return hashMap;
+        }
+    }
+
+    public Single<Resource<DisabledDays>> disabledDays(String token, String rentUuid) {
+        return rentRepository.disabledDaysByRent(token, rentUuid);
     }
 
     //-------------------------- RENT VISIT COUNT ---------------------------------------- //
@@ -448,21 +454,23 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
 
-    private List<GeoRent> transformPaginadedData(List<RentAndDependencies> listResource) {
+    private List<GeoRent> transformPaginadedData(Resource<List<RentAndDependencies>> listResource) {
         List<GeoRent> geoRentList = new ArrayList<>();
         GeoRent geoRent;
-        for (RentAndDependencies rentAndDependencies : listResource) {
-            String imagePath = rentAndDependencies.getImageAtPos(0);
-            geoRent = new GeoRent(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath);
-            geoRent.setAddress(rentAndDependencies.getAddress());
-            geoRent.setGeoPoint(new GeoPoint(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()));
-            geoRent.setPrice(rentAndDependencies.getPrice());
-            geoRent.setRating(rentAndDependencies.getRating());
-            geoRent.setRatingCount(rentAndDependencies.getRatingCount());
-            geoRent.setRentMode(rentAndDependencies.getRentMode());
-            geoRent.setPoiItems(transformPoiEntityToPoiItem(new LatLong(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()), rentAndDependencies.getRentPoiAndRelations()));
-            geoRent.setWished(rentAndDependencies.getIsWished());
-            geoRentList.add(geoRent);
+        if(listResource.data!=null) {
+            for (RentAndDependencies rentAndDependencies : listResource.data) {
+                String imagePath = rentAndDependencies.getImageAtPos(0);
+                geoRent = new GeoRent(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath);
+                geoRent.setAddress(rentAndDependencies.getAddress());
+                geoRent.setGeoPoint(new GeoPoint(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()));
+                geoRent.setPrice(rentAndDependencies.getPrice());
+                geoRent.setRating(rentAndDependencies.getRating());
+                geoRent.setRatingCount(rentAndDependencies.getRatingCount());
+                geoRent.setRentMode(rentAndDependencies.getRentMode());
+                geoRent.setPoiItems(transformPoiEntityToPoiItem(new LatLong(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()), rentAndDependencies.getRentPoiAndRelations()));
+                geoRent.setWished(rentAndDependencies.getIsWished());
+                geoRentList.add(geoRent);
+            }
         }
         return geoRentList;
 

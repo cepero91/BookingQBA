@@ -254,7 +254,7 @@ public class UserTraceImpl implements UserTraceRepository {
                     comment.setAvatar("");
                     comment.setActive(false);
                     comment.setEmotion(CommentEmotion.fromEmotion(entity.getEmotion()));
-                    comment.setIs_owner(entity.isOwner());
+                    comment.setOwner(entity.isOwner());
                     commentGroup.addComment(comment);
                     Timber.e("COMMENT to send ====> rent %s, name %s", entity.getUsername(), entity.getDescription());
                 }

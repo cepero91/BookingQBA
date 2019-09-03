@@ -122,9 +122,9 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         interaction = null;
         compositeDisposable.clear();
+        super.onDestroy();
     }
 
     public void loadFilterParams() {
@@ -272,8 +272,13 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
     public void onShipClick() {
         Map<String,List<String>> filterParams = getFilterParams();
         if (filterParams.size() > 0) {
-            rentViewModel.filter(filterParams, argProvince).observe(this, pagedList ->
-                    interaction.onFilterElement(pagedList));
+            disposable = rentViewModel.filter(filterParams, argProvince)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(listResource -> {
+                        interaction.onFilterElement(listResource);
+                    },Timber::e);
+            compositeDisposable.add(disposable);
         } else {
             interaction.onFilterClean();
         }

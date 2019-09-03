@@ -31,7 +31,7 @@ public class Comment {
 
     @SerializedName("is_owner")
     @Expose
-    private boolean is_owner;
+    private boolean owner;
 
     @SerializedName("emotion")
     @Expose
@@ -50,14 +50,14 @@ public class Comment {
         this.username = username;
     }
 
-    public Comment(String id, String username, String description, String created, String avatar, String rent, boolean is_owner, int emotion, boolean active) {
+    public Comment(String id, String username, String description, String created, String avatar, String rent, boolean owner, int emotion, boolean active) {
         this.id = id;
         this.username = username;
         this.description = description;
         this.created = created;
         this.avatar = avatar;
         this.rent = rent;
-        this.is_owner = is_owner;
+        this.owner = owner;
         this.emotion = emotion;
         this.active = active;
     }
@@ -110,12 +110,12 @@ public class Comment {
         this.rent = rent;
     }
 
-    public boolean isIs_owner() {
-        return is_owner;
+    public boolean isOwner() {
+        return owner;
     }
 
-    public void setIs_owner(boolean is_owner) {
-        this.is_owner = is_owner;
+    public void setOwner(boolean owner) {
+        this.owner = owner;
     }
 
     public int getEmotion() {

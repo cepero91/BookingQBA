@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:animateLayoutChanges="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="2">
+
+        <TextView
+            android:id="@+id/tv_btn_start_date"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="2.5dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_filter_small_ship_unselected"
+            android:drawableStart="@drawable/ic_fa_calendar_plus_line"
+            android:fontFamily="@font/poppinsregular"
+            android:orientation="horizontal"
+            android:text="Desde"
+            android:textColor="@color/material_color_blue_grey_500" />
+
+        <TextView
+            android:id="@+id/tv_btn_end_date"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="2.5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_filter_small_ship_unselected"
+            android:drawableStart="@drawable/ic_fa_calendar_plus_line"
+            android:fontFamily="@font/poppinsregular"
+            android:orientation="horizontal"
+            android:text="Hasta"
+            android:textColor="@color/material_color_blue_grey_500" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_validation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/poppinsregular"
+        android:textColor="@color/material_color_red_500"
+        android:text="Error: No puede seleccionar rango entre fechas ocupadas"/>
+
+</LinearLayout>

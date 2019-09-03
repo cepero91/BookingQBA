@@ -8,6 +8,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class Reservation {
 
+    @SerializedName("uui")
+    @Expose
+    private String id;
+
     @SerializedName("username")
     @Expose
     private String username;
@@ -32,13 +36,22 @@ public class Reservation {
     @Expose
     private ReservationStatus reservationStatus;
 
-    public Reservation(String username, String startDate, String endDate, String avatar, int capability, ReservationStatus reservationStatus) {
+    public Reservation(String id, String username, String startDate, String endDate, String avatar, int capability, ReservationStatus reservationStatus) {
+        this.id = id;
         this.username = username;
         this.startDate = startDate;
         this.endDate = endDate;
         this.avatar = avatar;
         this.capability = capability;
         this.reservationStatus = reservationStatus;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUsername() {
