@@ -20,10 +20,15 @@ public class RatingVote {
     @Expose
     private String comment;
 
-    public RatingVote(String rent, float rating, String comment) {
+    @SerializedName("userId")
+    @Expose
+    private String userId;
+
+    public RatingVote(String rent, float rating, String comment, String userId) {
         this.rent = rent;
         this.rating = rating;
         this.comment = comment;
+        this.userId = userId;
     }
 
     public String getRent() {
@@ -48,5 +53,13 @@ public class RatingVote {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

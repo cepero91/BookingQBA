@@ -10,8 +10,8 @@ import timber.log.Timber;
 
 public class DateUtils {
 
-    public static Date dateStringToDate(String dateString){
-        dateString = dateString.replace("T"," ");
+    public static Date dateStringToDate(String dateString) {
+        dateString = dateString.replace("T", " ");
         SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new Locale("es", "ES"));
         try {
             return parser.parse(dateString);
@@ -21,12 +21,12 @@ public class DateUtils {
         }
     }
 
-    public static String currentDateToString(){
+    public static String currentDateToString() {
         SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new Locale("es", "ES"));
         return parser.format(Calendar.getInstance().getTime());
     }
 
-    public static String parseDateToString(Date date){
+    public static String parseDateToString(Date date) {
         SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new Locale("es", "ES"));
         return parser.format(date);
     }
@@ -37,5 +37,17 @@ public class DateUtils {
             syncRequired = true;
         }
         return syncRequired;
+    }
+
+    public static String changeFormatDate(String formatIn, String formatOut, String date) {
+        Date tempDate = null;
+        SimpleDateFormat simpleDateFormatIn = new SimpleDateFormat(formatIn);
+        SimpleDateFormat simpleDateFormatOut = new SimpleDateFormat(formatOut);
+        try {
+            tempDate = simpleDateFormatIn.parse(date);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+        return simpleDateFormatOut.format(tempDate);
     }
 }

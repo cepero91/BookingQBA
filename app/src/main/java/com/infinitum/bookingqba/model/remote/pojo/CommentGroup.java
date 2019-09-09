@@ -8,25 +8,12 @@ import java.util.List;
 
 public class CommentGroup {
 
-    @SerializedName("imei")
-    @Expose
-    private String imei;
-
     @SerializedName("comments")
     @Expose
     private List<Comment> comments;
 
-    public CommentGroup(String imei) {
-        this.imei = imei;
+    public CommentGroup() {
         comments = new ArrayList<>();
-    }
-
-    public String getImei() {
-        return imei;
-    }
-
-    public void setImei(String imei) {
-        this.imei = imei;
     }
 
     public List<Comment> getComments() {

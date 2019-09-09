@@ -2,8 +2,6 @@ package com.infinitum.bookingqba.viewmodel;
 
 
 import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
-import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.support.annotation.NonNull;
 import android.util.Pair;
@@ -17,7 +15,6 @@ import com.infinitum.bookingqba.model.local.entity.OfferEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.RatingEntity;
-import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.PoiAndRelations;
@@ -31,6 +28,7 @@ import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
 import com.infinitum.bookingqba.model.remote.pojo.DrawChange;
+import com.infinitum.bookingqba.model.remote.pojo.RatingVote;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.comment.CommentRepository;
@@ -39,7 +37,10 @@ import com.infinitum.bookingqba.model.repository.poitype.PoiTypeRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.util.DateUtils;
-import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
+import com.infinitum.bookingqba.view.adapters.items.filter.BaseFilterItem;
+import com.infinitum.bookingqba.view.adapters.items.filter.CheckableFilterItem;
+import com.infinitum.bookingqba.view.adapters.items.filter.NumberFilterItem;
+import com.infinitum.bookingqba.view.adapters.items.filter.RangeFilterItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.map.PoiItem;
@@ -54,9 +55,7 @@ import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
 import org.mapsforge.core.model.LatLong;
 import org.oscim.core.GeoPoint;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +69,14 @@ import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static com.infinitum.bookingqba.util.Constants.FILTER_AMENITIES;
+import static com.infinitum.bookingqba.util.Constants.FILTER_CAPABILITY;
+import static com.infinitum.bookingqba.util.Constants.FILTER_MUNICIPALITIES;
+import static com.infinitum.bookingqba.util.Constants.FILTER_ORDER;
+import static com.infinitum.bookingqba.util.Constants.FILTER_POITYPES;
+import static com.infinitum.bookingqba.util.Constants.FILTER_PRICE;
+import static com.infinitum.bookingqba.util.Constants.FILTER_RENTMODE;
+
 public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     private static final int MAX_STAR = 5;
@@ -80,7 +87,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private MunicipalityRepository municipalityRepository;
     private CommentRepository commentRepository;
     private PoiTypeRepository poiTypeRepository;
-    private Map<String, List<CheckableItem>> filterMap;
+    private Map<String, List<? extends BaseFilterItem>> filterMap;
     private LiveData<PagedList<GeoRent>> ldRentsList;
 
     @Inject
@@ -139,47 +146,43 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     // --------------------------- FILTER LIST --------------------------------------------- //
 
-    public Flowable<Map<String, List<CheckableItem>>> getMapFilterItems(String province) {
+    public Flowable<Map<String, List<? extends BaseFilterItem>>> getMapFilterItems(String province) {
         if (filterMap != null && filterMap.size() > 0) {
-            return Flowable.just(filterMap);
+            return Flowable.just(filterMap).subscribeOn(Schedulers.io());
         } else {
             return getMapFlowable(province);
         }
     }
 
-    public void changeStateFilterItem(int pos, String levelParam) {
-        CheckableItem item = filterMap.get(levelParam).get(pos);
-        boolean currentState = item.isChecked();
-        item.setChecked(!currentState);
-    }
-
-    private Flowable<Map<String, List<CheckableItem>>> getMapFlowable(String province) {
-        Flowable<List<CheckableItem>> amenitieFlow = amenitiesRepository.allLocalAmenities()
-                .subscribeOn(Schedulers.io())
-                .map(this::transformAmenitieToMap);
-        Flowable<List<CheckableItem>> rentModeFlow = rentRepository.allRentMode()
-                .subscribeOn(Schedulers.io())
-                .map(this::transformRentModeToMap);
-        Flowable<List<CheckableItem>> municipalityFlow = municipalityRepository.allMunicipalitiesByProvince(province)
-                .subscribeOn(Schedulers.io())
-                .map(this::transformMunToMap);
-        Flowable<List<CheckableItem>> poiTypeFlow = poiTypeRepository.allLocalPoiType()
-                .subscribeOn(Schedulers.io())
-                .map(this::transformPoiTypeToMap);
-        Flowable<List<CheckableItem>> maxPrice = rentRepository.maxRentPrice()
-                .subscribeOn(Schedulers.io())
+    private Flowable<Map<String, List<? extends BaseFilterItem>>> getMapFlowable(String province) {
+        Flowable<List<CheckableFilterItem>> amenitieFlow = amenitiesRepository.allLocalAmenities()
+                .map(this::transformAmenitieToMap).subscribeOn(Schedulers.io());
+        Flowable<List<CheckableFilterItem>> rentModeFlow = rentRepository.allRentMode()
+                .map(this::transformRentModeToMap).subscribeOn(Schedulers.io());
+        Flowable<List<CheckableFilterItem>> municipalityFlow = municipalityRepository.allMunicipalitiesByProvince(province)
+                .map(this::transformMunToMap).subscribeOn(Schedulers.io());
+        Flowable<List<CheckableFilterItem>> poiTypeFlow = poiTypeRepository.allLocalPoiType()
+                .map(this::transformPoiTypeToMap).subscribeOn(Schedulers.io());
+        Flowable<List<RangeFilterItem>> maxPrice = rentRepository.maxRentPrice()
                 .map(aDouble -> {
-                    List<CheckableItem> checkableItems = new ArrayList<>();
-                    checkableItems.add(new CheckableItem(UUID.randomUUID().toString(), String.valueOf(aDouble), false));
-                    return checkableItems;
-                });
-        return Flowable.zip(amenitieFlow, rentModeFlow, municipalityFlow, poiTypeFlow, maxPrice,
-                (amenities, rentmode, municipalities, poitypes, max) -> {
-                    filterMap.put("Amenities", amenities);
-                    filterMap.put("RentMode", rentmode);
-                    filterMap.put("Municipality", municipalities);
-                    filterMap.put("PoiType", poitypes);
-                    filterMap.put("Price", max);
+                    List<RangeFilterItem> rangeFilterItems = new ArrayList<>();
+                    rangeFilterItems.add(new RangeFilterItem(UUID.randomUUID().toString(), aDouble.floatValue()));
+                    return rangeFilterItems;
+                }).subscribeOn(Schedulers.io());
+        Flowable<List<NumberFilterItem>> maxCapability = rentRepository.maxRentCapability()
+                .map(aInteger -> {
+                    List<NumberFilterItem> numberFilterItems = new ArrayList<>();
+                    numberFilterItems.add(new NumberFilterItem(UUID.randomUUID().toString(), aInteger));
+                    return numberFilterItems;
+                }).subscribeOn(Schedulers.io());
+        return Flowable.zip(amenitieFlow, rentModeFlow, municipalityFlow, poiTypeFlow, maxPrice, maxCapability,
+                (amenities, rentmode, municipalities, poitypes, max, capability) -> {
+                    filterMap.put(FILTER_AMENITIES, amenities);
+                    filterMap.put(FILTER_RENTMODE, rentmode);
+                    filterMap.put(FILTER_MUNICIPALITIES, municipalities);
+                    filterMap.put(FILTER_POITYPES, poitypes);
+                    filterMap.put(FILTER_PRICE, max);
+                    filterMap.put(FILTER_CAPABILITY, capability);
                     return filterMap;
                 }).subscribeOn(Schedulers.io());
     }
@@ -251,9 +254,15 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return commentRepository.send(token, comment);
     }
 
-    public Completable addRating(float rating, String comment, String rent) {
-        RatingEntity entity = new RatingEntity(UUID.randomUUID().toString(), rating, comment, rent, 0);
+    public Completable addRating(Map<String, Object> params) {
+        RatingEntity entity = new RatingEntity((String) params.get("id"), (float) params.get("rating"),
+                (String) params.get("comment"), (String) params.get("userId"),
+                (String) params.get("rent"), 0);
         return rentRepository.addOrUpdateRating(entity);
+    }
+
+    public Single<Resource<ResponseResult>> sendRating(String token, RatingVote ratingVote) {
+        return rentRepository.sendRatingVote(token, ratingVote);
     }
 
     public Single<Pair<Float, String>> getLastRentVote(String rent) {
@@ -307,51 +316,41 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     // ------------------------- TRANSFORM METHOD ---------------------------------------- //
 
-    private List<CheckableItem> transformAmenitieToMap(Resource<List<AmenitiesEntity>> listResource) {
-        ArrayList<CheckableItem> viewItemList = new ArrayList<>();
+    private List<CheckableFilterItem> transformAmenitieToMap(Resource<List<AmenitiesEntity>> listResource) {
+        ArrayList<CheckableFilterItem> viewItemList = new ArrayList<>();
         if (listResource.data != null) {
             for (AmenitiesEntity entity : listResource.data) {
-                viewItemList.add(new CheckableItem(entity.getId(), entity.getName(), false));
+                viewItemList.add(new CheckableFilterItem(entity.getId(), entity.getName(), false, FILTER_AMENITIES));
             }
         }
         return viewItemList;
     }
 
-    private List<CheckableItem> transformRZoneToMap(Resource<List<ReferenceZoneEntity>> listResource) {
-        ArrayList<CheckableItem> viewItemList = new ArrayList<>();
-        if (listResource.data != null) {
-            for (ReferenceZoneEntity entity : listResource.data) {
-                viewItemList.add(new CheckableItem(entity.getId(), entity.getName(), false));
-            }
-        }
-        return viewItemList;
-    }
-
-    private List<CheckableItem> transformRentModeToMap(Resource<List<RentModeEntity>> listResource) {
-        ArrayList<CheckableItem> viewItemList = new ArrayList<>();
+    private List<CheckableFilterItem> transformRentModeToMap(Resource<List<RentModeEntity>> listResource) {
+        ArrayList<CheckableFilterItem> viewItemList = new ArrayList<>();
         if (listResource.data != null) {
             for (RentModeEntity entity : listResource.data) {
-                viewItemList.add(new CheckableItem(entity.getId(), entity.getName(), false));
+                viewItemList.add(new CheckableFilterItem(entity.getId(), entity.getName(), false, FILTER_RENTMODE));
             }
         }
         return viewItemList;
     }
 
-    private List<CheckableItem> transformMunToMap(Resource<List<MunicipalityEntity>> listResource) {
-        ArrayList<CheckableItem> viewItemList = new ArrayList<>();
+    private List<CheckableFilterItem> transformMunToMap(Resource<List<MunicipalityEntity>> listResource) {
+        ArrayList<CheckableFilterItem> viewItemList = new ArrayList<>();
         if (listResource.data != null) {
             for (MunicipalityEntity entity : listResource.data) {
-                viewItemList.add(new CheckableItem(entity.getId(), entity.getName(), false));
+                viewItemList.add(new CheckableFilterItem(entity.getId(), entity.getName(), false, FILTER_MUNICIPALITIES));
             }
         }
         return viewItemList;
     }
 
-    private List<CheckableItem> transformPoiTypeToMap(Resource<List<PoiTypeEntity>> listResource) {
-        ArrayList<CheckableItem> viewItemList = new ArrayList<>();
+    private List<CheckableFilterItem> transformPoiTypeToMap(Resource<List<PoiTypeEntity>> listResource) {
+        ArrayList<CheckableFilterItem> viewItemList = new ArrayList<>();
         if (listResource.data != null) {
             for (PoiTypeEntity entity : listResource.data) {
-                viewItemList.add(new CheckableItem(String.valueOf(entity.getId()), entity.getName(), false));
+                viewItemList.add(new CheckableFilterItem(String.valueOf(entity.getId()), entity.getName(), false, FILTER_POITYPES));
             }
         }
         return viewItemList;
@@ -457,7 +456,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     private List<GeoRent> transformPaginadedData(Resource<List<RentAndDependencies>> listResource) {
         List<GeoRent> geoRentList = new ArrayList<>();
         GeoRent geoRent;
-        if(listResource.data!=null) {
+        if (listResource.data != null) {
             for (RentAndDependencies rentAndDependencies : listResource.data) {
                 String imagePath = rentAndDependencies.getImageAtPos(0);
                 geoRent = new GeoRent(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath);

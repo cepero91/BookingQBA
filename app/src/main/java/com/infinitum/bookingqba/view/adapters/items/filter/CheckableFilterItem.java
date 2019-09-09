@@ -3,24 +3,17 @@ package com.infinitum.bookingqba.view.adapters.items.filter;
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 
-public class CheckableItem implements ViewModel{
+public class CheckableFilterItem extends BaseFilterItem{
 
-    private String id;
     private String name;
     private boolean checked;
+    private String levelParam;
 
-    public CheckableItem(String id, String name, boolean checked) {
-        this.id = id;
+    public CheckableFilterItem(String id, String name, boolean checked, String levelParam) {
+        super(id);
         this.name = name;
         this.checked = checked;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        this.levelParam = levelParam;
     }
 
     public String getName() {
@@ -37,5 +30,13 @@ public class CheckableItem implements ViewModel{
 
     public void setChecked(boolean checked) {
         this.checked = checked;
+    }
+
+    public String getLevelParam() {
+        return levelParam;
+    }
+
+    public void setLevelParam(String levelParam) {
+        this.levelParam = levelParam;
     }
 }

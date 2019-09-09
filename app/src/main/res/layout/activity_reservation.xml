@@ -3,10 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="loading"
+            type="Boolean"/>
+    </data>
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:descendantFocusability="blocksDescendants"
+        android:focusableInTouchMode="false"
         tools:context=".view.rents.ReservationActivity">
 
         <TextView
@@ -59,7 +65,8 @@
                 android:id="@+id/quantityHost"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:textSize="16sp" />
+                app:textSize="16sp"
+                app:minQuantity="1"/>
 
         </LinearLayout>
 
@@ -96,11 +103,10 @@
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:layout_weight="1"
             android:background="@drawable/shape_btn_color_primary"
             android:fontFamily="@font/poppinsregular"
             android:includeFontPadding="false"
-            android:text="Enviar"
+            android:text="Hecho"
             android:textColor="@color/White_100"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -112,9 +118,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:fontFamily="@font/poppinslight"
-            android:paddingBottom="3dp"
+            android:paddingBottom="2dp"
             android:text="precio total:"
-            android:textColor="@color/material_color_blue_grey_300"
+            android:textColor="@color/material_color_blue_grey_500"
             app:layout_constraintBottom_toBottomOf="@+id/tv_price_value"
             app:layout_constraintEnd_toStartOf="@+id/tv_price_value" />
 
@@ -127,7 +133,7 @@
             android:includeFontPadding="false"
             android:text="0"
             android:textColor="@color/material_color_blue_grey_500"
-            android:textSize="26sp"
+            android:textSize="22sp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_cuc"
             app:layout_constraintEnd_toStartOf="@+id/tv_cuc" />
 
@@ -136,9 +142,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:fontFamily="@font/poppinsbold"
+            android:fontFamily="@font/poppinslight"
             android:includeFontPadding="false"
-            android:text="CUC"
+            android:text="cuc"
             android:textColor="@color/material_color_blue_grey_500"
             android:textSize="22sp"
             app:layout_constraintEnd_toEndOf="@+id/et_aditional_note"
@@ -164,6 +170,21 @@
             android:textColor="@color/material_color_blue_grey_500"
             app:layout_constraintEnd_toEndOf="@+id/tv_euro_conver"
             app:layout_constraintTop_toBottomOf="@+id/tv_euro_conver" />
+
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:visibleGone="@{safeUnbox(loading)}"
+            app:layout_constraintBottom_toTopOf="@+id/calendarRangeDateView"
+            app:layout_constraintEnd_toEndOf="@+id/tv_title"
+            app:layout_constraintTop_toTopOf="@+id/tv_title" />
 
 
     </android.support.constraint.ConstraintLayout>

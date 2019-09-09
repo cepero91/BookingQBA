@@ -516,8 +516,12 @@ public abstract class BookingQBADao {
     public abstract Flowable<List<RentAndDependencies>> getRentNearLatLon(SupportSQLiteQuery query);
 
     @Transaction
-    @Query("SELECT * FROM Rent ORDER BY price DESC")
+    @Query("SELECT * FROM Rent ORDER BY price DESC LIMIT 1")
     public abstract Flowable<List<RentEntity>> getAllRentOrderPrice();
+
+    @Transaction
+    @Query("SELECT * FROM Rent ORDER BY capability DESC LIMIT 1")
+    public abstract Flowable<List<RentEntity>> getMaxRentCapability();
 
     //------------------------- RATING ---------------------------//
 

@@ -41,18 +41,6 @@ public class BaseItem implements ViewModel, Parcelable {
         this.imagePath = imagePath;
     }
 
-    public static final Creator<BaseItem> CREATOR = new Creator<BaseItem>() {
-        @Override
-        public BaseItem createFromParcel(Parcel in) {
-            return new BaseItem(in);
-        }
-
-        @Override
-        public BaseItem[] newArray(int size) {
-            return new BaseItem[size];
-        }
-    };
-
     @Override
     public int describeContents() {
         return 0;

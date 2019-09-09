@@ -1,38 +1,23 @@
 package com.infinitum.bookingqba.view.rents;
 
-import android.app.DatePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CalendarView;
-import android.widget.DatePicker;
-import android.widget.Toast;
 
-import com.aminography.primecalendar.PrimeCalendar;
-import com.aminography.primecalendar.common.CalendarFactory;
-import com.aminography.primecalendar.common.CalendarType;
-import com.aminography.primedatepicker.OnDayPickedListener;
-import com.aminography.primedatepicker.PickType;
-import com.applandeo.materialcalendarview.EventDay;
-import com.applandeo.materialcalendarview.listeners.OnDayClickListener;
-import com.applandeo.materialcalendarview.utils.DateUtils;
+import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityReservationBinding;
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
+import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.view.customview.CalendarRangeDateView;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.thekhaeng.pushdownanim.PushDownAnim;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -44,6 +29,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static com.crowdfire.cfalertdialog.CFAlertDialog.CFAlertActionStyle.NEGATIVE;
+import static com.crowdfire.cfalertdialog.CFAlertDialog.CFAlertActionStyle.POSITIVE;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
@@ -73,13 +60,10 @@ public class ReservationActivity extends AppCompatActivity implements View.OnCli
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         reservationBinding = DataBindingUtil.setContentView(this, R.layout.activity_reservation);
-
+        reservationBinding.setLoading(true);
         compositeDisposable = new CompositeDisposable();
-
         PushDownAnim.setPushDownAnimTo(reservationBinding.tvBtnSend).setOnClickListener(this);
-
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
-
         if (getIntent().hasExtra(RENT_ID) && getIntent().hasExtra(USER_ID)
                 && getIntent().hasExtra(USER_TOKEN) && getIntent().hasExtra(PRICE)
                 && getIntent().hasExtra(MAXCAPABILITY)) {
@@ -89,30 +73,49 @@ public class ReservationActivity extends AppCompatActivity implements View.OnCli
             price = getIntent().getExtras().getDouble(PRICE);
             maxCapability = getIntent().getExtras().getInt(MAXCAPABILITY);
         }
-
         setupCalendarView();
-
         setupQuantityView();
-
     }
 
     private void setupQuantityView() {
-        reservationBinding.quantityHost.setMaxQuantity(1);
         reservationBinding.quantityHost.setMaxQuantity(maxCapability);
     }
 
     private void setupCalendarView() {
+        reservationBinding.calendarRangeDateView.setEnabled(false);
         reservationBinding.calendarRangeDateView.setRangeDateInteraction(this);
         disposable = rentViewModel.disabledDays(token, rentId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listResource -> {
-                    if (listResource.data != null)
-                        reservationBinding.calendarRangeDateView.setStrDisabledDays(listResource.data.getDates());
-                }, Timber::e);
+                    if (listResource.data != null) {
+                        success(listResource);
+                    } else {
+                        error(listResource.message);
+                    }
+                }, this::error);
         compositeDisposable.add(disposable);
     }
 
+    private void success(Resource<DisabledDays> listResource) {
+        reservationBinding.setLoading(false);
+        reservationBinding.calendarRangeDateView.setEnabled(true);
+        reservationBinding.calendarRangeDateView.setStrDisabledDays(listResource.data.getDates());
+    }
+
+    private void error(Throwable throwable) {
+        Timber.e(throwable);
+        reservationBinding.setLoading(false);
+        reservationBinding.calendarRangeDateView.setEnabled(false);
+        reservationBinding.calendarRangeDateView.setErrorMsg(getString(R.string.calendar_sync_error));
+    }
+
+    private void error(String msg) {
+        Timber.e(msg);
+        reservationBinding.setLoading(false);
+        reservationBinding.calendarRangeDateView.setEnabled(false);
+        reservationBinding.calendarRangeDateView.setErrorMsg(getString(R.string.calendar_sync_error));
+    }
 
     @Override
     public void onClick(View v) {
@@ -139,20 +142,22 @@ public class ReservationActivity extends AppCompatActivity implements View.OnCli
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resultResource -> {
                     if (resultResource.data != null && resultResource.data.getCode() == 200) {
-                        AlertUtils.showCFDialogWithCustomViewAndAction(this, R.layout.reservation_success_dialog, "Ok, volver",
-                                ((dialog, which) -> {
-                                    dialog.dismiss();
-                                    ReservationActivity.this.finish();
-                                }));
+                        showAlert(R.layout.reservation_success_dialog, "Ok, volver", "#009688", POSITIVE);
                     } else {
-                        AlertUtils.showCFDialogWithCustomViewAndAction(this, R.layout.reservation_error_dialog, "Ok, lo entiedo",
-                                ((dialog, which) -> {
-                                    dialog.dismiss();
-                                    ReservationActivity.this.finish();
-                                }));
+                        showAlert(R.layout.reservation_error_dialog, "Ok, lo entiedo", "#F44336", NEGATIVE);
                     }
                 }, Timber::e);
         compositeDisposable.add(disposable);
+    }
+
+    private void showAlert(int reservation_success_dialog, String buttonText, String parseColorButton,
+                           CFAlertDialog.CFAlertActionStyle dialogStyle) {
+        AlertUtils.showCFDialogWithCustomViewAndAction(this, reservation_success_dialog, buttonText,
+                parseColorButton, dialogStyle,
+                ((dialog, which) -> {
+                    dialog.dismiss();
+                    ReservationActivity.this.finish();
+                }));
     }
 
     @Override

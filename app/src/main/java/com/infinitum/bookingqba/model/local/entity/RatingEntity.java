@@ -36,14 +36,18 @@ public class RatingEntity {
     private String comment;
 
     @NonNull
+    private String userId;
+
+    @NonNull
     private String rent;
 
     private int version;
 
-    public RatingEntity(@NonNull String id, float rating, String comment, @NonNull String rent, int version) {
+    public RatingEntity(@NonNull String id, float rating, String comment, @NonNull String userId, @NonNull String rent, int version) {
         this.id = id;
         this.rating = rating;
         this.comment = comment;
+        this.userId = userId;
         this.rent = rent;
         this.version = version;
     }
@@ -88,5 +92,14 @@ public class RatingEntity {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    @NonNull
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(@NonNull String userId) {
+        this.userId = userId;
     }
 }

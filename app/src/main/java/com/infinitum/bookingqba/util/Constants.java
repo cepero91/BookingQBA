@@ -119,6 +119,17 @@ public final class Constants {
 
     public static final int REQUEST_CHECK_SETTINGS = 0x1;
 
+
+
+    public static final String FILTER_AMENITIES = "Amenities";
+    public static final String FILTER_RENTMODE = "RentMode";
+    public static final String FILTER_MUNICIPALITIES = "Municipality";
+    public static final String FILTER_POITYPES = "PoiType";
+    public static final String FILTER_PRICE = "Price";
+    public static final String FILTER_CAPABILITY = "Capability";
+    public static final String FILTER_ORDER = "Order";
+
+
     public static final String[] category = new String[]{
             "Restaurants",
             "Fast food restaurants",

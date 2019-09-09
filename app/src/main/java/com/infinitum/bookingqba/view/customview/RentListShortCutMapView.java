@@ -89,7 +89,6 @@ public class RentListShortCutMapView extends LinearLayout implements View.OnClic
         }else{
             isContentOpen = true;
             llContentButtons.setVisibility(VISIBLE);
-            Sequent.origin(llContentButtons).anim(getContext(), R.anim.fade_in_down).start();
             shortCutIcon.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         }
     }

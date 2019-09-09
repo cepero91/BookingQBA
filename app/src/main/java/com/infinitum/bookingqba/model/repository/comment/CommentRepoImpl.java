@@ -66,16 +66,8 @@ public class CommentRepoImpl implements CommentRepository {
 
     @Override
     public Single<Resource<ResponseResult>> send(String token, Comment comment) {
-        CommentGroup commentGroup = new CommentGroup(token);
-        commentGroup.addComment(comment);
-        //TODO hacer una url come esta que esta comentariada
-//        return retrofit.create(ApiInterface.class)
-//                .sendComment(token, comment)
-//                .map(Resource::success)
-//                .onErrorReturn(Resource::error)
-//                .subscribeOn(Schedulers.io());
         return retrofit.create(ApiInterface.class)
-                .updateRentComment(token, commentGroup)
+                .sendComment(token, comment)
                 .map(Resource::success)
                 .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());

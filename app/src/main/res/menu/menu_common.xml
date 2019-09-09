@@ -11,14 +11,14 @@
 
     <item
         android:id="@+id/action_filter_panel"
-        android:icon="@drawable/ic_sliders"
+        android:icon="@drawable/ic_fa_sliders_line_white"
         android:title="Filter"
         app:showAsAction="always" />
 
 
     <item
         android:id="@+id/action_refresh"
-        android:icon="@drawable/ic_sync_alt"
+        android:icon="@drawable/ic_fa_refresh_line_white"
         android:title="Gps"
         app:showAsAction="always" />
 

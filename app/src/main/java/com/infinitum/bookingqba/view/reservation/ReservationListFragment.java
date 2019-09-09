@@ -74,8 +74,28 @@ public class ReservationListFragment extends BaseNavigationFragment implements
 
         userViewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel.class);
 
-        reservationType = ReservationType.PENDING;
+        setupBtnBarReservationType(ReservationType.PENDING);
+
         loadPendingReservation();
+
+    }
+
+    private void setupBtnBarReservationType(ReservationType rsType) {
+        reservationType = rsType;
+        switch (reservationType){
+            case PENDING:
+                reservationListBinding.tvBtnPending.setBackgroundResource(R.drawable.shape_btn_color_primary);
+                reservationListBinding.tvBtnPending.setTextColor(getResources().getColor(R.color.White_100));
+                reservationListBinding.tvBtnAccepted.setBackgroundResource(R.drawable.shape_white_round_10dp);
+                reservationListBinding.tvBtnAccepted.setTextColor(getResources().getColor(R.color.material_color_blue_grey_500));
+                break;
+            case ACCEPTED:
+                reservationListBinding.tvBtnAccepted.setBackgroundResource(R.drawable.shape_btn_color_primary);
+                reservationListBinding.tvBtnAccepted.setTextColor(getResources().getColor(R.color.White_100));
+                reservationListBinding.tvBtnPending.setBackgroundResource(R.drawable.shape_white_round_10dp);
+                reservationListBinding.tvBtnPending.setTextColor(getResources().getColor(R.color.material_color_blue_grey_500));
+                break;
+        }
 
     }
 
@@ -152,10 +172,12 @@ public class ReservationListFragment extends BaseNavigationFragment implements
     public void onRefresh() {
         switch (reservationType) {
             case PENDING:
+                setupBtnBarReservationType(ReservationType.PENDING);
                 reservationListBinding.swipeRefresh.setRefreshing(true);
                 loadPendingReservation();
                 break;
             case ACCEPTED:
+                setupBtnBarReservationType(ReservationType.ACCEPTED);
                 reservationListBinding.swipeRefresh.setRefreshing(true);
                 loadAcceptedReservation();
                 break;
@@ -173,7 +195,7 @@ public class ReservationListFragment extends BaseNavigationFragment implements
             case R.id.tv_btn_accepted:
                 reservationType = ReservationType.ACCEPTED;
                 reservationListBinding.swipeRefresh.setRefreshing(true);
-                loadPendingReservation();
+                loadAcceptedReservation();
                 break;
         }
     }

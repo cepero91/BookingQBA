@@ -20,56 +20,67 @@
         android:background="@color/White_100"
         tools:context=".view.filter.FilterFragment">
 
-        <LinearLayout
-            android:id="@+id/ll_btn_content"
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardView"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:layout_alignParentTop="true"
-            android:background="@color/material_color_grey_200"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:layout_height="wrap_content"
+            app:cardElevation="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/btn_filter"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:scaleType="center"
-                android:tint="@color/colorPrimary"
-                app:srcCompat="@drawable/ic_filter" />
+            <LinearLayout
+                android:id="@+id/ll_btn_content"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="4">
 
-            <View
-                android:layout_width="0.5dp"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/material_color_blue_grey_100" />
+                <TextView
+                    android:id="@+id/btn_filter"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:fontFamily="@font/poppinsbold"
+                    android:gravity="center"
+                    android:text="Filtrar"
+                    android:textColor="@color/colorPrimary" />
 
-            <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/btn_clean"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:scaleType="center"
-                android:tint="@color/material_color_red_500"
-                app:srcCompat="@drawable/ic_eraser" />
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/material_color_blue_grey_100" />
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/btn_clean"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="center"
+                    android:tint="@color/material_color_red_500"
+                    app:srcCompat="@drawable/ic_fa_times_line" />
 
 
-        </LinearLayout>
+            </LinearLayout>
 
-        <ScrollView
+        </android.support.v7.widget.CardView>
+
+        <android.support.v4.widget.NestedScrollView
             android:id="@+id/bv_filter_params"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/ll_btn_content"
-            android:paddingBottom="20dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/cardView"
             android:clipToPadding="false"
+            android:paddingBottom="20dp"
             app:discreteVisibility="@{!safeUnbox(isLoading)}">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -87,7 +98,7 @@
                         android:layout_marginStart="16dp"
                         android:fontFamily="@font/poppinsmedium"
                         android:paddingTop="5dp"
-                        android:text="Por modo de renta"
+                        android:text="Modo de renta"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
@@ -120,7 +131,7 @@
                         android:layout_marginStart="16dp"
                         android:fontFamily="@font/poppinsmedium"
                         android:paddingTop="5dp"
-                        android:text="Por municipio"
+                        android:text="Municipio"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
@@ -152,7 +163,7 @@
                         android:layout_marginStart="16dp"
                         android:fontFamily="@font/poppinsmedium"
                         android:paddingTop="5dp"
-                        android:text="Por facilidades"
+                        android:text="Facilidades"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
@@ -161,10 +172,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
+                        android:clipToPadding="false"
                         android:nestedScrollingEnabled="false"
                         android:paddingEnd="12dp"
                         android:paddingStart="12dp"
-                        android:clipToPadding="false"
                         app:visibleGone="@{!safeUnbox(isLoading)}" />
 
 
@@ -184,7 +195,7 @@
                         android:layout_marginStart="16dp"
                         android:fontFamily="@font/poppinsmedium"
                         android:paddingTop="5dp"
-                        android:text="Cercana a:"
+                        android:text="Cerca de:"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
@@ -193,10 +204,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
+                        android:clipToPadding="false"
                         android:nestedScrollingEnabled="false"
                         android:paddingEnd="12dp"
                         android:paddingStart="12dp"
-                        android:clipToPadding="false"
                         app:visibleGone="@{!safeUnbox(isLoading)}" />
 
 
@@ -205,38 +216,72 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
                         android:fontFamily="@font/poppinsmedium"
                         android:paddingTop="5dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:text="Con precio maximo"
-                        android:layout_gravity="start"
+                        android:text="Capacidad (huespedes):"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
-                    <android.support.v7.widget.AppCompatSeekBar
-                        android:id="@+id/sb_max_price"
+                    <com.jaygoo.widget.RangeSeekBar
+                        android:id="@+id/rsb_capability"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"/>
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        app:rsb_gravity="center"
+                        app:rsb_indicator_padding_bottom="3dp"
+                        app:rsb_indicator_padding_left="8dp"
+                        app:rsb_indicator_padding_right="8dp"
+                        app:rsb_indicator_padding_top="3dp"
+                        app:rsb_indicator_radius="5dp"
+                        app:rsb_indicator_show_mode="alwaysShow"
+                        app:rsb_max="100"
+                        app:rsb_min="0"
+                        app:rsb_mode="single" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/tv_max_price"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end|center"
-                        android:text="$ 0"
-                        style="@style/text_12sp_regular_blue_grey_500"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"/>
+                        android:fontFamily="@font/poppinsmedium"
+                        android:paddingTop="5dp"
+                        android:text="Precio entre:"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
 
+                    <com.jaygoo.widget.RangeSeekBar
+                        android:id="@+id/rsb_price"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        app:rsb_gravity="center"
+                        app:rsb_indicator_padding_bottom="3dp"
+                        app:rsb_indicator_padding_left="8dp"
+                        app:rsb_indicator_padding_right="8dp"
+                        app:rsb_indicator_padding_top="3dp"
+                        app:rsb_indicator_radius="5dp"
+                        app:rsb_indicator_show_mode="alwaysShow"
+                        app:rsb_max="100"
+                        app:rsb_min="0"
+                        app:rsb_mode="range" />
 
                 </LinearLayout>
 
@@ -249,12 +294,12 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
                         android:fontFamily="@font/poppinsmedium"
                         android:paddingTop="5dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:text="Ordenado descendentemente por:"
-                        android:layout_gravity="start"
+                        android:text="Ordenado por:"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
@@ -269,13 +314,13 @@
                             android:id="@+id/rb_comment"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Comentarios"/>
+                            android:text="Comentarios" />
 
                         <android.support.v7.widget.AppCompatRadioButton
                             android:id="@+id/rb_rating"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Rating"/>
+                            android:text="Rating" />
 
                     </RadioGroup>
 
@@ -285,11 +330,15 @@
 
             </LinearLayout>
 
-        </ScrollView>
+        </android.support.v4.widget.NestedScrollView>
 
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:padding="5dp"
             android:layout_centerInParent="true"
             app:visibleGone="@{safeUnbox(isLoading)}">

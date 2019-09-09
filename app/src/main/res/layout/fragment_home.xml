@@ -86,7 +86,7 @@
                             android:fontFamily="@font/poppinsbold"
                             android:includeFontPadding="true"
                             android:text="Lo mas comentado"
-                            android:textColor="@color/material_color_blue_grey_300" />
+                            android:textColor="@color/material_color_blue_grey_500" />
 
                         <TextView
                             android:id="@+id/tv_most_commented_view_all"
@@ -96,7 +96,7 @@
                             android:background="@drawable/shape_btn_ship_view_more"
                             android:fontFamily="@font/poppinsregular"
                             android:includeFontPadding="false"
-                            android:text="Ver todos"
+                            android:text="@string/view_all"
                             android:textColor="@color/colorPrimary"
                             android:textSize="@dimen/home_header_pop_btn_size" />
 
@@ -143,7 +143,7 @@
                             android:fontFamily="@font/poppinsbold"
                             android:includeFontPadding="false"
                             android:text="Lo mas votado"
-                            android:textColor="@color/material_color_blue_grey_300" />
+                            android:textColor="@color/material_color_blue_grey_500" />
 
                         <TextView
                             android:id="@+id/tv_most_rating_view_all"
@@ -153,7 +153,7 @@
                             android:background="@drawable/shape_btn_ship_view_more"
                             android:fontFamily="@font/poppinsregular"
                             android:includeFontPadding="false"
-                            android:text="Ver todos"
+                            android:text="@string/view_all"
                             android:textColor="@color/colorPrimary"
                             android:textSize="@dimen/home_header_pop_btn_size" />
 

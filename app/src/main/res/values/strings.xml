@@ -190,7 +190,6 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="material_calendar_friday">V</string>
     <string name="material_calendar_saturday">S</string>
     <string name="material_calendar_sunday">D</string>
-    <string name="solicitud_de_reserva">Solicitud de Reserva</string>
 
     <array name="material_calendar_months_array">
         <item>Enero</item>
@@ -211,5 +210,20 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="material_calendar_positive_button">Ok</string>
     <string name="material_calendar_negative_button">Cancelar</string>
     <string name="end_sesion">Esta seguro que desea finalizar la sesión</string>
+    <string name="desde">Desde:</string>
+    <string name="hasta">Hasta:</string>
+    <string name="nota_adicional">Nota Adicional:</string>
+    <string name="hecha_por">Hecha por:</string>
+    <string name="nombre">Nombre:</string>
+    <string name="usuario_activo">Usuario activo:</string>
+    <string name="solicitudes"># Solicitudes</string>
+    <string name="valoracion">Valoracion:</string>
+    <string name="solicitud_de_reserva">Solicitud de Reserva</string>
+    <string name="no_me_gusto_ni_el_servicio_ni_el_trato">No me gusto ni el servicio ni el trato</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="rechazar">Rechazar</string>
+    <string name="range_error">No puede seleccionar rango entre fechas ocupadas</string>
+    <string name="calendar_sync_error">Error al sincronizar calendario</string>
+    <string name="view_all">Ver todos</string>
 
 </resources>

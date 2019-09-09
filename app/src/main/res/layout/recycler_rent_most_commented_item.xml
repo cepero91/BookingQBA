@@ -52,45 +52,34 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppinsbold"
-                    android:text="@{item.getName()}"
+                    android:text="Casa Antigua"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="16sp"
+                    android:includeFontPadding="false"
                     android:layout_marginTop="5dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/fl_iv_rent"/>
 
-                <LinearLayout
-                    android:id="@+id/ll_content_price"
+                <com.willy.ratingbar.BaseRatingBar
+                    android:id="@+id/sr_scale_rating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingBottom="8dp"
-                    app:layout_constraintStart_toStartOf="@+id/tv_title"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_title">
-
-                    <TextView
-                        android:id="@+id/tv_price"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:includeFontPadding="false"
-                        android:textSize="12sp"
-                        android:text="@{item.humanPrice}"
-                        android:textColor="@color/material_color_blue_grey_500" />
-
-                    <TextView
-                        android:id="@+id/tv_rent_mode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinslight"
-                        android:textSize="12sp"
-                        android:includeFontPadding="false"
-                        android:text="@{item.humanRentMode}"
-                        android:textColor="@color/material_color_blue_grey_300"/>
-
-                </LinearLayout>
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_title"
+                    app:srb_clickable="false"
+                    app:srb_scrollable="false"
+                    app:srb_drawableEmpty="@drawable/ic_fa_star_o_line"
+                    app:srb_drawableFilled="@drawable/ic_fa_star_line"
+                    app:srb_starHeight="16dp"
+                    app:srb_starPadding="2dp"
+                    app:srb_starWidth="16dp"
+                    app:srb_stepSize="0.5"
+                    app:setRating="@{item.rating}"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -102,15 +91,38 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:id="@+id/tv_total_comment"
+                        android:id="@+id/tv_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsbold"
+                        android:includeFontPadding="false"
+                        android:textSize="12sp"
+                        android:text="@{item.humanPrice}"
+                        android:textColor="@color/White_100" />
+
+                    <TextView
+                        android:id="@+id/tv_rent_mode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppinslight"
-                        android:text="@{item.humanTotalComment}"
-                        android:textColor="@color/White_100"
-                        android:textSize="12sp" />
+                        android:textSize="12sp"
+                        android:includeFontPadding="false"
+                        android:text="@{item.humanRentMode}"
+                        android:textColor="@color/White_100"/>
 
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_rating_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinslight"
+                    android:includeFontPadding="false"
+                    android:text="@{item.humanRatingCount}"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/sr_scale_rating"
+                    app:layout_constraintStart_toEndOf="@+id/sr_scale_rating"
+                    app:layout_constraintTop_toTopOf="@+id/sr_scale_rating" />
 
             </android.support.constraint.ConstraintLayout>
 

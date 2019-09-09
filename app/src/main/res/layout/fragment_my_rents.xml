@@ -62,9 +62,10 @@
             android:id="@+id/fab_add_rent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:tint="@color/White_100"
             app:layout_behavior="com.infinitum.bookingqba.view.widgets.FabBehavior"
             app:fabSize="normal"
-            app:srcCompat="@drawable/ic_plus"
+            app:srcCompat="@drawable/ic_fa_plus_line"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"/>
 

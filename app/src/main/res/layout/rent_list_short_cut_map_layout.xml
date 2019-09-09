@@ -9,14 +9,14 @@
     <FrameLayout
         android:id="@+id/fl_content_conf_map"
         android:layout_width="match_parent"
-        android:layout_height="45dp">
+        android:layout_height="45dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|start"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
             android:fontFamily="@font/poppinsbold"
             android:text="Mostrar en Mapa"
             android:textColor="@color/material_color_blue_grey_500" />
@@ -26,8 +26,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
             app:srcCompat="@drawable/ic_fa_cog_line"
             app:tint="@color/material_color_blue_grey_500" />
 
@@ -47,7 +45,7 @@
             android:id="@+id/button_five"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/poppinsregular"
+            android:fontFamily="@font/poppinslight"
             android:background="@drawable/shape_btn_rounded_white"
             android:includeFontPadding="false"
             android:padding="8dp"
@@ -62,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_btn_rounded_white"
-            android:fontFamily="@font/poppinsregular"
+            android:fontFamily="@font/poppinslight"
             android:includeFontPadding="false"
             android:padding="8dp"
             android:layout_margin="5dp"

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.location.Location;
@@ -173,6 +174,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                 if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                     getSupportFragmentManager().beginTransaction().remove(mapFragment).commit();
                     mapFragment = null;
+                    if (rentFormObject.getLatitude()!=null && rentFormObject.getLongitude()!=null)
+                        getAddressByLocation();
                 }
             }
         });
@@ -260,10 +263,10 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         binding.etRentName.setText(data.getName());
         binding.etPrice.setText(String.valueOf(data.getPrice()));
         binding.etEmail.setText(data.getEmail());
-        binding.etCapability.setText(String.valueOf(data.getCapability()));
-        binding.etMaxBeds.setText(String.valueOf(data.getMaxBeds()));
-        binding.etMaxBaths.setText(String.valueOf(data.getMaxBath()));
-        binding.etMaxRooms.setText(String.valueOf(data.getMaxRooms()));
+//        binding.etCapability.setText(String.valueOf(data.getCapability()));
+//        binding.etMaxBeds.setText(String.valueOf(data.getMaxBeds()));
+//        binding.etMaxBaths.setText(String.valueOf(data.getMaxBath()));
+//        binding.etMaxRooms.setText(String.valueOf(data.getMaxRooms()));
         binding.etRules.setText(String.valueOf(data.getRules()));
         binding.etDescription.setText(String.valueOf(data.getDescription()));
         binding.etPersonalPhone.setText(String.valueOf(data.getPhoneNumber()));
@@ -273,17 +276,16 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     private void initViewOnClick() {
         binding.flLocationBar.setOnClickListener(this);
-        binding.flMunicipalityBar.setOnClickListener(this);
         binding.flEsentialBar.setOnClickListener(this);
-        binding.btnLocation.setOnClickListener(this);
+        binding.tvLocation.setOnClickListener(this);
         binding.flMunicipalities.setOnClickListener(this);
         binding.flRentMode.setOnClickListener(this);
         binding.flAmenities.setOnClickListener(this);
         binding.flGalery.setOnClickListener(this);
         binding.flOffer.setOnClickListener(this);
         binding.btnUpload.setOnClickListener(this);
-        binding.flCheckin.setOnClickListener(this);
-        binding.flCheckout.setOnClickListener(this);
+        binding.tvCheckin.setOnClickListener(this);
+        binding.tvCheckout.setOnClickListener(this);
     }
 
 
@@ -382,10 +384,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         rentFormObject.setLatitude(String.valueOf(mLatitude));
         rentFormObject.setLongitude(String.valueOf(mLongitude));
         dialog.dismiss();
-        binding.btnLocation.setImageResource(R.drawable.ic_map_localized);
-        binding.tvTitleLocation.setText("Localizado");
-        binding.tvTitleLocation.setTextColor(Color.parseColor("#26A69A"));
-        getAddressByLocation();
+        binding.tvLocation.setText(String.format("Lat: %.3f -- Lon: %.3f", mLatitude, mLongitude));
+        binding.tvLocation.setTextColor(Color.parseColor("#009688"));
     }
 
     private void getAddressByLocation() {
@@ -422,17 +422,6 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                     formLocationOpen = true;
                 }
                 break;
-            case R.id.fl_municipality_bar:
-                if (formMunicipalityOpen) {
-                    binding.llMunicipalityForm.setVisibility(View.GONE);
-                    binding.ivArrowMunicipality.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
-                    formMunicipalityOpen = false;
-                } else {
-                    binding.llMunicipalityForm.setVisibility(View.VISIBLE);
-                    binding.ivArrowMunicipality.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
-                    formMunicipalityOpen = true;
-                }
-                break;
             case R.id.fl_esential_bar:
                 if (formEsentialOpen) {
                     binding.llEsentialForm.setVisibility(View.GONE);
@@ -444,7 +433,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                     formEsentialOpen = true;
                 }
                 break;
-            case R.id.btn_location:
+            case R.id.tv_location:
                 if (rentFormObject.getLatitude() != null && !rentFormObject.getLatitude().equals("") &&
                         rentFormObject.getLongitude() != null && !rentFormObject.getLongitude().equals("")) {
                     mapFragment = MapFormFragment.newInstance(rentFormObject.getLatitude(), rentFormObject.getLongitude());
@@ -475,10 +464,10 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
             case R.id.btn_upload:
                 uploadRent();
                 break;
-            case R.id.fl_checkin:
+            case R.id.tv_checkin:
                 showCheckinDialog();
                 break;
-            case R.id.fl_checkout:
+            case R.id.tv_checkout:
                 showCheckoutDialog();
                 break;
         }
@@ -489,8 +478,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 StringBuilder timeBuilder = new StringBuilder();
-                timeBuilder.append(hourOfDay).append(":").append(minute>0?minute:"00");
-                binding.tvCheckin.setText(String.format("%s",timeBuilder.toString()));
+                timeBuilder.append(hourOfDay).append(":").append(minute > 0 ? minute : "00");
+                binding.tvCheckin.setText(String.format("%s", timeBuilder.toString()));
                 binding.tvCheckin.setTextColor(getResources().getColor(R.color.colorAccent));
                 rentFormObject.setCheckin(timeBuilder.toString());
             }
@@ -504,8 +493,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 StringBuilder timeBuilder = new StringBuilder();
-                timeBuilder.append(hourOfDay).append(":").append(minute>0?minute:"00");
-                binding.tvCheckout.setText(String.format("%s",timeBuilder.toString()));
+                timeBuilder.append(hourOfDay).append(":").append(minute > 0 ? minute : "00");
+                binding.tvCheckout.setText(String.format("%s", timeBuilder.toString()));
                 binding.tvCheckout.setTextColor(getResources().getColor(R.color.colorAccent));
                 rentFormObject.setCheckout(timeBuilder.toString());
             }
@@ -551,7 +540,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     }
 
     private void hideLoadingDialog() {
-        loadingDialog.hide();
+        loadingDialog.dismiss();
     }
 
     private void updateRentFormFromInput() {
@@ -561,10 +550,10 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         rentFormObject.setEmail(binding.etEmail.getText().toString());
         rentFormObject.setPhoneNumber(binding.etPersonalPhone.getText().toString());
         rentFormObject.setPhoneHomeNumber(binding.etHomePhone.getText().toString());
-        rentFormObject.setMaxBaths(binding.etMaxBaths.getText().toString());
-        rentFormObject.setMaxBeds(binding.etMaxBeds.getText().toString());
-        rentFormObject.setMaxRooms(binding.etMaxRooms.getText().toString());
-        rentFormObject.setCapability(binding.etCapability.getText().toString());
+//        rentFormObject.setMaxBaths(binding.etMaxBaths.getText().toString());
+//        rentFormObject.setMaxBeds(binding.etMaxBeds.getText().toString());
+//        rentFormObject.setMaxRooms(binding.etMaxRooms.getText().toString());
+//        rentFormObject.setCapability(binding.etCapability.getText().toString());
         rentFormObject.setRules(binding.etRules.getText().toString());
         rentFormObject.setPrice(Float.parseFloat(binding.etPrice.getText().toString()));
     }
@@ -610,28 +599,34 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         }
     }
 
-
-    private void showRentModeDialog() {
-        disposable = rentViewModel.getAllRemoteRentMode(getString(R.string.device))
+    private void showMunicipalitiesDialog() {
+        binding.setLoadingMunicipality(true);
+        disposable = rentViewModel.getAllRemoteMunicipalities(sharedPreferences.getString(USER_TOKEN,""))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listResource -> {
                     if (listResource.data != null && listResource.data.size() > 0) {
                         ArrayList<SearchableSelectorModel> list = new ArrayList<>(listResource.data);
-                        new SimpleSearchDialogCompat<>(this, "Modo de Renta",
+                        binding.setLoadingMunicipality(false);
+                        new SimpleSearchDialogCompat<>(this, "Municipios",
                                 "Buscar por nombre", null, list, (dialog, item, position) -> {
-                            updateRentMode(item.getUuid(), item.getTitle());
+                            updateMunicipality(item.getUuid(), item.getTitle());
                             dialog.dismiss();
                         }).show();
+                    }else{
+                        binding.setLoadingMunicipality(false);
                     }
-                }, Timber::e);
+                }, throwable -> {
+                    Timber.e(throwable);
+                    binding.setLoadingMunicipality(false);
+                });
         compositeDisposable.add(disposable);
     }
 
-    private void updateRentMode(String uuid, String name) {
-        rentFormObject.setRentMode(uuid);
-        binding.tvRentMode.setTextColor(Color.parseColor("#FFC400"));
-        binding.tvRentMode.setText(name);
+    private void updateMunicipality(String uuid, String name) {
+        rentFormObject.setMunicipality(uuid);
+        binding.tvMunicipality.setTextColor(Color.parseColor("#009688"));
+        binding.tvMunicipality.setText(name);
     }
 
     private void showReferenceDialog() {
@@ -653,38 +648,32 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     private void updateReferenceZone(String uuid, String name) {
         rentFormObject.setReferenceZone(uuid);
-        binding.tvReferenceZone.setTextColor(Color.parseColor("#FFC400"));
+        binding.tvReferenceZone.setTextColor(Color.parseColor("#009688"));
         binding.tvReferenceZone.setText(name);
     }
 
-    private void showMunicipalitiesDialog() {
-        binding.setLoadingMunicipality(true);
-        disposable = rentViewModel.getAllRemoteMunicipalities(getString(R.string.device))
+    private void showRentModeDialog() {
+        disposable = rentViewModel.getAllRemoteRentMode(getString(R.string.device))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listResource -> {
                     if (listResource.data != null && listResource.data.size() > 0) {
                         ArrayList<SearchableSelectorModel> list = new ArrayList<>(listResource.data);
-                        binding.setLoadingMunicipality(false);
-                        new SimpleSearchDialogCompat<>(this, "Municipios",
+                        new SimpleSearchDialogCompat<>(this, "Modo de Renta",
                                 "Buscar por nombre", null, list, (dialog, item, position) -> {
-                            updateMunicipality(item.getUuid(), item.getTitle());
+                            updateRentMode(item.getUuid(), item.getTitle());
                             dialog.dismiss();
                         }).show();
                     }
-                }, throwable -> {
-                    Timber.e(throwable);
-                    binding.setLoadingMunicipality(false);
-                });
+                }, Timber::e);
         compositeDisposable.add(disposable);
     }
 
-    private void updateMunicipality(String uuid, String name) {
-        rentFormObject.setMunicipality(uuid);
-        binding.tvMunicipality.setTextColor(Color.parseColor("#FFC400"));
-        binding.tvMunicipality.setText(name);
+    private void updateRentMode(String uuid, String name) {
+        rentFormObject.setRentMode(uuid);
+        binding.tvRentMode.setTextColor(Color.parseColor("#009688"));
+        binding.tvRentMode.setText(name);
     }
-
 
     //--------------------------------- OFFER -------------------------------------
 

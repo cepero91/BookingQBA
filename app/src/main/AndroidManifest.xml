@@ -83,7 +83,10 @@
 
         <service android:name=".service.LocationService" />
 
-        <activity android:name=".view.reservation.ReservationDetailActivity"></activity>
+        <activity android:name=".view.reservation.ReservationDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>

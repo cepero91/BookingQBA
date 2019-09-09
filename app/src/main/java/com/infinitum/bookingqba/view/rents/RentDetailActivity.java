@@ -108,7 +108,6 @@ import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 //NestedScrollView.OnScrollChangeListener,
 
 public class RentDetailActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector,
-        DialogComment.CommentInteraction, DialogRating.RatingInteraction,
         InnerDetailInteraction {
 
     public static final int HAS_COMMENT_ONLY = 0;
@@ -355,25 +354,6 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
             setResult(FROM_DETAIL_SHOW_GROUP, intent);
             this.finish();
         }
-    }
-
-    @Override
-    public void sendComment(Comment comment) {
-        disposable = viewModel.addComment(comment)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> AlertUtils.showSuccessToast(this, "Comentario guardado"), Timber::e);
-        compositeDisposable.add(disposable);
-    }
-
-    @Override
-    public void sendRating(float rating, String comment) {
-        String rentId = rentUuid;
-        disposable = viewModel.addRating(rating, comment, rentId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> AlertUtils.showSuccessToast(this, "Votacion exitosa"), Timber::e);
-        compositeDisposable.add(disposable);
     }
 
     @Override

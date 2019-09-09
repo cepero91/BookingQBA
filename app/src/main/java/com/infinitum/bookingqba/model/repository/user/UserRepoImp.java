@@ -8,6 +8,7 @@ import com.infinitum.bookingqba.model.remote.Oauth;
 import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
+import com.infinitum.bookingqba.model.remote.pojo.UserEsentialData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +124,15 @@ public class UserRepoImp implements UserRepository {
     public Single<Resource<ResponseResult>> deniedReservation(String token ,String uuid) {
         return retrofit.create(ApiInterface.class)
                 .deniedReservation(token, uuid)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<Resource<UserEsentialData>> userBookEsentialData(String token, String userBookOwnerId, String rentId) {
+        return  retrofit.create(ApiInterface.class)
+                .userBookOwnerData(token, userBookOwnerId,rentId)
                 .map(Resource::success)
                 .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());

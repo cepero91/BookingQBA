@@ -82,7 +82,7 @@ public class CalendarRangeDateView extends LinearLayout implements View.OnClickL
                 .previousButtonSrc(R.drawable.ic_fa_angle_left_line)
                 .forwardButtonSrc(R.drawable.ic_fa_angle_right_line)
                 .minimumDate(min)
-                .disabledDays(disabledDays!=null?disabledDays:new ArrayList<>());
+                .disabledDays(disabledDays != null ? disabledDays : new ArrayList<>());
 
         if (validRangeDate != null) {
             oneDayBuilder.selectedDays(validRangeDate);
@@ -98,8 +98,8 @@ public class CalendarRangeDateView extends LinearLayout implements View.OnClickL
             Calendar endSelectedDay = calendar.get(calendar.size() - 1);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
             if (isAValidRangeDate(calendar)) {
-                rangeDateInteraction.nightSelectedCount(calendar.size()-1);
-                startEndDateCallback(startSelectedDay,endSelectedDay);
+                rangeDateInteraction.nightSelectedCount(calendar.size() - 1);
+                startEndDateCallback(startSelectedDay, endSelectedDay);
                 validRangeDate = calendar;
                 startEndDate.setText(simpleDateFormat.format(startSelectedDay.getTime()) + " / " + simpleDateFormat.format(endSelectedDay.getTime()));
                 startEndDate.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.ic_fa_calendar_check_line), null, null, null);
@@ -112,6 +112,7 @@ public class CalendarRangeDateView extends LinearLayout implements View.OnClickL
                 startEndDate.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.ic_fa_calendar_times_line), null, null, null);
                 startEndDate.getCompoundDrawables()[0].setTint(getResources().getColor(R.color.material_color_red_500));
                 startEndDate.setTextColor(getResources().getColor(R.color.material_color_red_500));
+                validationText.setText(getResources().getString(R.string.range_error));
                 validationText.setVisibility(VISIBLE);
             }
         }
@@ -119,14 +120,14 @@ public class CalendarRangeDateView extends LinearLayout implements View.OnClickL
 
     private void startEndDateCallback(Calendar startSelectedDay, Calendar endSelectedDay) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        rangeDateInteraction.validRangeSelected(simpleDateFormat.format(startSelectedDay.getTime()),simpleDateFormat.format(endSelectedDay.getTime()));
+        rangeDateInteraction.validRangeSelected(simpleDateFormat.format(startSelectedDay.getTime()), simpleDateFormat.format(endSelectedDay.getTime()));
     }
 
     private boolean isAValidRangeDate(List<Calendar> calendarList) {
         Calendar dayBefore = calendarList.get(0);
         for (int i = 1; i < calendarList.size(); i++) {
             Calendar currentDay = calendarList.get(i);
-            long div = (currentDay.getTimeInMillis() - dayBefore.getTimeInMillis()) / (3600*24*1000);
+            long div = (currentDay.getTimeInMillis() - dayBefore.getTimeInMillis()) / (3600 * 24 * 1000);
             if (div == 1) {
                 dayBefore = calendarList.get(i);
             } else {
@@ -138,18 +139,32 @@ public class CalendarRangeDateView extends LinearLayout implements View.OnClickL
 
     public void setStrDisabledDays(List<String> disabledStrDates) {
         disabledDays = new ArrayList<>();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = null;
-        Calendar calendarItem;
-        for (String dates : disabledStrDates) {
-            try {
-                date = simpleDateFormat.parse(dates);
-            } catch (ParseException e) {
-                e.printStackTrace();
+        if (disabledStrDates != null && disabledStrDates.size() > 0) {
+            validationText.setVisibility(GONE);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = null;
+            Calendar calendarItem;
+            for (String dates : disabledStrDates) {
+                try {
+                    date = simpleDateFormat.parse(dates);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                calendarItem = dateToCalendar(date);
+                disabledDays.add(calendarItem);
             }
-            calendarItem = dateToCalendar(date);
-            disabledDays.add(calendarItem);
         }
+    }
+
+    public void setErrorMsg(String msg) {
+        validationText.setVisibility(VISIBLE);
+        validationText.setText(msg);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        startEndDate.setOnClickListener(enabled?this:null);
     }
 
     private Calendar dateToCalendar(Date date) {
@@ -158,8 +173,9 @@ public class CalendarRangeDateView extends LinearLayout implements View.OnClickL
         return calendar;
     }
 
-    public interface CalendarRangeDateInteraction{
+    public interface CalendarRangeDateInteraction {
         void nightSelectedCount(int dayCount);
+
         void validRangeSelected(String startDate, String endDate);
     }
 }

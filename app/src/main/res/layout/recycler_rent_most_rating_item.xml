@@ -68,9 +68,11 @@
                         android:fontFamily="@font/poppinsbold"
                         android:maxLines="1"
                         android:paddingStart="3dp"
+                        android:paddingEnd="3dp"
+                        android:includeFontPadding="false"
                         android:text="@{item.getName()}"
                         android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="14sp" />
+                        android:textSize="16sp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -78,18 +80,19 @@
                         android:gravity="center|start"
                         android:orientation="horizontal">
 
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_star" />
-
-                        <TextView
-                            android:id="@+id/tv_rating"
+                        <com.willy.ratingbar.BaseRatingBar
+                            android:id="@+id/sr_scale_rating"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinslight"
-                            android:text="@{item.humanRating()}" />
+                            app:srb_clickable="false"
+                            app:srb_scrollable="false"
+                            app:srb_drawableEmpty="@drawable/ic_fa_star_o_line"
+                            app:srb_drawableFilled="@drawable/ic_fa_star_line"
+                            app:srb_starHeight="16dp"
+                            app:srb_starPadding="2dp"
+                            app:srb_starWidth="16dp"
+                            app:srb_stepSize="0.5"
+                            app:setRating="@{item.rating}"/>
 
                         <TextView
                             android:id="@+id/tv_rating_count"
@@ -98,7 +101,9 @@
                             android:layout_gravity="center"
                             android:layout_marginStart="3dp"
                             android:fontFamily="@font/poppinslight"
-                            android:text="@{item.humanRatingCount()}" />
+                            android:includeFontPadding="false"
+                            android:text="@{item.humanRatingCount()}"
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -114,9 +119,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppinsbold"
+                            android:includeFontPadding="false"
                             android:text="@{item.humanPrice()}"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="16sp" />
+                            android:textColor="@color/material_color_blue_grey_300"
+                            android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/tv_rent_mode"

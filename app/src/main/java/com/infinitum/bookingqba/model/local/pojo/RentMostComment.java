@@ -14,6 +14,8 @@ public class RentMostComment {
     private String name;
     private double price;
     private String rentMode;
+    private float rating;
+    private int ratingCount;
     private int totalComment;
     private float emotionAvg;
 
@@ -31,11 +33,13 @@ public class RentMostComment {
         return url;
     }
 
-    public RentMostComment(String id, String name, double price, String rentMode, int totalComment, float emotionAvg) {
+    public RentMostComment(String id, String name, double price, String rentMode, float rating, int ratingCount, int totalComment, float emotionAvg) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.rentMode = rentMode;
+        this.rating = rating;
+        this.ratingCount = ratingCount;
         this.totalComment = totalComment;
         this.emotionAvg = emotionAvg;
     }
@@ -102,5 +106,21 @@ public class RentMostComment {
 
     public void setGaleries(List<GalerieEntity> galeries) {
         this.galeries = galeries;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public int getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(int ratingCount) {
+        this.ratingCount = ratingCount;
     }
 }

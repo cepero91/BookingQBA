@@ -7,9 +7,12 @@ import com.infinitum.bookingqba.model.remote.Oauth;
 import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
+import com.infinitum.bookingqba.model.remote.pojo.UserEsentialData;
 import com.infinitum.bookingqba.model.repository.user.UserRepository;
+import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.view.adapters.items.reservation.ReservationItem;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +81,10 @@ public class UserViewModel extends ViewModel{
                 .onErrorReturn(Resource::error);
     }
 
+    public Single<Resource<UserEsentialData>> getUserBookRequestData(String token, String userBookOwner, String rentId){
+        return userRepository.userBookEsentialData(token, userBookOwner, rentId);
+    }
+
     private Resource<List<ReservationItem>> transformToReservationItem(Resource<List<Reservation>> listResource) {
         List<ReservationItem> resultItems = new ArrayList<>();
         if(listResource.data!=null){
@@ -86,10 +93,13 @@ public class UserViewModel extends ViewModel{
                 item = new ReservationItem();
                 item.setId(reservation.getId());
                 item.setUserName(reservation.getUsername());
-                item.setStartDate(reservation.getStartDate());
-                item.setEndDate(reservation.getEndDate());
+                item.setRentId(reservation.getRentId());
+                item.setUserId(reservation.getUserId());
+                item.setStartDate(DateUtils.changeFormatDate("yyyy-MM-dd","dd-MM-yy",reservation.getStartDate()));
+                item.setEndDate(DateUtils.changeFormatDate("yyyy-MM-dd","dd-MM-yy",reservation.getEndDate()));
                 item.setUserAvatar(reservation.getAvatar());
                 item.setCapability(String.valueOf(reservation.getCapability()));
+                item.setAditionalNote(reservation.getAditional());
                 resultItems.add(item);
             }
             return Resource.success(resultItems);

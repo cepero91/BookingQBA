@@ -8,6 +8,7 @@ import com.infinitum.bookingqba.model.remote.Oauth;
 import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
+import com.infinitum.bookingqba.model.remote.pojo.UserEsentialData;
 
 import java.util.List;
 import java.util.Map;
@@ -38,5 +39,7 @@ public interface UserRepository {
     Single<Resource<ResponseResult>> acceptReservation(String token, String resUuid);
 
     Single<Resource<ResponseResult>> deniedReservation(String token, String resUuid);
+
+    Single<Resource<UserEsentialData>> userBookEsentialData(String token, String userBookOwnerId, String rentId);
 
 }

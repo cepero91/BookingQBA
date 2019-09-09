@@ -12,4 +12,7 @@
     <color name="colorControlActivatedHalf">#9003A9F4</color>
     <color name="colorControlNormal">#FF78909C</color>
     <color name="colorPrimaryHalf">#9003A9F4</color>
+
+    <color name="trackTintColor">#E4E4E4</color>
+    <color name="trackHighlightTintColor">#02C05C</color>
 </resources>

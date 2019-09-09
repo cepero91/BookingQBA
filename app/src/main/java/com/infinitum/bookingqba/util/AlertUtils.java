@@ -322,13 +322,13 @@ public class AlertUtils {
         builder.show();
     }
 
-    public static void showCFDialogWithCustomViewAndAction(Context context, @LayoutRes int layout, String buttonText, DialogInterface.OnClickListener onClickListener){
+    public static void showCFDialogWithCustomViewAndAction(Context context, @LayoutRes int layout, String buttonText, String parseButtonColor, CFAlertDialog.CFAlertActionStyle buttonType , DialogInterface.OnClickListener onClickListener){
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         // Title and message
         builder.setHeaderView(layout);
         builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
-        builder.addButton(buttonText, -1, Color.parseColor("#26A69A"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
+        builder.addButton(buttonText, -1, Color.parseColor(parseButtonColor), buttonType, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
         builder.show();
     }
 

@@ -1,5 +1,7 @@
 package com.infinitum.bookingqba.view.map;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -37,7 +39,6 @@ import com.infinitum.bookingqba.view.base.BaseMapFragment;
 import com.infinitum.bookingqba.view.widgets.CenterSmoothScroller;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
-import com.mikhaellopez.rxanimation.RxAnimation;
 import com.squareup.picasso.Picasso;
 
 import org.mapsforge.core.model.LatLong;
@@ -63,6 +64,7 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -388,7 +390,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
             mMarkerLayer.getItemList().get(0).setMarker(rentMarkerPressed);
             currentMarkerIndex = 0;
             mapBinding.llContentFloating.setVisibility(View.GONE);
-            showMarkerView();
+            addRentDetailView();
         } else {
             // Position Habana
             map.setMapPosition(23.1165, -82.3882, 2 << 12);
@@ -424,19 +426,20 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     private void rentMarkerClick(int index, MarkerItem item) {
         if (!isNearOpen) {
             if (item.getMarker() == null) {
-                mapBinding.llContentFloating.setVisibility(View.GONE);
+//                mapBinding.llContentFloating.setVisibility(View.GONE);
                 if (currentMarkerIndex != -1) {
                     mMarkerLayer.getItemList().get(currentMarkerIndex).setMarker(null);
                 }
                 currentMarkerIndex = index;
                 item.setMarker(rentMarkerPressed);
                 map.animator().animateTo(1000, getMapPositionWithZoom(item.getPoint(), 15), Easing.Type.SINE_IN);
-                showMarkerView();
+                showRentDetailView();
             } else {
                 item.setMarker(null);
                 currentMarkerIndex = -1;
-                hideMarkerView();
-                mapBinding.llContentFloating.setVisibility(View.VISIBLE);
+                hideRentDetailView();
+//                hideMarkerView();
+//                mapBinding.llContentFloating.setVisibility(View.VISIBLE);
             }
         } else {
             hideNearRent();
@@ -461,7 +464,32 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     }
 
 
-    private void showMarkerView() {
+    private void showRentDetailView() {
+        mapBinding.llContentFloating.animate().alpha(0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                mapBinding.ivLocation.setEnabled(false);
+                mapBinding.ivNearRent.setEnabled(false);
+                addRentDetailView();
+            }
+        }).setDuration(200).start();
+    }
+
+    private void hideRentDetailView() {
+        disposable = Completable.fromAction(this::hideMarkerView)
+                .subscribe(mapBinding.llContentFloating.animate().alpha(1).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        mapBinding.ivLocation.setEnabled(true);
+                        mapBinding.ivNearRent.setEnabled(true);
+                    }
+                }).setDuration(500)::start);
+        compositeDisposable.add(disposable);
+    }
+
+    private void addRentDetailView() {
         GeoRent geoRent = geoRentArrayList.get(currentMarkerIndex);
         cafeBarMapMarkerBinding.setItem(geoRent);
         if (mapBinding.flMarker.getChildCount() > 0) {
@@ -472,8 +500,29 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         cafeBarMapMarkerBinding.rvPoi.setLayoutManager(linearLayoutManager);
         cafeBarMapMarkerBinding.rvPoi.setAdapter(mapPoiAdapter);
-        
         cafeBarMapMarkerBinding.flRentContent.animate().alpha(1).setDuration(500).start();
+    }
+
+    private void animateFloatingButtons(boolean visibility) {
+        if (visibility) {
+            mapBinding.llContentFloating.animate().alpha(1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    mapBinding.ivLocation.setEnabled(true);
+                    mapBinding.ivNearRent.setEnabled(true);
+                }
+            }).setDuration(3000).start();
+        } else {
+            mapBinding.llContentFloating.animate().alpha(0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    mapBinding.ivLocation.setEnabled(false);
+                    mapBinding.ivNearRent.setEnabled(false);
+                }
+            }).setDuration(3000).start();
+        }
 
     }
 

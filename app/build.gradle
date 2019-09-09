@@ -159,6 +159,9 @@ dependencies {
         exclude group: 'com.android.support'
     }
 
+    //Range
+    implementation 'com.github.Jay-Goo:RangeSeekBar:3.0.0'
+
     //Calendar
     implementation 'com.aminography:primedatepicker:1.0.7'
     implementation 'com.github.adawoud:BottomSheetTimeRangePicker:1.11'

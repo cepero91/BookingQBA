@@ -15,6 +15,7 @@ public class FilterRepositoryUtil {
     public static final String PRICE = "Price";
     public static final String POI = "Poi";
     public static final String ORDER = "Order";
+    public static final String CAPABILITY = "Capability";
 
 
     public static String generalQuery(Map<String, List<String>> filterParams, String province) {
@@ -169,9 +170,9 @@ public class FilterRepositoryUtil {
                         alias + ".ratingCount DESC";
             } else {
                 alias = secondLevelPair.first.isEmpty() ? "q2" : secondLevelPair.first;
-                return "SELECT q2.*,avg(Comment.emotion) as x, count(Comment.id) as y FROM(" +secondLevelPair.second+ ") as q2 " +
-                        "JOIN Comment ON Comment.rent = "+alias+".id " +
-                        "GROUP BY "+alias+".id order by x desc, y desc";
+                return "SELECT q2.*,avg(Comment.emotion) as x, count(Comment.id) as y FROM(" + secondLevelPair.second + ") as q2 " +
+                        "JOIN Comment ON Comment.rent = " + alias + ".id " +
+                        "GROUP BY " + alias + ".id order by x desc, y desc";
             }
         } else {
             return secondLevelPair.second;
@@ -250,9 +251,20 @@ public class FilterRepositoryUtil {
                 hasWhere = true;
             }
         }
+        if (filterParams.containsKey(CAPABILITY)) {
+            int capability = Integer.parseInt(filterParams.get(CAPABILITY).get(0));
+            String capabilityMatch = " Rent.capability = " + capability;
+            if (hasWhere) {
+                matchBuilder.append(clauseAnd).append(capabilityMatch);
+            } else {
+                matchBuilder.append(clauseWhere).append(capabilityMatch);
+                hasWhere = true;
+            }
+        }
         if (filterParams.containsKey(PRICE)) {
-            int price = Integer.parseInt(filterParams.get(PRICE).get(0));
-            String priceMatch = " Rent.price <= " + price;
+            float minPrice = Float.parseFloat(filterParams.get(PRICE).get(0));
+            float maxPrice = Float.parseFloat(filterParams.get(PRICE).get(1));
+            String priceMatch = " Rent.price BETWEEN " + minPrice + " AND " + maxPrice;
             if (hasWhere) {
                 matchBuilder.append(clauseAnd).append(priceMatch);
             } else {

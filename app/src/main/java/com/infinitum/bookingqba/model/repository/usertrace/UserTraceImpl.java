@@ -23,7 +23,6 @@ import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.errors.ResponseResultException;
 import com.infinitum.bookingqba.util.DateUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,6 +34,8 @@ import retrofit2.Retrofit;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.IMEI;
+import static com.infinitum.bookingqba.util.Constants.USER_ID;
+import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 
 public class UserTraceImpl implements UserTraceRepository {
 
@@ -51,18 +52,22 @@ public class UserTraceImpl implements UserTraceRepository {
 
     @Override
     public Single<OperationResult> traceRentWishedToServer(String token) {
-        return qbaDao.getAllWishedRents()
-                .subscribeOn(Schedulers.io())
-                .map(this::tranformEntityToRentWished)
-                .flatMap(rentWishedResource -> sendWishedToServer(token, rentWishedResource))
-                .map(responseResultResource -> {
-                    if (responseResultResource.data != null && responseResultResource.data.getCode() == 200) {
-                        return OperationResult.success();
-                    } else {
-                        return OperationResult.error(responseResultResource.message);
-                    }
-                })
-                .onErrorReturn(OperationResult::error);
+        if (sharedPreferences.getBoolean(USER_IS_AUTH, false)) {
+            return qbaDao.getAllWishedRents()
+                    .map(this::tranformEntityToRentWished)
+                    .flatMap(rentWishedResource -> sendWishedToServer(token, rentWishedResource))
+                    .map(responseResultResource -> {
+                        if (responseResultResource.data != null && responseResultResource.data.getCode() == 200) {
+                            return OperationResult.success();
+                        } else {
+                            return OperationResult.error(responseResultResource.message);
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .onErrorReturn(OperationResult::error);
+        } else {
+            return Single.just(OperationResult.error("Se enviaran las Rentas deseadas una vez autenticado el usuario"));
+        }
     }
 
     @Override
@@ -92,9 +97,9 @@ public class UserTraceImpl implements UserTraceRepository {
     @Override
     public Single<OperationResult> traceRatingToServer(String token) {
         return qbaDao.getAllRating()
-                .subscribeOn(Schedulers.io())
                 .map(this::tranformEntityToRatingVoteGroup)
                 .flatMap(ratingVoteGroupResource -> sendRatingVoteToServer(token, ratingVoteGroupResource))
+                .subscribeOn(Schedulers.io())
                 .onErrorReturn(Resource::error)
                 .flatMapCompletable(this::updateRatingVotes)
                 .toSingle(OperationResult::success)
@@ -103,7 +108,7 @@ public class UserTraceImpl implements UserTraceRepository {
 
     private Completable removeVisitCount(Resource<ResponseResult> resultResource) {
         if (resultResource.data != null && resultResource.data.getCode() == 200) {
-            return Completable.fromAction(() -> qbaDao.deleteAllVisitoCount());
+            return Completable.fromAction(() -> qbaDao.deleteAllVisitoCount()).subscribeOn(Schedulers.io());
         } else {
             return Completable.error(new ResponseResultException(resultResource.message));
         }
@@ -111,7 +116,7 @@ public class UserTraceImpl implements UserTraceRepository {
 
     private Completable updateRatingVotes(Resource<ResponseResult> resultResource) {
         if (resultResource.data != null && resultResource.data.getCode() == 200) {
-            return Completable.fromAction(() -> qbaDao.updateAllRatingVersionToOne());
+            return Completable.fromAction(() -> qbaDao.updateAllRatingVersionToOne()).subscribeOn(Schedulers.io());
         } else {
             return Completable.error(new ResponseResultException(resultResource.message));
         }
@@ -139,6 +144,7 @@ public class UserTraceImpl implements UserTraceRepository {
         if (rentWishedResource.data != null) {
             return retrofit.create(ApiInterface.class)
                     .updateRentWished(token, rentWishedResource.data)
+                    .subscribeOn(Schedulers.io())
                     .map(Resource::success)
                     .onErrorReturn(Resource::error);
         } else {
@@ -149,8 +155,9 @@ public class UserTraceImpl implements UserTraceRepository {
     private Single<Resource<ResponseResult>> sendRatingVoteToServer(String token, Resource<RatingVoteGroup> ratingVoteGroupResource) {
         if (ratingVoteGroupResource.data != null) {
             return retrofit.create(ApiInterface.class)
-                    .updateRatingVotes(token, ratingVoteGroupResource.data)
+                    .uploadRatingVotes(token, ratingVoteGroupResource.data)
                     .map(Resource::success)
+                    .subscribeOn(Schedulers.io())
                     .onErrorReturn(Resource::error);
         } else {
             return Single.just(Resource.error(ratingVoteGroupResource.message));
@@ -184,13 +191,12 @@ public class UserTraceImpl implements UserTraceRepository {
     private Resource<RentVisitCountGroup> tranformEntityToRentVisitCountGroup(List<RentVisitCountEntity> rentVisitCountEntities) {
         String uniqueDeviceID = sharedPreferences.getString(IMEI, "");
         if (uniqueDeviceID.equals("")) {
-            return Resource.error("No exite IMEI en este dispositivo");
+            return Resource.error("No exite UNIVERSAL ID en este dispositivo");
         } else {
             RentVisitCountGroup rentVisitCountGroup = new RentVisitCountGroup(uniqueDeviceID);
             if (rentVisitCountEntities.size() > 0) {
                 for (RentVisitCountEntity entity : rentVisitCountEntities) {
                     rentVisitCountGroup.addRentVisitCount(new RentVisitCount(entity.getRentId(), entity.getVisitCount()));
-                    Timber.e("VISIT COUNT to send ====> rent %s, count %s", entity.getRentId(), entity.getVisitCount());
                 }
                 return Resource.success(rentVisitCountGroup);
             } else {
@@ -201,69 +207,55 @@ public class UserTraceImpl implements UserTraceRepository {
     }
 
     private Resource<RentWished> tranformEntityToRentWished(List<RentEntity> entities) {
-        String uniqueDeviceID = sharedPreferences.getString(IMEI, "");
-        if (uniqueDeviceID.equals("")) {
-            return Resource.error("No exite IMEI en este dispositivo");
+        String userId = sharedPreferences.getString(USER_ID, "");
+        if (!sharedPreferences.getBoolean(USER_IS_AUTH, false)) {
+            return Resource.error("Rentas deseadas seran validas una vez autenticado el usuario");
         } else {
-            RentWished rentWished = new RentWished(uniqueDeviceID);
+            RentWished rentWished = new RentWished(userId);
             if (entities.size() > 0) {
                 for (RentEntity entity : entities) {
                     rentWished.addRentId(entity.getId());
-                    Timber.e("WHISHED to send ====> rent %s, name %s", entity.getId(), entity.getName());
                 }
                 return Resource.success(rentWished);
             } else {
-                rentWished.setUuids(new ArrayList<>());
-                return Resource.success(rentWished);
+                return Resource.error(new EmptyResultSetException("Datos nulos o vacios"));
             }
         }
 
     }
 
     private Resource<RatingVoteGroup> tranformEntityToRatingVoteGroup(List<RatingEntity> entities) {
-        String uniqueDeviceID = sharedPreferences.getString(IMEI, "");
-        if (uniqueDeviceID.equals("")) {
-            return Resource.error("No exite IMEI en este dispositivo");
-        } else {
-            RatingVoteGroup ratingVoteGroup = new RatingVoteGroup(uniqueDeviceID);
-            if (entities.size() > 0) {
-                for (RatingEntity entity : entities) {
-                    ratingVoteGroup.addRatingVote(new RatingVote(entity.getRent(), entity.getRating(), entity.getComment()));
-                    Timber.e("RATING to send ====> rent %s, name %s", entity.getRent(), String.valueOf(entity.getRating()));
-                }
-                return Resource.success(ratingVoteGroup);
-            } else {
-                return Resource.error(new EmptyResultSetException("Datos nulos o vacios"));
+        RatingVoteGroup ratingVoteGroup = new RatingVoteGroup();
+        if (entities.size() > 0) {
+            for (RatingEntity entity : entities) {
+                ratingVoteGroup.addRatingVote(new RatingVote(entity.getRent(), entity.getRating(), entity.getComment(), entity.getUserId()));
             }
+            return Resource.success(ratingVoteGroup);
+        } else {
+            return Resource.error(new EmptyResultSetException("Datos nulos o vacios"));
         }
+
     }
 
     private Resource<CommentGroup> tranformEntityToCommentGroup(List<CommentEntity> entities) {
-        String uniqueDeviceID = sharedPreferences.getString(IMEI, "");
-        if (uniqueDeviceID.equals("")) {
-            return Resource.error("No exite IMEI en este dispositivo");
-        } else {
-            CommentGroup commentGroup = new CommentGroup(uniqueDeviceID);
-            if (entities.size() > 0) {
-                for (CommentEntity entity : entities) {
-                    Comment comment = new Comment(entity.getId(), entity.getUsername());
-                    comment.setUserid(entity.getUserid());
-                    comment.setDescription(entity.getDescription());
-                    comment.setRent(entity.getRent());
-                    comment.setCreated(DateUtils.parseDateToString(entity.getCreated()));
-                    comment.setAvatar("");
-                    comment.setActive(false);
-                    comment.setEmotion(CommentEmotion.fromEmotion(entity.getEmotion()));
-                    comment.setOwner(entity.isOwner());
-                    commentGroup.addComment(comment);
-                    Timber.e("COMMENT to send ====> rent %s, name %s", entity.getUsername(), entity.getDescription());
-                }
-                return Resource.success(commentGroup);
-            } else {
-                return Resource.error(new EmptyResultSetException("Datos nulos o vacios"));
+        CommentGroup commentGroup = new CommentGroup();
+        if (entities.size() > 0) {
+            for (CommentEntity entity : entities) {
+                Comment comment = new Comment(entity.getId(), entity.getUsername());
+                comment.setUserid(entity.getUserid());
+                comment.setDescription(entity.getDescription());
+                comment.setRent(entity.getRent());
+                comment.setCreated(DateUtils.parseDateToString(entity.getCreated()));
+                comment.setAvatar("");
+                comment.setActive(false);
+                comment.setEmotion(CommentEmotion.fromEmotion(entity.getEmotion()));
+                comment.setOwner(entity.isOwner());
+                commentGroup.addComment(comment);
             }
+            return Resource.success(commentGroup);
+        } else {
+            return Resource.error(new EmptyResultSetException("Datos nulos o vacios"));
         }
-
     }
 
 

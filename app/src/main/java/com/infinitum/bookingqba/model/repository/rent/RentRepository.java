@@ -17,6 +17,7 @@ import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
 import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
 import com.infinitum.bookingqba.model.remote.pojo.DrawChange;
+import com.infinitum.bookingqba.model.remote.pojo.RatingVote;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
@@ -87,7 +88,11 @@ public interface RentRepository {
 
     Flowable<Double> maxRentPrice();
 
+    Flowable<Integer> maxRentCapability();
+
     Single<Resource<ResponseResult>> sendBookRequest(String token, BookRequest bookRequest);
+
+    Single<Resource<ResponseResult>> sendRatingVote(String token, RatingVote ratingVote);
 
     Single<Resource<List<DrawChange>>> drawChangeByFinalPrice(String token, double finalPrice);
 

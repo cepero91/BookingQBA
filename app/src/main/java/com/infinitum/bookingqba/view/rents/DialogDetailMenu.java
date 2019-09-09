@@ -26,12 +26,15 @@ import com.hsalf.smilerating.BaseRating;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentDetailMenuBinding;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
+import com.infinitum.bookingqba.model.remote.pojo.RatingVote;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -149,6 +152,8 @@ public class DialogDetailMenu extends DialogFragment implements View.OnClickList
         menuBinding.llVote.setOnClickListener(this);
         menuBinding.llListWich.setOnClickListener(this);
         menuBinding.btnComment.setOnClickListener(this);
+        menuBinding.btnVote.setOnClickListener(this);
+        menuBinding.btnComment.setOnClickListener(this);
     }
 
     private void setupRatingSmileView() {
@@ -160,6 +165,7 @@ public class DialogDetailMenu extends DialogFragment implements View.OnClickList
         menuBinding.ratingView.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.poppinsbold));
         menuBinding.ratingView.setTextSelectedColor(getResources().getColor(R.color.material_color_blue_grey_500));
         menuBinding.ratingView.setTextNonSelectedColor(getResources().getColor(R.color.material_color_blue_grey_300));
+        menuBinding.ratingView.setSelectedSmile(1);
     }
 
     @NonNull
@@ -197,11 +203,12 @@ public class DialogDetailMenu extends DialogFragment implements View.OnClickList
                     updateWishedRent(argRentId, argWished);
                 } else {
                     argWished = 0;
-                    updateWishedUi("Desear", R.color.material_color_blue_grey_500,false);
+                    updateWishedUi("Desear", R.color.material_color_blue_grey_500, false);
                     updateWishedRent(argRentId, argWished);
                 }
                 break;
             case R.id.btn_vote:
+                saveRating();
                 break;
             case R.id.btn_comment:
                 saveComment();
@@ -212,7 +219,7 @@ public class DialogDetailMenu extends DialogFragment implements View.OnClickList
     private void updateWishedUi(String value, @ColorRes int colorId, boolean silently) {
         menuBinding.ivListWich.setImageTintList(ColorStateList.valueOf(getResources().getColor(colorId)));
         menuBinding.tvWishedValue.setText(value);
-        if(!silently) {
+        if (!silently) {
             switch (colorId) {
                 case R.color.colorAccent:
                     AlertUtils.showSuccessToast(getActivity(), "Renta agregada a lista de deseo");
@@ -237,25 +244,27 @@ public class DialogDetailMenu extends DialogFragment implements View.OnClickList
     private void saveComment() {
         if (validateInputs()) {
             Comment comment = createComment();
-            if(networkHelper.isNetworkAvailable()){
-                saveCommentToServer(sharedPreferences.getString(USER_TOKEN,""),comment);
-            }else{
+            if (networkHelper.isNetworkAvailable()) {
+                saveCommentToServer(sharedPreferences.getString(USER_TOKEN, ""), comment);
+            } else {
                 saveCommentToLocal(comment);
             }
-            dismiss();
         }
     }
 
     private void saveCommentToServer(String token, Comment comment) {
-        disposable = rentViewModel.sendComment(token,comment)
+        disposable = rentViewModel.sendComment(token, comment)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resultResource -> {
-                    AlertUtils.showSuccessToast(getActivity(),"Comentario enviado con exito");
-                    dismiss();
+                    if(resultResource.data!=null && resultResource.data.getCode() == 200){
+                        Timber.e("hola");
+                    }
+                    AlertUtils.showSuccessToast(getActivity(), "Comentario enviado con exito");
+//                    dismiss();
                 }, throwable -> {
                     Timber.e(throwable);
-                    AlertUtils.showErrorToast(getActivity(),"Un problema ha ocurrido");
+                    AlertUtils.showErrorToast(getActivity(), "Un problema ha ocurrido");
                 });
         compositeDisposable.add(disposable);
     }
@@ -265,11 +274,11 @@ public class DialogDetailMenu extends DialogFragment implements View.OnClickList
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    AlertUtils.showSuccessToast(getActivity(),"Comentario guardado con exito");
+                    AlertUtils.showSuccessToast(getActivity(), "Comentario guardado con exito");
                     dismiss();
-                },throwable -> {
+                }, throwable -> {
                     Timber.e(throwable);
-                    AlertUtils.showErrorToast(getActivity(),"Un problema ha ocurrido");
+                    AlertUtils.showErrorToast(getActivity(), "Un problema ha ocurrido");
                 });
         compositeDisposable.add(disposable);
     }
@@ -298,6 +307,61 @@ public class DialogDetailMenu extends DialogFragment implements View.OnClickList
             Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
             menuBinding.etComment.startAnimation(animation);
             menuBinding.etComment.setError("Este campo es requerido");
+        }
+        return isValid;
+    }
+
+    //------------------------------ VOTE ---------------------------
+
+    private void saveRating() {
+        if (validateRatingInput()) {
+            RatingVote ratingVote = createRating();
+            if (networkHelper.isNetworkAvailable()) {
+                saveRatingToServer(sharedPreferences.getString(USER_TOKEN, ""), ratingVote);
+            } else {
+                saveRatingToLocal();
+            }
+            dismiss();
+        }
+    }
+
+    private void saveRatingToServer(String token, RatingVote ratingVote) {
+        disposable = rentViewModel.sendRating(token, ratingVote)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resultResource -> {
+                    if (resultResource.data != null && resultResource.data.getCode() == 200)
+                        AlertUtils.showSuccessToast(getActivity(), "Votacion exitosa");
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private RatingVote createRating() {
+        return new RatingVote(argRentId, menuBinding.srScaleRating.getRating(),
+                menuBinding.etVote.getText().toString(), sharedPreferences.getString(USER_ID,""));
+    }
+
+    private void saveRatingToLocal() {
+        Map<String, Object> ratingParams = new HashMap<>();
+        ratingParams.put("id",UUID.randomUUID().toString());
+        ratingParams.put("rating", menuBinding.srScaleRating.getRating());
+        ratingParams.put("comment",menuBinding.etVote.getText().toString());
+        ratingParams.put("userId",sharedPreferences.getString(USER_ID,""));
+        ratingParams.put("rent",argRentId);
+        disposable = rentViewModel.addRating(ratingParams)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> AlertUtils.showSuccessToast(getActivity(), "Votacion exitosa"), Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
+    private boolean validateRatingInput() {
+        boolean isValid = true;
+        if (menuBinding.etVote.getText().toString().length() == 0) {
+            isValid = false;
+            Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
+            menuBinding.etVote.startAnimation(animation);
+            menuBinding.etVote.setError("Este campo es requerido");
         }
         return isValid;
     }

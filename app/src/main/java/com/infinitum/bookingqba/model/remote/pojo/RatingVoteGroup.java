@@ -8,30 +8,12 @@ import java.util.List;
 
 public class RatingVoteGroup {
 
-    @SerializedName("imei")
-    @Expose
-    private String imei;
-
     @SerializedName("ratingVotes")
     @Expose
     private List<RatingVote> ratingVotes;
 
-    public RatingVoteGroup(String imei, List<RatingVote> ratingVotes) {
-        this.imei = imei;
-        this.ratingVotes = ratingVotes;
-    }
-
-    public RatingVoteGroup(String imei) {
-        this.imei = imei;
+    public RatingVoteGroup() {
         this.ratingVotes = new ArrayList<>();
-    }
-
-    public String getImei() {
-        return imei;
-    }
-
-    public void setImei(String imei) {
-        this.imei = imei;
     }
 
     public List<RatingVote> getRatingVotes() {
@@ -42,7 +24,7 @@ public class RatingVoteGroup {
         this.ratingVotes = ratingVotes;
     }
 
-    public void addRatingVote(RatingVote ratingVote){
+    public void addRatingVote(RatingVote ratingVote) {
         this.ratingVotes.add(ratingVote);
     }
 }

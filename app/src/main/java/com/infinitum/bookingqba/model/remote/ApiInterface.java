@@ -18,6 +18,7 @@ import com.infinitum.bookingqba.model.remote.pojo.Offer;
 import com.infinitum.bookingqba.model.remote.pojo.Poi;
 import com.infinitum.bookingqba.model.remote.pojo.PoiType;
 import com.infinitum.bookingqba.model.remote.pojo.Province;
+import com.infinitum.bookingqba.model.remote.pojo.RatingVote;
 import com.infinitum.bookingqba.model.remote.pojo.RatingVoteGroup;
 import com.infinitum.bookingqba.model.remote.pojo.ReferenceZone;
 import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
@@ -34,6 +35,7 @@ import com.infinitum.bookingqba.model.remote.pojo.RentWished;
 import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
+import com.infinitum.bookingqba.model.remote.pojo.UserEsentialData;
 
 import java.util.List;
 import java.util.Map;
@@ -100,8 +102,11 @@ public interface ApiInterface {
     Single<ResponseResult> acceptReservation(@Header("Authorization") String token, @Field("uui") String uuid);
 
     @FormUrlEncoded
-    @POST("/api/denied-reservation/")
+    @POST("/api/deny-reservation/")
     Single<ResponseResult> deniedReservation(@Header("Authorization") String token, @Field("uui") String uuid);
+
+    @GET("/api/user-data/")
+    Single<UserEsentialData> userBookOwnerData(@Header("Authorization") String token, @Query("userId") String userid, @Query("rentId") String rentId);
 
     //------------------- RENTAS EN LISTA DE DESEO ---------------------------//
 
@@ -111,7 +116,7 @@ public interface ApiInterface {
     // ------------------ VOTACIONES DE ESTRELLAS DE LOS USUARIOS ------------//
 
     @POST("/update-rent-rating/")
-    Single<ResponseResult> updateRatingVotes(@Header("Authorization") String token, @Body RatingVoteGroup ratingVoteGroup);
+    Single<ResponseResult> uploadRatingVotes(@Header("Authorization") String token, @Body RatingVoteGroup ratingVoteGroup);
 
     // ------------------ COMENTARIOS DE USUARIOS ------------//
 
@@ -198,18 +203,21 @@ public interface ApiInterface {
     @POST("/api/bookrequest-add")
     Single<ResponseResult> sendBookRequest(@Header("Authorization") String token, @Body BookRequest bookRequest);
 
+    @POST("/api/rating-add")
+    Single<ResponseResult> sendRating(@Header("Authorization") String token, @Body RatingVote ratingVote);
+
     @GET("/api/drawchange-by-price")
     Single<List<DrawChange>> drawChangeByFinalPrice(@Header("Authorization") String token, @Query("value") double value);
 
     @GET("/api/disabled-dates")
-    Single<DisabledDays> disabledDaysByRent(@Header("Authorization") String token, @Query("value") String value);
+    Single<DisabledDays> disabledDaysByRent(@Header("Authorization") String token, @Query("rentId") String value);
 
     //------------------- COMMENT ---------------------//
 
     @GET("/api/comments")
     Single<List<Comment>> getComment(@Header("Authorization") String token, @Query("value") String value);
 
-    @GET("/api/comments-add")
+    @POST("/api/comments-add")
     Single<ResponseResult> sendComment(@Header("Authorization") String token, @Body Comment comment);
 
     //------------------- MODO DE RENTA ---------------------//

@@ -32,18 +32,28 @@ public class Reservation {
     @Expose
     private int capability;
 
-    @SerializedName("status")
+    @SerializedName("userId")
     @Expose
-    private ReservationStatus reservationStatus;
+    private String userId;
 
-    public Reservation(String id, String username, String startDate, String endDate, String avatar, int capability, ReservationStatus reservationStatus) {
+    @SerializedName("rentId")
+    @Expose
+    private String rentId;
+
+    @SerializedName("aditional")
+    @Expose
+    private String aditional;
+
+    public Reservation(String id, String username, String startDate, String endDate, String avatar, int capability, String userId, String rentId, String aditional) {
         this.id = id;
         this.username = username;
         this.startDate = startDate;
         this.endDate = endDate;
         this.avatar = avatar;
         this.capability = capability;
-        this.reservationStatus = reservationStatus;
+        this.userId = userId;
+        this.rentId = rentId;
+        this.aditional = aditional;
     }
 
     public String getId() {
@@ -94,16 +104,27 @@ public class Reservation {
         this.capability = capability;
     }
 
-    public ReservationStatus getReservationStatus() {
-        return reservationStatus;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setReservationStatus(ReservationStatus reservationStatus) {
-        this.reservationStatus = reservationStatus;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public enum ReservationStatus{
-        PENDING, ACCEPTED, REJECTED, CANCELED
+    public String getRentId() {
+        return rentId;
     }
 
+    public void setRentId(String rentId) {
+        this.rentId = rentId;
+    }
+
+    public String getAditional() {
+        return aditional;
+    }
+
+    public void setAditional(String aditional) {
+        this.aditional = aditional;
+    }
 }

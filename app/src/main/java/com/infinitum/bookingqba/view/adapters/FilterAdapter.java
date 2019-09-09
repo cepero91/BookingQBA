@@ -10,18 +10,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.infinitum.bookingqba.R;
-import com.infinitum.bookingqba.view.adapters.items.filter.CheckableItem;
+import com.infinitum.bookingqba.view.adapters.items.filter.CheckableFilterItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterViewHolder> {
 
-    private List<CheckableItem> checkableItemList;
+    private List<CheckableFilterItem> checkableItemList;
     private SparseBooleanArray selectionIndex;
     private OnShipClick onShipClick;
 
-    public FilterAdapter(List<CheckableItem> checkableItemList, OnShipClick onShipClick) {
+    public FilterAdapter(List<CheckableFilterItem> checkableItemList, OnShipClick onShipClick) {
         this.checkableItemList = checkableItemList;
         this.onShipClick = onShipClick;
         initSparseBoolean(checkableItemList.size());
@@ -36,12 +36,13 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
 
     @Override
     public void onBindViewHolder(@NonNull FilterViewHolder filterViewHolder, int i) {
+        CheckableFilterItem checkableFilterItem = checkableItemList.get(i);
         if (selectionIndex.get(i)) {
             filterViewHolder.changeViewState(true);
         } else {
             filterViewHolder.changeViewState(false);
         }
-        filterViewHolder.bind(checkableItemList.get(i));
+        filterViewHolder.bind(checkableFilterItem);
         filterViewHolder.itemView.setOnClickListener(v -> {
             changeCheckState(i);
             onShipClick.onShipClick();
@@ -58,7 +59,7 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
         if (size > 0) {
             selectionIndex = new SparseBooleanArray(size);
             for (int i = 0; i < size; i++) {
-                selectionIndex.append(i, false);
+                selectionIndex.append(i, checkableItemList.get(i).isChecked());
             }
         }
     }
@@ -95,7 +96,7 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
             this.filterShipTitle = itemView.findViewById(R.id.filter_ship_title);
         }
 
-        private void bind(CheckableItem checkableItem) {
+        private void bind(CheckableFilterItem checkableItem) {
             filterShipTitle.setText(checkableItem.getName());
         }
 

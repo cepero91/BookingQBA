@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Handler;
@@ -122,6 +123,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
     @Inject
     SharedPreferences sharedPreferences;
+    private boolean filterActive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,7 +200,11 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
         homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
 
-        updateNavHeader(sharedPreferences.getString(USER_NAME, ""), sharedPreferences.getString(USER_AVATAR, ""));
+        if (sharedPreferences.getBoolean(USER_IS_AUTH, false)) {
+            homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(true);
+            homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(false);
+            updateNavHeader(sharedPreferences.getString(USER_NAME, ""), sharedPreferences.getString(USER_AVATAR, ""));
+        }
     }
 
 
@@ -298,6 +304,14 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
     public void checkMenuItemsVisibility(Menu menu) {
         menu.findItem(R.id.action_filter_panel).setVisible(mFragment instanceof RentListFragment);
+        Drawable icon = getResources().getDrawable(R.drawable.ic_fa_sliders_line_white);
+        if (filterActive) {
+            icon.setTint(getResources().getColor(R.color.colorAccent));
+            menu.findItem(R.id.action_filter_panel).setIcon(icon);
+        } else {
+            icon.setTint(getResources().getColor(R.color.White_100));
+            menu.findItem(R.id.action_filter_panel).setIcon(icon);
+        }
         menu.findItem(R.id.action_search).setVisible(mFragment instanceof RentListFragment);
         menu.findItem(R.id.action_refresh).setVisible(mFragment instanceof ProfileFragment);
     }
@@ -406,6 +420,11 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START);
             return;
         }
+        if(filterActive){
+            filterFragment.resetAllParams();
+            onFilterClean();
+            return;
+        }
         if (mFragment instanceof HomeFragment) {
             if (timeToGo == 0) {
                 Toast.makeText(this, "Presione de nuevo para salir", Toast.LENGTH_SHORT).show();
@@ -451,7 +470,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     @Override
     public void onBookReservationClick(ReservationItem item) {
         Intent intent = new Intent(HomeActivity.this, ReservationDetailActivity.class);
-        intent.putExtra("uuid",item.getId());
+        intent.putExtra("reservationItem", item);
         startActivity(intent);
     }
 
@@ -504,14 +523,18 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     @Override
     public void onFilterElement(Resource<List<GeoRent>> resourceResult) {
         if (mFragment instanceof RentListFragment) {
+            filterActive = true;
             ((RentListFragment) mFragment).filterListResult(resourceResult);
+            invalidateOptionsMenu();
         }
     }
 
     @Override
     public void onFilterClean() {
         if (mFragment instanceof RentListFragment) {
+            filterActive = false;
             ((RentListFragment) mFragment).needToRefresh(true);
+            invalidateOptionsMenu();
         }
     }
 
@@ -574,6 +597,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
     @Override
     protected void onDestroy() {
+        filterFragment = null;
         System.gc();
         super.onDestroy();
     }

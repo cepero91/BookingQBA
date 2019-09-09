@@ -22,6 +22,7 @@ import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
 import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
 import com.infinitum.bookingqba.model.remote.pojo.DrawChange;
 import com.infinitum.bookingqba.model.remote.pojo.Offer;
+import com.infinitum.bookingqba.model.remote.pojo.RatingVote;
 import com.infinitum.bookingqba.model.remote.pojo.Rent;
 import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
@@ -52,6 +53,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_COMMENTED;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_RATING;
@@ -173,7 +175,7 @@ public class RentRepoImpl implements RentRepository {
 
     @Override
     public Flowable<Resource<List<RentMostComment>>> fiveMostCommentRents(String province) {
-        String query = "SELECT Rent.id,Rent.name,Rent.price, Rent.rentMode, AVG(Comment.emotion) as emotionAvg, COUNT(Comment.id) as totalComment FROM Rent " +
+        String query = "SELECT Rent.id,Rent.name,Rent.price, Rent.rentMode, Rent.rating, Rent.ratingCount, AVG(Comment.emotion) as emotionAvg, COUNT(Comment.id) as totalComment FROM Rent " +
                 "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
                 "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
                 "LEFT JOIN Comment ON Comment.rent = Rent.id " +
@@ -270,9 +272,12 @@ public class RentRepoImpl implements RentRepository {
 
     @Override
     public Flowable<Resource<List<RentAndDependencies>>> filterRents(Map<String, List<String>> filterParams, String province) {
-        String query = FilterRepositoryUtil.buildFilterQuery(filterParams, province);
-        SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query);
-        return qbaDao.filterRents(simpleSQLiteQuery).map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
+//        String query = FilterRepositoryUtil.buildFilterQuery(filterParams, province);
+//        SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query);
+        return Flowable.just(FilterRepositoryUtil.buildFilterQuery(filterParams, province)).flatMap(result->{
+            SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(result);
+            return qbaDao.filterRents(simpleSQLiteQuery).subscribeOn(Schedulers.io());
+        }).map(Resource::success).subscribeOn(Schedulers.io()).onErrorReturn(Resource::error);
     }
 
     @Override
@@ -368,20 +373,48 @@ public class RentRepoImpl implements RentRepository {
 
     @Override
     public Flowable<Double> maxRentPrice() {
-        return qbaDao.getAllRentOrderPrice().subscribeOn(Schedulers.io())
+        return qbaDao.getAllRentOrderPrice()
                 .map(rentEntityList -> {
                     if (rentEntityList.size() > 0) {
                         return rentEntityList.get(0).getPrice();
                     } else {
                         return 0d;
                     }
-                }).onErrorReturn(throwable -> 0d);
+                })
+                .subscribeOn(Schedulers.io())
+                .onErrorReturn(throwable -> 0d);
+    }
+
+    @Override
+    public Flowable<Integer> maxRentCapability() {
+        return qbaDao.getMaxRentCapability()
+                .map(rentEntityList -> {
+                    if (rentEntityList.size() > 0) {
+                        return rentEntityList.get(0).getCapability();
+                    } else {
+                        return 0;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .onErrorReturn(throwable -> {
+                    Timber.e(throwable);
+                    return 0;
+                });
     }
 
     @Override
     public Single<Resource<ResponseResult>> sendBookRequest(String token, BookRequest bookRequest) {
         return retrofit.create(ApiInterface.class)
                 .sendBookRequest(token, bookRequest)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Single<Resource<ResponseResult>> sendRatingVote(String token, RatingVote ratingVote) {
+        return retrofit.create(ApiInterface.class)
+                .sendRating(token, ratingVote)
                 .subscribeOn(Schedulers.io())
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
