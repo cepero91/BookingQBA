@@ -3,13 +3,11 @@ package com.infinitum.bookingqba.view.rents;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,26 +15,20 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.github.siyamed.shapeimageview.RoundedImageView;
-import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentInnerDetailBinding;
+import com.infinitum.bookingqba.view.adapters.RDGalleryAdapter;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentAmenitieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentGalerieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentInnerDetail;
-import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
 import com.infinitum.bookingqba.view.interaction.InnerDetailInteraction;
-import com.squareup.picasso.Picasso;
+import com.thekhaeng.pushdownanim.PushDown;
+import com.thekhaeng.pushdownanim.PushDownAnim;
 
 import org.oscim.core.GeoPoint;
 
 import java.util.ArrayList;
-
-import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
-import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -81,26 +73,35 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        setHasOptionsMenu(false);
-
-        innerDetailBinding.llContentAddress.setOnClickListener(this);
-        innerDetailBinding.llBtnMovile.setOnClickListener(this);
-        innerDetailBinding.llBtnSms.setOnClickListener(this);
-        innerDetailBinding.llBtnHome.setOnClickListener(this);
-        innerDetailBinding.llBtnEmail.setOnClickListener(this);
-        innerDetailBinding.llBookRequest.setOnClickListener(this);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        innerDetailBinding.setByNight(View.GONE);
+        innerDetailBinding.setByHours(View.GONE);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(false);
+        if(rentInnerDetail.getRentMode().equalsIgnoreCase("por noche")){
+            innerDetailBinding.setByNight(View.VISIBLE);
+            innerDetailBinding.setByHours(View.GONE);
+        }else if(rentInnerDetail.getRentMode().equalsIgnoreCase("por horas")){
+            innerDetailBinding.setByNight(View.GONE);
+            innerDetailBinding.setByHours(View.VISIBLE);
+        }
         innerDetailBinding.setDetail(rentInnerDetail);
         setupAmenitiesAdapter(rentInnerDetail.getAmenitieItems());
-        setupPoisAdapter(rentInnerDetail.getRentPoiItems());
         setupGalerieAdapter(rentInnerDetail.getGalerieItems());
+
+//        innerDetailBinding.llContentAddress.setOnClickListener(this);
+//        innerDetailBinding.llBtnMovile.setOnClickListener(this);
+//        innerDetailBinding.llBtnSms.setOnClickListener(this);
+//        innerDetailBinding.llBtnHome.setOnClickListener(this);
+//        innerDetailBinding.llBtnEmail.setOnClickListener(this);
+//        innerDetailBinding.llBookRequest.setOnClickListener(this);
+        innerDetailBinding.llPrice.setOnClickListener(this);
+        PushDownAnim.setPushDownAnimTo(innerDetailBinding.btnBook).setOnClickListener(this);
     }
 
     @Override
@@ -111,29 +112,15 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    private void setupPoisAdapter(ArrayList<RentPoiItem> argPois) {
-        if (argPois != null && argPois.size() > 0) {
-            innerDetailBinding.fbPois.removeAllViews();
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            for(RentPoiItem rentPoiItem: argPois){
-                LinearLayout linearLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.recycler_rent_detail_pois_item,null);
-                TextView textView = linearLayout.findViewById(R.id.tv_name);
-                textView.setText(rentPoiItem.getmName());
-                params.setMargins(5,5,5,5);
-                linearLayout.setLayoutParams(params);
-                innerDetailBinding.fbPois.addView(linearLayout);
-            }
-        }
-    }
 
     private void setupAmenitiesAdapter(ArrayList<RentAmenitieItem> argAmenities) {
         if (argAmenities != null && argAmenities.size() > 0) {
             innerDetailBinding.fbAmenities.removeAllViews();
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            for(RentAmenitieItem rentAmenitieItem: argAmenities){
-                TextView textView = (TextView) getLayoutInflater().inflate(R.layout.recycler_rent_detail_amenities_item,null);
+            for (RentAmenitieItem rentAmenitieItem : argAmenities) {
+                TextView textView = (TextView) getLayoutInflater().inflate(R.layout.recycler_rent_detail_amenities_item, null);
                 textView.setText(rentAmenitieItem.getmName());
-                params.setMargins(5,5,5,5);
+                params.setMargins(5, 5, 5, 5);
                 textView.setLayoutParams(params);
                 innerDetailBinding.fbAmenities.addView(textView);
             }
@@ -142,60 +129,41 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
 
     private void setupGalerieAdapter(ArrayList<RentGalerieItem> argGaleries) {
         if (argGaleries != null && argGaleries.size() > 0) {
-            RendererRecyclerViewAdapter adapter = new RendererRecyclerViewAdapter();
-            adapter.registerRenderer(getGalerieVinder());
-            adapter.setItems(argGaleries);
-            innerDetailBinding.rvGaleries.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-            innerDetailBinding.setGaleries(adapter);
-            ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvGaleries, false);
+            RDGalleryAdapter adapter = new RDGalleryAdapter(argGaleries, (InnerDetailInteraction) getActivity());
+            innerDetailBinding.rvGalery.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+            innerDetailBinding.rvGalery.setAdapter(adapter);
+            ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvGalery, false);
         }
     }
 
 
-    private ViewBinder<?> getGalerieVinder() {
-        return new ViewBinder<>(
-                R.layout.recycler_rent_detail_galeries_item,
-                RentGalerieItem.class,
-                (model, finder, payloads) -> finder
-                        .find(R.id.iv_galerie, (ViewProvider<RoundedImageView>) view -> {
-                            String path;
-                            if (!model.getImage().contains("http")) {
-                                path = "file:" + model.getImage();
-                            } else {
-                                path = model.getImage();
-                            }
-                            Picasso.get()
-                                    .load(path)
-                                    .resize(THUMB_WIDTH,THUMB_HEIGHT)
-                                    .placeholder(R.drawable.placeholder)
-                                    .into(view);
-                        }).setOnClickListener(v -> {
-                            innerDetailInteraction.onGaleryClick(model.getId());
-                        })
-        );
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ll_content_address:
-                createGeoRent();
+            case R.id.ll_price:
+                innerDetailInteraction.onDrawChangeClick();
                 break;
-            case R.id.ll_btn_movile:
-                innerDetailInteraction.phoneCallClick(rentInnerDetail.getPersonalPhone());
-                break;
-            case R.id.ll_btn_sms:
-                innerDetailInteraction.phoneSMSClick(rentInnerDetail.getPersonalPhone());
-                break;
-            case R.id.ll_btn_home:
-                innerDetailInteraction.phoneHomeClick(rentInnerDetail.getHomePhone());
-                break;
-            case R.id.ll_btn_email:
-                innerDetailInteraction.phoneEmailClick(rentInnerDetail.getEmail());
-                break;
-            case R.id.ll_book_request:
+            case R.id.btn_book:
                 innerDetailInteraction.onBookRequestClick();
                 break;
+//            case R.id.ll_content_address:
+//                createGeoRent();
+//                break;
+//            case R.id.ll_btn_movile:
+//                innerDetailInteraction.phoneCallClick(rentInnerDetail.getPersonalPhone());
+//                break;
+//            case R.id.ll_btn_sms:
+//                innerDetailInteraction.phoneSMSClick(rentInnerDetail.getPersonalPhone());
+//                break;
+//            case R.id.ll_btn_home:
+//                innerDetailInteraction.phoneHomeClick(rentInnerDetail.getHomePhone());
+//                break;
+//            case R.id.ll_btn_email:
+//                innerDetailInteraction.phoneEmailClick(rentInnerDetail.getEmail());
+//                break;
+//            case R.id.ll_book_request:
+//                innerDetailInteraction.onBookRequestClick();
+//                break;
         }
     }
 

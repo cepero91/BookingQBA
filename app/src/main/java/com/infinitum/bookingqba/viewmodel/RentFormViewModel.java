@@ -22,6 +22,7 @@ import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.municipality.MunicipalityRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
+import com.infinitum.bookingqba.util.CategoryUtil;
 import com.infinitum.bookingqba.util.Constants;
 import com.infinitum.bookingqba.util.geo.POIEntitySort;
 import com.infinitum.bookingqba.view.adapters.items.addrent.MyRentItem;
@@ -41,13 +42,16 @@ import org.mapsforge.poi.storage.PoiCategoryManager;
 import org.mapsforge.poi.storage.PoiPersistenceManager;
 import org.mapsforge.poi.storage.PointOfInterest;
 import org.mapsforge.poi.storage.UnknownPoiCategoryException;
+import org.oscim.utils.ArrayUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,7 +74,7 @@ public class RentFormViewModel extends ViewModel {
     private ReferenceZoneRepository rzoneRepository;
     private MunicipalityRepository municipalityRepository;
     private AmenitiesRepository amenitiesRepository;
-    private List<Poi> poiList;
+    private HashSet<Poi> poiList;
     private PoiPersistenceManager mPersistenceManager;
 
     private boolean[] amenitiesSelected;
@@ -155,8 +159,8 @@ public class RentFormViewModel extends ViewModel {
         return uuidAmenities;
     }
 
-    private void transformPointOfInterestToPOI(Collection<PointOfInterest> pointOfInterests) {
-        poiList = new ArrayList<>();
+    private HashSet<Poi> transformPointOfInterestToPOI(Collection<PointOfInterest> pointOfInterests) {
+        HashSet<Poi> myPoiHashSet = new HashSet<>();
         for (PointOfInterest point : pointOfInterests) {
             Poi poi = new Poi();
             poi.setName(point.getName());
@@ -169,14 +173,18 @@ public class RentFormViewModel extends ViewModel {
                 int id2 = poiCategories[1].getID();
                 if (id1 != 396) {
                     poi.setCategory(id1);
+                    poi.setCategoryName(poiCategories[0].getTitle());
                 } else if (id2 != 396) {
                     poi.setCategory(id2);
+                    poi.setCategoryName(poiCategories[1].getTitle());
                 }
-            }else if(poiCategories.length == 1){
+            } else if (poiCategories.length == 1) {
                 poi.setCategory(poiCategories[0].getID());
+                poi.setCategoryName(poiCategories[0].getTitle());
             }
-            poiList.add(poi);
+            myPoiHashSet.add(poi);
         }
+        return myPoiHashSet;
     }
 
     public Flowable<Resource<List<MyRentItem>>> fetchRentByUserId(String token, String userId) {
@@ -265,15 +273,17 @@ public class RentFormViewModel extends ViewModel {
         Rent newRent = transformRentFormToRent(rentFormObject);
         finalMap.put("rent", newRent);
         finalMap.put("amenities", rentAmenities);
-        if (poiList != null && poiList.size() > 0)
-            finalMap.put("poi", new RentPoiAdd(rentFormObject.getUuid(), poiList));
+        if (poiList != null && poiList.size() > 0) {
+            List<Poi> parseList = new ArrayList<>(poiList);
+            finalMap.put("poi", new RentPoiAdd(rentFormObject.getUuid(), parseList));
+        }
         if (imageFilePath != null && imageFilePath.size() > 0)
             finalMap.put("galery", imageFilePath);
         if (params.containsKey("offer")) {
             List<Offer> offerList = transformToOffer((List<OfferFormObject>) params.get("offer"));
             finalMap.put("offer", offerList);
         }
-        return rentRepository.addRent(token, finalMap);
+        return rentRepository.addRent(token, finalMap).subscribeOn(Schedulers.io());
     }
 
     private ArrayList<String> getImageFilePath(ArrayList<GaleryFormObject> galery) {
@@ -348,26 +358,23 @@ public class RentFormViewModel extends ViewModel {
         return Resource.success(myRentItems);
     }
 
-    public Single<Map<String, Object>> poiAndReferenceZone(String token, String filePoi, double mLatitude, double mLongitude) {
-        return Single.just(getPointOfInterestByLocation(filePoi, mLatitude, mLongitude))
+    public Flowable<Map<String, Object>> poiAndReferenceZone(String token, String filePoi, double mLatitude, double mLongitude) {
+        return getPointOfInterestByLocation(filePoi, mLatitude, mLongitude)
                 .map(pointOfInterests -> {
+                    mPersistenceManager.close();
                     List<PointOfInterest> result = new ArrayList<>(pointOfInterests);
                     Collections.sort(result, new POIEntitySort(new LatLong(mLatitude, mLongitude)));
-                    if (result.size() > 30) {
-                        return result.subList(0, 30);
-                    }
+                    if (result.size() > 50)
+                        return result.subList(0, 50);
                     return result;
                 })
-                .flatMap(pointOfInterests -> {
-                    String referenceZone = getReferenceNameByPoiCategory(pointOfInterests);
-                    mPersistenceManager.close();
-                    return getRefenceZoneByNameInfered(token, referenceZone, pointOfInterests);
+                .map(this::transformPointOfInterestToPOI)
+                .map(poiHashSet -> {
+                    poiList = poiHashSet;
+                    String referenceZone = getReferenceNameByPoiCategory(poiHashSet);
+                    return new Pair<>(referenceZone, poiHashSet);
                 })
-                .map(map -> {
-                    if (map.containsKey("poi"))
-                        transformPointOfInterestToPOI((Collection<PointOfInterest>) map.get("poi"));
-                    return map;
-                })
+                .flatMap(stringCollectionPair -> getRefenceZoneByNameInfered(token, stringCollectionPair).subscribeOn(Schedulers.io()))
                 .subscribeOn(Schedulers.io())
                 .onErrorReturn(throwable -> {
                     Map<String, Object> map = new HashMap<>();
@@ -376,53 +383,65 @@ public class RentFormViewModel extends ViewModel {
                 });
     }
 
-    private Collection<PointOfInterest> getPointOfInterestByLocation(String poiFile, double mLatitude, double mLongitude) {
+    private Flowable<Collection<PointOfInterest>> getPointOfInterestByLocation(String poiFile, double mLatitude, double mLongitude) {
         mPersistenceManager = AndroidPoiPersistenceManagerFactory.getPoiPersistenceManager(poiFile);
         PoiCategoryManager categoryManager = mPersistenceManager.getCategoryManager();
         PoiCategoryFilter categoryFilter = new ExactMatchPoiCategoryFilter();
-        for (String category : Constants.category) {
+        for (Integer category : CategoryUtil.general_categories_id) {
             try {
-                categoryFilter.addCategory(categoryManager.getPoiCategoryByTitle(category));
+                categoryFilter.addCategory(categoryManager.getPoiCategoryByID(category));
             } catch (UnknownPoiCategoryException e) {
                 e.printStackTrace();
             }
         }
-        return mPersistenceManager.findNearPosition(new LatLong(mLatitude, mLongitude), 1000, categoryFilter, null, Integer.MAX_VALUE);
+        return Flowable.just(mPersistenceManager.findNearPosition(new LatLong(mLatitude, mLongitude),
+                1000, categoryFilter, null, Integer.MAX_VALUE)).subscribeOn(Schedulers.io());
     }
 
-    private String getReferenceNameByPoiCategory(Collection<PointOfInterest> pointOfInterests) {
+    private String getReferenceNameByPoiCategory(HashSet<Poi> pointOfInterests) {
+        List<Poi> parseList = new ArrayList<>(pointOfInterests);
         String referenceZoneResult = "Barriada";
-        if (containBeach(pointOfInterests)) {
-            referenceZoneResult = "Playa";
-        } else if (containCategory(pointOfInterests, Constants.historic_category)) {
-            referenceZoneResult = "Historia";
-        } else if (containCategory(pointOfInterests, Constants.natural_category)) {
+        if (containBeach(parseList)) {
+            referenceZoneResult = "Playa o Costa";
+        } else if (containIdCategory(parseList, CategoryUtil.natural_category_id)) {
             referenceZoneResult = "Natural";
+        } else if (containIdCategory(parseList, CategoryUtil.historic_category_id)) {
+            referenceZoneResult = "Histórico";
+        } else if (containIdCategory(parseList, CategoryUtil.cultural_category_id)) {
+            referenceZoneResult = "Cultural";
         }
         return referenceZoneResult;
     }
 
-    private boolean containBeach(Collection<PointOfInterest> pointOfInterests) {
-        for (PointOfInterest point : pointOfInterests) {
-            PoiCategory[] poiCategories = point.getCategories().toArray(new PoiCategory[point.getCategories().size()]);
-            for (PoiCategory poiCategory : poiCategories) {
-                if (poiCategory.getTitle().equals("Marinas")) {
-                    return true;
-                } else if (poiCategory.getTitle().equals("Attractions") && point.getName().contains("Playa")) {
-                    return true;
-                }
+    private boolean containBeach(List<Poi> pointOfInterests) {
+        for (Poi point : pointOfInterests) {
+            if (point.getCategory() == 171) {
+                return true;
+            } else if (point.getCategoryName().equals("Attractions") && point.getName().contains("Playa")) {
+                return true;
             }
         }
         return false;
     }
 
     private boolean containCategory(Collection<PointOfInterest> pointOfInterests, String[] categories) {
+        int occurrencies = 0;
         for (PointOfInterest point : pointOfInterests) {
             if (categoryIsInList(categories, point.getCategories())) {
-                return true;
+                occurrencies++;
             }
         }
-        return false;
+        return occurrencies > 5;
+    }
+
+    private boolean containIdCategory(List<Poi> pointOfInterests, int[] categories) {
+        int occurrencies = 0;
+        for (Poi point : pointOfInterests) {
+            if (categoryIdExist(categories, point.getCategory())) {
+                occurrencies++;
+            }
+        }
+        return occurrencies > 5;
     }
 
     private boolean categoryIsInList(String[] categoriesArray, Set<PoiCategory> categories) {
@@ -438,6 +457,14 @@ public class RentFormViewModel extends ViewModel {
     private boolean categoryExist(String[] categories, String category) {
         for (String stringCategory : categories) {
             if (stringCategory.equals(category))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean categoryIdExist(int[] categories, int category) {
+        for (Integer idCategory : categories) {
+            if (idCategory == category)
                 return true;
         }
         return false;
@@ -498,19 +525,19 @@ public class RentFormViewModel extends ViewModel {
     }
 
 
-    private Single<Map<String, Object>> getRefenceZoneByNameInfered(String token, String nameInfered, Collection<PointOfInterest> collection) {
+    private Flowable<Map<String, Object>> getRefenceZoneByNameInfered(String token, Pair<String, HashSet<Poi>> pairStringCollectionPair) {
         Map<String, Object> map = new HashMap<>();
-        map.put("poi", collection);
+        map.put("poi", pairStringCollectionPair.second);
         return getAllRemoteReferenceZone(token).map(listResource -> {
             if (listResource.data != null && listResource.data.size() > 0) {
-                Pair<String, String> pair = findReferenceZoneOnRemoteList(nameInfered, listResource.data);
+                Pair<String, String> pair = findReferenceZoneOnRemoteList(pairStringCollectionPair.first, listResource.data);
                 if (!pair.first.equals("") && !pair.second.equals("")) {
                     map.put("uuid", pair.first);
                     map.put("name", pair.second);
                 }
             }
             return map;
-        });
+        }).subscribeOn(Schedulers.io()).toFlowable();
     }
 
 

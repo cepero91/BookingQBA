@@ -25,6 +25,10 @@
             name="loadingRentMode"
             type="Boolean" />
 
+        <variable
+            name="phonesVisibility"
+            type="Integer"/>
+
     </data>
 
     <com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -63,7 +67,7 @@
                         android:layout_marginStart="10dp"
                         android:fontFamily="@font/poppinsbold"
                         android:includeFontPadding="false"
-                        android:text="@string/donde_esta_su_renta"
+                        android:text="Ubicación"
                         android:textColor="@color/material_color_blue_grey_500" />
 
                     <android.support.v7.widget.AppCompatImageView
@@ -100,11 +104,11 @@
                         android:layout_height="wrap_content"
                         android:drawablePadding="8dp"
                         android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                        android:fontFamily="@font/robotoregular"
+                        android:fontFamily="@font/poppinsregular"
                         android:gravity="center|start"
                         android:includeFontPadding="false"
                         android:padding="10dp"
-                        android:text="Ubicar"
+                        android:text="@string/coordenadas"
                         android:textColor="@color/material_color_grey_500"
                         android:textSize="14sp" />
 
@@ -116,8 +120,9 @@
                         android:background="@null"
                         android:drawablePadding="8dp"
                         android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                        android:fontFamily="@font/robotoregular"
-                        android:hint="Direccion"
+                        android:fontFamily="@font/poppinsregular"
+                        android:includeFontPadding="false"
+                        android:hint="@string/direcci_n"
                         android:inputType="text"
                         android:padding="10dp"
                         android:textColor="@color/colorPrimary"
@@ -136,7 +141,8 @@
                             android:layout_height="wrap_content"
                             android:drawablePadding="8dp"
                             android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                            android:fontFamily="@font/robotoregular"
+                            android:fontFamily="@font/poppinsregular"
+                            android:includeFontPadding="false"
                             android:gravity="center|start"
                             android:text="@string/municipio"
                             android:textColor="@color/material_color_grey_500"
@@ -164,9 +170,10 @@
                             android:layout_height="wrap_content"
                             android:drawablePadding="8dp"
                             android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                            android:fontFamily="@font/robotoregular"
+                            android:fontFamily="@font/poppinsregular"
+                            android:includeFontPadding="false"
                             android:gravity="center|start"
-                            android:text="@string/zona_de_referencia"
+                            android:text="@string/entorno_dominante"
                             android:textColor="@color/material_color_grey_500"
                             android:textSize="14sp" />
 
@@ -236,12 +243,13 @@
                         android:background="@null"
                         android:drawablePadding="8dp"
                         android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                        android:fontFamily="@font/robotoregular"
+                        android:fontFamily="@font/poppinsregular"
+                        android:includeFontPadding="false"
                         android:hint="Nombre de la Renta"
                         android:inputType="text"
                         android:padding="10dp"
                         android:textColor="@color/colorPrimary"
-                        android:textSize="13sp" />
+                        android:textSize="14sp" />
 
 
                     <FrameLayout
@@ -256,11 +264,12 @@
                             android:layout_height="wrap_content"
                             android:drawablePadding="8dp"
                             android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                            android:fontFamily="@font/robotoregular"
+                            android:fontFamily="@font/poppinsregular"
+                            android:includeFontPadding="false"
                             android:gravity="center|start"
                             android:text="@string/modo_de_renta"
                             android:textColor="@color/material_color_grey_500"
-                            android:textSize="13sp" />
+                            android:textSize="14sp" />
 
                         <ProgressBar
                             android:id="@+id/pb_rent_mode"
@@ -286,8 +295,9 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:drawablePadding="8dp"
-                            android:drawableStart="@drawable/ic_fa_hourglass_start_edit_line"
-                            android:fontFamily="@font/robotoregular"
+                            android:drawableStart="@drawable/ic_clock_1_small_blue_set"
+                            android:fontFamily="@font/poppinsregular"
+                            android:includeFontPadding="false"
                             android:gravity="center|start"
                             android:padding="10dp"
                             android:text="Entrada"
@@ -300,8 +310,9 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:drawablePadding="8dp"
-                            android:drawableStart="@drawable/ic_fa_hourglass_edit_end_line"
-                            android:fontFamily="@font/robotoregular"
+                            android:drawableStart="@drawable/ic_clock_1_small_blue_set"
+                            android:fontFamily="@font/poppinsregular"
+                            android:includeFontPadding="false"
                             android:gravity="center|start"
                             android:padding="10dp"
                             android:text="Salida"
@@ -318,7 +329,8 @@
                         android:background="@null"
                         android:drawablePadding="8dp"
                         android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                        android:fontFamily="@font/robotoregular"
+                        android:fontFamily="@font/poppinsregular"
+                        android:includeFontPadding="false"
                         android:hint="Precio"
                         android:inputType="number"
                         android:padding="10dp"
@@ -333,7 +345,8 @@
                         android:background="@null"
                         android:drawablePadding="8dp"
                         android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                        android:fontFamily="@font/robotoregular"
+                        android:fontFamily="@font/poppinsregular"
+                        android:includeFontPadding="false"
                         android:hint="Email"
                         android:inputType="textEmailAddress"
                         android:padding="10dp"
@@ -344,7 +357,8 @@
                         android:id="@+id/et_rules"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/robotoregular"
+                        android:fontFamily="@font/poppinsregular"
+                        android:includeFontPadding="false"
                         android:inputType="textMultiLine"
                         android:padding="10dp"
                         android:textColor="@color/colorPrimary"
@@ -358,7 +372,8 @@
                         android:id="@+id/et_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/robotoregular"
+                        android:fontFamily="@font/poppinsregular"
+                        android:includeFontPadding="false"
                         android:gravity="top"
                         android:inputType="textMultiLine"
                         android:padding="10dp"
@@ -373,126 +388,144 @@
                         android:id="@+id/et_personal_phone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/robotoregular"
+                        android:background="@null"
+                        android:drawablePadding="8dp"
+                        android:drawableStart="@drawable/ic_fa_circle_edit_line"
+                        android:fontFamily="@font/poppinsregular"
+                        android:hint="Telefono movil"
+                        android:includeFontPadding="false"
                         android:inputType="phone"
                         android:padding="10dp"
                         android:textColor="@color/colorPrimary"
-                        android:drawablePadding="8dp"
-                        android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                        android:background="@null"
-                        android:hint="Telefono movil"
-                        android:textSize="13sp"/>
+                        android:textSize="13sp"
+                        android:visibility="@{phonesVisibility}"/>
 
                     <android.support.v7.widget.AppCompatEditText
                         android:id="@+id/et_home_phone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/robotoregular"
+                        android:background="@null"
+                        android:drawablePadding="8dp"
+                        android:drawableStart="@drawable/ic_fa_circle_edit_line"
+                        android:fontFamily="@font/poppinsregular"
+                        android:hint="Telefono de la casa"
+                        android:includeFontPadding="false"
                         android:inputType="phone"
                         android:padding="10dp"
                         android:textColor="@color/colorPrimary"
-                        android:drawablePadding="8dp"
-                        android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                        android:background="@null"
-                        android:hint="Telefono de la casa"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:visibility="@{phonesVisibility}" />
 
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginBottom="24dp">
 
                         <TextView
                             android:id="@+id/tv_capability_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/robotoregular"
+                            android:fontFamily="@font/poppinsregular"
+                            android:includeFontPadding="false"
                             android:text="Capacidad"
                             android:textColor="@color/material_color_grey_500"
-                            app:layout_constraintEnd_toEndOf="@+id/quantityHost"
                             app:layout_constraintStart_toStartOf="@+id/quantityHost"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <com.infinitum.bookingqba.view.customview.QuantityPickerView
+                        <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
                             android:id="@+id/quantityHost"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_marginStart="16dp"
+                            app:backGroundColor="@color/material_color_grey_100"
+                            app:finalNumber="20"
+                            app:initialNumber="1"
+                            app:textColor="@color/material_color_blue_grey_500"
+                            app:textSize="14sp"
                             app:layout_constraintEnd_toStartOf="@+id/guideline3"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tv_capability_title"
-                            app:minQuantity="1"
-                            app:textSize="14sp" />
+                            app:layout_constraintTop_toBottomOf="@+id/tv_capability_title" />
 
                         <TextView
                             android:id="@+id/tv_room_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/robotoregular"
+                            android:fontFamily="@font/poppinsregular"
+                            android:includeFontPadding="false"
                             android:text="Habitaciones"
                             android:textColor="@color/material_color_grey_500"
-                            app:layout_constraintEnd_toEndOf="@+id/quantityRoom"
                             app:layout_constraintStart_toStartOf="@+id/quantityRoom"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <com.infinitum.bookingqba.view.customview.QuantityPickerView
+                        <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
                             android:id="@+id/quantityRoom"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="4dp"
+                            app:backGroundColor="@color/material_color_grey_100"
+                            app:finalNumber="20"
+                            app:initialNumber="1"
+                            app:textColor="@color/material_color_blue_grey_500"
+                            app:textSize="14sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="@+id/guideline3"
-                            app:layout_constraintTop_toBottomOf="@+id/tv_room_title"
-                            app:minQuantity="1"
-                            app:textSize="14sp" />
+                            app:layout_constraintTop_toBottomOf="@+id/tv_room_title" />
 
                         <TextView
                             android:id="@+id/tv_bed_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/robotoregular"
+                            android:fontFamily="@font/poppinsregular"
+                            android:includeFontPadding="false"
                             android:text="Camas"
                             android:textColor="@color/material_color_grey_500"
-                            app:layout_constraintEnd_toEndOf="@+id/quantityBed"
                             app:layout_constraintStart_toStartOf="@+id/quantityHost"
                             app:layout_constraintTop_toBottomOf="@+id/quantityHost" />
 
-                        <com.infinitum.bookingqba.view.customview.QuantityPickerView
+                        <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
                             android:id="@+id/quantityBed"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_marginStart="16dp"
+                            app:backGroundColor="@color/material_color_grey_100"
+                            app:finalNumber="20"
+                            app:initialNumber="1"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toStartOf="@+id/guideline3"
-                            app:layout_constraintHorizontal_bias="0.488"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tv_bed_title"
-                            app:layout_constraintVertical_bias="0.0"
-                            app:minQuantity="1"
+                            app:textColor="@color/material_color_blue_grey_500"
                             app:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/tv_bath_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/robotoregular"
+                            android:fontFamily="@font/poppinsregular"
+                            android:includeFontPadding="false"
                             android:text="Baños"
                             android:textColor="@color/material_color_grey_500"
-                            app:layout_constraintEnd_toEndOf="@+id/quantityBath"
                             app:layout_constraintStart_toStartOf="@+id/quantityRoom"
                             app:layout_constraintTop_toBottomOf="@+id/quantityRoom" />
 
-                        <com.infinitum.bookingqba.view.customview.QuantityPickerView
+                        <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
                             android:id="@+id/quantityBath"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="4dp"
+                            app:backGroundColor="@color/material_color_grey_100"
+                            app:finalNumber="20"
+                            app:initialNumber="1"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.488"
                             app:layout_constraintStart_toStartOf="@+id/guideline3"
                             app:layout_constraintTop_toBottomOf="@+id/tv_bath_title"
-                            app:layout_constraintVertical_bias="0.0"
-                            app:minQuantity="1"
+                            app:textColor="@color/material_color_blue_grey_500"
                             app:textSize="14sp" />
 
                         <android.support.constraint.Guideline
@@ -520,7 +553,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="start|center"
-                                android:fontFamily="@font/robotoregular"
+                                android:fontFamily="@font/poppinsregular"
                                 android:includeFontPadding="false"
                                 android:text="Facilidades"
                                 android:textColor="@color/material_color_grey_500"
@@ -565,7 +598,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="start|center"
-                                android:fontFamily="@font/robotoregular"
+                                android:fontFamily="@font/poppinsregular"
                                 android:includeFontPadding="false"
                                 android:text="Imagenes"
                                 android:textColor="@color/material_color_grey_500"
@@ -598,7 +631,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="start|center"
-                                android:fontFamily="@font/robotoregular"
+                                android:fontFamily="@font/poppinsregular"
+                                android:includeFontPadding="false"
                                 android:text="Ofertas"
                                 android:textColor="@color/material_color_grey_500"
                                 android:textSize="13sp"
@@ -622,7 +656,8 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:background="@drawable/shape_btn_color_primary"
-                    android:fontFamily="@font/poppinsbold"
+                    android:fontFamily="@font/poppinsregular"
+                    android:includeFontPadding="false"
                     android:padding="10dp"
                     android:text="Subir Renta"
                     android:textAlignment="center"

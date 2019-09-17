@@ -3,7 +3,14 @@ package com.infinitum.bookingqba.view.adapters.items.rentdetail;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class RentInnerDetail implements Parcelable {
 
@@ -26,9 +33,11 @@ public class RentInnerDetail implements Parcelable {
     private double latitude;
     private double longitude;
     private int wished;
+    private String checkin;
+    private String chekout;
     private ArrayList<RentAmenitieItem> amenitieItems;
     private ArrayList<RentGalerieItem> galerieItems;
-    private ArrayList<RentPoiItem> rentPoiItems;
+    private Map<PoiCategory,List<RentPoiItem>> poiItemMap;
 
     public RentInnerDetail() {
     }
@@ -177,15 +186,15 @@ public class RentInnerDetail implements Parcelable {
         this.galerieItems = galerieItems;
     }
 
-    public ArrayList<RentPoiItem> getRentPoiItems() {
-        return rentPoiItems;
+    public Map<PoiCategory, List<RentPoiItem>> getPoiItemMap() {
+        return poiItemMap;
     }
 
-    public void setRentPoiItems(ArrayList<RentPoiItem> rentPoiItems) {
-        this.rentPoiItems = rentPoiItems;
+    public void setPoiItemMap(Map<PoiCategory, List<RentPoiItem>> poiItemMap) {
+        this.poiItemMap = poiItemMap;
     }
 
-    public int galerieSize(){
+    public int galerieSize() {
         return galerieItems.size();
     }
 
@@ -205,7 +214,7 @@ public class RentInnerDetail implements Parcelable {
         this.longitude = longitude;
     }
 
-    public String firstImage(){
+    public String firstImage() {
         return galerieItems.get(0).getImage();
     }
 
@@ -215,6 +224,74 @@ public class RentInnerDetail implements Parcelable {
 
     public void setWished(int wished) {
         this.wished = wished;
+    }
+
+    public String getCheckin() {
+        return checkin;
+    }
+
+    public void setCheckin(String checkin) {
+        this.checkin = checkin;
+    }
+
+    public String getChekout() {
+        return chekout;
+    }
+
+    public void setChekout(String chekout) {
+        this.chekout = chekout;
+    }
+
+    public String humanChekin(){
+        SimpleDateFormat formatIn = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        Date date = null;
+        try {
+             date = formatIn.parse(checkin);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        SimpleDateFormat formatOut = new SimpleDateFormat("HH:mm a");
+        return formatOut.format(date);
+    }
+
+    public String humanChekout(){
+        SimpleDateFormat formatIn = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        Date date = null;
+        try {
+            date = formatIn.parse(chekout);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        SimpleDateFormat formatOut = new SimpleDateFormat("HH:mm a");
+        return formatOut.format(date);
+    }
+
+    public String humanVotes() {
+        if (votes > 0) {
+            return String.format("(%s voto%s)", votes, votes > 1 ? "s" : "");
+        } else {
+            return "(sin valoración)";
+        }
+    }
+
+    public String humanCapability() {
+        return String.format("%s Huesp.", capability);
+    }
+
+    public String humanRoom() {
+        return String.format("%s Cuarto%s", maxRooms, maxRooms > 1 ? "s" : "");
+    }
+
+    public String humanBed() {
+        return String.format("%s Cama%s", maxBeds, maxBeds > 1 ? "s" : "");
+    }
+
+    public String humanBath() {
+        return String.format("%s Baño%s", maxBaths, maxBaths > 1 ? "s" : "");
+    }
+
+    public String humanPrice(){
+        return String.format("%.2f CUC/%s",price,rentMode);
     }
 
 
@@ -244,9 +321,15 @@ public class RentInnerDetail implements Parcelable {
         dest.writeDouble(this.latitude);
         dest.writeDouble(this.longitude);
         dest.writeInt(this.wished);
+        dest.writeString(this.checkin);
+        dest.writeString(this.chekout);
         dest.writeTypedList(this.amenitieItems);
         dest.writeTypedList(this.galerieItems);
-        dest.writeTypedList(this.rentPoiItems);
+        dest.writeInt(this.poiItemMap.size());
+        for (Map.Entry<PoiCategory, List<RentPoiItem>> entry : this.poiItemMap.entrySet()) {
+            dest.writeParcelable(entry.getKey(), flags);
+            dest.writeTypedList(entry.getValue());
+        }
     }
 
     protected RentInnerDetail(Parcel in) {
@@ -269,9 +352,17 @@ public class RentInnerDetail implements Parcelable {
         this.latitude = in.readDouble();
         this.longitude = in.readDouble();
         this.wished = in.readInt();
+        this.checkin = in.readString();
+        this.chekout = in.readString();
         this.amenitieItems = in.createTypedArrayList(RentAmenitieItem.CREATOR);
         this.galerieItems = in.createTypedArrayList(RentGalerieItem.CREATOR);
-        this.rentPoiItems = in.createTypedArrayList(RentPoiItem.CREATOR);
+        int poiItemMapSize = in.readInt();
+        this.poiItemMap = new HashMap<PoiCategory, List<RentPoiItem>>(poiItemMapSize);
+        for (int i = 0; i < poiItemMapSize; i++) {
+            PoiCategory key = in.readParcelable(PoiCategory.class.getClassLoader());
+            List<RentPoiItem> value = in.createTypedArrayList(RentPoiItem.CREATOR);
+            this.poiItemMap.put(key, value);
+        }
     }
 
     public static final Creator<RentInnerDetail> CREATOR = new Creator<RentInnerDetail>() {

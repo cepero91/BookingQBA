@@ -11,6 +11,7 @@ import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.DatePicker;
 import com.applandeo.materialcalendarview.builders.DatePickerBuilder;
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.util.DateUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -97,7 +98,7 @@ public class CalendarRangeDateView extends LinearLayout implements View.OnClickL
             Calendar startSelectedDay = calendar.get(0);
             Calendar endSelectedDay = calendar.get(calendar.size() - 1);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-            if (isAValidRangeDate(calendar)) {
+            if (com.applandeo.materialcalendarview.utils.DateUtils.isFullDatesRange(calendar)) {
                 rangeDateInteraction.nightSelectedCount(calendar.size() - 1);
                 startEndDateCallback(startSelectedDay, endSelectedDay);
                 validRangeDate = calendar;
@@ -123,37 +124,8 @@ public class CalendarRangeDateView extends LinearLayout implements View.OnClickL
         rangeDateInteraction.validRangeSelected(simpleDateFormat.format(startSelectedDay.getTime()), simpleDateFormat.format(endSelectedDay.getTime()));
     }
 
-    private boolean isAValidRangeDate(List<Calendar> calendarList) {
-        Calendar dayBefore = calendarList.get(0);
-        for (int i = 1; i < calendarList.size(); i++) {
-            Calendar currentDay = calendarList.get(i);
-            long div = (currentDay.getTimeInMillis() - dayBefore.getTimeInMillis()) / (3600 * 24 * 1000);
-            if (div == 1) {
-                dayBefore = calendarList.get(i);
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void setStrDisabledDays(List<String> disabledStrDates) {
-        disabledDays = new ArrayList<>();
-        if (disabledStrDates != null && disabledStrDates.size() > 0) {
-            validationText.setVisibility(GONE);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = null;
-            Calendar calendarItem;
-            for (String dates : disabledStrDates) {
-                try {
-                    date = simpleDateFormat.parse(dates);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                calendarItem = dateToCalendar(date);
-                disabledDays.add(calendarItem);
-            }
-        }
+        disabledDays = DateUtils.transformStringDatesToCalendars(disabledStrDates);
     }
 
     public void setErrorMsg(String msg) {
@@ -165,12 +137,6 @@ public class CalendarRangeDateView extends LinearLayout implements View.OnClickL
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         startEndDate.setOnClickListener(enabled?this:null);
-    }
-
-    private Calendar dateToCalendar(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar;
     }
 
     public interface CalendarRangeDateInteraction {

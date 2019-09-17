@@ -10,6 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.model.remote.pojo.Poi;
+import com.infinitum.bookingqba.util.CategoryUtil;
+import com.infinitum.bookingqba.util.Constants;
 
 import org.mapsforge.poi.storage.PoiCategory;
 import org.mapsforge.poi.storage.PointOfInterest;
@@ -20,9 +23,9 @@ import java.util.List;
 import java.util.Set;
 
 public class AddPoiAdapter extends RecyclerView.Adapter<AddPoiAdapter.MyViewHolder> {
-    private List<PointOfInterest> pointOfInterests;
+    private List<Poi> pointOfInterests;
 
-    public AddPoiAdapter(List<PointOfInterest> pointOfInterests) {
+    public AddPoiAdapter(List<Poi> pointOfInterests) {
         this.pointOfInterests = pointOfInterests;
     }
 
@@ -35,22 +38,9 @@ public class AddPoiAdapter extends RecyclerView.Adapter<AddPoiAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
-        PointOfInterest pointOfInterest = pointOfInterests.get(i);
-        StringBuilder categoryBuilder = new StringBuilder();
-        Set<PoiCategory> poiCategorySet = pointOfInterest.getCategories();
-        if(poiCategorySet.size() > 1){
-            PoiCategory[] poiCategories = poiCategorySet.toArray(new PoiCategory[poiCategorySet.size()]);
-            for (PoiCategory poiCategory : poiCategories) {
-                if (!poiCategory.getTitle().equals("Address")) {
-                    categoryBuilder.append(poiCategory.getTitle());
-                    break;
-                }
-            }
-        }else{
-            categoryBuilder.append(pointOfInterest.getCategory().getTitle());
-        }
-        myViewHolder.tvCategory.setText(categoryBuilder.toString());
-        myViewHolder.tvPoi.setText(pointOfInterest.getName("es"));
+        Poi pointOfInterest = pointOfInterests.get(i);
+        myViewHolder.tvCategory.setText(CategoryUtil.categoryById(pointOfInterest.getCategory()));
+        myViewHolder.tvPoi.setText(pointOfInterest.getName());
         if(i%2==0){
             myViewHolder.llContentPoi.setBackgroundColor(Color.parseColor("#ECEFF1"));
         }else{

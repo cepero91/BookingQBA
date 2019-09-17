@@ -219,6 +219,7 @@ public class DialogDetailMenu extends DialogFragment implements View.OnClickList
     private void updateWishedUi(String value, @ColorRes int colorId, boolean silently) {
         menuBinding.ivListWich.setImageTintList(ColorStateList.valueOf(getResources().getColor(colorId)));
         menuBinding.tvWishedValue.setText(value);
+        menuBinding.tvWishedValue.setTextColor(getResources().getColor(colorId));
         if (!silently) {
             switch (colorId) {
                 case R.color.colorAccent:

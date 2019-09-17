@@ -1,19 +1,20 @@
 package com.infinitum.bookingqba.view.rents;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityReservationBinding;
-import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
-import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
 import com.infinitum.bookingqba.util.AlertUtils;
-import com.infinitum.bookingqba.view.customview.CalendarRangeDateView;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.thekhaeng.pushdownanim.PushDownAnim;
@@ -29,21 +30,28 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static com.crowdfire.cfalertdialog.CFAlertDialog.CFAlertActionStyle.NEGATIVE;
 import static com.crowdfire.cfalertdialog.CFAlertDialog.CFAlertActionStyle.POSITIVE;
+import static com.infinitum.bookingqba.util.Constants.DATE_RANGE;
+import static com.infinitum.bookingqba.util.Constants.END_DATE;
+import static com.infinitum.bookingqba.util.Constants.MAXCAPABILITY;
+import static com.infinitum.bookingqba.util.Constants.NIGHT_COUNT;
+import static com.infinitum.bookingqba.util.Constants.PRICE;
+import static com.infinitum.bookingqba.util.Constants.RENT_ID;
+import static com.infinitum.bookingqba.util.Constants.START_DATE;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
-public class ReservationActivity extends AppCompatActivity implements View.OnClickListener,
-        CalendarRangeDateView.CalendarRangeDateInteraction {
+public class ReservationActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ActivityReservationBinding reservationBinding;
     private String rentId, userId, token;
     private double price;
     private int maxCapability;
-    private static final String RENT_ID = "rentId";
-    private static final String PRICE = "price";
-    private static final String MAXCAPABILITY = "maxcapability";
+    private int nightCount;
+    private String dateRange;
     private CompositeDisposable compositeDisposable;
     private Disposable disposable;
 
@@ -53,6 +61,9 @@ public class ReservationActivity extends AppCompatActivity implements View.OnCli
     @Inject
     ViewModelFactory viewModelFactory;
 
+    @Inject
+    SharedPreferences sharedPreferences;
+
     private RentViewModel rentViewModel;
 
     @Override
@@ -60,62 +71,44 @@ public class ReservationActivity extends AppCompatActivity implements View.OnCli
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         reservationBinding = DataBindingUtil.setContentView(this, R.layout.activity_reservation);
-        reservationBinding.setLoading(true);
+        reservationBinding.setVisibility(GONE);
+
         compositeDisposable = new CompositeDisposable();
-        PushDownAnim.setPushDownAnimTo(reservationBinding.tvBtnSend).setOnClickListener(this);
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
-        if (getIntent().hasExtra(RENT_ID) && getIntent().hasExtra(USER_ID)
-                && getIntent().hasExtra(USER_TOKEN) && getIntent().hasExtra(PRICE)
-                && getIntent().hasExtra(MAXCAPABILITY)) {
-            rentId = getIntent().getExtras().getString(RENT_ID);
-            userId = getIntent().getExtras().getString(USER_ID);
-            token = getIntent().getExtras().getString(USER_TOKEN);
-            price = getIntent().getExtras().getDouble(PRICE);
-            maxCapability = getIntent().getExtras().getInt(MAXCAPABILITY);
+
+        if (getIntent().hasExtra(RENT_ID)  && getIntent().hasExtra(PRICE)
+                && getIntent().hasExtra(MAXCAPABILITY) && getIntent().hasExtra(NIGHT_COUNT)
+                && getIntent().hasExtra(DATE_RANGE) && getIntent().hasExtra(START_DATE)
+                && getIntent().hasExtra(END_DATE)) {
+            rentId = getIntent().getStringExtra(RENT_ID);
+            userId = sharedPreferences.getString(USER_ID,"");
+            token = sharedPreferences.getString(USER_TOKEN,"");
+            price = getIntent().getDoubleExtra(PRICE, 0);
+            nightCount = getIntent().getIntExtra(NIGHT_COUNT, 0);
+            dateRange = getIntent().getStringExtra(DATE_RANGE);
+            startDate = getIntent().getStringExtra(START_DATE);
+            endDate = getIntent().getStringExtra(END_DATE);
+            maxCapability = getIntent().getIntExtra(MAXCAPABILITY, 0);
         }
-        setupCalendarView();
-        setupQuantityView();
+        setupUIViews();
     }
 
-    private void setupQuantityView() {
+    private void setupUIViews() {
+        PushDownAnim.setPushDownAnimTo(reservationBinding.tvBtnSend).setOnClickListener(this);
         reservationBinding.quantityHost.setMaxQuantity(maxCapability);
+        reservationBinding.quantityHost.setMinQuantity(maxCapability);
+        reservationBinding.quantityHost.setOnQuantityChangeListener(quantity -> {
+            if (quantity == 0) {
+                Animation animation = AnimationUtils.loadAnimation(ReservationActivity.this, R.anim.shake_animation);
+                reservationBinding.quantityHost.startAnimation(animation);
+            }
+        });
+        reservationBinding.tvStartEndDate.setText(dateRange);
+        reservationBinding.tvPriceTitle.setText(String.format("%s noches a %.2f cuc = ", nightCount, price));
+        reservationBinding.tvPriceValue.setText(String.format("%.2f", price * nightCount));
+        updateDrawChange(price * nightCount);
     }
 
-    private void setupCalendarView() {
-        reservationBinding.calendarRangeDateView.setEnabled(false);
-        reservationBinding.calendarRangeDateView.setRangeDateInteraction(this);
-        disposable = rentViewModel.disabledDays(token, rentId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(listResource -> {
-                    if (listResource.data != null) {
-                        success(listResource);
-                    } else {
-                        error(listResource.message);
-                    }
-                }, this::error);
-        compositeDisposable.add(disposable);
-    }
-
-    private void success(Resource<DisabledDays> listResource) {
-        reservationBinding.setLoading(false);
-        reservationBinding.calendarRangeDateView.setEnabled(true);
-        reservationBinding.calendarRangeDateView.setStrDisabledDays(listResource.data.getDates());
-    }
-
-    private void error(Throwable throwable) {
-        Timber.e(throwable);
-        reservationBinding.setLoading(false);
-        reservationBinding.calendarRangeDateView.setEnabled(false);
-        reservationBinding.calendarRangeDateView.setErrorMsg(getString(R.string.calendar_sync_error));
-    }
-
-    private void error(String msg) {
-        Timber.e(msg);
-        reservationBinding.setLoading(false);
-        reservationBinding.calendarRangeDateView.setEnabled(false);
-        reservationBinding.calendarRangeDateView.setErrorMsg(getString(R.string.calendar_sync_error));
-    }
 
     @Override
     public void onClick(View v) {
@@ -126,10 +119,27 @@ public class ReservationActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    /**
-     * TODABIA FALTA LA BIBLIOTECA DEL INCREMENTO
-     */
     private void sendReservation() {
+        reservationBinding.setVisibility(VISIBLE);
+        BookRequest bookRequest = getBookRequest();
+        disposable = rentViewModel.sendBookRequest(token, bookRequest).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resultResource -> {
+                    reservationBinding.setVisibility(GONE);
+                    if (resultResource.data != null && resultResource.data.getCode() == 200) {
+                        showAlert(R.layout.reservation_success_dialog, "Ok, volver", "#009688", POSITIVE);
+                    } else {
+                        showAlert(R.layout.reservation_error_dialog, "Ok, lo entiedo", "#F44336", NEGATIVE);
+                    }
+                }, throwable -> {
+                    Timber.e(throwable);
+                    reservationBinding.setVisibility(GONE);
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    @NonNull
+    private BookRequest getBookRequest() {
         BookRequest bookRequest = new BookRequest();
         bookRequest.setId(UUID.randomUUID().toString());
         bookRequest.setUserid(userId);
@@ -138,16 +148,7 @@ public class ReservationActivity extends AppCompatActivity implements View.OnCli
         bookRequest.setEndDate(endDate);
         bookRequest.setCapability(String.valueOf(reservationBinding.quantityHost.getQuantity()));
         bookRequest.setAditional(reservationBinding.etAditionalNote.getText().toString());
-        disposable = rentViewModel.sendBookRequest(token, bookRequest).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(resultResource -> {
-                    if (resultResource.data != null && resultResource.data.getCode() == 200) {
-                        showAlert(R.layout.reservation_success_dialog, "Ok, volver", "#009688", POSITIVE);
-                    } else {
-                        showAlert(R.layout.reservation_error_dialog, "Ok, lo entiedo", "#F44336", NEGATIVE);
-                    }
-                }, Timber::e);
-        compositeDisposable.add(disposable);
+        return bookRequest;
     }
 
     private void showAlert(int reservation_success_dialog, String buttonText, String parseColorButton,
@@ -166,25 +167,6 @@ public class ReservationActivity extends AppCompatActivity implements View.OnCli
             disposable.dispose();
         compositeDisposable.clear();
         super.onDestroy();
-    }
-
-    @Override
-    public void nightSelectedCount(int nightCount) {
-        if (nightCount > 0) {
-            double finalPrice = price * nightCount;
-            reservationBinding.tvPriceTitle.setText(String.format("%s noches x %.2f = ", nightCount, price));
-            reservationBinding.tvPriceValue.setText(String.format("%.2f", finalPrice));
-            updateDrawChange(finalPrice);
-        } else {
-            reservationBinding.tvPriceTitle.setText("precio total");
-            reservationBinding.tvPriceValue.setText("0");
-        }
-    }
-
-    @Override
-    public void validRangeSelected(String startDate, String endDate) {
-        this.startDate = startDate;
-        this.endDate = endDate;
     }
 
     private void updateDrawChange(double finalPrice) {

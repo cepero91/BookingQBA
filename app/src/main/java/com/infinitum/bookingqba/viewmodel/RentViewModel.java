@@ -44,6 +44,7 @@ import com.infinitum.bookingqba.view.adapters.items.filter.RangeFilterItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.map.PoiItem;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.PoiCategory;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentAmenitieItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentCommentItem;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentGalerieItem;
@@ -56,6 +57,7 @@ import org.mapsforge.core.model.LatLong;
 import org.oscim.core.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -228,8 +230,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         innerDetail.setLatitude(rentEntity.getLatitude());
         innerDetail.setLongitude(rentEntity.getLongitude());
         innerDetail.setWished(rentEntity.getIsWished());
+        innerDetail.setCheckin(rentEntity.getCheckin());
+        innerDetail.setChekout(rentEntity.getCheckout());
         innerDetail.setAmenitieItems(convertAmenitiesPojoToParcel(rentDetail.data.getAmenitieNames()));
-        innerDetail.setRentPoiItems(convertPoisPojoToParcel(rentDetail.data.getRentPoiAndRelations()));
+        innerDetail.setPoiItemMap(convertPoisPojoToParcel(rentDetail.data.getRentPoiAndRelations()));
         innerDetail.setGalerieItems(convertGaleriePojoToParcel(rentDetail.data.getGaleries()));
         rentItem.setRentInnerDetail(innerDetail);
         rentItem.setCommentItems(convertCommentPojoToParcel(rentDetail.data.getCommentEntities()));
@@ -290,6 +294,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return rentRepository.drawChangeByFinalPrice(token, finalPrice)
                 .map(this::getStringDoubleMap).map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
     }
+
 
     @NonNull
     private Map<String, Double> getStringDoubleMap(Resource<List<DrawChange>> listResource) {
@@ -373,14 +378,24 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return detailCommentItems;
     }
 
-    private ArrayList<RentPoiItem> convertPoisPojoToParcel(List<RentPoiAndRelation> rentPoiAndRelations) {
-        ArrayList<RentPoiItem> detailPoiItems = new ArrayList<>();
-        for (RentPoiAndRelation item : rentPoiAndRelations) {
-            PoiEntity poiEntity = item.getPoiAndRelationsObject().getPoiEntity();
-            PoiTypeEntity poiTypeEntity = item.getPoiAndRelationsObject().getPoiTypeEntitySetObject();
-            detailPoiItems.add(new RentPoiItem(poiEntity.getName()));
+    private Map<PoiCategory, List<RentPoiItem>> convertPoisPojoToParcel(List<RentPoiAndRelation> rentPoiAndRelations) {
+        HashMap<PoiCategory, List<RentPoiItem>> hashMap = new HashMap<>();
+        if (rentPoiAndRelations.size() > 0) {
+            for (RentPoiAndRelation rentPoiAndRelation : rentPoiAndRelations) {
+                PoiTypeEntity poiTypeEntity = rentPoiAndRelation.getPoiAndRelationsObject().getPoiTypeEntitySetObject();
+                PoiCategory poiCategory = new PoiCategory(poiTypeEntity.getId(), poiTypeEntity.getName());
+                RentPoiItem rentPoiItem = new RentPoiItem(rentPoiAndRelation.getPoiAndRelationsObject().poiEntity.getName());
+                if(!hashMap.containsKey(poiCategory)) {
+                    ArrayList<RentPoiItem> poiItems = new ArrayList<>();
+                    poiItems.add(rentPoiItem);
+                    hashMap.put(poiCategory, poiItems);
+                }else{
+                    hashMap.get(poiCategory).add(rentPoiItem);
+                }
+            }
+            return hashMap;
         }
-        return detailPoiItems;
+        return hashMap;
     }
 
     private ArrayList<RentAmenitieItem> convertAmenitiesPojoToParcel(List<RentAmenitieAndRelation> amenitieNameArrayList) {

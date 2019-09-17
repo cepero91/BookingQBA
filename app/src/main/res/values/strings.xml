@@ -225,5 +225,9 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="range_error">No puede seleccionar rango entre fechas ocupadas</string>
     <string name="calendar_sync_error">Error al sincronizar calendario</string>
     <string name="view_all">Ver todos</string>
+    <string name="cerrar_sesi_n">Cerrar Sesión</string>
+    <string name="direcci_n">Dirección</string>
+    <string name="coordenadas">Coordenadas</string>
+    <string name="entorno_dominante">Entorno Dominante</string>
 
 </resources>

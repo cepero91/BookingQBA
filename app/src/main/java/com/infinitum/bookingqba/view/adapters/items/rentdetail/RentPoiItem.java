@@ -5,43 +5,20 @@ import android.os.Parcelable;
 
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 
-public class RentPoiItem implements ViewModel, Parcelable {
+public class RentPoiItem implements Parcelable {
 
-    private String mName;
+    private String name;
 
-    public RentPoiItem(String mName) {
-        this.mName = mName;
+    public RentPoiItem(String name) {
+        this.name = name;
     }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        final RentPoiItem that = (RentPoiItem) o;
-        return !mName.equals(that.mName);
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public int hashCode() {
-        return mName.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return mName;
-    }
-
-    public String getmName() {
-        return mName;
-    }
-
-    public void setmName(String mName) {
-        this.mName = mName;
+    public void setName(String name) {
+        this.name = name;
     }
 
 
@@ -52,11 +29,11 @@ public class RentPoiItem implements ViewModel, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.mName);
+        dest.writeString(this.name);
     }
 
     protected RentPoiItem(Parcel in) {
-        this.mName = in.readString();
+        this.name = in.readString();
     }
 
     public static final Creator<RentPoiItem> CREATOR = new Creator<RentPoiItem>() {

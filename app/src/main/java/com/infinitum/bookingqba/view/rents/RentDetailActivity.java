@@ -33,6 +33,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.applandeo.materialcalendarview.CalendarView;
+import com.applandeo.materialcalendarview.builders.DatePickerBuilder;
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityRentDetailBinding;
@@ -42,6 +44,7 @@ import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.ColorUtil;
+import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem;
 import com.infinitum.bookingqba.view.adapters.InnerViewPagerAdapter;
@@ -64,9 +67,15 @@ import org.oscim.core.GeoPoint;
 import org.reactivestreams.Subscription;
 
 import java.lang.ref.WeakReference;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -86,7 +95,10 @@ import io.reactivex.schedulers.Schedulers;
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
 
+import static android.view.Gravity.CENTER;
 import static com.infinitum.bookingqba.util.Constants.ALTERNATIVE_SYNC;
+import static com.infinitum.bookingqba.util.Constants.DATE_RANGE;
+import static com.infinitum.bookingqba.util.Constants.END_DATE;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH_SHOW_GROUP;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_SHOW_GROUP;
@@ -95,9 +107,14 @@ import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.IS_PROFILE_ACTIVE;
 import static com.infinitum.bookingqba.util.Constants.LOGIN_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.LOGIN_TAG;
+import static com.infinitum.bookingqba.util.Constants.MAXCAPABILITY;
 import static com.infinitum.bookingqba.util.Constants.NAV_HEADER_REQUIRED_UPDATE;
+import static com.infinitum.bookingqba.util.Constants.NIGHT_COUNT;
 import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_DEFAULT;
 import static com.infinitum.bookingqba.util.Constants.NOTIFICATION_ID;
+import static com.infinitum.bookingqba.util.Constants.PRICE;
+import static com.infinitum.bookingqba.util.Constants.RENT_ID;
+import static com.infinitum.bookingqba.util.Constants.START_DATE;
 import static com.infinitum.bookingqba.util.Constants.USER_AVATAR;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
@@ -105,15 +122,9 @@ import static com.infinitum.bookingqba.util.Constants.USER_NAME;
 import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
-//NestedScrollView.OnScrollChangeListener,
 
-public class RentDetailActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector,
-        InnerDetailInteraction {
+public class RentDetailActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector, InnerDetailInteraction {
 
-    public static final int HAS_COMMENT_ONLY = 0;
-    public static final int HAS_OFFER_ONLY = 1;
-    public static final int HAS_COMMENT_OFFER = 2;
-    public static final int HAS_DETAIL_ONLY = 3;
     private ActivityRentDetailBinding rentDetailBinding;
     private InnerViewPagerAdapter innerViewPagerAdapter;
     private String deviceID = "";
@@ -130,44 +141,41 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
     private RentViewModel viewModel;
     private RentItem rentItem;
     private String rentUuid = "";
-    private int isWished = 0;
-    private int mirrorWished = 0;
+    private String rentName = "";
 
     private Disposable disposable;
     private CompositeDisposable compositeDisposable;
+
     Fragment innerDetail;
     Fragment commentDetail;
     Fragment offerDetail;
-    private boolean loginIsClicked = false;
-    private boolean showMenuGroup = false;
+    Fragment poiDetail;
     private final static int REQUEST_PHONE_CALL = 1044;
     private final static int REQUEST_PHONE_SMS = 1045;
+    String userId;
+    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Timber.e("onCreate");
         AndroidInjection.inject(this);
-
+        super.onCreate(savedInstanceState);
         rentDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_rent_detail);
 
         deviceID = sharedPreferences.getString(IMEI, "");
-
+        userId = sharedPreferences.getString(USER_ID, "");
+        token = sharedPreferences.getString(USER_TOKEN, "");
         rentDetailBinding.setIsLoading(true);
         rentDetailBinding.setHasTab(false);
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
-
         compositeDisposable = new CompositeDisposable();
 
         if (getIntent().getExtras() != null) {
             rentUuid = getIntent().getExtras().getString("uuid");
+            rentName = getIntent().getExtras().getString("name");
+            rentDetailBinding.tvRentName.setText(rentName);
             String imageUrlPath = getIntent().getExtras().getString("url");
-            if (!imageUrlPath.contains("http")) {
-                imageUrlPath = "file:" + imageUrlPath;
-            }
-            isWished = getIntent().getExtras().getInt("wished");
-            mirrorWished = isWished;
+            imageUrlPath = "file:" + imageUrlPath;
             Picasso.get().load(imageUrlPath).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(rentDetailBinding.ivRent);
         }
 
@@ -211,9 +219,10 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
 
 
     private void onSuccess(Resource<RentItem> rentDetailResource) {
-        Timber.e("Entro OnSuccess");
         rentItem = rentDetailResource.data;
         setupViewPager(rentDetailResource.data);
+        rentDetailBinding.tvVotes.setText(rentDetailResource.data.getRentInnerDetail().humanVotes());
+        rentDetailBinding.srScaleRating.setRating(rentDetailResource.data.getRentInnerDetail().getRating());
     }
 
     private void setupToolbar() {
@@ -229,54 +238,32 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
     }
 
     private void setupViewPager(RentItem rentItem) {
-        if (rentItem.getCommentItems().size() > 0 && rentItem.getOfferItems().size() == 0) {
-            setupViewPagerWithNav(getFragmentList(rentItem, HAS_COMMENT_ONLY));
-        } else if (rentItem.getOfferItems().size() > 0 && rentItem.getCommentItems().size() == 0) {
-            setupViewPagerWithNav(getFragmentList(rentItem, HAS_OFFER_ONLY));
-        } else if (rentItem.getOfferItems().size() > 0 && rentItem.getCommentItems().size() > 0) {
-            setupViewPagerWithNav(getFragmentList(rentItem, HAS_COMMENT_OFFER));
-        } else {
-            setupViewPagerWithNav(getFragmentList(rentItem, HAS_DETAIL_ONLY));
-        }
+        setupViewPagerWithNav(getFragmentList(rentItem));
     }
 
     @NonNull
-    private Pair<List<Fragment>, List<String>> getFragmentList(RentItem rentItem, int type) {
+    private Pair<List<Fragment>, List<String>> getFragmentList(RentItem rentItem) {
         List<Fragment> fragments = new ArrayList<>();
         List<String> titles = new ArrayList<>();
         innerDetail = InnerDetailFragment.newInstance(rentItem.getRentInnerDetail());
-        commentDetail = RentCommentFragment.newInstance(rentItem.getCommentItems());
-        offerDetail = RentOfferFragment.newInstance(rentItem.getOfferItems());
-        switch (type) {
-            case HAS_DETAIL_ONLY:
-                rentDetailBinding.setHasTab(false);
-                fragments.add(innerDetail);
-                titles.add("Detalles");
-                break;
-            case HAS_COMMENT_ONLY:
-                rentDetailBinding.setHasTab(true);
-                fragments.add(innerDetail);
-                fragments.add(commentDetail);
-                titles.add("Detalles");
-                titles.add("Comentarios");
-                break;
-            case HAS_OFFER_ONLY:
-                rentDetailBinding.setHasTab(true);
-                fragments.add(innerDetail);
-                fragments.add(offerDetail);
-                titles.add("Detalles");
-                titles.add("Ofertas");
-                break;
-            case HAS_COMMENT_OFFER:
-                rentDetailBinding.setHasTab(true);
-                fragments.add(innerDetail);
-                fragments.add(commentDetail);
-                fragments.add(offerDetail);
-                titles.add("Detalles");
-                titles.add("Comentarios");
-                titles.add("Ofertas");
-                break;
+        fragments.add(innerDetail);
+        titles.add("Detalles");
+        if (rentItem.getRentInnerDetail().getPoiItemMap().size() > 0) {
+            poiDetail = RentDetailPoiFragment.newInstance(rentItem.getRentInnerDetail().getPoiItemMap());
+            fragments.add(poiDetail);
+            titles.add("Donde ir");
         }
+        if (rentItem.getCommentItems().size() > 0) {
+            commentDetail = RentCommentFragment.newInstance(rentItem.getCommentItems());
+            fragments.add(commentDetail);
+            titles.add("Comentarios");
+        }
+        if (rentItem.getOfferItems().size() > 0) {
+            offerDetail = RentOfferFragment.newInstance(rentItem.getOfferItems());
+            fragments.add(offerDetail);
+            titles.add("Ofertas");
+        }
+        rentDetailBinding.setHasTab(fragments.size() > 1);
         return new Pair<>(fragments, titles);
     }
 
@@ -286,19 +273,6 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
         rentDetailBinding.viewpager.setAdapter(innerViewPagerAdapter);
         OverScrollDecoratorHelper.setUpOverScroll(rentDetailBinding.viewpager);
         rentDetailBinding.tlTab.setViewPager(rentDetailBinding.viewpager);
-    }
-
-    private void showDialogComment() {
-        boolean isAuth = sharedPreferences.getBoolean(USER_IS_AUTH, false);
-        String username = sharedPreferences.getString(USER_NAME, "");
-        String userid = sharedPreferences.getString(USER_ID, "");
-        String rentId = rentUuid;
-        if (!isAuth) {
-            AlertUtils.showErrorAlert(this, "Debe estar autenticado para comentar");
-        } else {
-            DialogComment lf = DialogComment.newInstance(username, userid, rentId);
-            lf.show(getSupportFragmentManager(), "CommentDialog");
-        }
     }
 
 
@@ -329,31 +303,6 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
         String userId = sharedPreferences.getBoolean(USER_IS_AUTH, false) ? sharedPreferences.getString(USER_ID, "") : "";
         DialogDetailMenu dialogDetailMenu = DialogDetailMenu.newInstance(wished, userId, rentUuid);
         dialogDetailMenu.show(getSupportFragmentManager(), "dialogMenu");
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        if (isWished == mirrorWished && !showMenuGroup) {
-            super.onBackPressed();
-        } else if (isWished != mirrorWished && showMenuGroup) {
-            Intent intent = new Intent(this, HomeActivity.class);
-            intent.putExtra("refresh", true);
-            intent.putExtra("group", true);
-            setResult(FROM_DETAIL_REFRESH_SHOW_GROUP, intent);
-            this.finish();
-        } else if (isWished != mirrorWished) {
-            Intent intent = new Intent(this, HomeActivity.class);
-            intent.putExtra("refresh", true);
-            setResult(FROM_DETAIL_REFRESH, intent);
-            this.finish();
-        } else {
-            Intent intent = new Intent(this, HomeActivity.class);
-            intent.putExtra("refresh", true);
-            intent.putExtra("group", true);
-            setResult(FROM_DETAIL_SHOW_GROUP, intent);
-            this.finish();
-        }
     }
 
     @Override
@@ -412,41 +361,85 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
 
     @Override
     public void onBookRequestClick() {
-        String userId = sharedPreferences.getString(USER_ID, "");
-        String token = sharedPreferences.getString(USER_TOKEN, "");
-        String rentId = rentUuid;
-        Intent intent = new Intent(this, ReservationActivity.class);
-        intent.putExtra(USER_ID, userId);
-        intent.putExtra(USER_TOKEN, token);
-        intent.putExtra("price", rentItem.getRentInnerDetail().getPrice());
-        intent.putExtra("rentId", rentId);
-        intent.putExtra("maxcapability", rentItem.getRentInnerDetail().getCapability());
-        startActivity(intent);
+        disposable = viewModel.disabledDays(token,rentUuid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(disabledDaysResource -> {
+                    if(disabledDaysResource.data!= null){
+                        showDatesRangeDialog(DateUtils.transformStringDatesToCalendars(disabledDaysResource.data.getDates()));
+                    }
+                },Timber::e);
+        compositeDisposable.add(disposable);
     }
 
-    //------------------------------------- Login -------------------------------------//
+    private void showDatesRangeDialog(List<Calendar> calendarList) {
+        Calendar min = Calendar.getInstance();
+        min.add(Calendar.DAY_OF_MONTH, -1);
+        DatePickerBuilder oneDayBuilder = new DatePickerBuilder(this, this::checkValidRange)
+                .pickerType(CalendarView.RANGE_PICKER)
+                .daysLabelsColor(R.color.material_color_blue_grey_500)
+                .headerColor(R.color.material_color_grey_200)
+                .headerLabelColor(R.color.material_color_blue_grey_500)
+                .selectionColor(R.color.colorAccent)
+                .todayLabelColor(R.color.colorAccent)
+                .dialogButtonsColor(R.color.colorPrimary)
+                .previousButtonSrc(R.drawable.ic_fa_angle_left_line)
+                .forwardButtonSrc(R.drawable.ic_fa_angle_right_line)
+                .minimumDate(min)
+                .disabledDays(calendarList != null ? calendarList : new ArrayList<>());
+        oneDayBuilder.build().show();
+    }
+
+    private void checkValidRange(List<Calendar> calendarList) {
+        if(com.applandeo.materialcalendarview.utils.DateUtils.isFullDatesRange(calendarList)){
+            Intent intent = new Intent(this, ReservationActivity.class);
+            intent.putExtra(PRICE, rentItem.getRentInnerDetail().getPrice());
+            intent.putExtra(RENT_ID, rentUuid);
+            intent.putExtra(MAXCAPABILITY, rentItem.getRentInnerDetail().getCapability());
+            intent.putExtra(NIGHT_COUNT,calendarList.size()-1);
+            Calendar startSelectedDay = calendarList.get(0);
+            Calendar endSelectedDay = calendarList.get(calendarList.size() - 1);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-M-yyyy",Locale.getDefault());
+            String start = simpleDateFormat.format(startSelectedDay.getTime());
+            String end = simpleDateFormat.format(endSelectedDay.getTime());
+            intent.putExtra(DATE_RANGE,String.format("%s / %s",start,end));
+            SimpleDateFormat bookDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            intent.putExtra(START_DATE,bookDateFormat.format(startSelectedDay.getTime()));
+            intent.putExtra(END_DATE,bookDateFormat.format(endSelectedDay.getTime()));
+            startActivity(intent);
+        }else{
+            AlertUtils.showErrorToast(this,"Seleccione un rango válido");
+        }
+    }
 
 
-    //menu
-//    case R.id.action_list_wish:
-//    setIsWished();
-//                return true;
-//            case R.id.action_vote:
-//    disposable = viewModel.getLastRentVote(rentUuid)
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe(pair -> {
-//        DialogRating lf = DialogRating.newInstance(pair.first, pair.second);
-//        lf.show(getSupportFragmentManager(), "RatingDialog");
-//    }, Timber::e);
-//                compositeDisposable.add(disposable);
-//                return true;
-//            case android.R.id.home:
-//    onBackPressed();
-//                return true;
-//            case R.id.action_comment:
-//    showDialogComment();
-//                return true;
+    @Override
+    public void onDrawChangeClick() {
+        disposable = viewModel.drawChangeByFinalPrice(sharedPreferences.getString(USER_TOKEN, "")
+                , rentItem.getRentInnerDetail().getPrice())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(mapResource -> {
+                    StringBuilder builder = new StringBuilder();
+                    int i = 0;
+                    for (Map.Entry<String, Double> entry : mapResource.data.entrySet()) {
+                        String item = String.format("%s ~ %.2f", entry.getKey(), entry.getValue());
+                        builder.append(item);
+                        if (i < mapResource.data.size()-1) {
+                            builder.append("\n");
+                        }
+                        i++;
+                    }
+                    CFAlertDialog.Builder dialogBuilder = new CFAlertDialog.Builder(this);
+                    dialogBuilder.setTitle("Cambio de Moneda");
+                    dialogBuilder.setMessage(builder.toString());
+                    dialogBuilder.setTextGravity(CENTER);
+                    dialogBuilder.setTextColor(getResources().getColor(R.color.material_color_blue_grey_500));
+                    dialogBuilder.show();
+                }, Timber::e);
+        compositeDisposable.add(disposable);
+    }
+
 }
 
 

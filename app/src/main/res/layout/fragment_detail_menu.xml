@@ -36,9 +36,9 @@
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/iv_list_wich"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    app:srcCompat="@drawable/ic_fa_bookmark_line"
+                    android:layout_width="34dp"
+                    android:layout_height="40dp"
+                    app:srcCompat="@drawable/ic_bookmark_set"
                     app:tint="@color/material_color_blue_grey_500" />
 
                 <TextView
@@ -46,6 +46,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppinsregular"
+                    android:layout_marginTop="5dp"
                     android:text="Desear"
                     android:textColor="@color/material_color_blue_grey_500" />
 
@@ -61,15 +62,16 @@
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/iv_comment"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    app:srcCompat="@drawable/ic_fa_comment_line"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    app:srcCompat="@drawable/ic_speech_bubble_basic"
                     app:tint="@color/material_color_blue_grey_500" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppinsregular"
+                    android:layout_marginTop="5dp"
                     android:text="Comentar"
                     android:textColor="@color/material_color_blue_grey_500" />
 
@@ -85,15 +87,16 @@
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/iv_vote"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    app:srcCompat="@drawable/ic_fa_star_o_line"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    app:srcCompat="@drawable/ic_star_1_set"
                     app:tint="@color/material_color_blue_grey_500" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppinsregular"
+                    android:layout_marginTop="5dp"
                     android:text="Valorar"
                     android:textColor="@color/material_color_blue_grey_500" />
 

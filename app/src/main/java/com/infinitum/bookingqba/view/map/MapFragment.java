@@ -426,7 +426,6 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
     private void rentMarkerClick(int index, MarkerItem item) {
         if (!isNearOpen) {
             if (item.getMarker() == null) {
-//                mapBinding.llContentFloating.setVisibility(View.GONE);
                 if (currentMarkerIndex != -1) {
                     mMarkerLayer.getItemList().get(currentMarkerIndex).setMarker(null);
                 }
@@ -438,8 +437,6 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
                 item.setMarker(null);
                 currentMarkerIndex = -1;
                 hideRentDetailView();
-//                hideMarkerView();
-//                mapBinding.llContentFloating.setVisibility(View.VISIBLE);
             }
         } else {
             hideNearRent();

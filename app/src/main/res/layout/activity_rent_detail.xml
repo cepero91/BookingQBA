@@ -31,28 +31,120 @@
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
                 app:contentScrim="@color/colorPrimary"
-                app:titleEnabled="false"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap">
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
+                app:titleEnabled="false">
 
-                <android.support.v7.widget.AppCompatImageView
-                    android:id="@+id/iv_rent"
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/clipCorner"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/rent_detail_img_dimen"
-                    android:layout_gravity="center"
-                    android:fitsSystemWindows="true"
-                    android:focusableInTouchMode="true"
-                    android:scaleType="centerCrop"
-                    android:foreground="@drawable/shape_shadow_black"/>
+                    android:layout_height="250dp"
+                    android:fitsSystemWindows="true">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/iv_rent"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_gravity="center"
+                        android:fitsSystemWindows="true"
+                        android:focusableInTouchMode="true"
+                        android:foreground="@drawable/shape_shadow_black"
+                        android:scaleType="centerCrop"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <android.support.constraint.ConstraintLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
+                        android:background="@color/Black_30"
+                        android:paddingBottom="8dp"
+                        android:paddingEnd="16dp"
+                        android:paddingStart="16dp"
+                        android:paddingTop="8dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/iv_rent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <TextView
+                            android:id="@+id/tv_rent_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:fontFamily="@font/poppinsblack"
+                            android:paddingEnd="3dp"
+                            android:paddingStart="3dp"
+                            android:text="@string/empty_text"
+                            android:textColor="@color/White_100"
+                            android:textSize="20sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <LinearLayout
+                            android:id="@+id/linearLayout5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:orientation="horizontal"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="@+id/tv_rent_name"
+                            app:layout_constraintTop_toBottomOf="@+id/tv_rent_name">
+
+                            <com.willy.ratingbar.BaseRatingBar
+                                android:id="@+id/sr_scale_rating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srb_clickable="false"
+                                app:srb_drawableEmpty="@drawable/ic_fa_star_o_line"
+                                app:srb_drawableFilled="@drawable/ic_fa_star_line"
+                                app:srb_scrollable="false"
+                                app:srb_starHeight="16dp"
+                                app:srb_starPadding="2dp"
+                                app:srb_starWidth="16dp"
+                                app:srb_stepSize="0.5" />
+
+                            <TextView
+                                android:id="@+id/tv_votes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center|start"
+                                android:fontFamily="@font/poppinslight"
+                                android:includeFontPadding="false"
+                                android:text="@string/empty_short_text"
+                                android:textColor="@color/White_100"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:id="@+id/lv_location"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:scaleType="fitCenter"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:lottie_autoPlay="true"
+                            app:lottie_colorFilter="@color/White_100"
+                            app:lottie_fileName="lottie/location_c.json"
+                            app:lottie_loop="true"
+                            app:lottie_repeatMode="restart"/>
+
+                    </android.support.constraint.ConstraintLayout>
+
+
+                </android.support.constraint.ConstraintLayout>
 
                 <ProgressBar
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:minHeight="16dp"
-                    android:indeterminate="true"
-                    android:layout_marginTop="?actionBarSize"
-                    android:layout_marginEnd="10dp"
                     android:layout_gravity="end|top"
-                    app:visibleGone="@{safeUnbox(isLoading)}"/>
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="?actionBarSize"
+                    android:indeterminate="true"
+                    android:minHeight="16dp"
+                    app:visibleGone="@{safeUnbox(isLoading)}" />
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
@@ -67,16 +159,25 @@
                 android:id="@+id/tl_tab"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@color/White_100"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/material_color_grey_50"
                 app:stl_customTabTextLayoutId="@layout/custom_tab"
                 app:stl_customTabTextViewId="@id/custom_text"
                 app:stl_dividerColor="@android:color/transparent"
-                app:stl_indicatorColor="@color/colorPrimaryDark"
-                app:stl_indicatorCornerRadius="1.5dp"
-                app:stl_indicatorInterpolation="smart"
-                app:stl_indicatorThickness="3dp"
+                app:stl_dividerThickness="0dp"
+                app:stl_indicatorAlwaysInCenter="true"
+                app:stl_indicatorColor="@color/material_color_blue_grey_500"
+                app:stl_indicatorCornerRadius="1dp"
+                app:stl_indicatorGravity="bottom"
+                app:stl_indicatorInterpolation="linear"
+                app:stl_indicatorThickness="1dp"
+                app:stl_indicatorWidth="48dp"
+                app:stl_indicatorWithoutPadding="true"
+                app:stl_overlineColor="@android:color/transparent"
+                app:stl_overlineThickness="1dp"
                 app:stl_underlineColor="@android:color/transparent"
-                app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; safeUnbox(hasTab)}"/>
+                app:stl_underlineThickness="0dp"
+                app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; safeUnbox(hasTab)}" />
 
         </android.support.design.widget.AppBarLayout>
 
@@ -84,9 +185,9 @@
             android:id="@+id/viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:discreteVisibility="@{!safeUnbox(isLoading)}"
-            app:negativeMargin="@{!safeUnbox(hasTab)}"/>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
 
 
     </android.support.design.widget.CoordinatorLayout>

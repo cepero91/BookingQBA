@@ -253,7 +253,7 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
     //------------------------------------ USER LOCATION ------------------------
 
     public void updateCurrentLocation(double latitude, double longitude) {
-        if(mMarkerLayer.getItemList()!=null) {
+        if(mMarkerLayer!= null && mMarkerLayer.getItemList()!=null) {
             disposable = Single.just(findPosUserMarker())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

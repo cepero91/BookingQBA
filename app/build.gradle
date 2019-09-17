@@ -159,16 +159,12 @@ dependencies {
         exclude group: 'com.android.support'
     }
 
+    implementation 'com.cepheuen.elegant-number-button:lib:1.0.2'
+
     //Range
     implementation 'com.github.Jay-Goo:RangeSeekBar:3.0.0'
 
     //Calendar
-    implementation 'com.aminography:primedatepicker:1.0.7'
-    implementation 'com.github.adawoud:BottomSheetTimeRangePicker:1.11'
-    implementation 'com.archit.calendar:awesome-calendar:1.1.5'
-    implementation 'ru.cleverpumpkin:crunchycalendar:1.0.0'
-    implementation 'com.github.applikeysolutions:cosmocalendar:1.0.4'
-    implementation 'com.github.psinetron:slycalendarview:0.0.9'
     implementation 'com.applandeo:material-calendar-view:1.5.0'
 
     //Timber

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -11,559 +10,607 @@
             type="com.infinitum.bookingqba.view.adapters.items.rentdetail.RentInnerDetail" />
 
         <variable
-            name="amenities"
-            type="com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter" />
+            name="byNight"
+            type="Integer"/>
 
         <variable
-            name="pois"
-            type="com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter" />
-
-        <variable
-            name="galeries"
-            type="com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter" />
+            name="byHours"
+            type="Integer"/>
 
     </data>
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusableInTouchMode="true"
-            android:orientation="vertical"
-            android:paddingBottom="20dp">
+            android:layout_height="match_parent">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:id="@+id/ll_room"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_rect_grey"
-                android:paddingBottom="5dp"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp">
+                android:layout_marginEnd="3dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/rounded_rect_grey_200"
+                android:orientation="vertical"
+                android:padding="5dp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ll_bed">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:tint="@color/material_color_blue_grey_500"
+                    app:srcCompat="@drawable/entrance" />
 
                 <TextView
-                    android:id="@+id/tv_rent_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_toStartOf="@id/ll_content_price"
-                    android:fontFamily="@font/poppinsbold"
-                    android:text="@{detail.getName()}"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="3dp"
+                    android:fontFamily="@font/poppinslight"
+                    android:text="@{detail.humanRoom()}"
                     android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="@dimen/rent_detail_rent_name_size" />
+                    android:textSize="11sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_bed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="3dp"
+                android:layout_marginStart="3dp"
+                android:background="@drawable/rounded_rect_grey_200"
+                android:orientation="vertical"
+                android:padding="5dp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline4"
+                app:layout_constraintStart_toStartOf="@+id/guideline5"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:tint="@color/material_color_blue_grey_500"
+                    app:srcCompat="@drawable/bed" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="3dp"
+                    android:fontFamily="@font/poppinslight"
+                    android:text="@{detail.humanBed()}"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="11sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_bath"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="3dp"
+                android:layout_marginStart="3dp"
+                android:background="@drawable/rounded_rect_grey_200"
+                android:orientation="vertical"
+                android:padding="5dp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline6"
+                app:layout_constraintStart_toStartOf="@+id/guideline4"
+                app:layout_constraintTop_toTopOf="@+id/ll_bed">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:tint="@color/material_color_blue_grey_500"
+                    app:srcCompat="@drawable/bathtub" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="3dp"
+                    android:fontFamily="@font/poppinslight"
+                    android:text="@{detail.humanBath()}"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="11sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_host"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="3dp"
+                android:background="@drawable/rounded_rect_grey_200"
+                android:orientation="vertical"
+                android:padding="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline6"
+                app:layout_constraintTop_toTopOf="@+id/ll_bath">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:tint="@color/material_color_blue_grey_500"
+                    app:srcCompat="@drawable/family" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="3dp"
+                    android:fontFamily="@font/poppinslight"
+                    android:text="@{detail.humanCapability()}"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="11sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll_room">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:text="@string/descripcion"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinslight"
+                    android:text="@{detail.description}"
+                    android:textColor="@color/material_color_blue_grey_300"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll_description">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:text="Precio"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp" />
 
                 <LinearLayout
-                    android:id="@+id/ll_content_rating"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/tv_rent_name"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <com.willy.ratingbar.BaseRatingBar
-                        android:id="@+id/sr_scale_rating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:setRating="@{detail.getRating()}"
-                        app:srb_clickable="false"
-                        app:srb_drawableEmpty="@drawable/ic_star_o"
-                        app:srb_drawableFilled="@drawable/ic_star"
-                        app:srb_scrollable="false"
-                        app:srb_starHeight="16dp"
-                        app:srb_starPadding="2dp"
-                        app:srb_starWidth="16dp"
-                        app:srb_stepSize="0.5" />
+                    android:weightSum="6">
 
                     <TextView
-                        android:id="@+id/tv_votes"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:includeFontPadding="false"
-                        android:textColor="@color/material_color_grey_500"
-                        android:textSize="12sp"
-                        app:setVotes="@{detail.getVotes()}" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_content_address"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/ll_content_rating"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal">
+                        android:layout_weight="5"
+                        android:fontFamily="@font/poppinslight"
+                        android:text="@{detail.humanPrice()}"
+                        android:textColor="@color/material_color_blue_grey_300"
+                        android:textSize="14sp" />
 
                     <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="18dp"
+                        android:layout_width="0dp"
                         android:layout_height="18dp"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="12dp"
-                        app:srcCompat="@drawable/ic_map_marked" />
-
-                    <TextView
-                        android:id="@+id/tv_rent_address"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:ellipsize="end"
-                        android:fontFamily="@font/poppinsregular"
-                        android:includeFontPadding="false"
-                        android:maxLines="2"
-                        android:text="@{detail.getAddress()}"
-                        android:textColor="@color/material_color_grey_500"
-                        android:textSize="@dimen/rent_detail_address_size" />
-
+                        android:layout_weight="1"
+                        android:tint="@color/material_color_blue_grey_500"
+                        app:srcCompat="@drawable/ic_fa_exchange_line"/>
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/ll_content_price"
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_facilities"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll_price">
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignTop="@+id/tv_rent_name"
-                    android:gravity="center"
+                    android:layout_gravity="center|start"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:text="@string/facilidades"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp" />
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/fb_amenities"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="3dp"
+                    android:layout_marginStart="3dp"
+                    app:alignContent="center"
+                    app:flexWrap="wrap" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_galery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll_facilities">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:text="@string/imagenes"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_galery"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingEnd="3dp"
+                    android:paddingStart="3dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_rules"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll_galery">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:text="@string/reglas"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/poppinslight"
+                    android:text="@{detail.rules}"
+                    android:textColor="@color/material_color_blue_grey_300"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_checkin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/rounded_rect_grey_200"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:visibility="@{byNight}"
+                app:layout_constraintEnd_toStartOf="@+id/guideline4"
+                app:layout_constraintTop_toBottomOf="@+id/ll_rules">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:tint="@color/material_color_blue_grey_500"
+                    app:srcCompat="@drawable/ic_clock_1_set" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
+                        android:layout_gravity="center|start"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text="Entrada: "
                         android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="@dimen/rent_detail_price_size"
-                        app:setPriceText="@{detail.getPrice()}" />
+                        android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/tv_checkin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:textColor="@color/material_color_grey_500"
-                        android:textSize="@dimen/rent_detail_rent_mode_size"
-                        app:setRentModeString="@{detail.getRentMode()}" />
+                        android:layout_gravity="center|start"
+                        android:fontFamily="@font/poppinslight"
+                        android:text="@{detail.humanChekin()}"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
 
                 </LinearLayout>
-
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="5dp"
-                android:orientation="horizontal"
-                android:weightSum="4">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="3dp">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="20dp"
-                        android:layout_height="22dp"
-                        android:tint="@color/colorPrimaryDark"
-                        app:srcCompat="@drawable/ic_door_open" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:textAppearance="@style/SmallTextForIcon"
-                        app:setMaxRooms="@{detail.getMaxRooms()}" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginTop="5dp"
-                    android:background="@color/Black_5" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="3dp">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="20dp"
-                        android:layout_height="22dp"
-                        android:tint="@color/colorPrimaryDark"
-                        app:srcCompat="@drawable/ic_bed" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:textAppearance="@style/SmallTextForIcon"
-                        app:setMaxBeds="@{detail.getMaxBeds()}" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginTop="5dp"
-                    android:background="@color/material_color_grey_300" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="3dp">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="20dp"
-                        android:layout_height="22dp"
-                        android:tint="@color/colorPrimaryDark"
-                        app:srcCompat="@drawable/ic_bath" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:textAppearance="@style/SmallTextForIcon"
-                        app:setMaxBath="@{detail.getMaxBaths()}" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginTop="5dp"
-                    android:background="@color/material_color_grey_300" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="3dp">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="20dp"
-                        android:layout_height="22dp"
-                        android:tint="@color/colorPrimaryDark"
-                        app:srcCompat="@drawable/ic_street_view" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:textAppearance="@style/SmallTextForIcon"
-                        app:setCapability="@{detail.getCapability()}" />
-
-                </LinearLayout>
-
 
             </LinearLayout>
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/ll_checkout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:fontFamily="@font/poppinsbold"
-                android:text="@string/facilidades"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="14sp" />
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/rounded_rect_grey_200"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:visibility="@{byNight}"
+                app:layout_constraintStart_toStartOf="@+id/guideline4"
+                app:layout_constraintTop_toBottomOf="@+id/ll_rules">
 
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/fb_amenities"
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:tint="@color/material_color_blue_grey_500"
+                    app:srcCompat="@drawable/ic_clock_1_set" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|start"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text="Salida: "
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tv_checkout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|start"
+                        android:fontFamily="@font/poppinslight"
+                        android:text="@{detail.humanChekout()}"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/line_comment"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/material_color_blue_grey_50"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll_checkin"/>
+
+            <FrameLayout
+                android:id="@+id/fl_comments_owner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
-                android:layout_marginEnd="12dp"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="5dp"
-                app:alignContent="center"
-                app:flexWrap="wrap" />
+                android:visibility="@{byNight}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/line_comment">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|start"
+                    android:layout_marginStart="8dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:text="Consultar con el anfitrion"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:textColor="@color/material_color_blue_grey_500"/>
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|end"
+                    android:layout_marginEnd="8dp"
+                    app:srcCompat="@drawable/ic_speech_bubble_basic"
+                    android:tint="@color/material_color_blue_grey_500"/>
+
+            </FrameLayout>
 
             <TextView
+                android:id="@+id/btn_book"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:fontFamily="@font/poppinsbold"
-                android:text="@string/descripcion"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="14sp"
-                app:visibleByLength="@{detail.getDescription()}" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/poppinsregular"
-                android:text="@{detail.getDescription()}"
-                android:textColor="@color/material_color_grey_500"
-                app:visibleByLength="@{detail.getDescription()}" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:fontFamily="@font/poppinsbold"
-                android:text="@string/lugares_cercanos"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="14sp"
-                app:visibleGone="@{detail.getRentPoiItems().size()>0}" />
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/fb_pois"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
-                android:layout_marginEnd="12dp"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="5dp"
-                app:alignContent="center"
-                app:flexWrap="wrap"
-                app:visibleGone="@{detail.getRentPoiItems().size()>0}" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:fontFamily="@font/poppinsbold"
-                android:text="@string/imagenes"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="14sp"
-                app:setGalerieVisibility="@{detail.galerieSize()}" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_galeries"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="5dp"
-                android:adapter="@{galeries}"
-                app:setGalerieVisibility="@{detail.galerieSize()}" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:fontFamily="@font/poppinsbold"
-                android:text="@string/reglas"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="14sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/poppinsregular"
-                android:text="@{detail.getRules()}"
-                android:textColor="@color/material_color_grey_500" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:fontFamily="@font/poppinsbold"
-                android:text="@string/contactos"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="14sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_rect_grey"
-                android:baselineAligned="true"
+                android:background="@drawable/shape_btn_color_primary"
+                android:fontFamily="@font/poppinsregular"
                 android:gravity="center"
-                android:orientation="horizontal"
+                android:includeFontPadding="false"
                 android:padding="10dp"
-                android:weightSum="4">
+                android:text="Disponibilidad"
+                android:textColor="@color/White_100"
+                android:textSize="14sp"
+                android:visibility="@{byNight}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fl_comments_owner" />
+
+            <LinearLayout
+                android:id="@+id/ll_call_now"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/shape_btn_color_primary"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:layout_marginTop="8dp"
+                android:visibility="@{byHours}"
+                app:layout_constraintTop_toBottomOf="@+id/line_comment"
+                app:layout_constraintEnd_toStartOf="@+id/guideline4">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:tint="@color/White_100"
+                    app:srcCompat="@drawable/ic_045_call_contact_us" />
 
                 <LinearLayout
-                    android:id="@+id/ll_btn_sms"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    app:visibleByLength="@{detail.getPersonalPhone()}">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:tint="@color/colorPrimary"
-                        app:srcCompat="@drawable/ic_sms_black_24dp" />
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:text="@string/sms"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/material_color_grey_100"
-                    app:visibleByLength="@{detail.getPersonalPhone()}"/>
-
-                <LinearLayout
-                    android:id="@+id/ll_btn_movile"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    app:visibleByLength="@{detail.getPersonalPhone()}">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:tint="@color/colorPrimary"
-                        app:srcCompat="@drawable/ic_call_black_24dp" />
+                        android:layout_gravity="center|start"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text="Llame ya!! "
+                        android:textColor="@color/White_100"
+                        android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/tv_phone_number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:text="@string/movil"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/material_color_grey_100"
-                    app:visibleByLength="@{detail.getPersonalPhone()}"/>
-
-                <LinearLayout
-                    android:id="@+id/ll_btn_home"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    app:visibleByLength="@{detail.getHomePhone()}">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:tint="@color/colorPrimary"
-                        app:srcCompat="@drawable/ic_call_black_24dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:text="@string/casa"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/material_color_grey_100"
-                    app:visibleByLength="@{detail.getHomePhone()}"/>
-
-                <LinearLayout
-                    android:id="@+id/ll_btn_email"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    app:visibleByLength="@{detail.getEmail()}">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:tint="@color/colorPrimary"
-                        app:srcCompat="@drawable/ic_email_black_24dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:text="@string/email"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="12sp" />
+                        android:layout_gravity="center|start"
+                        android:fontFamily="@font/poppinslight"
+                        android:text="53901259"
+                        android:textColor="@color/White_100"
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/ll_book_request"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/rounded_rect_grey"
-            android:baselineAligned="true"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="10dp"
-            android:weightSum="4">
-
-            <TextView
+            <LinearLayout
+                android:id="@+id/ll_send_sms"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="reservar"/>
+                android:layout_marginStart="4dp"
+                android:background="@drawable/shape_btn_color_primary"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:layout_marginTop="8dp"
+                android:visibility="@{byHours}"
+                app:layout_constraintTop_toBottomOf="@+id/line_comment"
+                app:layout_constraintStart_toStartOf="@+id/guideline4">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:tint="@color/White_100"
+                    app:srcCompat="@drawable/ic_046_chat_1_contact_us" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|start"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text="SMS"
+                        android:textColor="@color/White_100"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tv_phone_sms"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|start"
+                        android:fontFamily="@font/poppinslight"
+                        android:text="53901259"
+                        android:textColor="@color/White_100"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.50" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.25" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.75" />
 
 
-        </LinearLayout>
-
-        </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
 
     </android.support.v4.widget.NestedScrollView>
 

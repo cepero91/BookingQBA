@@ -189,11 +189,13 @@ public class ReservationListFragment extends BaseNavigationFragment implements
         switch (v.getId()) {
             case R.id.tv_btn_pending:
                 reservationType = ReservationType.PENDING;
+                setupBtnBarReservationType(reservationType);
                 reservationListBinding.swipeRefresh.setRefreshing(true);
                 loadPendingReservation();
                 break;
             case R.id.tv_btn_accepted:
                 reservationType = ReservationType.ACCEPTED;
+                setupBtnBarReservationType(reservationType);
                 reservationListBinding.swipeRefresh.setRefreshing(true);
                 loadAcceptedReservation();
                 break;

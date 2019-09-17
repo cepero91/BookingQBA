@@ -66,7 +66,7 @@ public class BindingAdapters {
         }
     }
 
-    @BindingAdapter("setRatingEmbeded")
+    @BindingAdapter("setRating")
     public static void setRating(BaseRatingBar view, float rating) {
         view.setRating(rating);
     }

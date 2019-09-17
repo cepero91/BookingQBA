@@ -5,8 +5,10 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Amenitie"
-    android:fontFamily="@font/poppinsregular"
+    android:fontFamily="@font/poppinslight"
     android:includeFontPadding="false"
-    android:textColor="@color/material_color_grey_500"
+    android:textSize="12sp"
+    android:padding="10dp"
+    android:textColor="@color/material_color_blue_grey_300"
     android:background="@drawable/shape_rent_detail_amenitie_tv_bg"/>
 

@@ -33,8 +33,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 
-public class
-RentCommentFragment extends Fragment {
+public class RentCommentFragment extends Fragment {
 
     private FragmentInnerCommentBinding innerCommentBinding;
 

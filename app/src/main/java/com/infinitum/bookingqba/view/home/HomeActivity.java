@@ -1,11 +1,9 @@
 package com.infinitum.bookingqba.view.home;
 
 import android.app.Activity;
-import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
@@ -28,8 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.crowdfire.cfalertdialog.CFAlertDialog;
-import com.github.florent37.shapeofview.shapes.CutCornerView;
 import com.github.florent37.shapeofview.shapes.RoundRectView;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
@@ -39,7 +35,6 @@ import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.view.adapters.RentBookAdapter;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
-import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.adapters.items.reservation.ReservationItem;
 import com.infinitum.bookingqba.view.base.LocationActivity;
 import com.infinitum.bookingqba.view.customview.SuccessDialogContentView;
@@ -84,14 +79,10 @@ import dagger.android.support.HasSupportFragmentInjector;
 import static com.infinitum.bookingqba.service.LocationService.KEY_REQUESTING_LOCATION_UPDATES;
 import static com.infinitum.bookingqba.util.Constants.ALTERNATIVE_SYNC;
 import static com.infinitum.bookingqba.util.Constants.BASE_URL_API;
-import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH;
-import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_REFRESH_SHOW_GROUP;
-import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_SHOW_GROUP;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
 import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.LOGIN_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.MY_REQUEST_CODE;
-import static com.infinitum.bookingqba.util.Constants.NAV_HEADER_REQUIRED_UPDATE;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_COMMENTED;
 import static com.infinitum.bookingqba.util.Constants.PERIODICAL_WORK_NAME;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
@@ -227,18 +218,6 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                             }
                         }
                         break;
-                    case FROM_DETAIL_REFRESH:
-                        if (mFragment instanceof RentListFragment)
-                            ((RentListFragment) mFragment).needToRefresh(data.getBooleanExtra("refresh", false));
-                        break;
-                    case FROM_DETAIL_REFRESH_SHOW_GROUP:
-                        invalidateOptionsMenu();
-                        if (mFragment instanceof RentListFragment)
-                            ((RentListFragment) mFragment).needToRefresh(data.getBooleanExtra("refresh", false));
-                        break;
-                    case FROM_DETAIL_SHOW_GROUP:
-                        invalidateOptionsMenu();
-                        break;
                 }
                 break;
             case LOGIN_REQUEST_CODE:
@@ -282,6 +261,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
         intent.putExtra("uuid", baseItem.getId());
         intent.putExtra("url", baseItem.getImagePath());
+        intent.putExtra("name", baseItem.getName());
         intent.putExtra("wished", 0);
         startActivityForResult(intent, MY_REQUEST_CODE);
     }
@@ -304,7 +284,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
     public void checkMenuItemsVisibility(Menu menu) {
         menu.findItem(R.id.action_filter_panel).setVisible(mFragment instanceof RentListFragment);
-        Drawable icon = getResources().getDrawable(R.drawable.ic_fa_sliders_line_white);
+        Drawable icon = getResources().getDrawable(R.drawable.ic_controls_4_set);
         if (filterActive) {
             icon.setTint(getResources().getColor(R.color.colorAccent));
             menu.findItem(R.id.action_filter_panel).setIcon(icon);
@@ -386,7 +366,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             String token = sharedPreferences.getString(USER_TOKEN, "");
             mFragment = MyRentsFragment.newInstance(userid, token);
             sameFragment = false;
-        } else if (id == R.id.nav_reservation_request && !(mFragment instanceof ReservationListFragment)) {
+        } else if (id == R.id.nav_book_request && !(mFragment instanceof ReservationListFragment)) {
             mFragment = ReservationListFragment.newInstance();
             sameFragment = false;
         }

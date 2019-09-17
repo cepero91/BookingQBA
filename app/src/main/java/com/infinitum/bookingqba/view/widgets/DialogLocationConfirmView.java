@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.google.android.flexbox.FlexboxLayout;
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.model.remote.pojo.Poi;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
 import com.infinitum.bookingqba.view.profile.AddPoiAdapter;
 
@@ -22,6 +23,7 @@ import org.mapsforge.poi.storage.PointOfInterest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public class DialogLocationConfirmView extends LinearLayout implements View.OnClickListener {
@@ -31,7 +33,7 @@ public class DialogLocationConfirmView extends LinearLayout implements View.OnCl
     private String argLatitude;
     private String argLongitude;
     private String referenceZone;
-    private Collection<PointOfInterest> points;
+    private HashSet<Poi> points;
 
     private RecyclerView recyclerView;
 
@@ -73,14 +75,14 @@ public class DialogLocationConfirmView extends LinearLayout implements View.OnCl
         ((TextView) findViewById(R.id.tv_reference_zone)).setText(referenceZone);
     }
 
-    public void setPoints(Collection<PointOfInterest> points) {
+    public void setPoints(HashSet<Poi> points) {
         this.points = points;
         setupPoisAdapter(points);
     }
 
-    private void setupPoisAdapter(Collection<PointOfInterest> argPois) {
+    private void setupPoisAdapter(HashSet<Poi> argPois) {
         if (argPois != null && argPois.size() > 0) {
-            List<PointOfInterest> pointOfInterests = new ArrayList<>(argPois);
+            List<Poi> pointOfInterests = new ArrayList<>(argPois);
             AddPoiAdapter addPoiAdapter = new AddPoiAdapter(pointOfInterests);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
             recyclerView.setLayoutManager(linearLayoutManager);

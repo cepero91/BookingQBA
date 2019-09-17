@@ -21,7 +21,8 @@
         android:networkSecurityConfig="@xml/network_secure_config"
         android:roundIcon="@drawable/isotype"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:icon">
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -70,10 +71,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".view.MCVActivity" />
         <activity android:name=".view.GpsTest" />
-        <activity
-            android:name=".view.SecondActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
 
         <provider
             android:name="androidx.work.impl.WorkManagerInitializer"

@@ -21,4 +21,6 @@ public interface InnerDetailInteraction {
 
     void onBookRequestClick();
 
+    void onDrawChangeClick();
+
 }

@@ -19,11 +19,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="height" value="20" />
-                            <entry key="outputName" value="ic_fa_hourglass_edit_end_line" />
-                            <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../masiconos/line-awesome-master/line-awesome-master/src/production/fa-hourglass-end.svg" />
-                            <entry key="width" value="20" />
+                            <entry key="outputName" value="ic_food_map" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../masiconos/map-icons-master/src/icons/food.svg" />
                           </map>
                         </option>
                       </PersistentState>

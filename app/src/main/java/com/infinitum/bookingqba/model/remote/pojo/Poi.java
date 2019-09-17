@@ -17,6 +17,8 @@ public class Poi {
     @Expose
     private int category;
 
+    private String categoryName;
+
     @SerializedName("latitude")
     @Expose
     private double minLat;
@@ -87,5 +89,25 @@ public class Poi {
 
     public void setMaxLon(double maxLon) {
         this.maxLon = maxLon;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    @Override
+    public int hashCode() {
+        String hash = name.toLowerCase()+category;
+        return hash.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Poi objPoi = (Poi) obj;
+        return name.equalsIgnoreCase(objPoi.name) && category == objPoi.category;
     }
 }

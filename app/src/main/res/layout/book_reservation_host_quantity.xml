@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/White_100"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/poppinsbold"
+        android:text="Solicitud de Reserva"
+        android:textColor="@color/material_color_blue_grey_500"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/poppinsbold"
+        android:text="Estancia:"
+        android:textColor="@color/material_color_blue_grey_500"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/tv_start_end_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="8dp"
+        android:drawableStart="@drawable/ic_fa_calendar_small_blue_line"
+        android:fontFamily="@font/poppinslight"
+        android:gravity="center|start"
+        android:includeFontPadding="false"
+        android:text="13-septiembre-2019 / 23-septiembre-2019"
+        android:textColor="@color/material_color_blue_grey_300"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center|start"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_start_end_date">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppinsbold"
+            android:text="Numero de Huespedes"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="14sp" />
+
+        <com.infinitum.bookingqba.view.customview.QuantityPickerView
+            android:id="@+id/quantityHost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:minQuantity="1"
+            app:textSize="14sp" />
+
+    </LinearLayout>
+
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/et_aditional_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="@null"
+        android:drawablePadding="5dp"
+        android:drawableStart="@drawable/ic_fa_edit_line"
+        android:fontFamily="@font/poppinsregular"
+        android:gravity="start|center"
+        android:hint="Nota adicional"
+        android:inputType="textMultiLine"
+        android:maxLines="3"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+    <TextView
+        android:id="@+id/tv_price_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/poppinslight"
+        android:paddingBottom="2dp"
+        android:text="precio total:"
+        android:textColor="@color/material_color_blue_grey_500"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_price_value"
+        app:layout_constraintEnd_toStartOf="@+id/tv_price_value" />
+
+    <TextView
+        android:id="@+id/tv_price_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="3dp"
+        android:fontFamily="@font/poppinsbold"
+        android:includeFontPadding="false"
+        android:text="0"
+        android:textColor="@color/material_color_blue_grey_500"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_cuc"
+        app:layout_constraintEnd_toStartOf="@+id/tv_cuc" />
+
+    <TextView
+        android:id="@+id/tv_cuc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/poppinslight"
+        android:includeFontPadding="false"
+        android:text="cuc"
+        android:textColor="@color/material_color_blue_grey_500"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="@+id/et_aditional_note"
+        app:layout_constraintTop_toBottomOf="@+id/et_aditional_note" />
+
+    <TextView
+        android:id="@+id/tv_euro_conver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:fontFamily="@font/poppinslight"
+        android:text="~ € -.-"
+        android:textColor="@color/material_color_blue_grey_500"
+        app:layout_constraintEnd_toEndOf="@+id/tv_cuc"
+        app:layout_constraintTop_toBottomOf="@+id/tv_cuc" />
+
+    <TextView
+        android:id="@+id/tv_dollar_conver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppinslight"
+        android:text="~ $ -.-"
+        android:textColor="@color/material_color_blue_grey_500"
+        app:layout_constraintEnd_toEndOf="@+id/tv_euro_conver"
+        app:layout_constraintTop_toBottomOf="@+id/tv_euro_conver" />
+
+    <TextView
+        android:id="@+id/tv_btn_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/shape_btn_color_primary"
+        android:fontFamily="@font/poppinsregular"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="Enviar"
+        android:textColor="@color/White_100"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_dollar_conver" />
+</android.support.constraint.ConstraintLayout>
+

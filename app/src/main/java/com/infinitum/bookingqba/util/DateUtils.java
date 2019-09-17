@@ -2,8 +2,10 @@ package com.infinitum.bookingqba.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import timber.log.Timber;
@@ -50,4 +52,30 @@ public class DateUtils {
         }
         return simpleDateFormatOut.format(tempDate);
     }
+
+    public static List<Calendar> transformStringDatesToCalendars(List<String> disabledStrDates) {
+        List<Calendar> calendarList = new ArrayList<>();
+        if (disabledStrDates != null && disabledStrDates.size() > 0) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = null;
+            Calendar calendarItem;
+            for (String dates : disabledStrDates) {
+                try {
+                    date = simpleDateFormat.parse(dates);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                calendarItem = dateToCalendar(date);
+                calendarList.add(calendarItem);
+            }
+        }
+        return calendarList;
+    }
+
+    private static Calendar dateToCalendar(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
+    }
+
 }

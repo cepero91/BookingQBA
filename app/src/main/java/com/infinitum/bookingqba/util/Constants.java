@@ -120,7 +120,6 @@ public final class Constants {
     public static final int REQUEST_CHECK_SETTINGS = 0x1;
 
 
-
     public static final String FILTER_AMENITIES = "Amenities";
     public static final String FILTER_RENTMODE = "RentMode";
     public static final String FILTER_MUNICIPALITIES = "Municipality";
@@ -128,6 +127,19 @@ public final class Constants {
     public static final String FILTER_PRICE = "Price";
     public static final String FILTER_CAPABILITY = "Capability";
     public static final String FILTER_ORDER = "Order";
+
+
+    //--------------------- RENT RESERVATION ----------------------
+    public static final String RENT_ID = "rentId";
+    public static final String PRICE = "price";
+    public static final String MAXCAPABILITY = "maxcapability";
+    public static final String NIGHT_COUNT = "nightcount";
+    public static final String DATE_RANGE = "dateRange";
+    public static final String START_DATE = "startDate";
+    public static final String END_DATE = "endDate";
+
+
+
 
 
     public static final String[] category = new String[]{
@@ -158,21 +170,21 @@ public final class Constants {
     };
 
     public static String[] urban_category = new String[]{
-                    "Restaurants",
-                    "Fast food restaurants",
-                    "Bars",
-                    "Cafes",
-                    "Ice cream shops",
-                    "Car rental stations",
-                    "Taxi stands",
-                    "ATMs and cash points",
-                    "Banks",
-                    "Hospitals",
-                    "Arts centers",
-                    "Cinemas",
-                    "Nightclubs (Dancing)",
-                    "Theatres and operas",
-            };
+            "Restaurants",
+            "Fast food restaurants",
+            "Bars",
+            "Cafes",
+            "Ice cream shops",
+            "Car rental stations",
+            "Taxi stands",
+            "ATMs and cash points",
+            "Banks",
+            "Hospitals",
+            "Arts centers",
+            "Cinemas",
+            "Nightclubs (Dancing)",
+            "Theatres and operas",
+    };
 
     public static String[] historic_category = new String[]{
             "Castles",
