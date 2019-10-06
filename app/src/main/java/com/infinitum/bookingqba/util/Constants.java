@@ -101,6 +101,13 @@ public final class Constants {
 
     public static final String MAP_PATH = "mapDir";
     public static final String ROUTE_PATH = "routeDir";
+    public static final String ROUTE_IS_READY = "routeIsReady";
+
+    public static final String BY_HOURS_UUID = "7c9ea827-82e0-47e9-84c3-cc87de60ac67";
+    public static final String BY_NIGHT_UUID = "7a35e4a9-04d6-45ca-b7b2-2aeb49a6e5fa";
+
+    public static final String FILTER_RADAR_RENT_MODE = "rm";
+    public static final String FILTER_RADAR_RADIUS = "rd";
 
     //BASIC
     public static final String LEVEL_ENTITY = "entity";
@@ -139,103 +146,14 @@ public final class Constants {
     public static final String END_DATE = "endDate";
 
 
+    //------------------- REFERENCES ZONE ----
+    public static final String HISTORIC = "Histórico";
+    public static final String URBAN = "Barriada";
+    public static final String BEACH = "Playa o Costa";
+    public static final String CULTURE = "Cultural";
+    public static final String NATURAL = "Natural";
 
+    public static final String CONNEXION_ERROR_MSG = "Al parecer algo ocurre con tu internet. Intente más tarde";
+    public static final String OPERATIONAL_ERROR_MSG = "Al parecer un error ha ocurrido.";
 
-
-    public static final String[] category = new String[]{
-            "Restaurants",
-            "Fast food restaurants",
-            "Bars",
-            "Cafes",
-            "Ice cream shops",
-            "Car rental stations",
-            "Taxi stands",
-            "ATMs and cash points",
-            "Banks",
-            "Hospitals",
-            "Arts centers",
-            "Cinemas",
-            "Nightclubs (Dancing)",
-            "Theatres and operas",
-            "Castles",
-            "Memorials",
-            "Monuments",
-            "Ruins",
-            "Historic",
-            "Natural",
-            "Picnic sites",
-            "Nature reserves",
-            "Marinas",
-            "Attractions",
-    };
-
-    public static String[] urban_category = new String[]{
-            "Restaurants",
-            "Fast food restaurants",
-            "Bars",
-            "Cafes",
-            "Ice cream shops",
-            "Car rental stations",
-            "Taxi stands",
-            "ATMs and cash points",
-            "Banks",
-            "Hospitals",
-            "Arts centers",
-            "Cinemas",
-            "Nightclubs (Dancing)",
-            "Theatres and operas",
-    };
-
-    public static String[] historic_category = new String[]{
-            "Castles",
-            "Memorials",
-            "Monuments",
-            "Ruins",
-            "Historic",
-    };
-
-    public static String[] natural_category = new String[]{
-            "Natural",
-            "Picnic sites",
-            "Nature reserves",
-    };
-
-    public static String[] beach_category = new String[]{
-            "Marinas",
-            "Attractions",
-    };
-
-
-//            "Entertainment, arts and culture",
-//            "Churches, mosques, temples",
-//            "Airports",
-//            "Airport terminals",
-//            "Airport gates",
-//            "Terminals",
-//            "Airport POIs",
-//            "Dancing places",
-//            "Fishing sites",
-//            "Parks",
-//            "Sports centres",
-//            "Stadiums",
-//            "Swimming pools",
-//            "Water parks",
-//            "Attractions",
-//            "Travel agents",
-//            "Bakeries",
-//            "Beauty",
-//            "Boutiques",
-//            "Massages",
-//            "Musical instruments",
-//            "Seafood / Fish",
-//            "Sports",
-//            "Supermarkets",
-//            "Tattoos",
-//            "Tobacco",
-//            "Golf",
-//            "Swimming",
-//            "Camp sites",
-//            "Museums",
-//            "Zoos",
-//            "Waterfalls",
 }

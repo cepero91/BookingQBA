@@ -11,6 +11,7 @@ import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.DatabaseUpdate;
 import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
+import com.infinitum.bookingqba.model.remote.pojo.SyncData;
 import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.util.StringUtils;
 
@@ -107,6 +108,11 @@ public class DBCommonOperationRepoImpl implements DBCommonOperationRepository {
                         .flatMapCompletable(simpleSQLiteQuery -> Completable.fromAction(() -> qbaDao.deleteAll(simpleSQLiteQuery))))
                 .toSingle(OperationResult::success)
                 .onErrorReturn(OperationResult::error);
+    }
+
+    @Override
+    public Single<SyncData> getSyncData(String dateValue) {
+        return retrofit.create(ApiInterface.class).syncData(dateValue);
     }
 
     private List<SimpleSQLiteQuery> getCompletableToDelete(List<RemovedList> removedLists) {

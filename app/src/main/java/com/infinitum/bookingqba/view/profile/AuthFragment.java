@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -53,6 +52,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
     public static final String CODE = "code";
     private String imeiArg;
     private String lastEmailRegisterArg;
+    private Map<String, String> tempUserLoginMap;
 
     private FragmentAuthBinding fragmentAuthBinding;
 
@@ -108,8 +108,6 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         fragmentAuthBinding.setIsCode(false);
         fragmentAuthBinding.send.setTag(SIGNIN);
         fragmentAuthBinding.llBtnAccount.setTag(SIGNIN);
-        fragmentAuthBinding.tvImVisitor.setOnClickListener(this);
-        fragmentAuthBinding.tvImHost.setOnClickListener(this);
 
         fragmentAuthBinding.llBtnAccount.setOnClickListener(this);
         fragmentAuthBinding.send.setOnClickListener(this);
@@ -119,7 +117,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
 
         userViewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel.class);
 
-        if(!lastEmailRegisterArg.equals(""))
+        if (!lastEmailRegisterArg.equals(""))
             email = lastEmailRegisterArg;
 
     }
@@ -149,17 +147,9 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.ll_btn_account:
                 if (fragmentAuthBinding.llBtnAccount.getTag().equals(SIGNIN)) {
-                    fragmentAuthBinding.tvAccountQuestion.setText("Ya eres miembro?");
-                    fragmentAuthBinding.tvAccountBtn.setText("Entra");
-                    fragmentAuthBinding.send.setTag(SIGNUP);
-                    fragmentAuthBinding.llBtnAccount.setTag(SIGNUP);
-                    fragmentAuthBinding.setIsSignup(true);
+                    changeFormUi("Ya eres miembro?", "Entra", SIGNUP, true);
                 } else {
-                    fragmentAuthBinding.tvAccountQuestion.setText("No tienes cuenta?");
-                    fragmentAuthBinding.tvAccountBtn.setText("Registrate");
-                    fragmentAuthBinding.send.setTag(SIGNIN);
-                    fragmentAuthBinding.llBtnAccount.setTag(SIGNIN);
-                    fragmentAuthBinding.setIsSignup(false);
+                    changeFormUi("No tienes cuenta?", "Registrate", SIGNIN, false);
                 }
                 break;
             case R.id.send:
@@ -174,39 +164,48 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
             case R.id.tv_resend_activation_code:
                 resendActivationCode();
                 break;
-            case R.id.tv_im_visitor:
-                fragmentAuthBinding.tvImVisitor.setBackgroundResource(R.drawable.shape_filter_ship_selected);
-                fragmentAuthBinding.tvImVisitor.setTextColor(Color.WHITE);
-                fragmentAuthBinding.tvImHost.setBackgroundResource(R.drawable.shape_filter_ship_unselected);
-                fragmentAuthBinding.tvImHost.setTextColor(Color.parseColor("#607d8b"));
-                imHost = false;
-                break;
-            case R.id.tv_im_host:
-                fragmentAuthBinding.tvImHost.setBackgroundResource(R.drawable.shape_filter_ship_selected);
-                fragmentAuthBinding.tvImHost.setTextColor(Color.WHITE);
-                fragmentAuthBinding.tvImVisitor.setBackgroundResource(R.drawable.shape_filter_ship_unselected);
-                fragmentAuthBinding.tvImVisitor.setTextColor(Color.parseColor("#607d8b"));
-                imHost = true;
-                break;
         }
+    }
+
+    private void changeFormUi(String tvAccountText, String tvBtnAccountText, String tag, boolean isSignUp) {
+        fragmentAuthBinding.tvAccountQuestion.setText(tvAccountText);
+        fragmentAuthBinding.tvAccountBtn.setText(tvBtnAccountText);
+        fragmentAuthBinding.send.setTag(tag);
+        fragmentAuthBinding.llBtnAccount.setTag(tag);
+        fragmentAuthBinding.setIsSignup(isSignUp);
+    }
+
+    private void changeFormUi(String tvAccountText, String tvBtnAccountText, String tag, boolean isSignUp, boolean isActCode) {
+        fragmentAuthBinding.tvAccountQuestion.setText(tvAccountText);
+        fragmentAuthBinding.tvAccountBtn.setText(tvBtnAccountText);
+        fragmentAuthBinding.send.setTag(tag);
+        fragmentAuthBinding.llBtnAccount.setTag(tag);
+        fragmentAuthBinding.setIsSignup(isSignUp);
+        fragmentAuthBinding.setIsCode(isActCode);
     }
 
     //------------------------------------------ USER LOGIN ---------------------------------
     private void validateUserLogin() {
         if (networkHelper.isNetworkAvailable()) {
             if (validateInputs()) {
-                String params1 = fragmentAuthBinding.etUsername.getText().toString();
-                String params2 = fragmentAuthBinding.etPassword.getText().toString();
-                String params3 = imeiArg;
-                Map<String, String> userLoginParams = new HashMap<>();
-                userLoginParams.put("username", params1);
-                userLoginParams.put("password", params2);
-                userLoginParams.put("imei", params3);
+                Map<String, String> userLoginParams = getUserLoginParams();
                 sendUserLoginParams(userLoginParams);
             }
         } else {
             showErrorDialog("Aviso!!", "No se puede efectuar la operacion. Sin conexion");
         }
+    }
+
+    @NonNull
+    private Map<String, String> getUserLoginParams() {
+        String params1 = fragmentAuthBinding.etUsername.getText().toString();
+        String params2 = fragmentAuthBinding.etPassword.getText().toString();
+        String params3 = imeiArg;
+        Map<String, String> userLoginParams = new HashMap<>();
+        userLoginParams.put("username", params1);
+        userLoginParams.put("password", params2);
+        userLoginParams.put("imei", params3);
+        return userLoginParams;
     }
 
     private void sendUserLoginParams(Map<String, String> userLoginParams) {
@@ -221,7 +220,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                     } else {
                         String errorMsg = ErrorUtils.parseError(response).getMsg();
                         if (errorMsg.equals("500")) {
-                            setRegisterUserToActivateCount("Usuario pendiente de activacion.");
+                            setRegisterUserToActivateCount(true);
                             fragmentAuthBinding.send.setEnabled(true);
                         } else {
                             showErrorSnackbar(errorMsg);
@@ -245,8 +244,9 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         fragmentAuthBinding.send.setEnabled(false);
         if (networkHelper.isNetworkAvailable()) {
             if (validateInputs()) {
-                Map<String, String> map = getUserMap();
-                disposable = userViewModel.register(map)
+                tempUserLoginMap = getUserLoginParams();
+                Map<String, String> registerMap = getUserRegisterParams();
+                disposable = userViewModel.register(registerMap)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(resource -> {
@@ -265,9 +265,12 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                             fragmentAuthBinding.send.setEnabled(true);
                         });
                 compositeDisposable.add(disposable);
+            } else {
+                fragmentAuthBinding.send.setEnabled(true);
             }
         } else {
             showErrorDialog("Aviso!!", "No se puede efectuar la operacion. Sin conexion");
+            fragmentAuthBinding.send.setEnabled(true);
         }
     }
 
@@ -299,9 +302,9 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(resultResource -> {
-                            if(resultResource.status.equals(Resource.Status.SUCCESS)) {
+                            if (resultResource.status.equals(Resource.Status.SUCCESS)) {
                                 verifyActivationCode(resultResource);
-                            }else{
+                            } else {
                                 showErrorSnackbar(resultResource.message);
                             }
                         }, throwable -> {
@@ -321,8 +324,9 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
 
     private void verifyActivationCode(Resource<ResponseResult> resultResource) {
         if (resultResource.data != null && resultResource.data.getCode() == 200) {
-            showSuccessDialog("Aviso!!!", "Usuario activado con exito");
-        } else if(resultResource.data != null && resultResource.data.getCode() != 200) {
+            AlertUtils.showSuccessSnackbar(getActivity(), "Usuario activado, ya puede autenticarse !!!");
+            changeFormUi("No tienes cuenta?", "Registrate", SIGNIN, false, false);
+        } else if (resultResource.data != null && resultResource.data.getCode() != 200) {
             showErrorSnackbar(resultResource.data.getMsg());
         }
     }
@@ -330,21 +334,22 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
     private void verifyUserStatus(ResponseResult data) {
         if (data != null && data.getCode() == 200) {
             authInteraction.signupSuccess(email);
-            setRegisterUserToActivateCount(data.getMsg());
+            setRegisterUserToActivateCount(false);
         } else if (data != null && data.getCode() != 200) {
             showErrorSnackbar(data.getMsg());
         }
     }
 
-    private void setRegisterUserToActivateCount(@Nullable String message) {
-        showSuccessSnackbar(message);
+    private void setRegisterUserToActivateCount(boolean isPending) {
+        AlertUtils.showCFPositiveInfoAlert(getActivity(), isPending ? getString(R.string.user_pending_activation) : getString(R.string.success_register_user), "Ok, lo entiendo",
+                ((dialog, which) -> dialog.dismiss()));
         fragmentAuthBinding.send.setTag(CODE);
         fragmentAuthBinding.setIsCode(true);
         fragmentAuthBinding.llBtnAccount.setVisibility(View.GONE);
     }
 
     @NonNull
-    private Map<String, String> getUserMap() {
+    private Map<String, String> getUserRegisterParams() {
         String username = fragmentAuthBinding.etUsername.getText().toString();
         email = fragmentAuthBinding.etEmail.getText().toString();
         String password = fragmentAuthBinding.etPassword.getText().toString();
@@ -365,31 +370,49 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
     private boolean validateInputs() {
         boolean isValid = true;
         String password = fragmentAuthBinding.etPassword.getText().toString();
+        String repeatPass = fragmentAuthBinding.etPasswordRepeat.getText().toString();
         String username = fragmentAuthBinding.etUsername.getText().toString();
         String email = fragmentAuthBinding.etEmail.getText().toString();
         String code = fragmentAuthBinding.etActivationCode.getText().toString();
         if (username.equals("")) {
             isValid = false;
             Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
-            fragmentAuthBinding.tilUsername.startAnimation(animation);
+            fragmentAuthBinding.etUsername.startAnimation(animation);
+            fragmentAuthBinding.etUsername.setError("Campo requerido");
         }
         if (password.equals("")) {
             isValid = false;
             Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
-            fragmentAuthBinding.tilPassword.startAnimation(animation);
+            fragmentAuthBinding.etPassword.startAnimation(animation);
+            fragmentAuthBinding.etPassword.setError("Campo requerido");
         }
         if (fragmentAuthBinding.send.getTag().equals(SIGNUP)) {
             if (email.equals("")) {
                 isValid = false;
                 Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
-                fragmentAuthBinding.tilEmail.startAnimation(animation);
+                fragmentAuthBinding.etEmail.startAnimation(animation);
+                fragmentAuthBinding.etEmail.setError("Campo requerido");
+
+            }
+            if (repeatPass.equals("")) {
+                isValid = false;
+                Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
+                fragmentAuthBinding.etPasswordRepeat.startAnimation(animation);
+                fragmentAuthBinding.etPasswordRepeat.setError("Campo requerido");
+            }
+            if (!repeatPass.equals(password)) {
+                isValid = false;
+                Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
+                fragmentAuthBinding.etPasswordRepeat.startAnimation(animation);
+                fragmentAuthBinding.etPasswordRepeat.setError("Contraseñas diferentes");
+                fragmentAuthBinding.etPassword.startAnimation(animation);
             }
         }
         if (fragmentAuthBinding.send.getTag().equals(CODE)) {
             if (code.equals("")) {
                 isValid = false;
                 Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
-                fragmentAuthBinding.tilActivationCode.startAnimation(animation);
+                fragmentAuthBinding.etActivationCode.startAnimation(animation);
             }
         }
         return isValid;
@@ -456,6 +479,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
 
     public interface AuthInteraction {
         void signinSuccess(User user);
+
         void signupSuccess(String email);
     }
 }

@@ -14,6 +14,7 @@ import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.pojo.RentMostComment;
 import com.infinitum.bookingqba.model.local.pojo.RentMostRating;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
+import com.infinitum.bookingqba.model.remote.pojo.BlockDay;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
 import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
 import com.infinitum.bookingqba.model.remote.pojo.DrawChange;
@@ -84,7 +85,7 @@ public interface RentRepository {
 
     Single<Resource<List<RentEdit>>> rentById(String token, String uuid);
 
-    Flowable<Resource<List<RentAndDependencies>>> rentNearLocation(LatLong latLong, double range);
+    Flowable<Resource<List<RentAndDependencies>>> rentNearLocation(LatLong latLong, Map<String,Object> filterParams);
 
     Flowable<Double> maxRentPrice();
 
@@ -97,5 +98,7 @@ public interface RentRepository {
     Single<Resource<List<DrawChange>>> drawChangeByFinalPrice(String token, double finalPrice);
 
     Single<Resource<DisabledDays>> disabledDaysByRent(String token, String uuid);
+
+    Single<Resource<ResponseResult>> blockDates(String token, BlockDay blockDay);
 
 }

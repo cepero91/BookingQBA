@@ -182,7 +182,7 @@ public class AlertUtils {
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        ((Activity)context).startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS),requestCode);
+                        ((Activity) context).startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), requestCode);
                     }
                 });
         sweetAlertDialog.show();
@@ -216,7 +216,19 @@ public class AlertUtils {
         builder.show();
     }
 
-    public static void showCFInfoAlert(Context context, String message){
+    public static void showCFPositiveInfoAlert(Context context, String message, String buttonTitle, CFAlertDialog.OnClickListener onClickListener) {
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // Title and message
+        builder.setTitle("Aviso!!");
+        builder.setMessage(message);
+        builder.setTextGravity(Gravity.CENTER);
+        builder.addButton(buttonTitle, -1, Color.parseColor("#00BFA5"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.show();
+    }
+
+    public static void showCFInfoAlert(Context context, String message) {
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.NOTIFICATION);
         // Title and message
@@ -250,7 +262,7 @@ public class AlertUtils {
         notificationManager.notify(NOTIFICATION_ID, notification.build());
     }
 
-    public static void showSuccessSnackbar(Activity activity,String message) {
+    public static void showSuccessSnackbar(Activity activity, String message) {
         Snacky.builder()
                 .setActivity(activity)
                 .setText(message)
@@ -261,7 +273,7 @@ public class AlertUtils {
                 .show();
     }
 
-    public static void showErrorSnackbar(Activity activity,String message) {
+    public static void showErrorSnackbar(Activity activity, String message) {
         Snacky.builder()
                 .setActivity(activity)
                 .setText(message)
@@ -286,7 +298,7 @@ public class AlertUtils {
                 .show();
     }
 
-    public static void showCFErrorAlertWithAction(Context context, String title, String message, DialogInterface.OnClickListener onClickListener,String buttonTitle){
+    public static void showCFErrorAlertWithAction(Context context, String title, String message, DialogInterface.OnClickListener onClickListener, String buttonTitle) {
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
         // Title and message
@@ -299,7 +311,7 @@ public class AlertUtils {
         builder.show();
     }
 
-    public static void showCFErrorAlertWithAction(Context context, String title, String message, DialogInterface.OnClickListener onClickListener,String buttonTitle,@DrawableRes int drawableIcon){
+    public static void showCFErrorAlertWithAction(Context context, String title, String message, DialogInterface.OnClickListener onClickListener, String buttonTitle, @DrawableRes int drawableIcon) {
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
         // Title and message
@@ -312,7 +324,46 @@ public class AlertUtils {
         builder.show();
     }
 
-    public static void showSuccessLogin(Context context, SuccessDialogContentView successDialogContentView){
+    public static void showCFErrorNotificationWithAction(Context context, String title, String message, DialogInterface.OnClickListener onClickListener, String buttonTitle) {
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // Title and message
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setTextGravity(Gravity.CENTER);
+        builder.addButton(buttonTitle, -1, -1, CFAlertDialog.CFAlertActionStyle.NEGATIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.show();
+    }
+
+    public static void showCFErrorNotificationWithAction(Context context, String title, String message, DialogInterface.OnClickListener positiveClick,  DialogInterface.OnClickListener negativeClick, String positiveTitle, String negativeTitle) {
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // Title and message
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setTextGravity(Gravity.CENTER);
+        builder.addButton(positiveTitle, -1, Color.parseColor("#00BFA5"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, positiveClick);
+        builder.addButton(negativeTitle, -1, Color.parseColor("#F44336"), CFAlertDialog.CFAlertActionStyle.NEGATIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, negativeClick);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.setCancelable(false);
+        builder.show();
+    }
+
+    public static void showCFInfoNotificationWithAction(Context context, String title, String message, DialogInterface.OnClickListener positiveClick, String positiveTitle) {
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // Title and message
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setTextGravity(Gravity.CENTER);
+        builder.addButton(positiveTitle, -1, Color.parseColor("#00BFA5"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, positiveClick);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.setCancelable(false);
+        builder.show();
+    }
+
+    public static void showSuccessLogin(Context context, SuccessDialogContentView successDialogContentView) {
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         // Title and message
@@ -322,7 +373,7 @@ public class AlertUtils {
         builder.show();
     }
 
-    public static void showCFDialogWithCustomViewAndAction(Context context, @LayoutRes int layout, String buttonText, String parseButtonColor, CFAlertDialog.CFAlertActionStyle buttonType , DialogInterface.OnClickListener onClickListener){
+    public static void showCFDialogWithCustomViewAndAction(Context context, @LayoutRes int layout, String buttonText, String parseButtonColor, CFAlertDialog.CFAlertActionStyle buttonType, DialogInterface.OnClickListener onClickListener) {
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         // Title and message
@@ -331,8 +382,6 @@ public class AlertUtils {
         builder.addButton(buttonText, -1, Color.parseColor(parseButtonColor), buttonType, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
         builder.show();
     }
-
-
 
 
 }

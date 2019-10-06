@@ -8,6 +8,7 @@ import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
+import com.infinitum.bookingqba.model.remote.pojo.SyncData;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.comment.CommentRepository;
 import com.infinitum.bookingqba.model.repository.dbcommonsop.DBCommonOperationRepository;
@@ -178,5 +179,10 @@ public class SyncViewModel extends ViewModel {
 
     public Single<OperationResult> removedsItem(String value){
         return dBCommonOperationRepository.deleteAll(value);
+//        return Single.just(OperationResult.success());
+    }
+
+    public Flowable<SyncData> syncData(String value){
+        return dBCommonOperationRepository.getSyncData(value).toFlowable();
     }
 }

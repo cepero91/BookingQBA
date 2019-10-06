@@ -33,8 +33,7 @@ import timber.log.Timber;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
-public class ReservationListFragment extends BaseNavigationFragment implements
-        SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
+public class ReservationListFragment extends BaseNavigationFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
     private FragmentReservationListBinding reservationListBinding;
     private UserViewModel userViewModel;

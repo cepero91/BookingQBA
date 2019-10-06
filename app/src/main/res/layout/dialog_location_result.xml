@@ -1,49 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:orientation="vertical"
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
-    <LinearLayout
-        android:id="@+id/ll_content_confirmation"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_content_confirmation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/textView5"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/poppinsregular"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppinsbold"
+            android:text="@string/location_found"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@+id/lottieAnimationView2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppinslight"
             android:paddingBottom="12dp"
-            android:text="Esta seguro que esta es su ubicacion" />
+            android:text="@string/location_found_confirm"
+            android:textColor="@color/material_color_blue_grey_300"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/textView5"
+            app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
         <TextView
             android:id="@+id/tv_btn_confirm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/shape_btn_color_primary"
             android:fontFamily="@font/poppinsregular"
             android:includeFontPadding="false"
             android:padding="10dp"
-            android:text="Confirmar"
+            android:text="@string/confirm_btn"
             android:textAlignment="center"
-            android:textColor="@color/White_100" />
+            android:textColor="@color/White_100"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lottieAnimationView2" />
 
-    </LinearLayout>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieAnimationView2"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="lottie/location_d.json"
+            app:lottie_loop="true"
+            app:lottie_repeatMode="restart" />
+
+    </android.support.constraint.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/ll_content_progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cl_content_confirmation">
 
         <FrameLayout
             android:layout_width="75dp"
@@ -71,39 +112,48 @@
 
     <LinearLayout
         android:id="@+id/ll_content_params"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll_content_progress">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppinsbold"
-            android:textColor="@color/material_color_blue_grey_500"
-            android:text="Puntos de interes cercanos" />
+            android:text="@string/dialog_location_poi_tittle"
+            android:textColor="@color/material_color_blue_grey_500" />
 
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_poi"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginBottom="12dp"/>
+            android:layout_height="200dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/shape_poi_ship_selected"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppinsbold"
+            android:text="@string/dialog_location_enviroment_title"
             android:textColor="@color/material_color_blue_grey_500"
-            android:text="Zona de Referencia" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tv_reference_zone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/poppinsregular"
             android:layout_marginBottom="16dp"
-            android:text="No disponible" />
+            android:fontFamily="@font/poppinslight"
+            android:text="@string/empty_text"
+            android:textColor="@color/material_color_blue_grey_300"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tv_btn_save"
@@ -114,10 +164,10 @@
             android:fontFamily="@font/poppinsregular"
             android:includeFontPadding="false"
             android:padding="10dp"
-            android:text="Guardar"
+            android:text="@string/dialog_location_save_btn"
             android:textAlignment="center"
             android:textColor="@color/White_100" />
 
     </LinearLayout>
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

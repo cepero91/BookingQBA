@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel;
 
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.remote.Oauth;
+import com.infinitum.bookingqba.model.remote.pojo.BookRequestInfo;
 import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
@@ -12,7 +13,6 @@ import com.infinitum.bookingqba.model.repository.user.UserRepository;
 import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.view.adapters.items.reservation.ReservationItem;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +66,11 @@ public class UserViewModel extends ViewModel{
     }
 
     public Single<Resource<ResponseResult>> deniedReservation(String token, String uuid){
-        return userRepository.deniedReservation(token, uuid);
+        return userRepository.deniedReservationByHost(token, uuid);
+    }
+
+    public Single<Resource<ResponseResult>> deniedReservationByUser(String token, String uuid){
+        return userRepository.deniedReservationByUser(token, uuid);
     }
 
     public Single<Resource<List<ReservationItem>>> getPendingReservationByUser(String token, String userId){
@@ -79,6 +83,10 @@ public class UserViewModel extends ViewModel{
         return userRepository.allAcceptedReservationByUser(token, userId)
                 .map(this::transformToReservationItem)
                 .onErrorReturn(Resource::error);
+    }
+
+    public Single<Resource<List<BookRequestInfo>>> getUserBookRequestInfo(String token, String userId){
+        return userRepository.allUserBookRequestInfo(token, userId);
     }
 
     public Single<Resource<UserEsentialData>> getUserBookRequestData(String token, String userBookOwner, String rentId){

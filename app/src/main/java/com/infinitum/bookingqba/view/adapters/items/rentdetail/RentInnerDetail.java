@@ -26,6 +26,7 @@ public class RentInnerDetail implements Parcelable {
     private int votes;
     private String rules;
     private String rentMode;
+    private String referenceZone;
     private int maxBeds;
     private int maxBaths;
     private int capability;
@@ -242,6 +243,14 @@ public class RentInnerDetail implements Parcelable {
         this.chekout = chekout;
     }
 
+    public String getReferenceZone() {
+        return referenceZone;
+    }
+
+    public void setReferenceZone(String referenceZone) {
+        this.referenceZone = referenceZone;
+    }
+
     public String humanChekin(){
         SimpleDateFormat formatIn = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         Date date = null;
@@ -314,6 +323,7 @@ public class RentInnerDetail implements Parcelable {
         dest.writeInt(this.votes);
         dest.writeString(this.rules);
         dest.writeString(this.rentMode);
+        dest.writeString(this.referenceZone);
         dest.writeInt(this.maxBeds);
         dest.writeInt(this.maxBaths);
         dest.writeInt(this.capability);
@@ -345,6 +355,7 @@ public class RentInnerDetail implements Parcelable {
         this.votes = in.readInt();
         this.rules = in.readString();
         this.rentMode = in.readString();
+        this.referenceZone = in.readString();
         this.maxBeds = in.readInt();
         this.maxBaths = in.readInt();
         this.capability = in.readInt();

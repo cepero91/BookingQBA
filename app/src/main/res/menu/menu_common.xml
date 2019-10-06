@@ -22,5 +22,18 @@
         android:title="Gps"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/action_block"
+        android:icon="@drawable/ic_calendar_1_block"
+        android:title="Block"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_change_rent"
+        android:icon="@drawable/ic_repeat_set"
+        android:title="Filter"
+        app:showAsAction="always"
+        android:visible="false"/>
+
 
 </menu>

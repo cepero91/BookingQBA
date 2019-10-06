@@ -121,6 +121,8 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
                 tempItem.setRentMode(entity.getRentMode());
                 tempItem.setTotalComment(entity.getTotalComment());
                 tempItem.setEmotionAvg((int)entity.getEmotionAvg());
+                tempItem.setRating(entity.getRating());
+                tempItem.setRatingCount(entity.getRatingCount());
                 items.add(tempItem);
             }
             return Resource.success(items);

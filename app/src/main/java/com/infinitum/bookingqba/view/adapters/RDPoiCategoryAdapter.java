@@ -13,6 +13,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.TextView;
 
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.util.CategoryUtil;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.PoiCategory;
 
 public class RDPoiCategoryAdapter extends RecyclerView.Adapter<RDPoiCategoryAdapter.MyViewHolder> {
@@ -50,23 +51,17 @@ public class RDPoiCategoryAdapter extends RecyclerView.Adapter<RDPoiCategoryAdap
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         PoiCategory poiCategory = poiCategories[i];
         myViewHolder.tvCategory.setText(poiCategory.getName());
-        myViewHolder.ivCategory.setImageResource(getImageResourceByCategory(poiCategory.getId()));
+        myViewHolder.ivCategory.setImageResource(CategoryUtil.getImageResourceByCategoryID(poiCategory.getId()));
         if (selectedCategory[i]) {
             myViewHolder.tvCategory.setVisibility(View.VISIBLE);
             myViewHolder.tvCategory.animate().alpha(1)
                     .setDuration(300)
                     .setInterpolator(new AccelerateInterpolator()).start();
-            myViewHolder.tvCategory.setTextColor(Color.WHITE);
-            myViewHolder.ivCategory.setImageTintList(ColorStateList.valueOf(Color.WHITE));
-            myViewHolder.clRoot.setBackgroundResource(R.drawable.shape_poi_ship_selected);
-            myViewHolder.clRoot.setElevation(3f);
+            myViewHolder.ivCategory.setImageTintList(ColorStateList.valueOf(Color.parseColor("#607D8B")));
         } else {
             myViewHolder.tvCategory.setAlpha(0);
             myViewHolder.tvCategory.setVisibility(View.GONE);
-            myViewHolder.tvCategory.setTextColor(Color.parseColor("#607D8B"));
-            myViewHolder.ivCategory.setImageTintList(ColorStateList.valueOf(Color.parseColor("#607D8B")));
-            myViewHolder.clRoot.setBackgroundResource(R.drawable.shape_poi_ship_unselected);
-            myViewHolder.clRoot.setElevation(0f);
+            myViewHolder.ivCategory.setImageTintList(ColorStateList.valueOf(Color.parseColor("#90A4AE")));
         }
         myViewHolder.itemView.setOnClickListener(v -> {
             changeTextCategoryVisibility(i);
@@ -80,61 +75,6 @@ public class RDPoiCategoryAdapter extends RecyclerView.Adapter<RDPoiCategoryAdap
             selectedCategory[currentSelected] = true;
             lastSelectedCategory = currentSelected;
             notifyDataSetChanged();
-        }
-    }
-
-    private int getImageResourceByCategory(int category) {
-        switch (category) {
-            case 0:
-                return R.drawable.ic_fa_cutlery_line;
-            case 2:
-                return R.drawable.ic_fa_flash_line;
-            case 6:
-                return R.drawable.ic_fa_beer_line;
-            case 7:
-                return R.drawable.ic_fa_coffee_line;
-            case 9:
-                return R.drawable.ic_fa_spoon_line;
-            case 21:
-                return R.drawable.ic_fa_automobile_line;
-            case 26:
-                return R.drawable.ic_fa_cab_line;
-            case 29:
-                return R.drawable.ic_fa_usd_line;
-            case 30:
-                return R.drawable.ic_fa_money_line;
-            case 34:
-                return R.drawable.ic_fa_hospital_line;
-            case 41:
-                return R.drawable.ic_fa_picture_o_line;
-            case 42:
-                return R.drawable.ic_fa_video_camera_line;
-            case 45:
-                return R.drawable.ic_fa_music_line;
-            case 47:
-                return R.drawable.ic_fa_building_line;
-            case 154:
-                return R.drawable.ic_fa_institution_line;
-            case 157:
-                return R.drawable.ic_fa_street_view_line;
-            case 158:
-                return R.drawable.ic_fa_camera_line;
-            case 159:
-                return R.drawable.ic_fa_camera_retro_line;
-            case 164:
-                return R.drawable.ic_fa_history_line;
-            case 171:
-                return R.drawable.ic_fa_anchor_line;
-            case 173:
-                return R.drawable.ic_fa_tree_line;
-            case 212:
-                return R.drawable.ic_fa_leaf_line;
-            case 369:
-                return R.drawable.ic_fa_diamond_line;
-            case 381:
-                return R.drawable.ic_fa_fire_line;
-            default:
-                return R.drawable.ic_fa_diamond_line;
         }
     }
 

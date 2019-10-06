@@ -24,11 +24,13 @@ import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
 import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
 import com.infinitum.bookingqba.model.local.tconverter.CommentEmotion;
+import com.infinitum.bookingqba.model.remote.pojo.BlockDay;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
 import com.infinitum.bookingqba.model.remote.pojo.DrawChange;
 import com.infinitum.bookingqba.model.remote.pojo.RatingVote;
+import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.comment.CommentRepository;
@@ -107,6 +109,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     //----------------------------------- GET METHOD -----------------------------------------//
 
+    public Flowable<Resource<List<RentEsential>>> allRentByUserId(String token, String userid){
+        return rentRepository.allRentByUserId(token, userid);
+    }
+
     /**
      * Lista paginada de rentas segun tipo de orden y provincia
      *
@@ -130,9 +136,9 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 .map(this::transformToGeoRent);
     }
 
-    public Flowable<Resource<List<GeoRent>>> getGeoRentNearLatLon(LatLong latLong, double range) {
+    public Flowable<Resource<List<GeoRent>>> getGeoRentNearLatLon(LatLong latLong, Map<String,Object> params) {
         return rentRepository
-                .rentNearLocation(latLong, range)
+                .rentNearLocation(latLong, params)
                 .map(this::transformToGeoRent);
     }
 
@@ -223,6 +229,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         innerDetail.setVotes(rentEntity.getRatingCount());
         innerDetail.setRules(rentEntity.getRules());
         innerDetail.setRentMode(rentDetail.data.getRentModeNameObject());
+        innerDetail.setReferenceZone(rentDetail.data.getReferenceZoneNameObject());
         innerDetail.setMaxBeds(rentEntity.getMaxBeds());
         innerDetail.setMaxBaths(rentEntity.getMaxBath());
         innerDetail.setCapability(rentEntity.getCapability());
@@ -313,6 +320,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return rentRepository.disabledDaysByRent(token, rentUuid);
     }
 
+    public Single<Resource<ResponseResult>> blockDays(String token, BlockDay blockDay) {
+        return rentRepository.blockDates(token, blockDay);
+    }
+
     //-------------------------- RENT VISIT COUNT ---------------------------------------- //
 
     public Completable addOrUpdateRentVisitCount(String id, String rentId) {
@@ -384,7 +395,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
             for (RentPoiAndRelation rentPoiAndRelation : rentPoiAndRelations) {
                 PoiTypeEntity poiTypeEntity = rentPoiAndRelation.getPoiAndRelationsObject().getPoiTypeEntitySetObject();
                 PoiCategory poiCategory = new PoiCategory(poiTypeEntity.getId(), poiTypeEntity.getName());
-                RentPoiItem rentPoiItem = new RentPoiItem(rentPoiAndRelation.getPoiAndRelationsObject().poiEntity.getName());
+                RentPoiItem rentPoiItem = new RentPoiItem(rentPoiAndRelation.getPoiAndRelationsObject().poiEntity.getId(),
+                        rentPoiAndRelation.getPoiAndRelationsObject().poiEntity.getName(),
+                        rentPoiAndRelation.getPoiAndRelationsObject().poiEntity.getMinLat(),
+                        rentPoiAndRelation.getPoiAndRelationsObject().poiEntity.getMinLon());
                 if(!hashMap.containsKey(poiCategory)) {
                     ArrayList<RentPoiItem> poiItems = new ArrayList<>();
                     poiItems.add(rentPoiItem);
@@ -426,7 +440,8 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 geoRent.setRating(rentAndDependencies.getRating());
                 geoRent.setRatingCount(rentAndDependencies.getRatingCount());
                 geoRent.setRentMode(rentAndDependencies.getRentMode());
-                geoRent.setPoiItems(transformPoiEntityToPoiItem(new LatLong(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()), rentAndDependencies.getRentPoiAndRelations()));
+                geoRent.setPoiItemMap(convertPoisPojoToParcel(rentAndDependencies.getRentPoiAndRelations()));
+                geoRent.setReferenceZone(rentAndDependencies.getReferenceZone());
                 geoRentList.add(geoRent);
             }
             return Resource.success(geoRentList);
@@ -481,7 +496,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 geoRent.setRating(rentAndDependencies.getRating());
                 geoRent.setRatingCount(rentAndDependencies.getRatingCount());
                 geoRent.setRentMode(rentAndDependencies.getRentMode());
-                geoRent.setPoiItems(transformPoiEntityToPoiItem(new LatLong(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()), rentAndDependencies.getRentPoiAndRelations()));
+                geoRent.setPoiItemMap(convertPoisPojoToParcel(rentAndDependencies.getRentPoiAndRelations()));
                 geoRent.setWished(rentAndDependencies.getIsWished());
                 geoRentList.add(geoRent);
             }

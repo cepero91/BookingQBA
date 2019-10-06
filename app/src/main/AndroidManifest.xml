@@ -40,7 +40,8 @@
         <activity
             android:name=".view.sync.SyncActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:hardwareAccelerated="true"/>
         <activity
             android:name=".view.tutorial.TutorialActivity"
             android:screenOrientation="portrait"
@@ -69,7 +70,16 @@
             android:name=".view.rents.ReservationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".view.MCVActivity" />
+
+        <activity android:name=".view.reservation.ReservationDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".view.MCVActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+
         <activity android:name=".view.GpsTest" />
 
         <provider
@@ -79,10 +89,6 @@
             tools:node="remove" />
 
         <service android:name=".service.LocationService" />
-
-        <activity android:name=".view.reservation.ReservationDetailActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
 
     </application>
 

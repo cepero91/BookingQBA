@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fl_content_near"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:background="@color/White_100">
+
+    <FrameLayout
+        android:id="@+id/fl_title_radar_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="3dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="3dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center"
+            android:fontFamily="@font/poppinsbold"
+            android:includeFontPadding="false"
+            android:text="Radar"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="18sp" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/iv_near_close"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="end|center"
+            android:tint="@color/material_color_blue_grey_500"
+            app:srcCompat="@drawable/ic_multiply_set" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_content_radar_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fl_title_radar_bar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/poppinsmedium"
+            android:paddingTop="5dp"
+            android:text="Modo de Renta"
+            android:textColor="@color/material_color_blue_grey_400"
+            android:textSize="14sp" />
+
+        <RadioGroup
+            android:id="@+id/rg_rent_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|start"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rb_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:fontFamily="@font/poppinslight"
+                android:includeFontPadding="false"
+                android:text="Ambos"
+                android:textColor="@color/material_color_blue_grey_400" />
+
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rb_by_night"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/poppinslight"
+                android:includeFontPadding="false"
+                android:text="Por noche"
+                android:textColor="@color/material_color_blue_grey_400" />
+
+            <android.support.v7.widget.AppCompatRadioButton
+                android:id="@+id/rb_by_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/poppinslight"
+                android:includeFontPadding="false"
+                android:text="Por horas"
+                android:textColor="@color/material_color_blue_grey_400" />
+
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppinsmedium"
+            android:paddingTop="5dp"
+            android:text="Radio de distancia (metros)"
+            android:textColor="@color/material_color_blue_grey_400"
+            android:textSize="14sp" />
+
+        <com.jaygoo.widget.RangeSeekBar
+            android:id="@+id/rsb_radius"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            app:rsb_gravity="center"
+            app:rsb_indicator_padding_bottom="3dp"
+            app:rsb_indicator_padding_left="8dp"
+            app:rsb_indicator_padding_right="8dp"
+            app:rsb_indicator_padding_top="3dp"
+            app:rsb_indicator_radius="5dp"
+            app:rsb_indicator_show_mode="alwaysShow"
+            app:rsb_max="5000"
+            app:rsb_min="0"
+            app:rsb_mode="single" />
+
+        <TextView
+            android:id="@+id/tv_btn_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/shape_btn_color_primary"
+            android:fontFamily="@font/poppinsregular"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Buscar"
+            android:textColor="@color/White_100" />
+
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_near_rents"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fl_title_radar_bar" />
+
+    <LinearLayout
+        android:id="@+id/ll_content_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_goneMarginBottom="16dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fl_title_radar_bar">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lv_progress"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            app:lottie_fileName="lottie/scan_a.json"
+            app:lottie_loop="true"
+            app:lottie_repeatMode="restart" />
+
+        <TextView
+            android:id="@+id/tv_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|start"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/poppinsregular"
+            android:text="Buscando...."
+            android:textColor="@color/material_color_blue_grey_400" />
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
+

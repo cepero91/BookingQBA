@@ -26,6 +26,7 @@ import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.adapters.RentListAdapter;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.customview.RentListShortCutMapView;
+import com.infinitum.bookingqba.view.customview.StateView;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 
@@ -96,8 +97,7 @@ public class RentListFragment extends BaseNavigationFragment implements RentList
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        rentListBinding.setIsLoading(true);
-        rentListBinding.setIsEmpty(false);
+        initLoading(true, StateView.Status.LOADING, true);
         rentListBinding.shortCutMapView.setShortCutMapInteraction(this);
 
         setHasOptionsMenu(true);
@@ -131,6 +131,12 @@ public class RentListFragment extends BaseNavigationFragment implements RentList
         });
     }
 
+    private void initLoading(boolean loading, StateView.Status status, boolean isEmpty) {
+        rentListBinding.setIsLoading(loading);
+        rentListBinding.setIsEmpty(isEmpty);
+        rentListBinding.stateView.setStatus(status);
+    }
+
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_filter_panel).setVisible(true);
@@ -142,9 +148,7 @@ public class RentListFragment extends BaseNavigationFragment implements RentList
         disposable = rentViewModel.getLiveDataRentList(mOrderType, mProvinceParam)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(listResource -> {
-                    setupPagerAdapter(listResource);
-                }, Timber::e);
+                .subscribe(this::setupPagerAdapter, throwable -> initLoading(false, StateView.Status.EMPTY, true));
         compositeDisposable.add(disposable);
     }
 
@@ -164,11 +168,9 @@ public class RentListFragment extends BaseNavigationFragment implements RentList
             pagerAdapter = new RentListAdapter(getLayoutInflater(), (FragmentNavInteraction) getActivity(), pagedList.data);
             rentListBinding.recyclerView.setAdapter(pagerAdapter);
             rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
-            rentListBinding.setIsLoading(false);
-            rentListBinding.setIsEmpty(false);
+            initLoading(false, StateView.Status.SUCCESS, false);
         } else {
-            rentListBinding.setIsLoading(false);
-            rentListBinding.setIsEmpty(true);
+            initLoading(false, StateView.Status.EMPTY, true);
         }
     }
 

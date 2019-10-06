@@ -36,6 +36,12 @@ public class RentEdit {
     @SerializedName("longitude")
     @Expose
     private String longitude;
+    @SerializedName("checkin")
+    @Expose
+    private String checkin;
+    @SerializedName("checkout")
+    @Expose
+    private String checkout;
     @SerializedName("maxRooms")
     @Expose
     private Integer maxRooms;
@@ -258,5 +264,21 @@ public class RentEdit {
 
     public void setOffer(List<Offer> offer) {
         this.offer = offer;
+    }
+
+    public String getCheckin() {
+        return checkin;
+    }
+
+    public void setCheckin(String checkin) {
+        this.checkin = checkin;
+    }
+
+    public String getCheckout() {
+        return checkout;
+    }
+
+    public void setCheckout(String checkout) {
+        this.checkout = checkout;
     }
 }

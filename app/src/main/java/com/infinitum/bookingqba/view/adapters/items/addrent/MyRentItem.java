@@ -3,7 +3,7 @@ package com.infinitum.bookingqba.view.adapters.items.addrent;
 import com.github.vivchar.rendererrecyclerviewadapter.ViewModel;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 
-public class MyRentItem implements ViewModel{
+public class MyRentItem {
 
     private String uuid;
     private String name;
@@ -11,24 +11,6 @@ public class MyRentItem implements ViewModel{
     private double price;
     private String rentMode;
     private String portrait;
-
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        final MyRentItem that = (MyRentItem) obj;
-        return uuid.equals(that.uuid);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.uuid.hashCode();
-    }
 
     public MyRentItem() {
     }
@@ -87,5 +69,13 @@ public class MyRentItem implements ViewModel{
 
     public void setPortrait(String portrait) {
         this.portrait = portrait;
+    }
+
+    public String humanPrice(){
+        return String.format("%.2f cuc",price);
+    }
+
+    public String humanRentMode(){
+        return "/"+rentMode;
     }
 }

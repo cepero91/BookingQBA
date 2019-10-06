@@ -18,6 +18,7 @@ import com.infinitum.bookingqba.model.local.pojo.RentMostComment;
 import com.infinitum.bookingqba.model.local.pojo.RentMostRating;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
+import com.infinitum.bookingqba.model.remote.pojo.BlockDay;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
 import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
 import com.infinitum.bookingqba.model.remote.pojo.DrawChange;
@@ -30,7 +31,9 @@ import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoiAdd;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
+import com.infinitum.bookingqba.util.Constants;
 import com.infinitum.bookingqba.util.DateUtils;
+import com.infinitum.bookingqba.util.StringUtils;
 
 import org.mapsforge.core.model.LatLong;
 
@@ -39,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -55,6 +59,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import timber.log.Timber;
 
+import static com.infinitum.bookingqba.util.Constants.FILTER_RADAR_RENT_MODE;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_COMMENTED;
 import static com.infinitum.bookingqba.util.Constants.ORDER_TYPE_MOST_RATING;
 
@@ -351,7 +356,10 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public Flowable<Resource<List<RentAndDependencies>>> rentNearLocation(LatLong latLong, double range) {
+    public Flowable<Resource<List<RentAndDependencies>>> rentNearLocation(LatLong latLong, Map<String,Object> filterParams) {
+        Float userRange = (Float) filterParams.get(Constants.FILTER_RADAR_RADIUS);
+        double range = userRange.doubleValue();
+        List<String> rentModeUuid = (List<String>) filterParams.get(FILTER_RADAR_RENT_MODE);
         PointF center = new PointF((float) latLong.latitude, (float) latLong.longitude);
         final double mult = 1; // mult = 1.1; is more reliable
         PointF p1 = calculateDerivedPosition(center, mult * range, 0);
@@ -359,7 +367,8 @@ public class RentRepoImpl implements RentRepository {
         PointF p3 = calculateDerivedPosition(center, mult * range, 180);
         PointF p4 = calculateDerivedPosition(center, mult * range, 270);
 
-        String strWhere = "SELECT * FROM Rent WHERE "
+        String strWhere = "SELECT * FROM Rent " +
+                "WHERE Rent.rentMode IN("+StringUtils.convertListToCommaSeparated(rentModeUuid)+") AND "
                 + "Rent.latitude > " + String.valueOf(p3.x) + " AND "
                 + "Rent.latitude < " + String.valueOf(p1.x) + " AND "
                 + "Rent.longitude < " + String.valueOf(p2.y) + " AND "
@@ -367,6 +376,7 @@ public class RentRepoImpl implements RentRepository {
         SupportSQLiteQuery simpleQuery = new SimpleSQLiteQuery(strWhere);
         return qbaDao.getRentNearLatLon(simpleQuery)
                 .subscribeOn(Schedulers.io())
+                .delay(2000, TimeUnit.MILLISECONDS)
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
     }
@@ -433,6 +443,15 @@ public class RentRepoImpl implements RentRepository {
     public Single<Resource<DisabledDays>> disabledDaysByRent(String token, String uuid) {
         return retrofit.create(ApiInterface.class)
                 .disabledDaysByRent(token, uuid)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Single<Resource<ResponseResult>> blockDates(String token, BlockDay blockDay) {
+        return retrofit.create(ApiInterface.class)
+                .blockDates(token, blockDay)
                 .subscribeOn(Schedulers.io())
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);

@@ -53,4 +53,8 @@
         <attr name="thumbOutlineSize" format="dimension|reference"/>
         <attr name="displayTextFontSize" format="dimension|reference"/>
     </declare-styleable>
+    <declare-styleable name="DateLabel">
+        <attr name="hint" format="string" />
+        <attr name="cta" format="string" />
+    </declare-styleable>
 </resources>

@@ -54,7 +54,7 @@ public class ReferenceZoneRepoImpl implements ReferenceZoneRepository {
         ArrayList<ReferenceZoneEntity> listEntity = new ArrayList<>();
         ReferenceZoneEntity entity;
         for (ReferenceZone item : gsonList) {
-            entity = new ReferenceZoneEntity(item.getId(), item.getName(), Base64.decode(item.getImage(),Base64.DEFAULT));
+            entity = new ReferenceZoneEntity(item.getId(), item.getName());
             listEntity.add(entity);
         }
         return listEntity;

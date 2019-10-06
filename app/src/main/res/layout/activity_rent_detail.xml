@@ -58,7 +58,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:animateLayoutChanges="true"
-                        android:background="@color/Black_30"
+                        android:background="@color/Black_35"
                         android:paddingBottom="8dp"
                         android:paddingEnd="16dp"
                         android:paddingStart="16dp"
@@ -117,19 +117,16 @@
 
                         </LinearLayout>
 
-                        <com.airbnb.lottie.LottieAnimationView
+                        <android.support.v7.widget.AppCompatImageView
                             android:id="@+id/lv_location"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
                             android:scaleType="fitCenter"
+                            app:srcCompat="@drawable/ic_placeholder_3_set"
+                            android:tint="@color/White_100"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:lottie_autoPlay="true"
-                            app:lottie_colorFilter="@color/White_100"
-                            app:lottie_fileName="lottie/location_c.json"
-                            app:lottie_loop="true"
-                            app:lottie_repeatMode="restart"/>
+                            app:layout_constraintTop_toTopOf="parent"/>
 
                     </android.support.constraint.ConstraintLayout>
 

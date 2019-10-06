@@ -1,131 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cv_rent_content"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
-    android:layout_marginBottom="5dp"
-    android:layout_marginStart="25dp"
-    android:layout_marginEnd="25dp"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="5dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <data>
+        <variable
+            name="item"
+            type="com.infinitum.bookingqba.view.adapters.items.addrent.MyRentItem"/>
+    </data>
+
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cv_rent_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp">
 
-        <RelativeLayout
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:id="@+id/siv_rent_image"
             android:layout_width="match_parent"
-            android:layout_height="130dp">
-
-            <com.github.siyamed.shapeimageview.RoundedImageView
-                android:id="@+id/siv_rent_image"
-                android:layout_width="match_parent"
-                android:layout_height="130dp"
-                android:src="@drawable/bedroom"
-                app:siShape="@drawable/shape_imageview_rounded_top" />
-
-
-            <LinearLayout
-                android:id="@+id/ll_content_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/shape_list_wish_item_price_square"
-                android:orientation="horizontal"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true">
-
-                <TextView
-                    android:id="@+id/tv_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsbold"
-                    android:textColor="@color/White_100"
-                    android:textSize="12sp"
-                    android:text="Precio" />
-
-                <TextView
-                    android:id="@+id/tv_rent_mode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsregular"
-                    android:textColor="@color/White_100"
-                    android:textSize="12sp"
-                    android:text="Modo" />
-
-            </LinearLayout>
-
-        </RelativeLayout>
+            android:layout_height="180dp"
+            app:setMyRentItemImage="@{item.getPortrait()}"
+            app:siBorderColor="@android:color/transparent"
+            app:siRadius="10dp" />
 
         <LinearLayout
-            android:id="@+id/ll_content_detail"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:orientation="vertical">
+            android:background="@drawable/shape_list_wish_item_price_square"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@+id/siv_rent_image"
+            app:layout_constraintTop_toTopOf="@+id/siv_rent_image">
 
-            <TextView
-                android:id="@+id/tv_rent_name"
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/iv_rent_locked"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppinsbold"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:text="Titulo" />
-
-            <TextView
-                android:id="@+id/tv_state"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppinsregular"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="12sp"
-                android:text="Desactivada" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:weightSum="3"
-                android:orientation="horizontal">
-
-                <android.support.v7.widget.AppCompatImageView
-                    android:id="@+id/btn_analitics"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    app:srcCompat="@drawable/ic_chart_line"
-                    android:tint="@color/material_color_teal_500"
-                    android:layout_weight="1"/>
-
-                <android.support.v7.widget.AppCompatImageView
-                    android:id="@+id/btn_view"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:tint="@color/material_color_teal_500"
-                    app:srcCompat="@drawable/ic_eye"
-                    android:layout_weight="1"/>
-
-                <android.support.v7.widget.AppCompatImageView
-                    android:id="@+id/btn_edit"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:tint="@color/material_color_orange_500"
-                    app:srcCompat="@drawable/ic_edit"
-                    android:layout_weight="1"/>
-
-            </LinearLayout>
-
+                app:setLockedIcon="@{safeUnbox(item.isActive())}" />
 
         </LinearLayout>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tv_rent_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/poppinsbold"
+            android:text="@{item.name}"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="18sp"
+            android:includeFontPadding="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/siv_rent_image" />
+
+        <LinearLayout
+            android:id="@+id/ll_content_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@+id/tv_rent_name"
+            app:layout_constraintTop_toBottomOf="@+id/tv_rent_name">
+
+            <TextView
+                android:id="@+id/tv_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppinsbold"
+                android:text="@{item.humanPrice()}"
+                android:textColor="@color/material_color_blue_grey_300"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_rent_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppinslight"
+                android:text="@{item.humanRentMode()}"
+                android:textColor="@color/material_color_blue_grey_300"
+                android:textSize="14sp" />
+
+        </LinearLayout>
 
 
-</android.support.v7.widget.CardView>
+        <TextView
+            android:id="@+id/tv_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/shape_bg_round_5_black"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/ic_edit_small_1_set"
+            android:fontFamily="@font/poppinslight"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Editar"
+            android:textColor="@color/White_100"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/siv_rent_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

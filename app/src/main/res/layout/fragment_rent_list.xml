@@ -27,40 +27,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; !safeUnbox(isEmpty)}"/>
 
-        <LinearLayout
-            android:id="@+id/linearLayout2"
-            android:layout_width="match_parent"
+        <com.infinitum.bookingqba.view.customview.StateView
+            android:id="@+id/state_view"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:visibleGone="@{safeUnbox(isEmpty)}">
-
-            <com.github.siyamed.shapeimageview.RoundedImageView
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/fogg_no_comments"
-                app:siBorderColor="@color/material_color_grey_50"
-                app:siBorderWidth="2dp"
-                app:siRadius="150dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppinsbold"
-                android:text="Nada que mostrar"
-                android:textColor="@color/material_color_blue_grey_100"
-                android:textSize="22sp" />
-
-        </LinearLayout>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"

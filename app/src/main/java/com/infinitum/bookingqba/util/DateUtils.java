@@ -5,8 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import timber.log.Timber;
 
@@ -67,6 +69,38 @@ public class DateUtils {
                 }
                 calendarItem = dateToCalendar(date);
                 calendarList.add(calendarItem);
+            }
+        }
+        return calendarList;
+    }
+
+    public static Set<Long> transformStringDatesToCalendarsSet(List<String> disabledStrDates) {
+        Set<Long> calendarList = new HashSet<>();
+        if (disabledStrDates != null && disabledStrDates.size() > 0) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = null;
+            Calendar calendarItem;
+            for (String dates : disabledStrDates) {
+                try {
+                    date = simpleDateFormat.parse(dates);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                calendarItem = dateToCalendar(date);
+                calendarList.add(calendarItem.getTimeInMillis());
+            }
+        }
+        return calendarList;
+    }
+
+    public static List<String> transformCalendarsToStringDates(List<Calendar> disabledStrDates) {
+        List<String> calendarList = new ArrayList<>();
+        if (disabledStrDates != null && disabledStrDates.size() > 0) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            String date;
+            for (Calendar dates : disabledStrDates) {
+                date = simpleDateFormat.format(dates.getTime());
+                calendarList.add(date);
             }
         }
         return calendarList;

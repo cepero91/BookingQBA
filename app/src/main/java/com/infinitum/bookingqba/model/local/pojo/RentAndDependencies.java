@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.model.local.pojo;
 import android.arch.persistence.room.Relation;
 
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
+import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 
@@ -21,6 +22,10 @@ public class RentAndDependencies {
     private double longitude;
     private int isWished;
     private String rentMode;
+    private String referenceZone;
+
+    @Relation(parentColumn = "referenceZone", entityColumn = "id",entity = ReferenceZoneEntity.class,projection = {"name"})
+    private Set<String> referenceZoneSet;
 
     @Relation(parentColumn = "rentMode", entityColumn = "id",entity = RentModeEntity.class,projection = {"name"})
     private Set<String> rentModeSet;
@@ -36,7 +41,7 @@ public class RentAndDependencies {
         this.name = name;
     }
 
-    public RentAndDependencies(String id, String name, String address, double price, float rating, int ratingCount, double latitude, double longitude, int isWished, String rentMode, Set<String> rentModeSet, List<GalerieEntity> galeries, List<RentPoiAndRelation> rentPoiAndRelations) {
+    public RentAndDependencies(String id, String name, String address, double price, float rating, int ratingCount, double latitude, double longitude, int isWished, String rentMode, String referenceZone, Set<String> referenceZoneSet, Set<String> rentModeSet, List<GalerieEntity> galeries, List<RentPoiAndRelation> rentPoiAndRelations) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -47,6 +52,8 @@ public class RentAndDependencies {
         this.longitude = longitude;
         this.isWished = isWished;
         this.rentMode = rentMode;
+        this.referenceZone = referenceZone;
+        this.referenceZoneSet = referenceZoneSet;
         this.rentModeSet = rentModeSet;
         this.galeries = galeries;
         this.rentPoiAndRelations = rentPoiAndRelations;
@@ -154,6 +161,22 @@ public class RentAndDependencies {
 
     public void setRentMode(String rentMode) {
         this.rentMode = rentMode;
+    }
+
+    public String getReferenceZone() {
+        return referenceZoneSet.toArray()[0].toString();
+    }
+
+    public void setReferenceZone(String referenceZone) {
+        this.referenceZone = referenceZone;
+    }
+
+    public Set<String> getReferenceZoneSet() {
+        return referenceZoneSet;
+    }
+
+    public void setReferenceZoneSet(Set<String> referenceZoneSet) {
+        this.referenceZoneSet = referenceZoneSet;
     }
 
     public String getImageAtPos(int pos){

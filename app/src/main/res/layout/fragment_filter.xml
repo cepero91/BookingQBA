@@ -62,7 +62,7 @@
                     android:layout_weight="1"
                     android:scaleType="center"
                     android:tint="@color/material_color_red_500"
-                    app:srcCompat="@drawable/ic_fa_times_line" />
+                    app:srcCompat="@drawable/ic_multiply_set" />
 
 
             </LinearLayout>

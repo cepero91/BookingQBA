@@ -50,7 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:fontFamily="@font/poppinsmedium"
+                android:fontFamily="@font/montserrat_bold"
                 android:maxLines="1"
                 android:paddingEnd="3dp"
                 android:paddingStart="3dp"
@@ -84,8 +84,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="3dp"
-                    android:fontFamily="@font/poppinslight"
-                    android:includeFontPadding="false"
+                    android:fontFamily="@font/montserrat_light"
                     android:text="@{item.humanRatingCount()}"
                     android:textSize="12sp" />
 
@@ -103,8 +102,7 @@
                     android:id="@+id/tv_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsbold"
-                    android:includeFontPadding="false"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="@{item.humanPrice()}"
                     android:textColor="@color/material_color_blue_grey_300"
                     android:textSize="14sp" />
@@ -114,7 +112,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
-                    android:fontFamily="@font/poppinslight"
+                    android:fontFamily="@font/montserrat_light"
                     android:text="@{item.humanRentMode()}"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="12sp" />

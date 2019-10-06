@@ -5,6 +5,7 @@ package com.infinitum.bookingqba.model.repository.user;
 import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.remote.Oauth;
+import com.infinitum.bookingqba.model.remote.pojo.BookRequestInfo;
 import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
@@ -34,11 +35,15 @@ public interface UserRepository {
 
     Single<Resource<List<Reservation>>> allPendingReservationByUser(String token, String userid);
 
+    Single<Resource<List<BookRequestInfo>>> allUserBookRequestInfo(String token, String userid);
+
     Single<Resource<List<Reservation>>> allAcceptedReservationByUser(String token, String userid);
 
     Single<Resource<ResponseResult>> acceptReservation(String token, String resUuid);
 
-    Single<Resource<ResponseResult>> deniedReservation(String token, String resUuid);
+    Single<Resource<ResponseResult>> deniedReservationByHost(String token, String resUuid);
+
+    Single<Resource<ResponseResult>> deniedReservationByUser(String token, String resUuid);
 
     Single<Resource<UserEsentialData>> userBookEsentialData(String token, String userBookOwnerId, String rentId);
 

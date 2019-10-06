@@ -23,243 +23,213 @@
             type="Boolean" />
     </data>
 
-    <FrameLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/appCompatImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:foreground="@color/Black_25"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/house_beach_blur" />
+
         <LinearLayout
+            android:id="@+id/ll_content_signin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical">
+            android:layout_marginBottom="8dp"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/ll_btn_account"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
 
             <ImageView
-                android:layout_width="200dp"
+                android:id="@+id/imageView"
+                android:layout_width="180dp"
                 android:layout_height="90dp"
-                android:layout_marginBottom="15dp"
                 android:layout_gravity="center"
-                android:scaleType="centerCrop"
-                android:src="@drawable/logotipo" />
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="32dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/isotype"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:id="@+id/ll_content_signin"
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/et_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp">
+                android:background="@drawable/shape_bg_edit"
+                android:drawablePadding="10dp"
+                android:drawableStart="@drawable/ic_fa_circle_edit_line"
+                android:fontFamily="@font/poppinsregular"
+                android:hint="Nombre de Usuario"
+                android:includeFontPadding="false"
+                android:inputType="text"
+                android:padding="12dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/White_80"
+                app:visibleGone="@{!safeUnbox(isCode)}" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="5dp"
-                    android:weightSum="2"
-                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}">
 
-                    <TextView
-                        android:id="@+id/tv_im_visitor"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Soy huesped"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="3dp"
-                        android:textAlignment="center"
-                        android:includeFontPadding="false"
-                        android:fontFamily="@font/poppinsregular"
-                        android:textColor="@color/White_100"
-                        android:background="@drawable/shape_filter_ship_selected"/>
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/shape_bg_edit"
+                android:drawablePadding="10dp"
+                android:drawableStart="@drawable/ic_fa_circle_edit_line"
+                android:fontFamily="@font/poppinsregular"
+                android:hint="Email"
+                android:includeFontPadding="false"
+                android:inputType="textEmailAddress"
+                android:padding="12dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/White_80"
+                app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
 
-                    <TextView
-                        android:id="@+id/tv_im_host"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Soy Anfitrion"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textAlignment="center"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginEnd="5dp"
-                        android:includeFontPadding="false"
-                        android:fontFamily="@font/poppinsregular"
-                        android:background="@drawable/shape_filter_ship_unselected"/>
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/shape_bg_edit"
+                android:drawablePadding="10dp"
+                android:drawableStart="@drawable/ic_fa_circle_edit_line"
+                android:fontFamily="@font/poppinsregular"
+                android:hint="@string/contrase_a"
+                android:includeFontPadding="false"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/White_80"
+                app:visibleGone="@{!safeUnbox(isCode)}" />
 
-                </LinearLayout>
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/et_password_repeat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/shape_bg_edit"
+                android:drawablePadding="10dp"
+                android:drawableStart="@drawable/ic_fa_circle_edit_line"
+                android:fontFamily="@font/poppinsregular"
+                android:hint="@string/repita_la_contrase_a"
+                android:includeFontPadding="false"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/White_80"
+                app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}" />
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_username"
-                    style="@style/MyStyleUserInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:hint="Nombre de Usuario"
-                    app:boxStrokeColor="@color/colorPrimary"
-                    app:visibleGone="@{!safeUnbox(isCode)}">
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_username"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawablePadding="10dp"
-                        android:drawableStart="@drawable/ic_user_input"
-                        android:fontFamily="@font/poppinsregular"
-                        android:inputType="text"
-                        android:padding="12dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:textColor="@color/colorAccent" />
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/et_activation_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/shape_bg_edit"
+                android:drawablePadding="10dp"
+                android:drawableStart="@drawable/ic_fa_circle_edit_line"
+                android:fontFamily="@font/poppinsregular"
+                android:hint="Código"
+                android:includeFontPadding="false"
+                android:inputType="number"
+                android:padding="12dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/White_80"
+                android:visibility="gone"
+                app:visibleGone="@{safeUnbox(isCode)}" />
 
-                </android.support.design.widget.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_email"
-                    style="@style/MyStyleUserInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:hint="Email"
-                    app:boxStrokeColor="@color/colorPrimary"
-                    app:visibleGone="@{safeUnbox(isSignup) &amp;&amp; !safeUnbox(isCode)}">
+            <TextView
+                android:id="@+id/tv_resend_activation_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:text="@string/reenviar_c_digo_de_activaci_n"
+                android:textColor="@color/material_color_teal_A200"
+                android:textSize="14sp"
+                android:visibility="gone"
+                app:visibleGone="@{safeUnbox(isCode)}" />
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_email"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawablePadding="10dp"
-                        android:drawableStart="@drawable/ic_envelope_input"
-                        android:fontFamily="@font/poppinsregular"
-                        android:inputType="textEmailAddress"
-                        android:padding="12dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:textColor="@color/colorAccent" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_password"
-                    style="@style/MyStyleUserInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:hint="@string/contrase_a"
-                    app:boxStrokeColor="@color/colorPrimary"
-                    app:passwordToggleEnabled="true"
-                    app:visibleGone="@{!safeUnbox(isCode)}">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawablePadding="10dp"
-                        android:drawableStart="@drawable/ic_key"
-                        android:fontFamily="@font/poppinsregular"
-                        android:inputType="textPassword"
-                        android:padding="12dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:textColor="@color/colorAccent" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/til_activation_code"
-                    style="@style/MyStyleUserInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:hint="Codigo"
-                    app:boxStrokeColor="@color/colorPrimary"
-                    app:visibleGone="@{safeUnbox(isCode)}">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/et_activation_code"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawablePadding="10dp"
-                        android:drawableStart="@drawable/ic_hashtag"
-                        android:fontFamily="@font/poppinsregular"
-                        android:inputType="number"
-                        android:padding="12dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:textColor="@color/colorAccent" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <TextView
-                    android:id="@+id/tv_resend_activation_code"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="8dp"
-                    android:text="Reenviar codigo de activacion"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp"
-                    app:visibleGone="@{safeUnbox(isCode)}" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <mehdi.sakout.fancybuttons.FancyButton
-                        android:id="@+id/send"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="3dp"
-                        android:layout_marginStart="3dp"
-                        android:paddingBottom="8dp"
-                        android:paddingLeft="25dp"
-                        android:paddingRight="25dp"
-                        android:paddingTop="8dp"
-                        fancy:fb_borderColor="@color/colorPrimary"
-                        fancy:fb_borderWidth="2dp"
-                        fancy:fb_defaultColor="@color/White_100"
-                        fancy:fb_fontIconResource="&#xf00c;"
-                        fancy:fb_iconPosition="left"
-                        fancy:fb_radius="10dp"
-                        fancy:fb_text="Enviar"
-                        fancy:fb_textColor="@color/colorPrimary" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/send"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/shape_btn_color_primary"
+                android:fontFamily="@font/poppinsregular"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:padding="10dp"
+                android:text="Enviar"
+                android:textColor="@color/White_100"
+                android:textSize="14sp" />
 
         </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/ll_btn_account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|bottom"
-            android:layout_marginBottom="8dp"
-            android:orientation="horizontal">
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
             <TextView
                 android:id="@+id/tv_account_question"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppinsregular"
-                android:text="No tienes cuenta?"
-                android:textColor="@color/material_color_blue_grey_300"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+                android:text="@string/no_tienes_cuenta"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:textColor="@color/material_color_blue_grey_200" />
 
             <TextView
                 android:id="@+id/tv_account_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppinsregular"
-                android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
-                android:text="Registrate"
-                android:textColor="@color/material_color_blue_grey_700"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+                android:layout_marginStart="5dp"
+                android:fontFamily="@font/poppinsregular"
+                android:text="@string/reg_strate"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:textColor="@color/material_color_teal_A200" />
 
         </LinearLayout>
 
-    </FrameLayout>
+    </android.support.constraint.ConstraintLayout>
 
 
 </layout>

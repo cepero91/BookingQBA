@@ -29,7 +29,7 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
                 android:layout_marginTop="10dp"
-                app:cardCornerRadius="15dp"
+                app:cardCornerRadius="10dp"
                 app:cardElevation="5dp"
                 app:cardPreventCornerOverlap="true">
 
@@ -52,7 +52,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        app:srcCompat="@drawable/ic_fa_search_line"
+                        app:srcCompat="@drawable/ic_search_set"
                         app:tint="@color/material_color_blue_grey_500" />
 
                 </FrameLayout>
@@ -62,14 +62,15 @@
             <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="10dp"
+                android:clipToPadding="false"
                 android:paddingBottom="10dp"
-                android:clipToPadding="false">
+                android:paddingTop="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:visibleGone="@{!safeUnbox(isLoading)}">
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -83,11 +84,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|start"
-                            android:fontFamily="@font/poppinsbold"
-                            android:includeFontPadding="true"
-                            android:text="Lo mas comentado"
-                            android:textSize="16sp"
-                            android:textColor="@color/material_color_blue_grey_500" />
+                            android:fontFamily="@font/montserrat_regular"
+                            android:text="@string/lo_m_s_comentado"
+                            android:textColor="@color/material_color_blue_grey_500"
+                            android:textSize="16sp" />
 
                         <TextView
                             android:id="@+id/tv_most_commented_view_all"
@@ -95,39 +95,22 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="end|center"
                             android:background="@drawable/shape_btn_ship_view_more"
-                            android:fontFamily="@font/poppinsregular"
-                            android:includeFontPadding="false"
+                            android:fontFamily="@font/montserrat_light"
                             android:text="@string/view_all"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="@dimen/home_header_pop_btn_size" />
+                            android:textColor="@color/material_color_teal_A700"
+                            android:textSize="12sp" />
 
                     </FrameLayout>
 
-                    <FrameLayout
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_most_commented"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:animateLayoutChanges="true">
+                        android:clipToPadding="false"
+                        android:paddingEnd="8dp"
+                        android:paddingStart="8dp" />
 
-                        <ProgressBar
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_marginTop="75dp"
-                            android:layout_marginBottom="75dp"
-                            android:layout_gravity="center"
-                            android:indeterminate="true"
-                            app:discreteVisibility="@{safeUnbox(isLoading)}" />
-
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/rv_most_commented"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:clipToPadding="false"
-                            android:paddingEnd="8dp"
-                            android:paddingStart="8dp"
-                            app:discreteVisibility="@{!safeUnbox(isLoading)}" />
-
-
-                    </FrameLayout>
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -141,11 +124,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|start"
-                            android:fontFamily="@font/poppinsbold"
-                            android:includeFontPadding="false"
-                            android:text="Lo mas votado"
-                            android:textSize="16sp"
-                            android:textColor="@color/material_color_blue_grey_500" />
+                            android:fontFamily="@font/montserrat_regular"
+                            android:text="@string/lo_m_s_votado"
+                            android:textColor="@color/material_color_blue_grey_500"
+                            android:textSize="16sp" />
 
                         <TextView
                             android:id="@+id/tv_most_rating_view_all"
@@ -153,36 +135,20 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="end|center"
                             android:background="@drawable/shape_btn_ship_view_more"
-                            android:fontFamily="@font/poppinsregular"
-                            android:includeFontPadding="false"
+                            android:fontFamily="@font/montserrat_light"
                             android:text="@string/view_all"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="@dimen/home_header_pop_btn_size" />
+                            android:textColor="@color/material_color_teal_A700"
+                            android:textSize="12sp" />
 
                     </FrameLayout>
 
-                    <FrameLayout
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_most_rating"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:animateLayoutChanges="true">
+                        android:clipToPadding="false" />
 
-                        <ProgressBar
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_marginTop="75dp"
-                            android:layout_marginBottom="75dp"
-                            android:layout_gravity="center"
-                            android:indeterminate="true"
-                            app:discreteVisibility="@{safeUnbox(isLoading)}" />
-
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/rv_most_rating"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:clipToPadding="false"
-                            app:discreteVisibility="@{!safeUnbox(isLoading)}" />
-
-                    </FrameLayout>
 
                 </LinearLayout>
 
@@ -190,6 +156,20 @@
             </android.support.v4.widget.NestedScrollView>
 
         </LinearLayout>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center"
+            app:visibleGone="@{safeUnbox(isLoading)}"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="lottie/loading.json"
+            app:lottie_loop="true"
+            app:lottie_repeatMode="restart" />
 
     </android.support.design.widget.CoordinatorLayout>
 

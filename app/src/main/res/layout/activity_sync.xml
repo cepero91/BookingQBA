@@ -23,199 +23,187 @@
             type="Float" />
     </data>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
+        android:background="@color/White_100"
         android:fitsSystemWindows="true"
-        android:background="@color/material_color_grey_200"
         tools:context=".view.tutorial.PageFourFragment">
 
-        <android.support.v7.widget.AppCompatImageView
+        <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/iv_use_case"
             android:layout_width="match_parent"
-            android:paddingTop="10dp"
-            android:layout_height="200dp"
-            android:scaleType="fitCenter"
+            android:layout_height="0dp"
             android:layout_centerHorizontal="true"
-            android:background="@color/White_100"
-            app:srcCompat="@drawable/download_use_case"/>
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toTopOf="@+id/guideline9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="lottie/data.json"
+            app:lottie_loop="true"
+            app:lottie_repeatMode="restart" />
 
-        <View
-            android:id="@+id/line"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@+id/iv_use_case"
-            android:background="@color/material_color_blue_grey_500"/>
 
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/poppinsbold"
+            android:text="@string/sincronizacion"
+            android:textAlignment="center"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline9" />
+
+
+        <android.support.v7.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="5dp"
+            app:cardElevation="5dp"
+            app:contentPadding="5dp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline10"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title">
 
             <LinearLayout
-                android:id="@+id/ll_content_text"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:layout_below="@+id/line"
-                android:layout_centerHorizontal="true"
-                android:layout_gravity="center"
-                android:orientation="vertical"
-                app:visibleGone="@{!safeUnbox(isDownloading)}">
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="@dimen/pages_title_margin_bottom"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:text="Anuncios"
+                    android:textColor="@color/material_color_blue_grey_400"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_rents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center"
                     android:fontFamily="@font/poppinsbold"
-                    android:text="@string/sincronizacion"
-                    android:textAlignment="center"
+                    android:text="@string/empty_short_text"
                     android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="18sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <com.rey.material.widget.Switch
-                        android:id="@+id/sw_download"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        app:v_styleId="@array/switches"
-                        android:checked="true"
-                        android:paddingEnd="3dp"
-                        android:paddingStart="3dp"/>
-
-                    <TextView
-                        android:id="@+id/tv_download"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:text="@string/descargar_imagenes"
-                        android:textAlignment="center"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_gravity="center"
-                    android:animateLayoutChanges="true"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:id="@+id/ll_content_entity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <com.vaibhavlakhera.circularprogressview.CircularProgressView
-                            android:id="@+id/pb_entities"
-                            android:layout_width="85dp"
-                            android:layout_height="85dp"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginEnd="5dp"
-                            app:animate="true"
-                            app:animateDuration="300"
-                            app:fillColor="@color/White_100"
-                            app:progressColor="@color/colorPrimary"
-                            app:progressInterpolator="@android:anim/accelerate_decelerate_interpolator"
-                            app:progressRoundCap="false"
-                            app:progressTextColor="@color/colorPrimary"
-                            app:progressTextEnabled="true"
-                            app:progressTextSize="16sp"
-                            app:progressTextType="percent"
-                            app:progressWidth="10dp"
-                            app:startAngle="270"
-                            app:totalValue="100"
-                            app:totalColor="@color/material_color_grey_300"
-                            app:totalWidth="6dp" />
-
-                        <TextView
-                            android:id="@+id/tv_entities"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginBottom="@dimen/pages_title_margin_bottom"
-                            android:fontFamily="@font/poppinsregular"
-                            android:text="@string/rentas"
-                            android:textAlignment="center"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/ll_content_galery"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:orientation="vertical">
-
-                        <com.vaibhavlakhera.circularprogressview.CircularProgressView
-                            android:id="@+id/pb_galery"
-                            android:layout_width="85dp"
-                            android:layout_height="85dp"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginEnd="5dp"
-                            app:animate="true"
-                            app:animateDuration="300"
-                            app:fillColor="@color/White_100"
-                            app:progressColor="@color/colorPrimary"
-                            app:progressInterpolator="@android:anim/accelerate_decelerate_interpolator"
-                            app:progressRoundCap="false"
-                            app:progressTextColor="@color/colorPrimary"
-                            app:progressTextEnabled="true"
-                            app:progressTextSize="16sp"
-                            app:progressTextType="percent"
-                            app:progressWidth="10dp"
-                            app:startAngle="270"
-                            app:totalValue="100"
-                            app:totalColor="@color/material_color_grey_300"
-                            app:totalWidth="6dp" />
-
-                        <TextView
-                            android:id="@+id/tv_galerie"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginBottom="@dimen/pages_title_margin_bottom"
-                            android:fontFamily="@font/poppinsregular"
-                            android:text="@string/imagenes"
-                            android:textAlignment="center"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <mehdi.sakout.fancybuttons.FancyButton
-                    android:id="@+id/fb_download"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="5dp"
-                    android:paddingBottom="8dp"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:paddingTop="8dp"
-                    fancy:fb_borderColor="@color/colorPrimary"
-                    fancy:fb_borderWidth="2dp"
-                    fancy:fb_defaultColor="#FFF"
-                    fancy:fb_focusColor="@color/material_color_grey_400"
-                    fancy:fb_fontIconResource="&#xf019;"
-                    fancy:fb_iconPosition="left"
-                    fancy:fb_radius="30dp"
-                    fancy:fb_text="Sincronizar"
-                    fancy:fb_textColor="@color/colorPrimary" />
+                    android:textSize="24sp" />
 
             </LinearLayout>
 
-    </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="5dp"
+            app:cardElevation="5dp"
+            app:contentPadding="5dp"
+            app:layout_constraintStart_toEndOf="@+id/guideline10"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:text="Recursos"
+                    android:textColor="@color/material_color_blue_grey_400"
+                    android:textSize="14sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_resource"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center"
+                        android:fontFamily="@font/poppinsbold"
+                        android:text="@string/empty_short_text"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|center"
+                        android:fontFamily="@font/poppinslight"
+                        android:text="Mb"
+                        android:textColor="@color/material_color_blue_grey_300"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+
+        <TextView
+            android:id="@+id/fb_download"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/shape_btn_color_primary"
+            android:fontFamily="@font/poppinsregular"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:padding="10dp"
+            android:text="Sincronizar"
+            android:textColor="@color/White_100"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.6" />
+
+        <ProgressBar
+            android:id="@+id/pb_entities"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:alpha="0"
+            app:layout_constraintBottom_toTopOf="@+id/fb_download"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+    </android.support.constraint.ConstraintLayout>
 
 </layout>

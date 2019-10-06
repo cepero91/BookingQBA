@@ -6,6 +6,7 @@ import android.arch.persistence.room.Relation;
 import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.entity.OfferEntity;
+import com.infinitum.bookingqba.model.local.entity.ReferenceZoneEntity;
 import com.infinitum.bookingqba.model.local.entity.RentAmenitiesEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
@@ -22,6 +23,9 @@ public class RentDetail {
 
     @Embedded
     RentEntity rentEntity;
+
+    @Relation(parentColumn = "referenceZone", entityColumn = "id",entity = ReferenceZoneEntity.class, projection = {"name"})
+    private Set<String> referenceZoneName;
 
     @Relation(parentColumn = "rentMode", entityColumn = "id",entity = RentModeEntity.class,projection = {"name"})
     private Set<String> rentModeName;
@@ -51,6 +55,14 @@ public class RentDetail {
 
     public void setRentModeName(Set<String> rentModeName) {
         this.rentModeName = rentModeName;
+    }
+
+    public Set<String> getReferenceZoneName() {
+        return referenceZoneName;
+    }
+
+    public void setReferenceZoneName(Set<String> referenceZoneName) {
+        this.referenceZoneName = referenceZoneName;
     }
 
     public List<RentAmenitieAndRelation> getAmenitieNames() {
@@ -87,6 +99,10 @@ public class RentDetail {
 
     public String getRentModeNameObject(){
         return (String) rentModeName.toArray()[0];
+    }
+
+    public String getReferenceZoneNameObject(){
+        return (String) referenceZoneName.toArray()[0];
     }
 
     public List<CommentEntity> getCommentEntities() {

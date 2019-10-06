@@ -23,6 +23,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.builders.DatePickerBuilder;
@@ -46,6 +48,7 @@ import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.ColorUtil;
 import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
+import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentInnerDetail;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentItem;
 import com.infinitum.bookingqba.view.adapters.InnerViewPagerAdapter;
 import com.infinitum.bookingqba.view.customview.SuccessDialogContentView;
@@ -60,6 +63,7 @@ import com.infinitum.bookingqba.view.profile.UserAuthActivity;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
+import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.squareup.picasso.Picasso;
 
 
@@ -123,7 +127,7 @@ import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
 
-public class RentDetailActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector, InnerDetailInteraction {
+public class RentDetailActivity extends DaggerAppCompatActivity implements View.OnClickListener ,HasSupportFragmentInjector, InnerDetailInteraction {
 
     private ActivityRentDetailBinding rentDetailBinding;
     private InnerViewPagerAdapter innerViewPagerAdapter;
@@ -174,8 +178,7 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
             rentUuid = getIntent().getExtras().getString("uuid");
             rentName = getIntent().getExtras().getString("name");
             rentDetailBinding.tvRentName.setText(rentName);
-            String imageUrlPath = getIntent().getExtras().getString("url");
-            imageUrlPath = "file:" + imageUrlPath;
+            String imageUrlPath = "file:" + getIntent().getExtras().getString("url");
             Picasso.get().load(imageUrlPath).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(rentDetailBinding.ivRent);
         }
 
@@ -219,6 +222,7 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
 
 
     private void onSuccess(Resource<RentItem> rentDetailResource) {
+        rentDetailBinding.lvLocation.setOnClickListener(this);
         rentItem = rentDetailResource.data;
         setupViewPager(rentDetailResource.data);
         rentDetailBinding.tvVotes.setText(rentDetailResource.data.getRentInnerDetail().humanVotes());
@@ -249,7 +253,8 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
         fragments.add(innerDetail);
         titles.add("Detalles");
         if (rentItem.getRentInnerDetail().getPoiItemMap().size() > 0) {
-            poiDetail = RentDetailPoiFragment.newInstance(rentItem.getRentInnerDetail().getPoiItemMap());
+            poiDetail = RentDetailPoiFragment.newInstance(rentItem.getRentInnerDetail().getPoiItemMap(),
+                    rentItem.getRentInnerDetail().getReferenceZone());
             fragments.add(poiDetail);
             titles.add("Donde ir");
         }
@@ -440,6 +445,27 @@ public class RentDetailActivity extends DaggerAppCompatActivity implements HasSu
         compositeDisposable.add(disposable);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.lv_location:
+                RentInnerDetail innerDetail = rentItem.getRentInnerDetail();
+                GeoRent geoRent = new GeoRent(innerDetail.getId(),innerDetail.getName(),innerDetail.firstImage());
+                geoRent.setRating(innerDetail.getRating());
+                geoRent.setRatingCount(innerDetail.getVotes());
+                geoRent.setAddress(innerDetail.getAddress());
+                geoRent.setPrice(innerDetail.getPrice());
+                geoRent.setGeoPoint(new GeoPoint(innerDetail.getLatitude(),innerDetail.getLongitude()));
+                geoRent.setReferenceZone(innerDetail.getReferenceZone());
+                geoRent.setRentMode(innerDetail.getRentMode());
+                geoRent.setWished(innerDetail.getWished());
+                geoRent.setPoiItemMap(innerDetail.getPoiItemMap());
+                ArrayList<GeoRent> geoRents = new ArrayList<>();
+                geoRents.add(geoRent);
+                onAddressClick(geoRents);
+                break;
+        }
+    }
 }
 
 

@@ -16,7 +16,7 @@ import com.infinitum.bookingqba.R;
 
 public class StateView extends LinearLayout {
 
-    private RoundedImageView stateImageView;
+    private AppCompatImageView stateImageView;
     private TextView stateTextView;
     private LinearLayout llRoot;
 
@@ -59,13 +59,13 @@ public class StateView extends LinearLayout {
                 break;
             case EMPTY:
                 llRoot.setVisibility(VISIBLE);
-                stateImageView.setImageResource(R.drawable.fogg_no_comments);
+                stateImageView.setImageResource(R.drawable.flame_empty);
                 stateTextView.setText("Nada que mostrar");
                 break;
             case NO_CONNECTION:
                 llRoot.setVisibility(VISIBLE);
-                stateImageView.setImageResource(R.drawable.fogg_no_connection_2);
-                stateTextView.setText("Sin conexion");
+                stateImageView.setImageResource(R.drawable.flame_no_conexion);
+                stateTextView.setText("Sin conexión");
                 break;
         }
     }

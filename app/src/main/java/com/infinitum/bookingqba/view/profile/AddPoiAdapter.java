@@ -41,11 +41,6 @@ public class AddPoiAdapter extends RecyclerView.Adapter<AddPoiAdapter.MyViewHold
         Poi pointOfInterest = pointOfInterests.get(i);
         myViewHolder.tvCategory.setText(CategoryUtil.categoryById(pointOfInterest.getCategory()));
         myViewHolder.tvPoi.setText(pointOfInterest.getName());
-        if(i%2==0){
-            myViewHolder.llContentPoi.setBackgroundColor(Color.parseColor("#ECEFF1"));
-        }else{
-            myViewHolder.llContentPoi.setBackgroundColor(Color.parseColor("#CFD8DC"));
-        }
     }
 
     @Override

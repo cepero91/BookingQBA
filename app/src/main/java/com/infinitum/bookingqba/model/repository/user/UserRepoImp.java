@@ -5,6 +5,7 @@ import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.Oauth;
+import com.infinitum.bookingqba.model.remote.pojo.BookRequestInfo;
 import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
@@ -103,6 +104,15 @@ public class UserRepoImp implements UserRepository {
     }
 
     @Override
+    public Single<Resource<List<BookRequestInfo>>> allUserBookRequestInfo(String token, String userid) {
+        return retrofit.create(ApiInterface.class)
+                .bookRequestInfo(token, userid)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
     public Single<Resource<List<Reservation>>> allAcceptedReservationByUser(String token, String userid) {
         return retrofit.create(ApiInterface.class)
                 .acceptedReservation(token, userid)
@@ -121,9 +131,18 @@ public class UserRepoImp implements UserRepository {
     }
 
     @Override
-    public Single<Resource<ResponseResult>> deniedReservation(String token ,String uuid) {
+    public Single<Resource<ResponseResult>> deniedReservationByHost(String token , String uuid) {
         return retrofit.create(ApiInterface.class)
                 .deniedReservation(token, uuid)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<Resource<ResponseResult>> deniedReservationByUser(String token , String uuid) {
+        return retrofit.create(ApiInterface.class)
+                .deniedReservationByUser(token, uuid)
                 .map(Resource::success)
                 .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());

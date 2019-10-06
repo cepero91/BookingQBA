@@ -84,7 +84,7 @@
         android:layout_marginTop="6dp"
         android:background="@null"
         android:drawablePadding="5dp"
-        android:drawableStart="@drawable/ic_fa_edit_line"
+        android:drawableStart="@drawable/ic_fa_circle_edit_line"
         android:fontFamily="@font/poppinsregular"
         android:gravity="start|center"
         android:hint="Nota adicional"

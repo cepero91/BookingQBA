@@ -138,6 +138,10 @@ public class ReservationActivity extends AppCompatActivity implements View.OnCli
         compositeDisposable.add(disposable);
     }
 
+    /**
+     * OJO CAMBIAR LA VISTA DE LA CANTIDAD DE HUESPEDES QUE ESTA DANDO PROBLEMAS LA QUE EXISTE
+     * @return
+     */
     @NonNull
     private BookRequest getBookRequest() {
         BookRequest bookRequest = new BookRequest();

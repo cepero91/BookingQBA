@@ -122,6 +122,15 @@ public class BindingAdapters {
                 .into(view);
     }
 
+    @BindingAdapter("setMyRentItemImage")
+    public static void setMyRentItemImage(RoundedImageView view, String imagePath) {
+        Picasso.get()
+                .load(imagePath)
+                .resize(420, 280)
+                .placeholder(R.drawable.placeholder)
+                .into(view);
+    }
+
     @BindingAdapter("setRemoteCircleImage")
     public static void setRemoteCircleImage(RoundedImageView view, String imagePath) {
         Picasso.get()
@@ -213,6 +222,15 @@ public class BindingAdapters {
     @BindingAdapter("setIconResource")
     public static void setIconResource(AppCompatImageView view, int resource) {
         view.setImageResource(resource);
+    }
+
+    @BindingAdapter("setLockedIcon")
+    public static void setLockedIcon(AppCompatImageView view, boolean active) {
+        if (active) {
+            view.setImageResource(R.drawable.ic_unlocked_small_set);
+        } else {
+            view.setImageResource(R.drawable.ic_locked_small_set);
+        }
     }
 
 

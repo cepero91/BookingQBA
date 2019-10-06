@@ -42,6 +42,7 @@ import org.mapsforge.poi.storage.PoiCategoryManager;
 import org.mapsforge.poi.storage.PoiPersistenceManager;
 import org.mapsforge.poi.storage.PointOfInterest;
 import org.mapsforge.poi.storage.UnknownPoiCategoryException;
+import org.mapsforge.poi.storage.WhitelistPoiCategoryFilter;
 import org.oscim.utils.ArrayUtils;
 
 import java.io.File;
@@ -168,21 +169,12 @@ public class RentFormViewModel extends ViewModel {
             poi.setMinLat(point.getLatitude());
             poi.setMinLon(point.getLongitude());
             PoiCategory[] poiCategories = point.getCategories().toArray(new PoiCategory[point.getCategories().size()]);
-            if (poiCategories.length > 1) {
-                int id1 = poiCategories[0].getID();
-                int id2 = poiCategories[1].getID();
-                if (id1 != 396) {
-                    poi.setCategory(id1);
-                    poi.setCategoryName(poiCategories[0].getTitle());
-                } else if (id2 != 396) {
-                    poi.setCategory(id2);
-                    poi.setCategoryName(poiCategories[1].getTitle());
-                }
-            } else if (poiCategories.length == 1) {
-                poi.setCategory(poiCategories[0].getID());
-                poi.setCategoryName(poiCategories[0].getTitle());
+            Pair<Integer,String> correctCategory = CategoryUtil.giveCorrectCategoryid(poiCategories);
+            if (correctCategory.first != -1) {
+                poi.setCategory(correctCategory.first);
+                poi.setCategoryName(correctCategory.second);
+                myPoiHashSet.add(poi);
             }
-            myPoiHashSet.add(poi);
         }
         return myPoiHashSet;
     }
@@ -399,67 +391,46 @@ public class RentFormViewModel extends ViewModel {
     }
 
     private String getReferenceNameByPoiCategory(HashSet<Poi> pointOfInterests) {
+        Pair<String, Integer> occIntegerPair = new Pair<>("Barriada", 0);
         List<Poi> parseList = new ArrayList<>(pointOfInterests);
-        String referenceZoneResult = "Barriada";
         if (containBeach(parseList)) {
-            referenceZoneResult = "Playa o Costa";
-        } else if (containIdCategory(parseList, CategoryUtil.natural_category_id)) {
-            referenceZoneResult = "Natural";
-        } else if (containIdCategory(parseList, CategoryUtil.historic_category_id)) {
-            referenceZoneResult = "Histórico";
-        } else if (containIdCategory(parseList, CategoryUtil.cultural_category_id)) {
-            referenceZoneResult = "Cultural";
+            occIntegerPair = new Pair<>("Playa o Costa", 0);
+            return occIntegerPair.first;
+        } else if (containIdCategory(parseList, CategoryUtil.natural_category_id) > 5) {
+            int total = containIdCategory(parseList, CategoryUtil.natural_category_id);
+            occIntegerPair = new Pair<>("Natural", total);
+            return occIntegerPair.first;
+        } else if (containIdCategory(parseList, CategoryUtil.historic_category_id) > 5) {
+            int total = containIdCategory(parseList, CategoryUtil.historic_category_id);
+            occIntegerPair = new Pair<>("Histórico", total);
+        } else if (containIdCategory(parseList, CategoryUtil.cultural_category_id) > 5) {
+            int total = containIdCategory(parseList, CategoryUtil.cultural_category_id);
+            if (occIntegerPair.first.equalsIgnoreCase("Histórico") && total > occIntegerPair.second)
+                occIntegerPair = new Pair<>("Cultural", total);
         }
-        return referenceZoneResult;
+        return occIntegerPair.first;
     }
 
     private boolean containBeach(List<Poi> pointOfInterests) {
         for (Poi point : pointOfInterests) {
             if (point.getCategory() == 171) {
                 return true;
-            } else if (point.getCategoryName().equals("Attractions") && point.getName().contains("Playa")) {
+            } else if (point.getCategoryName().equals("Attractions")
+                    && (point.getName().contains("Playa") || point.getName().contains("Buceo"))) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean containCategory(Collection<PointOfInterest> pointOfInterests, String[] categories) {
-        int occurrencies = 0;
-        for (PointOfInterest point : pointOfInterests) {
-            if (categoryIsInList(categories, point.getCategories())) {
-                occurrencies++;
-            }
-        }
-        return occurrencies > 5;
-    }
-
-    private boolean containIdCategory(List<Poi> pointOfInterests, int[] categories) {
+    private int containIdCategory(List<Poi> pointOfInterests, int[] categories) {
         int occurrencies = 0;
         for (Poi point : pointOfInterests) {
             if (categoryIdExist(categories, point.getCategory())) {
                 occurrencies++;
             }
         }
-        return occurrencies > 5;
-    }
-
-    private boolean categoryIsInList(String[] categoriesArray, Set<PoiCategory> categories) {
-        PoiCategory[] poiCategories = categories.toArray(new PoiCategory[categories.size()]);
-        for (PoiCategory poiCategory : poiCategories) {
-            if (categoryExist(categoriesArray, poiCategory.getTitle())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean categoryExist(String[] categories, String category) {
-        for (String stringCategory : categories) {
-            if (stringCategory.equals(category))
-                return true;
-        }
-        return false;
+        return occurrencies;
     }
 
     private boolean categoryIdExist(int[] categories, int category) {

@@ -34,29 +34,15 @@
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
-        <LinearLayout
+        <com.infinitum.bookingqba.view.customview.StateView
+            android:id="@+id/state_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:visibleGone="@{safeUnbox(isEmpty)}"
-            android:orientation="vertical">
-
-            <android.support.v7.widget.AppCompatImageView
-                android:layout_width="110dp"
-                android:layout_height="110dp"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_archive_4"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lista vacia"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/poppinsregular"
-                android:textSize="32sp"
-                android:textColor="@color/material_color_blue_grey_100"/>
-
-        </LinearLayout>
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_add_rent"

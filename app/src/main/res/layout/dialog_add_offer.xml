@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
@@ -8,89 +9,90 @@
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/til_offer_name"
-        style="@style/MyStyleUserInput"
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/et_offer_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:hint="Nombre de la Oferta"
-        app:boxStrokeColor="@color/colorPrimary">
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@null"
+        android:drawablePadding="5dp"
+        android:drawableStart="@drawable/ic_fa_circle_edit_line"
+        android:fontFamily="@font/poppinsregular"
+        android:gravity="start|center"
+        android:hint="Nombre de la oferta"
+        android:inputType="text"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/et_offer_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppinsregular"
-            android:inputType="text"
-            android:padding="12dp"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-            android:textColor="@color/colorAccent" />
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/til_description"
-        style="@style/MyStyleUserInput"
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/et_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:hint="Descripcion"
-        app:boxStrokeColor="@color/colorPrimary">
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@null"
+        android:drawablePadding="5dp"
+        android:drawableStart="@drawable/ic_fa_circle_edit_line"
+        android:fontFamily="@font/poppinsregular"
+        android:gravity="start|center"
+        android:hint="Descripción"
+        android:inputType="textMultiLine"
+        android:maxLines="4"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_offer_name" />
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/et_description"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:fontFamily="@font/poppinsregular"
-            android:gravity="top"
-            android:inputType="textMultiLine"
-            android:padding="12dp"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-            android:textColor="@color/colorAccent" />
-
-    </android.support.design.widget.TextInputLayout>
-
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/til_price"
-        style="@style/MyStyleUserInput"
-        android:layout_width="120dp"
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/et_price"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@null"
+        android:drawablePadding="5dp"
+        android:drawableStart="@drawable/ic_fa_circle_edit_line"
+        android:fontFamily="@font/poppinsregular"
+        android:gravity="start|center"
         android:hint="Precio"
-        app:boxStrokeColor="@color/colorPrimary">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/et_price"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:fontFamily="@font/robotoregular"
-            android:inputType="numberDecimal"
-            android:drawableStart="@drawable/ic_dollar_sign"
-            android:drawablePadding="5dp"
-            android:padding="10dp"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-            android:textColor="@color/colorAccent" />
-
-    </android.support.design.widget.TextInputLayout>
+        android:inputType="numberDecimal"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_description" />
 
 
     <TextView
         android:id="@+id/tv_btn_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/shape_btn_color_primary"
         android:fontFamily="@font/poppinsregular"
         android:includeFontPadding="false"
         android:padding="10dp"
-        android:text="Guardar"
+        android:text="Hecho"
         android:textAlignment="center"
-        android:textColor="@color/White_100" />
+        android:textColor="@color/White_100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_price" />
 
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

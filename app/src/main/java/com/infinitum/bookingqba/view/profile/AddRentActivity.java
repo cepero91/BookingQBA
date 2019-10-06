@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.location.Location;
@@ -40,20 +39,18 @@ import com.infinitum.bookingqba.view.profile.uploaditem.GaleryFormObject;
 import com.infinitum.bookingqba.view.profile.uploaditem.OfferFormObject;
 import com.infinitum.bookingqba.view.profile.uploaditem.RentFormObject;
 import com.infinitum.bookingqba.view.customview.DialogAddOfferView;
-import com.infinitum.bookingqba.view.widgets.DialogLocationConfirmView;
+import com.infinitum.bookingqba.view.customview.DialogLocationConfirmView;
 import com.infinitum.bookingqba.viewmodel.RentFormViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
 
 import org.mapsforge.poi.storage.PoiPersistenceManager;
-import org.mapsforge.poi.storage.PointOfInterest;
 
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -234,6 +231,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         rentFormObject.setDescription(rentEdit.getDescription());
         rentFormObject.setPhoneNumber(rentEdit.getPhoneNumber());
         rentFormObject.setPhoneHomeNumber(rentEdit.getPhoneHomeNumber());
+        rentFormObject.setCheckin(rentEdit.getCheckin());
+        rentFormObject.setCheckout(rentEdit.getCheckout());
         rentViewModel.setLocalAmenities(rentEdit.getAmenities());
         List<String> selected = new ArrayList<>();
         for (int i = 0; i < rentEdit.getAmenities().size(); i++) {
@@ -263,27 +262,31 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     private void updateAllInput(RentEdit data) {
         binding.etAddress.setText(data.getAddress());
+        binding.tvLocation.setText(String.format("Lat: %s -- Lon: %s", data.getLatitude(), data.getLongitude()));
+        binding.tvLocation.setTextColor(Color.parseColor("#009688"));
         updateMunicipality(data.getMunicipality().getId(), data.getMunicipality().getName());
         updateReferenceZone(data.getReferenceZone().getId(), data.getReferenceZone().getName());
         updateRentMode(data.getRentMode().getId(), data.getRentMode().getName());
         binding.etRentName.setText(data.getName());
         binding.etPrice.setText(String.valueOf(data.getPrice()));
         binding.etEmail.setText(data.getEmail());
-//        binding.etCapability.setText(String.valueOf(data.getCapability()));
-//        binding.etMaxBeds.setText(String.valueOf(data.getMaxBeds()));
-//        binding.etMaxBaths.setText(String.valueOf(data.getMaxBath()));
-//        binding.etMaxRooms.setText(String.valueOf(data.getMaxRooms()));
+        binding.quantityHost.setNumber(String.valueOf(data.getCapability()));
+        binding.quantityBed.setNumber(String.valueOf(data.getMaxBeds()));
+        binding.quantityBath.setNumber(String.valueOf(data.getMaxBath()));
+        binding.quantityRoom.setNumber(String.valueOf(data.getMaxRooms()));
         binding.etRules.setText(String.valueOf(data.getRules()));
         binding.etDescription.setText(String.valueOf(data.getDescription()));
         binding.etPersonalPhone.setText(String.valueOf(data.getPhoneNumber()));
         binding.etHomePhone.setText(String.valueOf(data.getPhoneHomeNumber()));
-
+        binding.tvCheckin.setText(data.getCheckin());
+        binding.tvCheckout.setText(data.getCheckout());
     }
 
     private void initViewOnClick() {
         binding.flLocationBar.setOnClickListener(this);
         binding.flEsentialBar.setOnClickListener(this);
         binding.tvLocation.setOnClickListener(this);
+        binding.flReferenceZone.setOnClickListener(this);
         binding.flMunicipalities.setOnClickListener(this);
         binding.flRentMode.setOnClickListener(this);
         binding.flAmenities.setOnClickListener(this);
@@ -353,15 +356,8 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     public void showLocationConfirmDialog() {
         builder = new CFAlertDialog.Builder(this);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
-        // Title and message
-        builder.setTitle("Ubicacion obtenida");
-        builder.setTextGravity(Gravity.START);
-        builder.setIcon(R.drawable.ic_map_marker_alt_blue_grey);
-        builder.setTextColor(Color.parseColor("#607D8B"));
-
         dialogLocationConfirmView = new DialogLocationConfirmView(this);
-        builder.setFooterView(dialogLocationConfirmView);
-
+        builder.setHeaderView(dialogLocationConfirmView);
         dialog = builder.show();
     }
 
@@ -494,7 +490,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                     e.printStackTrace();
                 }
                 binding.tvCheckin.setText(displayFormat.format(inDate));
-                binding.tvCheckin.setTextColor(getResources().getColor(R.color.colorAccent));
+                binding.tvCheckin.setTextColor(getResources().getColor(R.color.colorPrimary));
                 rentFormObject.setCheckin(timeBuilder.toString());
             }
         }, 12, 0, false);
@@ -517,7 +513,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                     e.printStackTrace();
                 }
                 binding.tvCheckout.setText(displayFormat.format(inDate));
-                binding.tvCheckout.setTextColor(getResources().getColor(R.color.colorAccent));
+                binding.tvCheckout.setTextColor(getResources().getColor(R.color.colorPrimary));
                 rentFormObject.setCheckout(timeBuilder.toString());
             }
         }, 12, 0, false);
@@ -652,13 +648,13 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     }
 
     private void showReferenceDialog() {
-        disposable = rentViewModel.getAllRemoteReferenceZone(userToken)
+        disposable = rentViewModel.getAllRemoteReferenceZone(sharedPreferences.getString(USER_TOKEN, ""))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listResource -> {
                     if (listResource.data != null && listResource.data.size() > 0) {
                         ArrayList<SearchableSelectorModel> list = new ArrayList<>(listResource.data);
-                        new SimpleSearchDialogCompat<>(this, "Zona de Referencia",
+                        new SimpleSearchDialogCompat<>(this, "Entorno predominante",
                                 "Buscar por nombre", null, list, (dialog, item, position) -> {
                             updateReferenceZone(item.getUuid(), item.getTitle());
                             dialog.dismiss();

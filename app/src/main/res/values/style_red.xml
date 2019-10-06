@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="RedScrollCalendarStyle" parent="@style/ScrollCalendarStyle">
+        <item name="adapter">none</item>
+        <item name="customFont">font/montserrat-light.otf</item>
+        <item name="dayStyle">@style/DayStyle</item>
+        <item name="currentDayStyle">@style/RedLayoutCurrentDayStyle</item>
+        <item name="roundLineBreaks">false</item>
+        <item name="legendItemStyle">@style/RedLegendItemStyle</item>
+        <item name="legendSeparatorStyle">@style/RedLegendSeparatorStyle</item>
+        <item name="monthTitleStyle">@style/RedMonthTitleStyle</item>
+        <item name="selectedBeginningItemStyle">@style/RedLayoutSelectedBeginningItemStyle</item>
+        <item name="selectedEndItemStyle">@style/RedLayoutSelectedEndItemStyle</item>
+        <item name="selectedItemStyle">@style/RedLayoutSelectedItemStyle</item>
+        <item name="selectedMiddleItemStyle">@style/RedLayoutSelectedMiddleItemStyle</item>
+        <item name="unavailableItemStyle">@style/UnavailableItemStyle</item>
+        <item name="showYearAlways">true</item>
+    </style>
+
+    <style name="RedLegendItemStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:padding">2dp</item>
+        <item name="android:textColor">@color/material_color_blue_grey_500</item>
+    </style>
+
+    <style name="DayStyle">
+        <item name="android:textColor">@color/material_color_blue_grey_500</item>
+    </style>
+
+    <style name="RedMonthTitleStyle">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/material_color_blue_grey_500</item>
+    </style>
+
+    <style name="RedHeaderBar">
+        <item name="android:background">@android:color/white</item>
+        <item name="android:textColor">@color/material_color_red_500</item>
+    </style>
+
+    <style name="RedLayoutCurrentDayStyle">
+        <item name="android:textColor">@color/material_color_teal_A700</item>
+    </style>
+
+    <style name="RedLegendSeparatorStyle">
+        <item name="android:background">@drawable/divider</item>
+        <item name="android:height">5dp</item>
+    </style>
+
+    <style name="RedLayoutSelectedItemStyle">
+        <item name="android:background">@drawable/circle_full_red</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="RedLayoutSelectedBeginningItemStyle">
+        <item name="android:background">@drawable/range_start_red</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="RedLayoutSelectedMiddleItemStyle">
+        <item name="android:background">@drawable/range_middle_red</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="RedLayoutSelectedEndItemStyle">
+        <item name="android:background">@drawable/range_end_red</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+</resources>

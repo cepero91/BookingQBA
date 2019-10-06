@@ -230,4 +230,43 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="coordenadas">Coordenadas</string>
     <string name="entorno_dominante">Entorno Dominante</string>
 
+    <string name="historic_reference">Se caracteriza por contar con un elevado número de Museos, Monumentos, Castillos y otros lugares emblemáticos. Ideal para la fotografía y conocer sobre nuestros antepasados.</string>
+    <string name="historic_enviroment">Ubicado en zona histórica</string>
+
+    <string name="neiborhood_reference">Cuenta con gran número de bares, restaurantes, cafés, atracciones, entre otros. Generalmente son zonas superpobladas, ideal para conocer nuestra ideosincrasia. </string>
+    <string name="neibor_enviroment">Ubicado en zona urbana</string>
+
+    <string name="culture_reference">Prevalecen los sitios donde la cultura está presente: teatros, óperas, centros de arte, artesanía, entre otros. Ideal para los amantes de las salidas nocturnas</string>
+    <string name="culture_enviroment">Ubicado en zona cultural</string>
+
+    <string name="beach_reference">Se encuentra a poca distancia de playas, costas o marinas. Ideal para los amantes del mar, la pesca y los deportes acuáticos.</string>
+    <string name="beach_enviroment">Ubicado en zona de Playa</string>
+
+    <string name="natural_reference">Prevalece el verde por sobre todos los colores, a poca distancia de reservas naturales, sitios de picnic, campismos, entre otros. Donde se respira aire puro, alejados del ruido y las grandes ciudades.</string>
+    <string name="natural_enviroment">Ubicado en zona de naturaleza</string>
+    <string name="location_found">Ubicación encontrada</string>
+    <string name="location_found_confirm">¿Está seguro que esta es su ubicación?</string>
+    <string name="confirm_btn">Confirmar</string>
+    <string name="dialog_location_save_btn">Guardar</string>
+    <string name="dialog_location_enviroment_title">Entorno predominante</string>
+    <string name="dialog_location_poi_tittle">Lugares de interes cercanos</string>
+    <string name="route_from_title">Desde:</string>
+    <string name="rb_rent">La Renta</string>
+    <string name="rb_my_location">Mi Ubicación</string>
+    <string name="route_to_title">Hasta:</string>
+    <string name="rb_my_rent">La Renta</string>
+    <string name="rb_poi">Lugar de Interes</string>
+    <string name="route_time">Demora</string>
+    <string name="repita_la_contrase_a">Repita la contraseña</string>
+    <string name="reenviar_c_digo_de_activaci_n">Reenviar código de activación</string>
+    <string name="no_tienes_cuenta">No tienes cuenta?</string>
+    <string name="reg_strate">Regístrate</string>
+    <string name="success_register_user">Un código de activación fue enviado a su correo. Ingresélo por favor.</string>
+    <string name="user_pending_activation">Usuario pendiente de activación. Por favor, ingrese el código</string>
+    <string name="sync_success">En hora buena, los datos han sido actualizados con éxito</string>
+    <string name="select_starting_date">Seleccione fecha</string>
+    <string name="select_ending_date">Seleccione fecha</string>
+    <string name="lo_m_s_votado">Lo más votado</string>
+    <string name="lo_m_s_comentado">Lo más comentado</string>
+
 </resources>

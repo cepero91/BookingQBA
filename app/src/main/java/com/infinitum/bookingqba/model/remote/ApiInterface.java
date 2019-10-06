@@ -5,7 +5,9 @@ import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
 import com.infinitum.bookingqba.model.remote.pojo.AnaliticsGroup;
+import com.infinitum.bookingqba.model.remote.pojo.BlockDay;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
+import com.infinitum.bookingqba.model.remote.pojo.BookRequestInfo;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.CommentGroup;
 import com.infinitum.bookingqba.model.remote.pojo.DatabaseUpdate;
@@ -34,6 +36,7 @@ import com.infinitum.bookingqba.model.remote.pojo.RentVisitCountGroup;
 import com.infinitum.bookingqba.model.remote.pojo.RentWished;
 import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
+import com.infinitum.bookingqba.model.remote.pojo.SyncData;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.model.remote.pojo.UserEsentialData;
 
@@ -69,6 +72,11 @@ public interface ApiInterface {
     @GET("/api/date-count-update")
     Flowable<DatabaseUpdate> getDatabaseUpdate();
 
+    //-------------------- sync data --------------------------------//
+
+    @GET("/api/sync-data")
+    Single<SyncData> syncData(@Query("value") String value);
+
     //------------------- USER ---------------------------//
 
     @FormUrlEncoded
@@ -94,6 +102,9 @@ public interface ApiInterface {
     @GET("/api/pending-reservation/")
     Single<List<Reservation>> pendingReservation(@Header("Authorization") String token, @Query("userId") String userid);
 
+    @GET("/api/user-book-request-info/")
+    Single<List<BookRequestInfo>> bookRequestInfo(@Header("Authorization") String token, @Query("userId") String userid);
+
     @GET("/api/accepted-reservation/")
     Single<List<Reservation>> acceptedReservation(@Header("Authorization") String token, @Query("userId") String userid);
 
@@ -104,6 +115,10 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("/api/deny-reservation/")
     Single<ResponseResult> deniedReservation(@Header("Authorization") String token, @Field("uui") String uuid);
+
+    @FormUrlEncoded
+    @POST("/api/deny-reservation-user/")
+    Single<ResponseResult> deniedReservationByUser(@Header("Authorization") String token, @Field("uui") String uuid);
 
     @GET("/api/user-data/")
     Single<UserEsentialData> userBookOwnerData(@Header("Authorization") String token, @Query("userId") String userid, @Query("rentId") String rentId);
@@ -211,6 +226,9 @@ public interface ApiInterface {
 
     @GET("/api/disabled-dates")
     Single<DisabledDays> disabledDaysByRent(@Header("Authorization") String token, @Query("rentId") String value);
+
+    @POST("/api/block-dates")
+    Single<ResponseResult> blockDates(@Header("Authorization") String token, @Body BlockDay value);
 
     //------------------- COMMENT ---------------------//
 

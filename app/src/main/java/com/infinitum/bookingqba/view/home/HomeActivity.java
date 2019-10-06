@@ -30,13 +30,16 @@ import com.github.florent37.shapeofview.shapes.RoundRectView;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
 import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.model.remote.pojo.BookRequestInfo;
 import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.view.adapters.RentBookAdapter;
+import com.infinitum.bookingqba.view.adapters.UserBookRequestInfoAdapter;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.reservation.ReservationItem;
 import com.infinitum.bookingqba.view.base.LocationActivity;
+import com.infinitum.bookingqba.view.calendar.CalendarFragment;
 import com.infinitum.bookingqba.view.customview.SuccessDialogContentView;
 import com.infinitum.bookingqba.view.info.DialogFeedback;
 import com.infinitum.bookingqba.view.info.InfoFragment;
@@ -52,6 +55,7 @@ import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.profile.UserAuthActivity;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
+import com.infinitum.bookingqba.view.reservation.BookRequestListFragment;
 import com.infinitum.bookingqba.view.reservation.ReservationDetailActivity;
 import com.infinitum.bookingqba.view.reservation.ReservationListFragment;
 import com.infinitum.bookingqba.view.sync.SyncActivity;
@@ -96,7 +100,8 @@ import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 public class HomeActivity extends LocationActivity implements HasSupportFragmentInjector,
         FragmentNavInteraction, NavigationView.OnNavigationItemSelectedListener,
         FilterInteraction, MapFragment.OnFragmentMapInteraction, InfoInteraction,
-        DialogFeedback.FeedbackInteraction, MyRentsFragment.AddRentClick, RentBookAdapter.RentBookInteraction {
+        DialogFeedback.FeedbackInteraction, MyRentsFragment.AddRentClick,
+        RentBookAdapter.RentBookInteraction {
 
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
     private ActivityHomeBinding homeBinding;
@@ -294,6 +299,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         }
         menu.findItem(R.id.action_search).setVisible(mFragment instanceof RentListFragment);
         menu.findItem(R.id.action_refresh).setVisible(mFragment instanceof ProfileFragment);
+        menu.findItem(R.id.action_block).setVisible(mFragment instanceof CalendarFragment);
     }
 
 
@@ -362,12 +368,16 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         } else if (id == R.id.nav_logout) {
             confirmLogout();
         } else if (id == R.id.nav_my_rents && !(mFragment instanceof MyRentsFragment)) {
-            String userid = sharedPreferences.getString(USER_ID, "");
-            String token = sharedPreferences.getString(USER_TOKEN, "");
-            mFragment = MyRentsFragment.newInstance(userid, token);
+            mFragment = MyRentsFragment.newInstance();
             sameFragment = false;
         } else if (id == R.id.nav_book_request && !(mFragment instanceof ReservationListFragment)) {
             mFragment = ReservationListFragment.newInstance();
+            sameFragment = false;
+        } else if (id == R.id.nav_my_book_request && !(mFragment instanceof BookRequestListFragment)) {
+            mFragment = BookRequestListFragment.newInstance();
+            sameFragment = false;
+        } else if (id == R.id.nav_my_calendar && !(mFragment instanceof CalendarFragment)) {
+            mFragment = CalendarFragment.newInstance();
             sameFragment = false;
         }
         if (mFragment != null && !sameFragment) {
@@ -400,7 +410,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START);
             return;
         }
-        if(filterActive){
+        if (filterActive) {
             filterFragment.resetAllParams();
             onFilterClean();
             return;

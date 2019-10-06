@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_block"
+        android:icon="@drawable/ic_calendar_1_block"
+        android:title="Block"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_change_rent"
+        android:icon="@drawable/ic_repeat_set"
+        android:title="Filter"
+        app:showAsAction="always"
+        android:visible="false"/>
+
+</menu>

@@ -3,27 +3,18 @@ package com.infinitum.bookingqba.view.profile;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentMapFormBinding;
-import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.view.base.BaseMapFragment;
-import com.infinitum.bookingqba.view.widgets.DialogLocationConfirmView;
 
-import org.oscim.android.MapView;
-import org.oscim.backend.CanvasAdapter;
 import org.oscim.backend.canvas.Bitmap;
 import org.oscim.core.GeoPoint;
 import org.oscim.core.MapPosition;
@@ -34,35 +25,20 @@ import org.oscim.layers.Layer;
 import org.oscim.layers.marker.ItemizedLayer;
 import org.oscim.layers.marker.MarkerItem;
 import org.oscim.layers.marker.MarkerSymbol;
-import org.oscim.layers.tile.buildings.BuildingLayer;
-import org.oscim.layers.tile.vector.VectorTileLayer;
-import org.oscim.layers.tile.vector.labeling.LabelLayer;
 import org.oscim.map.Map;
-import org.oscim.renderer.GLViewport;
-import org.oscim.scalebar.DefaultMapScaleBar;
-import org.oscim.scalebar.MapScaleBar;
-import org.oscim.scalebar.MapScaleBarLayer;
-import org.oscim.theme.VtmThemes;
-import org.oscim.tiling.source.mapfile.MapFileTileSource;
 import org.oscim.utils.animation.Easing;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
-import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
-import static com.infinitum.bookingqba.util.Constants.USER_GPS;
 import static org.oscim.android.canvas.AndroidGraphics.drawableToBitmap;
 
 public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.OnItemGestureListener<MarkerItem>,

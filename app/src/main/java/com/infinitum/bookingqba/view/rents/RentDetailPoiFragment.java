@@ -17,6 +17,7 @@ import android.view.animation.LayoutAnimationController;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentRentDetailPoiBinding;
+import com.infinitum.bookingqba.util.Constants;
 import com.infinitum.bookingqba.view.adapters.RDPoiAdapter;
 import com.infinitum.bookingqba.view.adapters.RDPoiCategoryAdapter;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.PoiCategory;
@@ -33,16 +34,21 @@ public class RentDetailPoiFragment extends Fragment implements RDPoiCategoryAdap
 
     private static final String ARG_POI_CATEGORY = "poiCategory";
 
+    private static final String ARG_REFERENCE_ZONE = "refZone";
+
     private Map<PoiCategory, List<RentPoiItem>> argPoiCategory;
+
+    private String argRefZone;
 
     public RentDetailPoiFragment() {
         // Required empty public constructor
     }
 
-    public static RentDetailPoiFragment newInstance(Map<PoiCategory, List<RentPoiItem>> argPoiCategory) {
+    public static RentDetailPoiFragment newInstance(Map<PoiCategory, List<RentPoiItem>> argPoiCategory, String argRefZone) {
         RentDetailPoiFragment fragment = new RentDetailPoiFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_POI_CATEGORY, (Serializable) argPoiCategory);
+        args.putString(ARG_REFERENCE_ZONE, argRefZone);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,6 +58,7 @@ public class RentDetailPoiFragment extends Fragment implements RDPoiCategoryAdap
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             argPoiCategory = (Map<PoiCategory, List<RentPoiItem>>) getArguments().getSerializable(ARG_POI_CATEGORY);
+            argRefZone = getArguments().getString(ARG_REFERENCE_ZONE);
         }
     }
 
@@ -65,16 +72,41 @@ public class RentDetailPoiFragment extends Fragment implements RDPoiCategoryAdap
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupPoiCategoryAdapter(argPoiCategory);
-        if(argPoiCategory!=null){
-            setupPoiAdapter((PoiCategory) argPoiCategory.keySet().toArray()[0]);
-        }
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(false);
+        setupReferenceZone(argRefZone);
+        setupPoiCategoryAdapter(argPoiCategory);
+        if (argPoiCategory != null) {
+            setupPoiAdapter((PoiCategory) argPoiCategory.keySet().toArray()[0]);
+        }
+    }
+
+    private void setupReferenceZone(String argRefZone) {
+        if (argRefZone.equalsIgnoreCase(Constants.URBAN)) {
+            fragmentRentDetailPoiBinding.tvRzTitle.setText(getString(R.string.neibor_enviroment));
+            fragmentRentDetailPoiBinding.tvRzDescription.setText(getString(R.string.neiborhood_reference));
+            fragmentRentDetailPoiBinding.tvRzDescription.setCompoundDrawablesWithIntrinsicBounds(null,null,getActivity().getDrawable(R.drawable.compass),null);
+        } else if (argRefZone.equalsIgnoreCase(Constants.BEACH)) {
+            fragmentRentDetailPoiBinding.tvRzTitle.setText(getString(R.string.beach_enviroment));
+            fragmentRentDetailPoiBinding.tvRzDescription.setText(getString(R.string.beach_reference));
+            fragmentRentDetailPoiBinding.tvRzDescription.setCompoundDrawablesWithIntrinsicBounds(null,null,getActivity().getDrawable(R.drawable.beach),null);
+        } else if (argRefZone.equalsIgnoreCase(Constants.NATURAL)) {
+            fragmentRentDetailPoiBinding.tvRzTitle.setText(getString(R.string.natural_enviroment));
+            fragmentRentDetailPoiBinding.tvRzDescription.setText(getString(R.string.natural_reference));
+            fragmentRentDetailPoiBinding.tvRzDescription.setCompoundDrawablesWithIntrinsicBounds(null,null,getActivity().getDrawable(R.drawable.caravan),null);
+        } else if (argRefZone.equalsIgnoreCase(Constants.HISTORIC)) {
+            fragmentRentDetailPoiBinding.tvRzTitle.setText(getString(R.string.historic_enviroment));
+            fragmentRentDetailPoiBinding.tvRzDescription.setText(getString(R.string.historic_reference));
+            fragmentRentDetailPoiBinding.tvRzDescription.setCompoundDrawablesWithIntrinsicBounds(null,null,getActivity().getDrawable(R.drawable.pictures),null);
+        } else if (argRefZone.equalsIgnoreCase(Constants.CULTURE)) {
+            fragmentRentDetailPoiBinding.tvRzTitle.setText(getString(R.string.culture_enviroment));
+            fragmentRentDetailPoiBinding.tvRzDescription.setText(getString(R.string.culture_reference));
+            fragmentRentDetailPoiBinding.tvRzDescription.setCompoundDrawablesWithIntrinsicBounds(null,null,getActivity().getDrawable(R.drawable.photo_camera),null);
+        }
     }
 
     private void setupPoiCategoryAdapter(Map<PoiCategory, List<RentPoiItem>> poiCategories) {
@@ -82,7 +114,7 @@ public class RentDetailPoiFragment extends Fragment implements RDPoiCategoryAdap
             RDPoiCategoryAdapter adapter = new RDPoiCategoryAdapter(poiCategories.keySet().toArray(new PoiCategory[poiCategories.keySet().size()]), this);
             fragmentRentDetailPoiBinding.rvCategory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
             fragmentRentDetailPoiBinding.rvCategory.setAdapter(adapter);
-            ViewCompat.setNestedScrollingEnabled(fragmentRentDetailPoiBinding.rvCategory,false);
+            ViewCompat.setNestedScrollingEnabled(fragmentRentDetailPoiBinding.rvCategory, false);
         }
     }
 

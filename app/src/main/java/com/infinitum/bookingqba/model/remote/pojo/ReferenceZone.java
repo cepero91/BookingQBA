@@ -13,9 +13,6 @@ public class ReferenceZone {
     @Expose
     private String name;
 
-    @SerializedName("image")
-    @Expose
-    private String image;
 
 
     public String getId() {
@@ -34,11 +31,4 @@ public class ReferenceZone {
         this.name = name;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
 }

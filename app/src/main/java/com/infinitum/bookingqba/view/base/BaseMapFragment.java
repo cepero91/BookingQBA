@@ -49,8 +49,7 @@ public abstract class BaseMapFragment extends Fragment {
 
     protected Disposable disposable;
     protected CompositeDisposable compositeDisposable;
-    private String mapFile, routeZipFile, routeDir;
-    protected GraphHopper graphHopper;
+    private String mapFile;
 
     protected MapView mapView;
     protected Map map;
@@ -73,7 +72,6 @@ public abstract class BaseMapFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mapFile = sharedPreferences.getString(MAP_PATH, "");
-        routeDir = sharedPreferences.getString(ROUTE_PATH, "");
 
         mapView = getActivity().findViewById(R.id.mapview);
         map = mapView.map();
@@ -99,20 +97,13 @@ public abstract class BaseMapFragment extends Fragment {
 
     private void initializeMap() {
         if (mapFile.equals("")) {
-            publishProgress("Configuración inicial, espere...");
+            publishProgress("Configuración inicial...");
             disposable = Completable.fromAction(this::copyAssetMap)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .andThen(Completable.fromAction(this::setupMapView).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
                     .andThen(Completable.fromAction(this::initializeMarker))
-                    .doOnComplete(this::showViews)
-                    .andThen(configurateGraph())
-                    .subscribe(() -> {
-                        File zipFile = new File(routeZipFile);
-                        if (zipFile.delete()) {
-                            Timber.e("====> zip eliminado");
-                        }
-                    }, Timber::e);
+                    .subscribe(this::showViews,Timber::e);
             compositeDisposable.add(disposable);
         } else {
             publishProgress("Cargando mapa...");
@@ -121,69 +112,8 @@ public abstract class BaseMapFragment extends Fragment {
                     .observeOn(AndroidSchedulers.mainThread())
                     .andThen(Completable.fromAction(this::initializeMarker))
                     .doOnComplete(this::showViews)
-                    .andThen(configurateGraph())
-                    .subscribe();
+                    .subscribe(this::showViews,Timber::e);
             compositeDisposable.add(disposable);
-        }
-    }
-
-    private Completable configurateGraph() {
-        if (routeDir.isEmpty()) {
-            return Completable.fromAction(this::copyAssetRoute)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnComplete(() -> Toast.makeText(getActivity(), "Configurando ruta...", Toast.LENGTH_SHORT).show())
-                    .andThen(Completable.fromAction(this::unzipFile).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
-                    .doOnComplete(() -> saveRouteFilePath(getActivity().getFilesDir().getAbsolutePath() + File.separator + "route-gh"))
-                    .andThen(Completable.fromAction(this::setupGraph).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
-                    .doOnComplete(() -> Toast.makeText(getActivity(), "Ruta lista", Toast.LENGTH_SHORT).show());
-        } else {
-            return Completable.fromAction(this::setupGraph)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnComplete(() -> {
-                        Toast.makeText(getActivity(), "Ruta lista", Toast.LENGTH_SHORT).show();
-                    });
-        }
-    }
-
-    private void setupGraph() {
-        String routeDir = getActivity().getFilesDir().getAbsolutePath() + File.separator + "route-gh";
-        graphHopper = new GraphHopper().forMobile();
-        graphHopper.getCHFactoryDecorator().addWeighting("shortest");
-        graphHopper.load(routeDir);
-        Timber.e("found graph " + graphHopper.getGraphHopperStorage().toString() + ", nodes:" + graphHopper.getGraphHopperStorage().getNodes());
-    }
-
-    private void copyAssetRoute() {
-        CopyAssets.with(getActivity())
-                .from("route-gh")
-                .setListener(new CopyListener() {
-                    @Override
-                    public void completed(CopyCreator copyCreator, java.util.Map<File, Boolean> results) {
-                        if (results.size() > 0) {
-                            routeZipFile = ((File) results.keySet().toArray()[0]).getAbsolutePath();
-                        }
-                    }
-
-                    @Override
-                    public void error(CopyCreator copyCreator, Throwable e) {
-                        Timber.e(e);
-                    }
-                })
-                .copy();
-    }
-
-    private void unzipFile() {
-        if (routeZipFile != null) {
-            String destine = getActivity().getFilesDir().getAbsolutePath() + File.separator + "route-gh";
-            try {
-                ZipUtil.unzip(new File(routeZipFile), new File(destine));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            throw new NullPointerException("No existe ese fichero");
         }
     }
 
@@ -213,39 +143,26 @@ public abstract class BaseMapFragment extends Fragment {
         edit.apply();
     }
 
-    private void saveRouteFilePath(String path) {
-        SharedPreferences.Editor edit = sharedPreferences.edit();
-        edit.putString(ROUTE_PATH, path);
-        edit.apply();
-    }
-
     public void setupMapView() {
         MapRenderer.setBackgroundColor(Color.WHITE);
         MapFileTileSource tileSource = new MapFileTileSource();
         String mapPath = new File(mapFile).getAbsolutePath();
         if (tileSource.setMapFile(mapPath)) {
-
             map.viewport().setMinZoomLevel(10);
-
             // Vector layer
             VectorTileLayer tileLayer = map.setBaseMap(tileSource);
-
             // Building layer
             map.layers().add(new BuildingLayer(map, tileLayer));
-
             // Label layer
             map.layers().add(new LabelLayer(map, tileLayer));
-
             // Render theme
             map.setTheme(VtmThemes.DEFAULT);
-
             // Scale bar
             MapScaleBar mapScaleBar = new DefaultMapScaleBar(map);
             MapScaleBarLayer mapScaleBarLayer = new MapScaleBarLayer(map, mapScaleBar);
             mapScaleBarLayer.getRenderer().setPosition(GLViewport.Position.BOTTOM_LEFT);
             mapScaleBarLayer.getRenderer().setOffset(5 * CanvasAdapter.getScale(), 0);
             map.layers().add(mapScaleBarLayer);
-
         }
     }
 

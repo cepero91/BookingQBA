@@ -8,6 +8,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.RawQuery;
+import android.arch.persistence.room.RoomWarnings;
 import android.arch.persistence.room.Transaction;
 import android.arch.persistence.room.TypeConverters;
 import android.arch.persistence.room.Update;
@@ -422,8 +423,9 @@ public abstract class BookingQBADao {
     }
 
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.ratingCount, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
+    @Query("SELECT Rent.* FROM Rent " +
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) ")
     public abstract Flowable<List<RentAndDependencies>> getAllRents();
 
@@ -458,14 +460,16 @@ public abstract class BookingQBADao {
      * @param province
      * @return
      */
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.ratingCount, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
+    @Query("SELECT Rent.* FROM Rent " +
             "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
             "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
             "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
             "Province.id = :province ORDER BY Rent.rating DESC, Rent.ratingCount DESC")
     public abstract Flowable<List<RentAndDependencies>> getAllMostRatingRent(String province);
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
     public abstract Flowable<List<RentAndDependencies>> getAllMostCommentedRent(SupportSQLiteQuery query);
@@ -499,6 +503,7 @@ public abstract class BookingQBADao {
     @RawQuery(observedEntities = RentEntity.class)
     public abstract long updateRentIsWished(SupportSQLiteQuery query);
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
     public abstract Flowable<List<RentAndDependencies>> filterRents(SupportSQLiteQuery query);
@@ -511,6 +516,7 @@ public abstract class BookingQBADao {
     @RawQuery(observedEntities = RentEntity.class)
     public abstract Single<List<RentAndGalery>> getRentByUuidList(SupportSQLiteQuery query);
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
     public abstract Flowable<List<RentAndDependencies>> getRentNearLatLon(SupportSQLiteQuery query);

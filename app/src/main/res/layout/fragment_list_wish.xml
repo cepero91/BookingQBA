@@ -12,7 +12,8 @@
             type="Boolean" />
     </data>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -25,8 +26,7 @@
             android:layout_height="match_parent"
             android:paddingBottom="20dp"
             android:layoutAnimation="@anim/layout_anim_fall_down"
-            app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; !safeUnbox(isEmpty)}"
-            />
+            app:visibleGone="@{!safeUnbox(isLoading) &amp;&amp; !safeUnbox(isEmpty)}"/>
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -43,16 +43,15 @@
 
         </FrameLayout>
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:layout_gravity="center"
-            app:visibleGone="@{safeUnbox(isEmpty)}"
-            app:lottie_loop="true"
-            app:lottie_repeatMode="restart"
-            app:lottie_autoPlay="true"
-            app:lottie_enableMergePathsForKitKatAndAbove="true"
-            app:lottie_fileName="lottie/empty.json"/>
+        <com.infinitum.bookingqba.view.customview.StateView
+            android:id="@+id/state_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center" />
 
 
     </FrameLayout>

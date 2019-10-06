@@ -4,6 +4,7 @@ import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
 import com.infinitum.bookingqba.model.remote.pojo.RemovedList;
+import com.infinitum.bookingqba.model.remote.pojo.SyncData;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public interface DBCommonOperationRepository {
     Flowable<Resource<DatabaseUpdateEntity>> lastDatabaseUpdateLocal();
 
     Single<OperationResult> deleteAll(String dateValue);
+
+    Single<SyncData> getSyncData(String dateValue);
 }

@@ -11,105 +11,315 @@
 
     </data>
 
-    <RelativeLayout
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.map.MapFragment">
+        android:gravity="bottom"
+        app:umanoDragView="@+id/map_marker_content"
+        app:umanoInitialState="hidden"
+        app:umanoOverlay="true"
+        app:umanoPanelHeight="100dp"
+        app:umanoParallaxOffset="120dp"
+        app:umanoScrollableView="@+id/panel_scrollable"
+        app:umanoShadowHeight="4dp">
 
-        <FrameLayout
-            android:id="@+id/fl_content_map"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:context=".view.map.MapFragment">
 
-            <org.oscim.android.MapView
-                android:id="@+id/mapview"
+            <FrameLayout
+                android:id="@+id/fl_content_map"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:discreteVisibility="@{!safeUnbox(isLoading)}" />
+                android:layout_height="match_parent">
 
-            <View
-                android:id="@+id/v_overlap"
+                <org.oscim.android.MapView
+                    android:id="@+id/mapview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:discreteVisibility="@{!safeUnbox(isLoading)}" />
+
+                <View
+                    android:id="@+id/v_overlap"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    app:cardElevation="5dp">
+
+                    <FrameLayout
+                        android:id="@+id/fl_marker"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <FrameLayout
+                        android:id="@+id/fl_near"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </android.support.v7.widget.CardView>
+
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                app:visibleGone="@{safeUnbox(isLoading)}">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lv_progress"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="lottie/word.json"
+                    app:lottie_loop="true"
+                    app:lottie_repeatMode="restart" />
+
+                <TextView
+                    android:id="@+id/tv_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/poppinsregular"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_content_floating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:orientation="vertical">
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/iv_near_rent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:tint="@color/White_100"
+                    android:visibility="gone"
+                    app:fabSize="mini"
+                    app:srcCompat="@drawable/ic_radar_set" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/iv_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:tint="@color/White_100"
+                    app:fabSize="normal"
+                    app:srcCompat="@drawable/ic_my_location_black_24dp" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/map_marker_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/White_100"
+            android:clickable="true"
+            android:focusable="false">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/rl_marker"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/cv_btn_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.github.siyamed.shapeimageview.RoundedImageView
+                        android:id="@+id/siv_rent_image"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="start|top"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/bedroom"
+                        app:siBorderAlpha="0" />
+
+                </android.support.v7.widget.CardView>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout6"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="@+id/cv_btn_view"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/cv_btn_view"
+                    app:layout_constraintTop_toTopOf="@+id/cv_btn_view">
+
+                    <TextView
+                        android:id="@+id/tv_rent_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppinsbold"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="Hola mundo"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start|center"
+                        android:orientation="horizontal">
+
+                        <com.willy.ratingbar.BaseRatingBar
+                            android:id="@+id/sr_scale_rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:srb_clickable="false"
+                            app:srb_drawableEmpty="@drawable/ic_fa_star_o_line"
+                            app:srb_drawableFilled="@drawable/ic_fa_star_line"
+                            app:srb_scrollable="false"
+                            app:srb_starHeight="16dp"
+                            app:srb_starPadding="2dp"
+                            app:srb_starWidth="16dp"
+                            app:srb_stepSize="0.5" />
+
+                        <TextView
+                            android:id="@+id/tv_rating_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center"
+                            android:layout_marginEnd="3dp"
+                            android:layout_marginStart="3dp"
+                            android:fontFamily="@font/poppinslight"
+                            android:includeFontPadding="false"
+                            android:text="(2 votos)"
+                            android:textColor="@color/material_color_blue_grey_300"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppinsmedium"
+                            android:text="33$"
+                            android:textColor="@color/material_color_blue_grey_400"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tv_rent_mode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppinslight"
+                            android:text="/por noche"
+                            android:textColor="@color/material_color_blue_grey_400"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cv_btn_view">
 
 
-            <android.support.v7.widget.CardView
+                    <TextView
+                        android:id="@+id/ll_btn_poi"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:orientation="horizontal"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp"
+                        android:text="Donde ir"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:layout_width="0.5dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/material_color_blue_grey_100" />
+
+                    <TextView
+                        android:id="@+id/ll_btn_route"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp"
+                        android:text="Ruta"
+                        android:textColor="@color/material_color_blue_grey_200"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.v4.widget.NestedScrollView
+                android:id="@+id/panel_scrollable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                app:cardElevation="5dp">
+                android:layout_below="@id/rl_marker">
 
                 <FrameLayout
-                    android:id="@+id/fl_marker"
+                    android:id="@+id/fl_detail"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rl_marker"
+                    android:animateLayoutChanges="true" />
 
-                <FrameLayout
-                    android:id="@+id/fl_near"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+            </android.support.v4.widget.NestedScrollView>
 
-            </android.support.v7.widget.CardView>
+        </RelativeLayout>
 
-
-        </FrameLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="vertical"
-            app:visibleGone="@{safeUnbox(isLoading)}">
-
-            <com.rey.material.widget.ProgressView
-                android:id="@+id/progress_pv_circular_inout"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_gravity="center"
-                app:pv_autostart="true"
-                app:v_styleId="@array/pv_circular_in" />
-
-            <TextView
-                android:id="@+id/tv_progress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/poppinsregular" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_content_floating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:orientation="vertical">
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/iv_near_rent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="10dp"
-                android:tint="@color/White_100"
-                android:visibility="gone"
-                app:fabSize="mini"
-                app:srcCompat="@drawable/ic_fa_compass_line" />
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/iv_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:tint="@color/White_100"
-                app:fabSize="normal"
-                app:srcCompat="@drawable/ic_fa_crosshairs_line" />
-
-        </LinearLayout>
-
-    </RelativeLayout>
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
 </layout>

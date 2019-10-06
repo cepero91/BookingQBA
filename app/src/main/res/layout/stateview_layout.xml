@@ -10,24 +10,21 @@
     android:visibility="gone">
 
 
-    <com.github.siyamed.shapeimageview.RoundedImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/iv_state"
         android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:layout_height="200dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/fogg_no_comments"
-        app:siBorderColor="@color/material_color_grey_50"
-        app:siBorderWidth="2dp"
-        app:siRadius="150dp" />
+        app:srcCompat="@drawable/flame_empty" />
 
     <TextView
         android:id="@+id/tv_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/poppinsbold"
+        android:fontFamily="@font/poppinsblack"
         android:text="Nada que mostrar"
-        android:textColor="@color/material_color_blue_grey_100"
-        android:textSize="22sp" />
+        android:textColor="@color/material_color_blue_grey_300"
+        android:textSize="24sp" />
 
 
 </LinearLayout>

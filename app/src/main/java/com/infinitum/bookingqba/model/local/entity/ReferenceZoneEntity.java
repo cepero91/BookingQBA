@@ -19,13 +19,9 @@ public class ReferenceZoneEntity {
     @NonNull
     private String name;
 
-    @NonNull
-    private byte[] image;
-
-    public ReferenceZoneEntity(@NonNull String id, @NonNull String name, @NonNull byte[] image) {
+    public ReferenceZoneEntity(@NonNull String id, @NonNull String name) {
         this.id = id;
         this.name = name;
-        this.image = image;
     }
 
     @NonNull
@@ -46,12 +42,4 @@ public class ReferenceZoneEntity {
         this.name = name;
     }
 
-    @NonNull
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(@NonNull byte[] image) {
-        this.image = image;
-    }
 }

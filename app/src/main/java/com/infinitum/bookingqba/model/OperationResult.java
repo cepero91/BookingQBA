@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.model;
 import android.support.annotation.NonNull;
 
 import com.infinitum.bookingqba.model.remote.errors.ResponseResultException;
+import com.infinitum.bookingqba.util.Constants;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -31,18 +32,18 @@ public class OperationResult {
     }
 
     public static OperationResult error(String message) {
-        return new OperationResult(Result.ERROR, message);
+        return new OperationResult(Result.OPERATIONAL_ERROR, message);
     }
 
     public static OperationResult error(Throwable throwable) {
         if (throwable instanceof ConnectException) {
-            return new OperationResult(Result.ERROR, "Error al conectarse");
+            return new OperationResult(Result.CONNEXION_ERROR, Constants.CONNEXION_ERROR_MSG);
         } else if (throwable instanceof SocketException) {
-            return new OperationResult(Result.ERROR, "Error al conectarse");
-        }else if (throwable instanceof ResponseResultException) {
-            return new OperationResult(Result.ERROR, throwable.getMessage());
+            return new OperationResult(Result.CONNEXION_ERROR, Constants.CONNEXION_ERROR_MSG);
+        } else if (throwable instanceof ResponseResultException) {
+            return new OperationResult(Result.SERVER_ERROR, throwable.getMessage());
         } else {
-            return new OperationResult(Result.ERROR, "Un error ha ocurrido");
+            return new OperationResult(Result.OPERATIONAL_ERROR, Constants.OPERATIONAL_ERROR_MSG);
         }
 
     }
@@ -67,7 +68,9 @@ public class OperationResult {
 
     public enum Result {
         SUCCESS,
-        ERROR,
+        OPERATIONAL_ERROR,
+        CONNEXION_ERROR,
+        SERVER_ERROR,
         EMPTY
     }
 }

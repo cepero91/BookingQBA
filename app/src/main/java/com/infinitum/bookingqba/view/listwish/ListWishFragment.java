@@ -21,6 +21,7 @@ import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentListWishBinding;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
+import com.infinitum.bookingqba.view.customview.StateView;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.squareup.picasso.Picasso;
@@ -69,10 +70,9 @@ public class ListWishFragment extends BaseNavigationFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
+        initLoading(true, StateView.Status.LOADING, true);
 
-        wishBinding.setIsLoading(true);
-        wishBinding.setIsEmpty(false);
+        rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
 
         setupRecyclerView();
 
@@ -86,6 +86,12 @@ public class ListWishFragment extends BaseNavigationFragment {
         return wishBinding.getRoot();
     }
 
+    private void initLoading(boolean loading, StateView.Status status, boolean isEmpty) {
+        wishBinding.setIsLoading(loading);
+        wishBinding.setIsEmpty(isEmpty);
+        wishBinding.stateView.setStatus(status);
+    }
+
     public void setupRecyclerView() {
         wishBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         wishBinding.recyclerView.addItemDecoration(new BetweenSpacesItemDecoration(2, 0));
@@ -96,7 +102,10 @@ public class ListWishFragment extends BaseNavigationFragment {
         disposable = rentViewModel.getRentListWish(province)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(listResource -> setItemsAdapter(listResource.data), Timber::e);
+                .subscribe(listResource -> setItemsAdapter(listResource.data), throwable -> {
+                    Timber.e(throwable);
+                    initLoading(false, StateView.Status.EMPTY, true);
+                });
         compositeDisposable.add(disposable);
     }
 
@@ -108,12 +117,10 @@ public class ListWishFragment extends BaseNavigationFragment {
             recyclerViewAdapter.setItems(rendererViewModelList);
             wishBinding.recyclerView.setAdapter(recyclerViewAdapter);
             OverScrollDecoratorHelper.setUpOverScroll(wishBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
-            wishBinding.setIsLoading(false);
-            wishBinding.setIsEmpty(false);
+            initLoading(false, StateView.Status.SUCCESS, false);
             wishBinding.progressPvLinear.stop();
         } else {
-            wishBinding.setIsLoading(false);
-            wishBinding.setIsEmpty(true);
+            initLoading(false, StateView.Status.EMPTY, true);
             wishBinding.progressPvLinear.stop();
         }
     }
