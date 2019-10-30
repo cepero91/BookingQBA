@@ -8,14 +8,18 @@ import android.graphics.PointF;
 import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
+import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
+import com.infinitum.bookingqba.model.local.entity.WishedRentEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndDependencies;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
+import com.infinitum.bookingqba.model.local.pojo.RentDetailEsential;
 import com.infinitum.bookingqba.model.local.pojo.RentMostComment;
 import com.infinitum.bookingqba.model.local.pojo.RentMostRating;
+import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.BlockDay;
@@ -30,6 +34,7 @@ import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
 import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoiAdd;
+import com.infinitum.bookingqba.model.remote.pojo.RentPoiReferenceZone;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.util.Constants;
 import com.infinitum.bookingqba.util.DateUtils;
@@ -214,6 +219,23 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
+    public Flowable<Resource<List<RentPoiAndRelation>>> getRentPoiById(String uuid) {
+        return qbaDao.getRentPoiById(uuid)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+
+    @Override
+    public Flowable<Resource<WishedRentEntity>> rentIsWished(String rentUudi, String userId){
+        return qbaDao.getWishedRent(rentUudi,userId)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
     public Completable addOrUpdateRentVisitCount(String id, String rent) {
         SupportSQLiteQuery query = new SimpleSQLiteQuery("INSERT OR REPLACE INTO RentVisitCount VALUES ('" + rent + "', COALESCE(" +
                 "(SELECT visitCount FROM RentVisitCount WHERE rentId = '" + rent + "'),0)+1)");
@@ -233,15 +255,17 @@ public class RentRepoImpl implements RentRepository {
     }
 
     @Override
-    public Flowable<Resource<List<RentAndGalery>>> allWishedRent(String province) {
-        return qbaDao.getAllWishedRents(province)
+    public Flowable<Resource<List<RentAndDependencies>>> allWishedRent(String province, String userId) {
+        return qbaDao.getAllWishedRents(province, userId)
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);
     }
 
     @Override
-    public Completable updateIsWishedRent(String uuid, int isWished) {
-        SupportSQLiteQuery query = new SimpleSQLiteQuery("UPDATE Rent SET isWished ='" + isWished + "' WHERE id='" + uuid + "'");
+    public Completable addOrUpdateWishedRent(String uuid,String userId, int isWished) {
+        SupportSQLiteQuery query = new SimpleSQLiteQuery("INSERT OR REPLACE INTO Wished(id,value,userId,rent) " +
+                "VALUES ((SELECT Wished.id FROM Wished WHERE Wished.userId = '"+userId+"' AND Wished.rent = '"+uuid+"'), " +
+                ""+isWished+",'"+userId+"','"+uuid+"')");
         return Completable.fromAction(() -> qbaDao.updateRentIsWished(query)).subscribeOn(Schedulers.io());
     }
 
@@ -277,8 +301,6 @@ public class RentRepoImpl implements RentRepository {
 
     @Override
     public Flowable<Resource<List<RentAndDependencies>>> filterRents(Map<String, List<String>> filterParams, String province) {
-//        String query = FilterRepositoryUtil.buildFilterQuery(filterParams, province);
-//        SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(query);
         return Flowable.just(FilterRepositoryUtil.buildFilterQuery(filterParams, province)).flatMap(result->{
             SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(result);
             return qbaDao.filterRents(simpleSQLiteQuery).subscribeOn(Schedulers.io());
@@ -301,11 +323,6 @@ public class RentRepoImpl implements RentRepository {
             Single<ResponseResult> newRentGalery = retrofit.create(ApiInterface.class)
                     .addRentGalery(token, imagesRequestBody).subscribeOn(Schedulers.io());
             collection.add(newRentGalery);
-        }
-        if (params.containsKey("poi")) {
-            Single<ResponseResult> newRentPoi = retrofit.create(ApiInterface.class)
-                    .addRentPoi(token, (RentPoiAdd) params.get("poi")).subscribeOn(Schedulers.io());
-            collection.add(newRentPoi);
         }
         if (params.containsKey("offer")) {
             Single<ResponseResult> newRentOffer = retrofit.create(ApiInterface.class)
@@ -452,6 +469,24 @@ public class RentRepoImpl implements RentRepository {
     public Single<Resource<ResponseResult>> blockDates(String token, BlockDay blockDay) {
         return retrofit.create(ApiInterface.class)
                 .blockDates(token, blockDay)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Single<Resource<RentPoiReferenceZone>> referenceZoneAndPoiByLocation(String token, double lat, double lon) {
+        return retrofit.create(ApiInterface.class)
+                .getReferenceZoneAndPoisByLocation(token, lat,lon)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
+    @Override
+    public Single<Resource<ResponseResult>> deleteImage(String token, String uuid) {
+        return retrofit.create(ApiInterface.class)
+                .imageDelete(token, uuid)
                 .subscribeOn(Schedulers.io())
                 .map(Resource::success)
                 .onErrorReturn(Resource::error);

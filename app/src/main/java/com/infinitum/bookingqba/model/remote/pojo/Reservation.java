@@ -24,6 +24,10 @@ public class Reservation {
     @Expose
     private String endDate;
 
+    @SerializedName("created")
+    @Expose
+    private String created;
+
     @SerializedName("avatar")
     @Expose
     private String avatar;
@@ -44,16 +48,31 @@ public class Reservation {
     @Expose
     private String aditional;
 
-    public Reservation(String id, String username, String startDate, String endDate, String avatar, int capability, String userId, String rentId, String aditional) {
+    @SerializedName("rentName")
+    @Expose
+    private String rentName;
+
+    @SerializedName("hostCount")
+    @Expose
+    private int hostCount;
+
+    @SerializedName("state")
+    @Expose
+    private int state;
+
+    public Reservation(String id, String username, String startDate, String endDate, String created, String avatar, int capability, String userId, String rentId, String aditional, String rentName, int hostCount) {
         this.id = id;
         this.username = username;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.created = created;
         this.avatar = avatar;
         this.capability = capability;
         this.userId = userId;
         this.rentId = rentId;
         this.aditional = aditional;
+        this.rentName = rentName;
+        this.hostCount = hostCount;
     }
 
     public String getId() {
@@ -86,6 +105,14 @@ public class Reservation {
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
     }
 
     public String getAvatar() {
@@ -126,5 +153,29 @@ public class Reservation {
 
     public void setAditional(String aditional) {
         this.aditional = aditional;
+    }
+
+    public String getRentName() {
+        return rentName;
+    }
+
+    public void setRentName(String rentName) {
+        this.rentName = rentName;
+    }
+
+    public int getHostCount() {
+        return hostCount;
+    }
+
+    public void setHostCount(int hostCount) {
+        this.hostCount = hostCount;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }

@@ -1,112 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cv_rent_content"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
-    android:layout_marginBottom="5dp"
-    android:layout_marginStart="20dp"
-    android:layout_marginEnd="20dp"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="5dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <data>
+        <variable
+            name="item"
+            type="com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem"/>
+    </data>
+
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:id="@+id/siv_rent_image"
             android:layout_width="match_parent"
-            android:layout_height="150dp">
-
-            <com.github.siyamed.shapeimageview.RoundedImageView
-                android:id="@+id/siv_rent_image"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:src="@drawable/bedroom"
-                app:siShape="@drawable/shape_imageview_rounded_top" />
-
-
-            <LinearLayout
-                android:id="@+id/ll_content_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/shape_list_wish_item_price_square"
-                android:orientation="horizontal"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true">
-
-                <TextView
-                    android:id="@+id/tv_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsbold"
-                    android:textColor="@color/White_100"
-                    android:text="Precio" />
-
-                <TextView
-                    android:id="@+id/tv_rent_mode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsregular"
-                    android:textColor="@color/White_100"
-                    android:text="Modo" />
-
-            </LinearLayout>
-
-        </RelativeLayout>
+            android:layout_height="150dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:setRentListImage="@{item.getImagePath()}"
+            app:siBorderAlpha="0"
+            app:siRadius="5dp" />
 
         <LinearLayout
-            android:id="@+id/ll_content_detail"
-            android:layout_width="match_parent"
+            android:id="@+id/ll_content_price"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:orientation="vertical">
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/shape_rent_pop_price_square"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@+id/siv_rent_image"
+            app:layout_constraintTop_toTopOf="@+id/siv_rent_image">
 
             <TextView
-                android:id="@+id/tv_rent_name"
+                android:id="@+id/tv_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppinsbold"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:text="Titulo" />
+                android:fontFamily="@font/montserrat_medium"
+                android:text="@{item.humanPrice()}"
+                android:textColor="@color/White_100"
+                android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/tv_address"
+                android:id="@+id/tv_rent_mode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:paddingEnd="10dp"
-                android:maxLines="1"
-                android:fontFamily="@font/poppinsregular"
-                android:drawablePadding="3dp"
-                android:drawableLeft="@drawable/ic_map_marker"
-                android:textColor="@color/material_color_blue_grey_500"
-                android:text="address" />
-
-            <com.willy.ratingbar.BaseRatingBar
-                android:id="@+id/sr_scale_rating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:srb_clickable="false"
-                app:srb_drawableEmpty="@drawable/ic_star_o"
-                app:srb_drawableFilled="@drawable/ic_star"
-                app:srb_scrollable="false"
-                app:srb_starHeight="16dp"
-                app:srb_starPadding="2dp"
-                app:srb_starWidth="16dp"
-                app:srb_stepSize="0.5" />
-
+                android:fontFamily="@font/montserrat_thin"
+                android:text="@{item.humanRentMode()}"
+                android:textColor="@color/White_100"
+                android:textSize="14sp" />
 
         </LinearLayout>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tv_rent_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="@{item.name}"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="@+id/siv_rent_image"
+            app:layout_constraintTop_toBottomOf="@+id/siv_rent_image" />
 
+        <com.willy.ratingbar.BaseRatingBar
+            android:id="@+id/sr_scale_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@+id/tv_rent_name"
+            app:layout_constraintTop_toBottomOf="@+id/tv_rent_name"
+            app:srb_clickable="false"
+            app:srb_drawableEmpty="@drawable/ic_fa_star_o_line"
+            app:srb_drawableFilled="@drawable/ic_fa_star_line"
+            app:srb_scrollable="false"
+            app:srb_starHeight="16dp"
+            app:srb_starPadding="2dp"
+            app:srb_starWidth="16dp"
+            app:srb_stepSize="0.5"
+            app:setRating="@{item.rating}"/>
 
-</android.support.v7.widget.CardView>
+        <TextView
+            android:id="@+id/tv_rating_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{item.humanRatingCount()}"
+            android:fontFamily="@font/montserrat_thin"
+            android:textColor="@color/material_color_blue_grey_500"
+            app:layout_constraintBottom_toBottomOf="@+id/sr_scale_rating"
+            app:layout_constraintStart_toEndOf="@+id/sr_scale_rating"
+            app:layout_constraintTop_toTopOf="@+id/sr_scale_rating" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

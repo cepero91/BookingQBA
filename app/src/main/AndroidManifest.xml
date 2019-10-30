@@ -16,10 +16,10 @@
     <application
         android:name=".BookingQBApp"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher_official"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_secure_config"
-        android:roundIcon="@drawable/isotype"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
@@ -39,9 +39,9 @@
         </activity>
         <activity
             android:name=".view.sync.SyncActivity"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:hardwareAccelerated="true"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.tutorial.TutorialActivity"
             android:screenOrientation="portrait"
@@ -70,14 +70,22 @@
             android:name=".view.rents.ReservationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".view.reservation.ReservationDetailActivity"
+        <activity
+            android:name=".view.reservation.ReservationDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".view.MCVActivity"
+        <activity android:name=".view.rents.DetailActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".view.MCVActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
         <activity android:name=".view.GpsTest" />

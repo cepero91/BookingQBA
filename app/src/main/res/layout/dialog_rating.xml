@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="isAuth"
+            type="Boolean"/>
+    </data>
+
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/shape_white_round_10dp"
+        android:orientation="vertical">
+
+
+        <com.willy.ratingbar.BaseRatingBar
+            android:id="@+id/sr_scale_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/et_vote"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srb_clickable="true"
+            app:srb_drawableEmpty="@drawable/ic_fa_star_o_line"
+            app:srb_drawableFilled="@drawable/ic_fa_star_line"
+            app:srb_rating="1"
+            app:srb_scrollable="true"
+            app:srb_starHeight="36dp"
+            app:srb_starPadding="3dp"
+            app:srb_starWidth="36dp"
+            app:srb_stepSize="1" />
+
+        <EditText
+            android:id="@+id/et_vote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@null"
+            android:drawablePadding="5dp"
+            android:drawableStart="@drawable/ic_fa_edit_line"
+            android:fontFamily="@font/montserrat_regular"
+            android:gravity="start|center"
+            android:hint="Escribe aquí"
+            android:includeFontPadding="false"
+            android:inputType="textMultiLine"
+            android:maxLines="10"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/btn_vote"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/btn_vote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/shape_btn_color_primary"
+            android:fontFamily="@font/montserrat_regular"
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:text="Hecho"
+            android:textColor="@color/White_100"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>

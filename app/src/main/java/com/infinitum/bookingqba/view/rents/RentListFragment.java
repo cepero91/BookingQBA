@@ -4,6 +4,7 @@ package com.infinitum.bookingqba.view.rents;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
 import android.databinding.DataBindingUtil;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,8 @@ import android.view.ViewGroup;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentRentListBinding;
 import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.util.AlertUtils;
+import com.infinitum.bookingqba.util.geo.GeoRentSort;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.rentlist.RentListItem;
 import com.infinitum.bookingqba.view.adapters.RentListAdapter;
@@ -31,6 +34,7 @@ import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -148,24 +152,32 @@ public class RentListFragment extends BaseNavigationFragment implements RentList
         disposable = rentViewModel.getLiveDataRentList(mOrderType, mProvinceParam)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::setupPagerAdapter, throwable -> initLoading(false, StateView.Status.EMPTY, true));
+                .subscribe(listResource -> {
+                    setupPagerAdapter(listResource, null);
+                }, throwable -> initLoading(false, StateView.Status.EMPTY, true));
         compositeDisposable.add(disposable);
     }
 
     public void needToRefresh(boolean refresh) {
         if (refresh) {
-            rentListBinding.setIsLoading(true);
+            initLoading(true, StateView.Status.LOADING, true);
             loadPaginatedData();
         }
     }
 
-    public void filterListResult(Resource<List<GeoRent>> pagedList) {
-        setupPagerAdapter(pagedList);
+    public void filterListResult(Resource<List<GeoRent>> pagedList, @Nullable Location lastLocationKnow) {
+        setupPagerAdapter(pagedList, lastLocationKnow);
     }
 
-    private void setupPagerAdapter(Resource<List<GeoRent>> pagedList) {
+    private void setupPagerAdapter(Resource<List<GeoRent>> pagedList, @Nullable Location lastLocationKnow) {
         if (pagedList.data != null && pagedList.data.size() > 0) {
-            pagerAdapter = new RentListAdapter(getLayoutInflater(), (FragmentNavInteraction) getActivity(), pagedList.data);
+            List<GeoRent> geoList = pagedList.data;
+            if(lastLocationKnow!=null)
+                Collections.sort(geoList,new GeoRentSort(lastLocationKnow));
+            pagerAdapter = new RentListAdapter(getLayoutInflater(), (FragmentNavInteraction) getActivity(),
+                    geoList, lastLocationKnow != null);
+            if (lastLocationKnow != null)
+                pagerAdapter.setLastLocationKnow(lastLocationKnow);
             rentListBinding.recyclerView.setAdapter(pagerAdapter);
             rentListBinding.recyclerView.setLayoutManager(setupLayoutManager());
             initLoading(false, StateView.Status.SUCCESS, false);
@@ -176,8 +188,7 @@ public class RentListFragment extends BaseNavigationFragment implements RentList
 
 
     public RecyclerView.LayoutManager setupLayoutManager() {
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        return mLayoutManager;
+        return new LinearLayoutManager(getActivity());
     }
 
 
@@ -199,24 +210,28 @@ public class RentListFragment extends BaseNavigationFragment implements RentList
     @Override
     public void onButtonClick(View view) {
         int listSize = pagerAdapter.getFilteredList() != null ? pagerAdapter.getFilteredList().size() : 0;
-        switch (view.getId()) {
-            case R.id.button_five:
-                if (listSize >= 5) {
-                    mListener.shortCutToMap(pagerAdapter.getFilteredList().subList(0, 5));
-                } else {
+        if (listSize > 0) {
+            switch (view.getId()) {
+                case R.id.button_five:
+                    if (listSize >= 5) {
+                        mListener.shortCutToMap(pagerAdapter.getFilteredList().subList(0, 5));
+                    } else {
+                        mListener.shortCutToMap(pagerAdapter.getFilteredList() != null ? pagerAdapter.getFilteredList().subList(0, listSize) : new ArrayList<>());
+                    }
+                    break;
+                case R.id.button_ten:
+                    if (listSize >= 10) {
+                        mListener.shortCutToMap(pagerAdapter.getFilteredList().subList(0, 10));
+                    } else {
+                        mListener.shortCutToMap(pagerAdapter.getFilteredList() != null ? pagerAdapter.getFilteredList().subList(0, listSize) : new ArrayList<>());
+                    }
+                    break;
+                case R.id.button_all:
                     mListener.shortCutToMap(pagerAdapter.getFilteredList() != null ? pagerAdapter.getFilteredList().subList(0, listSize) : new ArrayList<>());
-                }
-                break;
-            case R.id.button_ten:
-                if (listSize >= 10) {
-                    mListener.shortCutToMap(pagerAdapter.getFilteredList().subList(0, 10));
-                } else {
-                    mListener.shortCutToMap(pagerAdapter.getFilteredList() != null ? pagerAdapter.getFilteredList().subList(0, listSize) : new ArrayList<>());
-                }
-                break;
-            case R.id.button_all:
-                mListener.shortCutToMap(pagerAdapter.getFilteredList() != null ? pagerAdapter.getFilteredList().subList(0, listSize) : new ArrayList<>());
-                break;
+                    break;
+            }
+        } else {
+            AlertUtils.showErrorToast(getActivity(),"No hay nada que mostrar");
         }
     }
 }

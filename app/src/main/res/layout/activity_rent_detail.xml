@@ -40,7 +40,7 @@
                     android:layout_height="250dp"
                     android:fitsSystemWindows="true">
 
-                    <android.support.v7.widget.AppCompatImageView
+                    <com.github.siyamed.shapeimageview.RoundedImageView
                         android:id="@+id/iv_rent"
                         android:layout_width="match_parent"
                         android:layout_height="250dp"
@@ -49,6 +49,8 @@
                         android:focusableInTouchMode="true"
                         android:foreground="@drawable/shape_shadow_black"
                         android:scaleType="centerCrop"
+                        app:siBorderAlpha="0"
+                        app:siRadius="5dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +74,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
-                            android:fontFamily="@font/poppinsblack"
+                            android:fontFamily="@font/montserrat_black"
                             android:paddingEnd="3dp"
                             android:paddingStart="3dp"
                             android:text="@string/empty_text"
@@ -109,11 +111,11 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center|start"
-                                android:fontFamily="@font/poppinslight"
+                                android:fontFamily="@font/montserrat_light"
                                 android:includeFontPadding="false"
                                 android:text="@string/empty_short_text"
                                 android:textColor="@color/White_100"
-                                android:textSize="12sp" />
+                                android:textSize="14sp" />
 
                         </LinearLayout>
 
@@ -184,7 +186,6 @@
             android:layout_height="match_parent"
             app:discreteVisibility="@{!safeUnbox(isLoading)}"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
 
 
     </android.support.design.widget.CoordinatorLayout>

@@ -2,12 +2,14 @@ package com.infinitum.bookingqba.model.repository.rentanalitics;
 
 import android.arch.persistence.db.SimpleSQLiteQuery;
 
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.AnaliticsGroup;
 import com.infinitum.bookingqba.model.remote.pojo.RentAnalitics;
+import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.util.StringUtils;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerItem;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
@@ -18,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
@@ -60,6 +63,15 @@ public class RentAnaliticsRepoImpl implements RentAnaliticsRepository{
         SimpleSQLiteQuery simpleSQLiteQuery = new SimpleSQLiteQuery(String.format(testSqlStatement,comma));
         return qbaDao.getRentByUuidList(simpleSQLiteQuery)
                 .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Flowable<Resource<List<RentEsential>>> allRentByUserId(String token,String userId) {
+        return retrofit.create(ApiInterface.class)
+                .allRentByUserId(token, userId)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
     }
 
     private CommonSpinnerList transformToSpinnerList(List<RentEntity> rentEntityList) {

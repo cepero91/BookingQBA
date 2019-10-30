@@ -27,11 +27,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center"
-                android:text="Atras"
+                android:text="@string/atr_s"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="@dimen/root_pages_btn_text_size"
                 android:alpha="0"
-                />
+                android:fontFamily="@font/montserrat_light" />
 
             <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
                 android:id="@+id/dots_indicator"
@@ -52,9 +52,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center"
-                android:text="Siguiente"
+                android:text="@string/siguiente"
                 android:textSize="@dimen/root_pages_btn_text_size"
-                android:textColor="@color/colorPrimaryDark" />
+                android:textColor="@color/colorPrimaryDark"
+                android:fontFamily="@font/montserrat_light"/>
 
             <Button
                 android:id="@+id/btn_begin"
@@ -62,10 +63,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center"
-                android:text="Comenzar"
+                android:text="@string/comenzar"
                 android:textSize="@dimen/root_pages_btn_text_size"
                 android:textColor="@color/colorPrimaryDark"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:fontFamily="@font/montserrat_light"/>
 
         </FrameLayout>
 

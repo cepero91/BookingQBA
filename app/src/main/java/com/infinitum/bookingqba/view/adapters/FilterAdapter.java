@@ -74,6 +74,15 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
         return selectedItems;
     }
 
+    public boolean isAtLessOneSelected(){
+        for (int i = 0; i < selectionIndex.size(); i++) {
+            if (selectionIndex.get(i)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void changeCheckState(int pos) {
         if (selectionIndex.get(pos)) {
             selectionIndex.append(pos, false);
@@ -105,7 +114,7 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterView
                 filterShipTitle.setTextColor(Color.WHITE);
                 filterShipTitle.setBackgroundResource(R.drawable.shape_filter_ship_selected);
             } else {
-                filterShipTitle.setTextColor(Color.parseColor("#9E9E9E"));
+                filterShipTitle.setTextColor(Color.parseColor("#78909C"));
                 filterShipTitle.setBackgroundResource(R.drawable.shape_filter_ship_unselected);
             }
         }

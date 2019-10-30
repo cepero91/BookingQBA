@@ -6,22 +6,27 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.RecyclerBookReservationItemBinding;
 import com.infinitum.bookingqba.databinding.RecyclerUserBookReservationInfoItemBinding;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequestInfo;
+import com.infinitum.bookingqba.view.adapters.items.reservation.BookInfoItem;
 import com.infinitum.bookingqba.view.adapters.items.reservation.ReservationItem;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class UserBookRequestInfoAdapter extends RecyclerView.Adapter<UserBookRequestInfoAdapter.MyViewHolder> {
 
     private LayoutInflater inflater;
-    private List<BookRequestInfo> requestInfos;
+    private List<BookInfoItem> requestInfos;
     private UserBookRequestInteraction userBookRequestInteraction;
+    private final ViewBinderHelper binderHelper = new ViewBinderHelper();
 
-    public UserBookRequestInfoAdapter(LayoutInflater inflater, List<BookRequestInfo> requestInfos, UserBookRequestInteraction userBookRequestInteraction) {
+    public UserBookRequestInfoAdapter(LayoutInflater inflater, List<BookInfoItem> requestInfos, UserBookRequestInteraction userBookRequestInteraction) {
         this.inflater = inflater;
         this.requestInfos = requestInfos;
         this.userBookRequestInteraction = userBookRequestInteraction;
@@ -36,12 +41,12 @@ public class UserBookRequestInfoAdapter extends RecyclerView.Adapter<UserBookReq
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
-        BookRequestInfo item = requestInfos.get(i);
+        BookInfoItem item = requestInfos.get(i);
         if (item == null) {
             myViewHolder.unbind();
         } else {
-            myViewHolder.itemBinding.setItem(item);
-            myViewHolder.itemView.setOnClickListener(v -> userBookRequestInteraction.onBookReservationClick(item));
+            binderHelper.bind(myViewHolder.itemBinding.swipeLayout,item.getId());
+            myViewHolder.bind(item);
         }
     }
 
@@ -58,8 +63,11 @@ public class UserBookRequestInfoAdapter extends RecyclerView.Adapter<UserBookReq
             this.itemBinding = itemBinding;
         }
 
-        public void bind(BookRequestInfo item) {
+        public void bind(BookInfoItem item) {
             itemBinding.setItem(item);
+            itemBinding.deleteLayout.setOnClickListener(v -> {
+                userBookRequestInteraction.onBookRequestDelete(item);
+            });
             itemBinding.executePendingBindings();
         }
 
@@ -69,6 +77,6 @@ public class UserBookRequestInfoAdapter extends RecyclerView.Adapter<UserBookReq
     }
 
     public interface UserBookRequestInteraction {
-        void onBookReservationClick(BookRequestInfo item);
+        void onBookRequestDelete(BookInfoItem item);
     }
 }

@@ -45,7 +45,7 @@ import timber.log.Timber;
 import static com.infinitum.bookingqba.util.Constants.MAP_PATH;
 import static com.infinitum.bookingqba.util.Constants.ROUTE_PATH;
 
-public abstract class BaseMapFragment extends Fragment {
+public abstract class  BaseMapFragment extends Fragment {
 
     protected Disposable disposable;
     protected CompositeDisposable compositeDisposable;

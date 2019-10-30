@@ -13,7 +13,8 @@
         <item
             android:id="@+id/nav_wish_list"
             android:icon="@drawable/ic_bookmark_1_set"
-            android:title="@string/lista_de_deseo" />
+            android:title="@string/lista_de_deseo"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_placeholder_2_set"
@@ -38,19 +39,23 @@
         <item
             android:id="@+id/nav_my_rents"
             android:icon="@drawable/ic_cloud_computing_set"
-            android:title="Mis Anuncios" />
+            android:title="Mis Anuncios"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_book_request"
             android:icon="@drawable/ic_incoming_set"
-            android:title="Reservas" />
+            android:title="Reservas"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_my_book_request"
             android:icon="@drawable/ic_send_set"
-            android:title="Mis solicitudes" />
+            android:title="Mis solicitudes"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_my_calendar"
             android:icon="@drawable/ic_calendar_1_set"
-            android:title="Mi Calendario" />
+            android:title="Mi Calendario"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_settings_1_set"

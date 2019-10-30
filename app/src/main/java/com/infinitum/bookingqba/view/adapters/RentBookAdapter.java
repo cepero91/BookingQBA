@@ -7,22 +7,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.RecyclerBookReservationItemBinding;
+import com.infinitum.bookingqba.model.remote.ReservationType;
 import com.infinitum.bookingqba.view.adapters.items.reservation.ReservationItem;
 
 import java.util.List;
+
+import timber.log.Timber;
 
 public class RentBookAdapter extends RecyclerView.Adapter<RentBookAdapter.MyViewHolder> {
 
     private LayoutInflater inflater;
     private List<ReservationItem> reservationItemList;
     private RentBookInteraction rentBookInteraction;
+    private ReservationType reservationType;
+    private final ViewBinderHelper binderHelper = new ViewBinderHelper();
 
-    public RentBookAdapter(LayoutInflater inflater, List<ReservationItem> reservationItemList, RentBookInteraction rentBookInteraction) {
+    public RentBookAdapter(LayoutInflater inflater, List<ReservationItem> reservationItemList, RentBookInteraction rentBookInteraction, ReservationType reservationType) {
         this.inflater = inflater;
         this.reservationItemList = reservationItemList;
         this.rentBookInteraction = rentBookInteraction;
+        this.reservationType = reservationType;
     }
 
     @NonNull
@@ -38,8 +45,8 @@ public class RentBookAdapter extends RecyclerView.Adapter<RentBookAdapter.MyView
         if (item == null) {
             myViewHolder.unbind();
         } else {
-            myViewHolder.itemBinding.setItem(item);
-            myViewHolder.itemView.setOnClickListener(v -> rentBookInteraction.onBookReservationClick(item));
+            binderHelper.bind(myViewHolder.itemBinding.swipeLayout,item.getId());
+            myViewHolder.bind(item);
         }
     }
 
@@ -58,6 +65,15 @@ public class RentBookAdapter extends RecyclerView.Adapter<RentBookAdapter.MyView
 
         public void bind(ReservationItem item) {
             itemBinding.setItem(item);
+            itemBinding.deleteLayout.setOnClickListener(v -> {
+                rentBookInteraction.onBookReservationDelete(item);
+                reservationItemList.remove(getAdapterPosition());
+                notifyItemRemoved(getAdapterPosition());
+            });
+            itemBinding.clFront.setOnClickListener(v -> {
+                Timber.e("Entro");
+                rentBookInteraction.onBookReservationClick(item,reservationType);
+            });
             itemBinding.executePendingBindings();
         }
 
@@ -67,6 +83,7 @@ public class RentBookAdapter extends RecyclerView.Adapter<RentBookAdapter.MyView
     }
 
     public interface RentBookInteraction {
-        void onBookReservationClick(ReservationItem item);
+        void onBookReservationClick(ReservationItem item, ReservationType reservationType);
+        void onBookReservationDelete(ReservationItem item);
     }
 }

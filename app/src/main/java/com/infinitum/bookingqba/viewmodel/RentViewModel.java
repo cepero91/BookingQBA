@@ -12,7 +12,6 @@ import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
 import com.infinitum.bookingqba.model.local.entity.MunicipalityEntity;
 import com.infinitum.bookingqba.model.local.entity.OfferEntity;
-import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.PoiTypeEntity;
 import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
@@ -20,8 +19,8 @@ import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.pojo.PoiAndRelations;
 import com.infinitum.bookingqba.model.local.pojo.RentAmenitieAndRelation;
 import com.infinitum.bookingqba.model.local.pojo.RentAndDependencies;
-import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
+import com.infinitum.bookingqba.model.local.pojo.RentDetailEsential;
 import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
 import com.infinitum.bookingqba.model.local.tconverter.CommentEmotion;
 import com.infinitum.bookingqba.model.remote.pojo.BlockDay;
@@ -39,6 +38,7 @@ import com.infinitum.bookingqba.model.repository.poitype.PoiTypeRepository;
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.util.DateUtils;
+import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.BaseFilterItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.CheckableFilterItem;
 import com.infinitum.bookingqba.view.adapters.items.filter.NumberFilterItem;
@@ -57,9 +57,9 @@ import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
 
 import org.mapsforge.core.model.LatLong;
 import org.oscim.core.GeoPoint;
+import org.reactivestreams.Publisher;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,14 +69,16 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.util.Constants.FILTER_AMENITIES;
 import static com.infinitum.bookingqba.util.Constants.FILTER_CAPABILITY;
 import static com.infinitum.bookingqba.util.Constants.FILTER_MUNICIPALITIES;
-import static com.infinitum.bookingqba.util.Constants.FILTER_ORDER;
 import static com.infinitum.bookingqba.util.Constants.FILTER_POITYPES;
 import static com.infinitum.bookingqba.util.Constants.FILTER_PRICE;
 import static com.infinitum.bookingqba.util.Constants.FILTER_RENTMODE;
@@ -109,8 +111,25 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     //----------------------------------- GET METHOD -----------------------------------------//
 
-    public Flowable<Resource<List<RentEsential>>> allRentByUserId(String token, String userid){
+    public Flowable<Resource<List<RentEsential>>> allRentByUserId(String token, String userid) {
         return rentRepository.allRentByUserId(token, userid);
+    }
+
+    public Flowable<Resource<List<RentEsential>>> allRentByUserIdByNightMode(String token, String userid) {
+        return rentRepository.allRentByUserId(token, userid)
+                .map(listResource -> {
+                    if(listResource.data!=null){
+                        return listResource.data;
+                    }
+                    return new ArrayList<RentEsential>();
+                })
+                .flatMap((Function<List<RentEsential>, Publisher<RentEsential>>) Flowable::fromIterable)
+                .filter(rentEsential -> rentEsential.getRentMode().equals("por noche"))
+                .toList()
+                .toFlowable()
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
     }
 
     /**
@@ -123,8 +142,8 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
     }
 
 
-    public Flowable<Resource<List<ListWishItem>>> getRentListWish(String province) {
-        return rentRepository.allWishedRent(province)
+    public Flowable<Resource<List<BaseItem>>> getRentListWish(String province, String userId) {
+        return rentRepository.allWishedRent(province, userId)
                 .subscribeOn(Schedulers.io())
                 .map(this::transformToWishList)
                 .onErrorReturn(Resource::error);
@@ -136,7 +155,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 .map(this::transformToGeoRent);
     }
 
-    public Flowable<Resource<List<GeoRent>>> getGeoRentNearLatLon(LatLong latLong, Map<String,Object> params) {
+    public Flowable<Resource<List<GeoRent>>> getGeoRentNearLatLon(LatLong latLong, Map<String, Object> params) {
         return rentRepository
                 .rentNearLocation(latLong, params)
                 .map(this::transformToGeoRent);
@@ -144,13 +163,13 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
 
     // --------------------------- RENT WISHED ---------------------------------------------//
 
-    public Completable updateRentIsWished(String uuid, int isWished) {
-        return rentRepository.updateIsWishedRent(uuid, isWished);
+    public Completable addOrUpdateRentIsWished(String rentUuid, String userId, int isWished) {
+        return rentRepository.addOrUpdateWishedRent(rentUuid, userId, isWished);
     }
 
-    public Completable updateRent(String uuid, int wished) {
-        return rentRepository.updateIsWishedRent(uuid, wished);
-    }
+//    public Completable updateRent(String uuid, int wished) {
+//        return rentRepository.addOrUpdateWishedRent(uuid, wished);
+//    }
 
     // --------------------------- FILTER LIST --------------------------------------------- //
 
@@ -213,6 +232,32 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 .subscribeOn(Schedulers.io());
     }
 
+    public Flowable<Resource<Map<PoiCategory, List<RentPoiItem>>>> getRentPoiById(String uuid) {
+        return rentRepository
+                .getRentPoiById(uuid)
+                .map(listResource -> {
+                    assert listResource.data != null;
+                    return convertPoisPojoToParcel(listResource.data);
+                })
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+    public Flowable<Resource<Integer>> rentIsWished(String rentUuid, String userId) {
+        return rentRepository
+                .rentIsWished(rentUuid, userId)
+                .map(wishedRentEntityResource -> {
+                    if (wishedRentEntityResource.data != null) {
+                        return wishedRentEntityResource.data.getValue();
+                    }
+                    return 0;
+                })
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
     private RentItem parseRentDetailPojoToItem(Resource<RentDetail> rentDetail) {
         RentItem rentItem = new RentItem();
         RentInnerDetail innerDetail = new RentInnerDetail();
@@ -239,6 +284,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         innerDetail.setWished(rentEntity.getIsWished());
         innerDetail.setCheckin(rentEntity.getCheckin());
         innerDetail.setChekout(rentEntity.getCheckout());
+        innerDetail.setOwnerId(rentEntity.getUserId());
         innerDetail.setAmenitieItems(convertAmenitiesPojoToParcel(rentDetail.data.getAmenitieNames()));
         innerDetail.setPoiItemMap(convertPoisPojoToParcel(rentDetail.data.getRentPoiAndRelations()));
         innerDetail.setGalerieItems(convertGaleriePojoToParcel(rentDetail.data.getGaleries()));
@@ -399,11 +445,11 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                         rentPoiAndRelation.getPoiAndRelationsObject().poiEntity.getName(),
                         rentPoiAndRelation.getPoiAndRelationsObject().poiEntity.getMinLat(),
                         rentPoiAndRelation.getPoiAndRelationsObject().poiEntity.getMinLon());
-                if(!hashMap.containsKey(poiCategory)) {
+                if (!hashMap.containsKey(poiCategory)) {
                     ArrayList<RentPoiItem> poiItems = new ArrayList<>();
                     poiItems.add(rentPoiItem);
                     hashMap.put(poiCategory, poiItems);
-                }else{
+                } else {
                     hashMap.get(poiCategory).add(rentPoiItem);
                 }
             }
@@ -434,12 +480,10 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentAndDependencies rentAndDependencies : listResource.data) {
                 String imagePath = rentAndDependencies.getImageAtPos(0);
-                geoRent = new GeoRent(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath);
+                geoRent = new GeoRent(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath, (float) rentAndDependencies.getPrice(),rentAndDependencies.getRentMode());
                 geoRent.setGeoPoint(new GeoPoint(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()));
-                geoRent.setPrice(rentAndDependencies.getPrice());
                 geoRent.setRating(rentAndDependencies.getRating());
                 geoRent.setRatingCount(rentAndDependencies.getRatingCount());
-                geoRent.setRentMode(rentAndDependencies.getRentMode());
                 geoRent.setPoiItemMap(convertPoisPojoToParcel(rentAndDependencies.getRentPoiAndRelations()));
                 geoRent.setReferenceZone(rentAndDependencies.getReferenceZone());
                 geoRentList.add(geoRent);
@@ -467,16 +511,16 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         return poiItems;
     }
 
-    private Resource<List<ListWishItem>> transformToWishList(Resource<List<RentAndGalery>> listResource) {
-        List<ListWishItem> listWishItems = new ArrayList<>();
+    private Resource<List<BaseItem>> transformToWishList(Resource<List<RentAndDependencies>> listResource) {
+        List<BaseItem> listWishItems = new ArrayList<>();
         ListWishItem item;
-        for (RentAndGalery rentAndGalery : listResource.data) {
-            String imagePath = rentAndGalery.getImageAtPos(0);
-            item = new ListWishItem(rentAndGalery.getId(), rentAndGalery.getName(), imagePath);
-            item.setAddress(rentAndGalery.getAddress());
-            item.setPrice(rentAndGalery.getPrice());
-            item.setRating(rentAndGalery.getRating());
-            item.setRentMode(rentAndGalery.getRentMode());
+        for (RentAndDependencies rentAndDependencies : listResource.data) {
+            String imagePath = rentAndDependencies.getImageAtPos(0);
+            item = new ListWishItem(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath, (float) rentAndDependencies.getPrice(),rentAndDependencies.getRentMode());
+            item.setAddress(rentAndDependencies.getAddress());
+            item.setRating(rentAndDependencies.getRating());
+            item.setRatingCount(rentAndDependencies.getRatingCount());
+            item.setRentMode(rentAndDependencies.getRentMode());
             listWishItems.add(item);
         }
         return Resource.success(listWishItems);
@@ -489,15 +533,12 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
         if (listResource.data != null) {
             for (RentAndDependencies rentAndDependencies : listResource.data) {
                 String imagePath = rentAndDependencies.getImageAtPos(0);
-                geoRent = new GeoRent(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath);
+                geoRent = new GeoRent(rentAndDependencies.getId(), rentAndDependencies.getName(), imagePath, (float) rentAndDependencies.getPrice(),rentAndDependencies.getRentMode());
                 geoRent.setAddress(rentAndDependencies.getAddress());
                 geoRent.setGeoPoint(new GeoPoint(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()));
-                geoRent.setPrice(rentAndDependencies.getPrice());
                 geoRent.setRating(rentAndDependencies.getRating());
                 geoRent.setRatingCount(rentAndDependencies.getRatingCount());
-                geoRent.setRentMode(rentAndDependencies.getRentMode());
                 geoRent.setPoiItemMap(convertPoisPojoToParcel(rentAndDependencies.getRentPoiAndRelations()));
-                geoRent.setWished(rentAndDependencies.getIsWished());
                 geoRentList.add(geoRent);
             }
         }

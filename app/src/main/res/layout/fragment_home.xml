@@ -13,92 +13,100 @@
             type="android.widget.ArrayAdapter" />
     </data>
 
-    <android.support.design.widget.CoordinatorLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            android:paddingTop="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <android.support.v7.widget.CardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
-                android:layout_marginTop="10dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="5dp"
-                app:cardPreventCornerOverlap="true">
+                android:orientation="vertical">
 
-                <FrameLayout
+                <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp">
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:layout_marginTop="6dp"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="3dp"
+                    app:cardPreventCornerOverlap="true">
 
-                    <com.infinitum.bookingqba.view.widgets.SearchableSpinner
-                        android:id="@+id/spinner_provinces"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="42dp"
-                        android:background="@null"
-                        android:gravity="center"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp" />
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        app:srcCompat="@drawable/ic_search_set"
-                        app:tint="@color/material_color_blue_grey_500" />
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginStart="20dp">
 
-                </FrameLayout>
+                        <com.infinitum.bookingqba.view.widgets.SearchableSpinner
+                            android:id="@+id/spinner_provinces"
+                            android:layout_width="match_parent"
+                            android:layout_height="42dp"
+                            android:background="@null"
+                            android:gravity="center"
+                            android:paddingEnd="10dp"
+                            android:paddingStart="10dp" />
 
-            </android.support.v7.widget.CardView>
+                        <android.support.v7.widget.AppCompatImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center_vertical"
+                            app:srcCompat="@drawable/ic_search_set"
+                            app:tint="@color/colorAccent" />
 
-            <android.support.v4.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp">
+                    </FrameLayout>
+
+                </android.support.v7.widget.CardView>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:layout_marginTop="8dp"
                     app:visibleGone="@{!safeUnbox(isLoading)}">
 
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp">
+                        android:layout_marginEnd="13dp"
+                        android:layout_marginStart="16dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|start"
-                            android:fontFamily="@font/montserrat_regular"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
                             android:text="@string/lo_m_s_comentado"
+                            android:textAllCaps="true"
                             android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="16sp" />
+                            android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/tv_most_commented_view_all"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="end|center"
-                            android:background="@drawable/shape_btn_ship_view_more"
+                            android:layout_marginEnd="3dp"
                             android:fontFamily="@font/montserrat_light"
                             android:text="@string/view_all"
+                            android:textAllCaps="true"
                             android:textColor="@color/material_color_teal_A700"
-                            android:textSize="12sp" />
+                            android:textSize="14sp" />
 
                     </FrameLayout>
 
@@ -108,69 +116,77 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clipToPadding="false"
-                        android:paddingEnd="8dp"
-                        android:paddingStart="8dp" />
+                        android:paddingEnd="18dp"
+                        android:paddingStart="8dp"
+                        android:nestedScrollingEnabled="false"/>
 
 
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="13dp"
                         android:layout_marginStart="16dp"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp">
+                        android:layout_marginTop="16dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center|start"
-                            android:fontFamily="@font/montserrat_regular"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
                             android:text="@string/lo_m_s_votado"
+                            android:textAllCaps="true"
                             android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="16sp" />
+                            android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/tv_most_rating_view_all"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="end|center"
-                            android:background="@drawable/shape_btn_ship_view_more"
+                            android:layout_marginEnd="3dp"
                             android:fontFamily="@font/montserrat_light"
                             android:text="@string/view_all"
+                            android:textAllCaps="true"
                             android:textColor="@color/material_color_teal_A700"
-                            android:textSize="12sp" />
+                            android:textSize="14sp" />
 
                     </FrameLayout>
-
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/rv_most_rating"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:clipToPadding="false" />
+                        android:clipToPadding="false"
+                        android:nestedScrollingEnabled="false"/>
 
 
                 </LinearLayout>
 
+            </LinearLayout>
 
-            </android.support.v4.widget.NestedScrollView>
-
-        </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
 
         <com.airbnb.lottie.LottieAnimationView
             android:layout_width="70dp"
             android:layout_height="30dp"
+            android:layout_gravity="center"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_gravity="center"
-            app:visibleGone="@{safeUnbox(isLoading)}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:lottie_autoPlay="true"
+            app:lottie_colorFilter="@color/colorPrimary"
             app:lottie_fileName="lottie/loading.json"
             app:lottie_loop="true"
-            app:lottie_repeatMode="restart" />
+            app:lottie_repeatMode="restart"
+            app:visibleGone="@{safeUnbox(isLoading)}" />
 
-    </android.support.design.widget.CoordinatorLayout>
+    </android.support.constraint.ConstraintLayout>
 
 </layout>

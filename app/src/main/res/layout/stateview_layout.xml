@@ -7,7 +7,7 @@
     android:layout_gravity="center"
     android:gravity="center"
     android:orientation="vertical"
-    android:visibility="gone">
+    android:visibility="visible">
 
 
     <android.support.v7.widget.AppCompatImageView
@@ -15,16 +15,46 @@
         android:layout_width="250dp"
         android:layout_height="200dp"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/flame_empty" />
+        app:srcCompat="@drawable/flame_no_conexion" />
 
     <TextView
-        android:id="@+id/tv_state"
+        android:id="@+id/tv_state_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/poppinsblack"
-        android:text="Nada que mostrar"
+        android:fontFamily="@font/montserrat_black"
+        android:text="Oops!!"
+        android:textColor="@color/material_color_blue_grey_400"
+        android:textSize="24sp"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/tv_state_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_regular"
+        android:text="Al parecer ha ocurrido algo con tu internet"
         android:textColor="@color/material_color_blue_grey_300"
-        android:textSize="24sp" />
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/tv_btn_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_btn_color_primary"
+        android:text="@string/volver_a_intentar"
+        android:fontFamily="@font/montserrat_regular"
+        android:textSize="14sp"
+        android:textColor="@color/White_100"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="24dp"
+        android:padding="10dp"
+        android:gravity="center"
+        android:visibility="gone"/>
 
 
 </LinearLayout>

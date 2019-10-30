@@ -17,6 +17,7 @@ import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
 import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoiAdd;
+import com.infinitum.bookingqba.model.remote.pojo.RentPoiReferenceZone;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
 import com.infinitum.bookingqba.model.repository.municipality.MunicipalityRepository;
@@ -98,6 +99,10 @@ public class RentFormViewModel extends ViewModel {
 
     public Single<Resource<List<RentEdit>>> getRentById(String token, String uuid) {
         return rentRepository.rentById(token, uuid);
+    }
+
+    public Single<Resource<ResponseResult>> deleteImage(String token, String uuid) {
+        return rentRepository.deleteImage(token, uuid);
     }
 
     public Single<Resource<Pair<String[], boolean[]>>> getAllRemoteAmenities(String token) {
@@ -265,10 +270,6 @@ public class RentFormViewModel extends ViewModel {
         Rent newRent = transformRentFormToRent(rentFormObject);
         finalMap.put("rent", newRent);
         finalMap.put("amenities", rentAmenities);
-        if (poiList != null && poiList.size() > 0) {
-            List<Poi> parseList = new ArrayList<>(poiList);
-            finalMap.put("poi", new RentPoiAdd(rentFormObject.getUuid(), parseList));
-        }
         if (imageFilePath != null && imageFilePath.size() > 0)
             finalMap.put("galery", imageFilePath);
         if (params.containsKey("offer")) {
@@ -348,6 +349,10 @@ public class RentFormViewModel extends ViewModel {
             return Resource.error(listResource.message);
         }
         return Resource.success(myRentItems);
+    }
+
+    public Single<Resource<RentPoiReferenceZone>> remoteReferenceZoneAndPoiByLocation(String token, double lat, double lon){
+        return rentRepository.referenceZoneAndPoiByLocation(token,lat,lon).subscribeOn(Schedulers.io());
     }
 
     public Flowable<Map<String, Object>> poiAndReferenceZone(String token, String filePoi, double mLatitude, double mLongitude) {

@@ -17,8 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp">
-
 
         <com.github.siyamed.shapeimageview.RoundedImageView
             android:id="@+id/iv_rent"
@@ -30,15 +30,14 @@
             app:layout_constraintTop_toTopOf="parent"
             app:setRentListImage="@{item.getImagePath()}"
             app:siBorderAlpha="0"
-            app:siRadius="10dp" />
+            app:siRadius="5dp" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="8dp"
             android:gravity="center|start"
             android:orientation="vertical"
-            android:paddingEnd="5dp"
             android:paddingTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -50,13 +49,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:fontFamily="@font/montserrat_bold"
+                android:fontFamily="@font/montserrat_medium"
                 android:maxLines="1"
-                android:paddingEnd="3dp"
                 android:paddingStart="3dp"
                 android:text="@{item.getName()}"
                 android:textColor="@color/material_color_blue_grey_500"
-                android:textSize="14sp" />
+                android:textSize="18sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -69,10 +67,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:setRating="@{item.rating}"
-                    app:srb_clickable="false"
                     app:srb_drawableEmpty="@drawable/ic_fa_star_o_line"
                     app:srb_drawableFilled="@drawable/ic_fa_star_line"
-                    app:srb_scrollable="false"
+                    app:srb_isIndicator="true"
                     app:srb_starHeight="16dp"
                     app:srb_starPadding="2dp"
                     app:srb_starWidth="16dp"
@@ -84,9 +81,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="3dp"
-                    android:fontFamily="@font/montserrat_light"
+                    android:fontFamily="@font/montserrat_thin"
                     android:text="@{item.humanRatingCount()}"
-                    android:textSize="12sp" />
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
@@ -102,20 +100,19 @@
                     android:id="@+id/tv_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/montserrat_bold"
+                    android:fontFamily="@font/montserrat_light"
                     android:text="@{item.humanPrice()}"
-                    android:textColor="@color/material_color_blue_grey_300"
+                    android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/tv_rent_mode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
                     android:fontFamily="@font/montserrat_light"
                     android:text="@{item.humanRentMode()}"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp" />
+                    android:textColor="@color/colorAccent"
+                    android:textSize="14sp" />
 
             </LinearLayout>
 

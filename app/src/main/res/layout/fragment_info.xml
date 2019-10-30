@@ -4,271 +4,249 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="localUpdate"
-            type="String"/>
+            type="String" />
+
         <variable
             name="remoteAvailable"
-            type="String"/>
+            type="String" />
     </data>
 
-    <com.xw.repo.widget.BounceScrollView
-        android:id="@+id/nested"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/material_color_grey_100"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
-        android:orientation="vertical">
-
-        <TextView
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/nested"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppinsbold"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:text="@string/base_de_datos"
-            android:textAlignment="center"
-            android:textColor="@color/material_color_blue_grey_500"
-            android:textSize="14sp" />
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            android:paddingTop="16dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:orientation="horizontal"
-            android:weightSum="6"
-            android:baselineAligned="false">
-
-            <LinearLayout
-                android:layout_width="0dp"
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:gravity="center">
+                android:orientation="vertical">
 
-                <Button
+                <TextView
+                    android:id="@+id/textView26"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:text="@string/base_de_datos"
+                    android:textAlignment="center"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
                     android:id="@+id/btn_sync"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     android:background="@null"
-                    android:drawableTop="@drawable/ic_database_3"
-                    android:fontFamily="@font/poppinsregular"
+                    android:fontFamily="@font/montserrat_regular"
                     android:paddingBottom="5dp"
                     android:paddingTop="5dp"
-                    android:text="@string/sincronizar"
-                    android:textAllCaps="false"
-                    android:textColor="@color/material_color_blue_grey_500" />
+                    android:src="@drawable/ic_cloud_computing_15_set"
+                    android:textColor="@color/material_color_teal_A700"
+                    android:tint="@color/material_color_teal_A700"
+                    app:layout_constraintBottom_toBottomOf="@+id/linearLayout11"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/linearLayout11" />
 
-            </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/linearLayout11"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_sync"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView26">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:background="@drawable/shape_bg_info_left"
-                android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:fontFamily="@font/montserrat_medium"
+                        android:text="@string/ultima_actualizacion"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:fontFamily="@font/montserrat_light"
+                        android:text="@{localUpdate}"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:fontFamily="@font/montserrat_medium"
+                        android:text="@string/actualizacion_disponible"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:fontFamily="@font/montserrat_light"
+                        android:text="@{remoteAvailable}"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/textView27"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:fontFamily="@font/poppinsregular"
-                    android:text="@string/ultima_actualizacion"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:text="@string/propiedad_intelectual"
+                    android:textAlignment="center"
                     android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp" />
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout11" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+
+                <LinearLayout
+                    android:id="@+id/linearLayout12"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_marginStart="15dp"
-                    android:fontFamily="@font/poppinsitalic"
-                    android:text="@{localUpdate}"
-                    android:textColor="@color/material_color_blue_grey_300"
-                    android:textSize="12sp" />
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/btn_politics"
+                    app:layout_constraintTop_toBottomOf="@+id/textView27">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:fontFamily="@font/poppinsregular"
-                    android:text="@string/actualizacion_disponible"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:fontFamily="@font/montserrat_medium"
+                        android:text="@string/desarrollo_y_dise_o"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_marginStart="15dp"
-                    android:fontFamily="@font/poppinsitalic"
-                    android:text="@{remoteAvailable}"
-                    android:textColor="@color/material_color_blue_grey_300"
-                    android:textSize="12sp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:fontFamily="@font/montserrat_light"
+                        android:text="@string/tec_inf_jose_manuel_cepero"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:fontFamily="@font/montserrat_medium"
+                        android:text="@string/version"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:fontFamily="@font/montserrat_light"
+                        android:text="1.0 beta"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
 
 
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/material_color_grey_100"
-            android:fontFamily="@font/poppinsbold"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:text="@string/propiedad_intelectual"
-            android:textAlignment="center"
-            android:textColor="@color/material_color_blue_grey_500"
-            android:textSize="14sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:background="@drawable/shape_bg_info_right"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:fontFamily="@font/poppinsregular"
-                    android:text="@string/desarrollo_y_dise_o"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="15dp"
-                    android:fontFamily="@font/poppinsitalic"
-                    android:text="@string/tec_inf_jose_manuel_cepero"
-                    android:textColor="@color/material_color_blue_grey_300"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:fontFamily="@font/poppinsregular"
-                    android:text="@string/version"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="15dp"
-                    android:fontFamily="@font/poppinsitalic"
-                    android:text="1.0 beta"
-                    android:textColor="@color/material_color_blue_grey_300"
-                    android:textSize="12sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:gravity="center">
-
-                <Button
+                <ImageButton
                     android:id="@+id/btn_politics"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
                     android:background="@null"
-                    android:drawableTop="@drawable/ic_file_3"
                     android:fontFamily="@font/poppinsregular"
                     android:paddingBottom="5dp"
                     android:paddingTop="5dp"
-                    android:text="@string/politicas"
-                    android:textAllCaps="false"
-                    android:textColor="@color/material_color_blue_grey_500" />
+                    android:src="@drawable/ic_document_set"
+                    android:tint="@color/material_color_teal_A700"
+                    app:layout_constraintBottom_toBottomOf="@+id/linearLayout12"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/linearLayout12" />
 
-            </LinearLayout>
 
+                <TextView
+                    android:id="@+id/textView28"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:padding="5dp"
+                    android:text="@string/ayudanos_a_mejorar"
+                    android:textAlignment="center"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout12" />
 
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/material_color_grey_100"
-            android:fontFamily="@font/poppinsbold"
-            android:padding="5dp"
-            android:text="@string/ayudanos_a_mejorar"
-            android:textAlignment="center"
-            android:textColor="@color/material_color_blue_grey_500"
-            android:textSize="14sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="6">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:background="@color/material_color_grey_100"
-                android:gravity="center">
-
-                <Button
+                <ImageButton
                     android:id="@+id/btn_feedback"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:layout_marginEnd="16dp"
                     android:background="@null"
-                    android:drawableTop="@drawable/ic_speech_bubble"
-                    android:fontFamily="@font/poppinsregular"
                     android:paddingBottom="5dp"
                     android:paddingTop="5dp"
-                    android:text="@string/sugerir"
-                    android:textAllCaps="false"
-                    android:textColor="@color/material_color_blue_grey_500" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:background="@drawable/shape_bg_info_left"
-                android:orientation="vertical">
+                    android:src="@drawable/ic_speech_bubble"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView29"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView29" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/textView29"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
-                    android:fontFamily="@font/poppinsregular"
+                    android:layout_marginEnd="3dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/montserrat_light"
                     android:text="@string/txt_feedback"
                     android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp" />
-
-            </LinearLayout>
-
-
-        </LinearLayout>
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_feedback"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView28" />
 
 
-    </LinearLayout>
+            </android.support.constraint.ConstraintLayout>
 
-    </com.xw.repo.widget.BounceScrollView>
+        </android.support.v4.widget.NestedScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </layout>

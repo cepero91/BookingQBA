@@ -43,10 +43,11 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="3"
-                    android:fontFamily="@font/poppinsbold"
+                    android:fontFamily="@font/montserrat_black"
                     android:gravity="center"
-                    android:text="Filtrar"
-                    android:textColor="@color/colorPrimary" />
+                    android:text="@string/filtrar"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="16sp"/>
 
                 <View
                     android:layout_width="0.5dp"
@@ -62,7 +63,7 @@
                     android:layout_weight="1"
                     android:scaleType="center"
                     android:tint="@color/material_color_red_500"
-                    app:srcCompat="@drawable/ic_multiply_set" />
+                    app:srcCompat="@drawable/ic_trash_set" />
 
 
             </LinearLayout>
@@ -76,6 +77,7 @@
             android:layout_below="@+id/cardView"
             android:clipToPadding="false"
             android:paddingBottom="20dp"
+            android:paddingTop="10dp"
             app:discreteVisibility="@{!safeUnbox(isLoading)}">
 
             <LinearLayout
@@ -86,8 +88,72 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:id="@+id/fl_user_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:text="@string/usar_mi_ubicaci_n"
+                            android:textColor="@color/material_color_blue_grey_500"
+                            android:textSize="14sp" />
+
+                        <android.support.v7.widget.AppCompatCheckBox
+                            android:id="@+id/cb_use_location"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center|end"/>
+
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/tv_distance_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/montserrat_medium"
+                        android:paddingTop="5dp"
+                        android:text="@string/distancia"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp"
+                        android:visibility="gone"/>
+
+                    <com.jaygoo.widget.RangeSeekBar
+                        android:id="@+id/rsb_distance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        app:rsb_gravity="center"
+                        app:rsb_indicator_padding_bottom="3dp"
+                        app:rsb_indicator_padding_left="8dp"
+                        app:rsb_indicator_padding_right="8dp"
+                        app:rsb_indicator_padding_top="3dp"
+                        app:rsb_indicator_radius="5dp"
+                        app:rsb_indicator_show_mode="alwaysShow"
+                        app:rsb_max="5"
+                        app:rsb_min="0"
+                        app:rsb_mode="single"
+                        android:visibility="gone"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_content_mun"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:layout_marginTop="5dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -96,9 +162,41 @@
                         android:layout_gravity="start"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:fontFamily="@font/poppinsmedium"
+                        android:fontFamily="@font/montserrat_medium"
                         android:paddingTop="5dp"
-                        android:text="Modo de renta"
+                        android:text="@string/municipio"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_municipality"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:clipToPadding="false"
+                        android:paddingEnd="12dp"
+                        android:paddingStart="12dp"
+                        app:visibleGone="@{!safeUnbox(isLoading)}" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/montserrat_medium"
+                        android:paddingTop="5dp"
+                        android:text="@string/modo_de_renta"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
@@ -129,41 +227,9 @@
                         android:layout_gravity="start"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:fontFamily="@font/poppinsmedium"
+                        android:fontFamily="@font/montserrat_medium"
                         android:paddingTop="5dp"
-                        android:text="Municipio"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:textSize="14sp" />
-
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/rv_municipality"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:clipToPadding="false"
-                        android:paddingEnd="12dp"
-                        android:paddingStart="12dp"
-                        app:visibleGone="@{!safeUnbox(isLoading)}" />
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
-                        android:fontFamily="@font/poppinsmedium"
-                        android:paddingTop="5dp"
-                        android:text="Facilidades"
+                        android:text="@string/facilidades"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
@@ -193,9 +259,9 @@
                         android:layout_gravity="start"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:fontFamily="@font/poppinsmedium"
+                        android:fontFamily="@font/montserrat_medium"
                         android:paddingTop="5dp"
-                        android:text="Cerca de:"
+                        android:text="@string/cerca_de"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
@@ -224,9 +290,9 @@
                         android:layout_gravity="start"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:fontFamily="@font/poppinsmedium"
+                        android:fontFamily="@font/montserrat_medium"
                         android:paddingTop="5dp"
-                        android:text="Capacidad (huespedes):"
+                        android:text="@string/capacidad_huespedes"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
@@ -260,9 +326,9 @@
                         android:layout_gravity="start"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:fontFamily="@font/poppinsmedium"
+                        android:fontFamily="@font/montserrat_medium"
                         android:paddingTop="5dp"
-                        android:text="Precio entre:"
+                        android:text="@string/precio_entre"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
@@ -297,9 +363,9 @@
                         android:layout_gravity="start"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:fontFamily="@font/poppinsmedium"
+                        android:fontFamily="@font/montserrat_medium"
                         android:paddingTop="5dp"
-                        android:text="Ordenado por:"
+                        android:text="@string/ordenado_por"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
 
@@ -314,13 +380,25 @@
                             android:id="@+id/rb_comment"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Comentarios" />
+                            android:text="Comentarios"
+                            android:textColor="@color/material_color_blue_grey_500"
+                            android:fontFamily="@font/montserrat_light"/>
 
                         <android.support.v7.widget.AppCompatRadioButton
                             android:id="@+id/rb_rating"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Rating" />
+                            android:text="Rating"
+                            android:textColor="@color/material_color_blue_grey_500"
+                            android:fontFamily="@font/montserrat_light"/>
+
+                        <android.support.v7.widget.AppCompatRadioButton
+                            android:id="@+id/rb_price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/material_color_blue_grey_500"
+                            android:fontFamily="@font/montserrat_light"
+                            android:text="Precio" />
 
                     </RadioGroup>
 
@@ -332,26 +410,20 @@
 
         </android.support.v4.widget.NestedScrollView>
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="70dp"
+            android:layout_height="30dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:padding="5dp"
             android:layout_centerInParent="true"
-            app:visibleGone="@{safeUnbox(isLoading)}">
-
-            <com.rey.material.widget.ProgressView
-                android:id="@+id/progress_pv_circular_inout"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_gravity="center"
-                app:pv_autostart="true"
-                app:v_styleId="@array/pv_circular_in" />
-
-        </FrameLayout>
+            app:visibleGone="@{safeUnbox(isLoading)}"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="lottie/loading.json"
+            app:lottie_loop="true"
+            app:lottie_repeatMode="restart"
+            app:lottie_colorFilter="@color/material_color_blue_grey_500"/>
 
     </RelativeLayout>
 

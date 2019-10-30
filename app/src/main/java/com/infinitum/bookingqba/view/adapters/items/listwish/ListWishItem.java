@@ -4,23 +4,16 @@ import android.os.Parcel;
 
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 
-public class ListWishItem extends BaseItem{
+import java.util.Locale;
+
+public class ListWishItem extends BaseItem {
 
     private String address;
     private float rating;
-    private double price;
-    private String rentMode;
+    private int ratingCount;
 
-    public ListWishItem(String id, String name, String imagePath) {
-        super(id, name, imagePath);
-    }
-
-    public ListWishItem(String id, String name, String imagePath, String address, float rating, double price, String rentMode) {
-        super(id, name, imagePath);
-        this.address = address;
-        this.rating = rating;
-        this.price = price;
-        this.rentMode = rentMode;
+    public ListWishItem(String id, String name, String imagePath, float price, String rentMode) {
+        super(id, name, imagePath, price, rentMode);
     }
 
     public String getAddress() {
@@ -39,20 +32,16 @@ public class ListWishItem extends BaseItem{
         this.rating = rating;
     }
 
-    public double getPrice() {
-        return price;
+    public int getRatingCount() {
+        return ratingCount;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setRatingCount(int ratingCount) {
+        this.ratingCount = ratingCount;
     }
 
-    public String getRentMode() {
-        return rentMode;
-    }
-
-    public void setRentMode(String rentMode) {
-        this.rentMode = rentMode;
+    public String humanRatingCount(){
+        return String.format("(%s)",ratingCount);
     }
 
 
@@ -66,16 +55,14 @@ public class ListWishItem extends BaseItem{
         super.writeToParcel(dest, flags);
         dest.writeString(this.address);
         dest.writeFloat(this.rating);
-        dest.writeDouble(this.price);
-        dest.writeString(this.rentMode);
+        dest.writeInt(this.ratingCount);
     }
 
     protected ListWishItem(Parcel in) {
         super(in);
         this.address = in.readString();
         this.rating = in.readFloat();
-        this.price = in.readDouble();
-        this.rentMode = in.readString();
+        this.ratingCount = in.readInt();
     }
 
     public static final Creator<ListWishItem> CREATOR = new Creator<ListWishItem>() {

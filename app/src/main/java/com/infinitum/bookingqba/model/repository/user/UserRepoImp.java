@@ -5,6 +5,7 @@ import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.database.BookingQBADao;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.Oauth;
+import com.infinitum.bookingqba.model.remote.ReservationType;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequestInfo;
 import com.infinitum.bookingqba.model.remote.pojo.Reservation;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
@@ -33,6 +34,15 @@ public class UserRepoImp implements UserRepository {
     public UserRepoImp(Retrofit retrofit, BookingQBADao qbaDao) {
         this.retrofit = retrofit;
         this.qbaDao = qbaDao;
+    }
+
+    @Override
+    public Single<Resource<ResponseResult>> register(Map<String, String> map) {
+        return retrofit.create(ApiInterface.class)
+                .register(map)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
@@ -68,15 +78,6 @@ public class UserRepoImp implements UserRepository {
     }
 
     @Override
-    public Single<Resource<ResponseResult>> register(Map<String, String> map) {
-        return retrofit.create(ApiInterface.class)
-                .register(map)
-                .map(Resource::success)
-                .onErrorReturn(Resource::error)
-                .subscribeOn(Schedulers.io());
-    }
-
-    @Override
     public Single<Resource<ResponseResult>> activationUser(Map<String, String> map) {
         return retrofit.create(ApiInterface.class)
                 .activeUser(map)
@@ -104,7 +105,46 @@ public class UserRepoImp implements UserRepository {
     }
 
     @Override
-    public Single<Resource<List<BookRequestInfo>>> allUserBookRequestInfo(String token, String userid) {
+    public Single<Resource<List<Reservation>>> allCheckedReservationByUser(String token, String userid) {
+        return retrofit.create(ApiInterface.class)
+                .checkedReservation(token, userid)
+                .map(Resource::success)
+                .onErrorReturn(Resource::error)
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<Resource<List<Reservation>>> allReservationUserByType(String token, String userid, ReservationType type) {
+        switch (type){
+            case PENDING:
+                return retrofit.create(ApiInterface.class)
+                        .pendingReservation(token, userid)
+                        .map(Resource::success)
+                        .onErrorReturn(Resource::error)
+                        .subscribeOn(Schedulers.io());
+            case CHECKED:
+                return retrofit.create(ApiInterface.class)
+                        .checkedReservation(token, userid)
+                        .map(Resource::success)
+                        .onErrorReturn(Resource::error)
+                        .subscribeOn(Schedulers.io());
+            case ACCEPTED:
+                return retrofit.create(ApiInterface.class)
+                        .acceptedReservation(token, userid)
+                        .map(Resource::success)
+                        .onErrorReturn(Resource::error)
+                        .subscribeOn(Schedulers.io());
+            default:
+                return retrofit.create(ApiInterface.class)
+                        .pendingReservation(token, userid)
+                        .map(Resource::success)
+                        .onErrorReturn(Resource::error)
+                        .subscribeOn(Schedulers.io());
+        }
+    }
+
+    @Override
+    public Single<Resource<List<Reservation>>> allUserBookRequestInfo(String token, String userid) {
         return retrofit.create(ApiInterface.class)
                 .bookRequestInfo(token, userid)
                 .map(Resource::success)
@@ -149,9 +189,9 @@ public class UserRepoImp implements UserRepository {
     }
 
     @Override
-    public Single<Resource<UserEsentialData>> userBookEsentialData(String token, String userBookOwnerId, String rentId) {
+    public Single<Resource<UserEsentialData>> userBookEsentialData(String token, String userBookOwnerId, String rentId, String reservationId) {
         return  retrofit.create(ApiInterface.class)
-                .userBookOwnerData(token, userBookOwnerId,rentId)
+                .userBookOwnerData(token, userBookOwnerId,rentId, reservationId)
                 .map(Resource::success)
                 .onErrorReturn(Resource::error)
                 .subscribeOn(Schedulers.io());

@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="60dp"
+    android:height="16dp"
+    android:viewportWidth="60"
+    android:viewportHeight="16">
+    <path
+        android:fillColor="#000"
+        android:name="Forma 1"
+        android:pathData="m8 2c3.309 0 6 2.691 6 6c0 3.309 -2.691 6 -6 6c-3.309 0 -6 -2.691 -6 -6c0 -3.309 2.691 -6 6 -6zm22 0c3.309 0 6 2.691 6 6c0 3.309 -2.691 6 -6 6c-3.309 0 -6 -2.691 -6 -6c0 -3.309 2.691 -6 6 -6zm22 0c3.309 0 6 2.691 6 6c0 3.309 -2.691 6 -6 6c-3.309 0 -6 -2.691 -6 -6c0 -3.309 2.691 -6 6 -6zm-44 -2c-4.411 0 -8 3.589 -8 8c0 4.411 3.589 8 8 8c4.411 0 8 -3.589 8 -8c0 -4.411 -3.589 -8 -8 -8zm22 0c-4.411 0 -8 3.589 -8 8c0 4.411 3.589 8 8 8c4.411 0 8 -3.589 8 -8c0 -4.411 -3.589 -8 -8 -8zm22 0c-4.411 0 -8 3.589 -8 8c0 4.411 3.589 8 8 8c4.411 0 8 -3.589 8 -8c0 -4.411 -3.589 -8 -8 -8z" />
+</vector>

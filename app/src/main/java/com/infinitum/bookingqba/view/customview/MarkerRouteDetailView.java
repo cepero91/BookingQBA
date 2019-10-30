@@ -118,7 +118,7 @@ public class MarkerRouteDetailView extends ConstraintLayout implements View.OnCl
 
     public void setPoiLocation(LatLong poiLocation) {
         this.poiLocation = poiLocation;
-        if(rbPoiTo.isChecked()){
+        if (rbPoiTo.isChecked()) {
             to = poiLocation;
             tvBtnCalculate.setVisibility(VISIBLE);
         }
@@ -153,6 +153,9 @@ public class MarkerRouteDetailView extends ConstraintLayout implements View.OnCl
         rbRentTo.setVisibility(View.GONE);
         rlContentTo.setVisibility(View.VISIBLE);
         tvBtnCalculate.setVisibility(VISIBLE);
+        cvDistance.setVisibility(GONE);
+        cvTime.setVisibility(GONE);
+        rvIntructions.setVisibility(GONE);
     }
 
     @Override
@@ -177,7 +180,11 @@ public class MarkerRouteDetailView extends ConstraintLayout implements View.OnCl
                 ivCar.setImageTintList(ColorStateList.valueOf(Color.parseColor("#00BFA5")));
                 break;
             case R.id.tv_btn_calc:
-                markerRouteInteraction.onCalcClick(from, to, vehicle);
+                if (from != null && to != null) {
+                    markerRouteInteraction.onCalcClick(from, to, vehicle);
+                } else {
+                    AlertUtils.showErrorToast(getContext(), "No se puede calcular la ruta");
+                }
                 break;
         }
     }
@@ -204,7 +211,8 @@ public class MarkerRouteDetailView extends ConstraintLayout implements View.OnCl
                     tvBtnCalculate.setVisibility(VISIBLE);
                     to = poiLocation;
                 } else {
-                    AlertUtils.showErrorToast(getContext(), "Seleccione un lugar de interes!");
+                    to = null;
+                    AlertUtils.showErrorToast(getContext(), "Seleccione un lugar de interés!");
                 }
                 break;
         }

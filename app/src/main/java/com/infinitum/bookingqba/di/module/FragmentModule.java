@@ -12,8 +12,12 @@ import com.infinitum.bookingqba.view.profile.MapFormFragment;
 import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.profile.MyRentsFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
-import com.infinitum.bookingqba.view.rents.DialogDetailMenu;
+import com.infinitum.bookingqba.view.rents.BookDaysDialog;
+import com.infinitum.bookingqba.view.rents.RatingDialog;
+import com.infinitum.bookingqba.view.rents.RentCommentFragment;
+import com.infinitum.bookingqba.view.rents.RentDetailFragment;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
+import com.infinitum.bookingqba.view.rents.RentPoiFragment;
 import com.infinitum.bookingqba.view.reservation.BookRequestListFragment;
 import com.infinitum.bookingqba.view.reservation.ReservationListFragment;
 
@@ -64,7 +68,7 @@ public interface FragmentModule {
     ReservationListFragment bindReservationListFragment();
 
     @ContributesAndroidInjector
-    DialogDetailMenu bindDialogDetailMenu();
+    RatingDialog bindDialogDetailMenu();
 
     @ContributesAndroidInjector
     BookRequestListFragment bindBookRequestListFragment();
@@ -72,5 +76,16 @@ public interface FragmentModule {
     @ContributesAndroidInjector
     CalendarFragment bindCalendarFragment();
 
+    @ContributesAndroidInjector
+    BookDaysDialog bindBookDaysDialog();
+
+    @ContributesAndroidInjector
+    RentDetailFragment bindRentDetailFragment();
+
+    @ContributesAndroidInjector
+    RentPoiFragment bindRentPoiFragment();
+
+    @ContributesAndroidInjector
+    RentCommentFragment bindRentCommentFragment();
 
 }

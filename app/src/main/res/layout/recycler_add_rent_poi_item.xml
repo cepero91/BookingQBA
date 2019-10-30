@@ -1,39 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_content_poi"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
-
-    <TextView
-        android:id="@+id/tv_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/poppinsmedium"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:text="Category"
-        android:textSize="12sp"
-        android:textColor="@color/material_color_blue_grey_500"/>
-
-    <TextView
-        android:id="@+id/tv_separator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="3dp"
-        android:layout_marginStart="3dp"
-        android:text="---"
-        android:textColor="@color/material_color_blue_grey_500"/>
+    android:orientation="horizontal"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
 
     <TextView
         android:id="@+id/tv_poi"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:drawablePadding="5dp"
+        android:drawableStart="@drawable/ic_fa_circle_edit_line"
+        android:ellipsize="end"
+        android:fontFamily="@font/montserrat_light"
+        android:maxLines="2"
+        android:text="Hospital Clinico General Universitario Julio Trigo Lopez"
+        android:textColor="@color/material_color_blue_grey_500"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tv_distance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/poppinslight"
-        android:padding="8dp"
-        android:text="poi"
-        android:textSize="12sp"
-        android:textColor="@color/material_color_blue_grey_300"/>
+        android:fontFamily="@font/montserrat_light_italic"
+        android:gravity="end|center"
+        android:text="a 100 m"
+        android:textColor="@color/material_color_teal_A700"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_poi"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_poi" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
 

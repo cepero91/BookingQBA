@@ -6,7 +6,7 @@
     android:orientation="horizontal"
     android:layout_margin="5dp"
     app:cardElevation="5dp"
-    app:cardCornerRadius="10dp">
+    app:cardCornerRadius="5dp">
 
     <com.github.siyamed.shapeimageview.RoundedImageView
         android:id="@+id/iv_galerie"
@@ -17,7 +17,7 @@
         android:src="@drawable/bedroom"
         app:siBorderColor="@android:color/transparent"
         app:siBorderAlpha="0"
-        app:siRadius="10dp"
+        app:siRadius="5dp"
         />
 
 

@@ -28,14 +28,19 @@ import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.remote.pojo.BlockDay;
 import com.infinitum.bookingqba.model.remote.pojo.DisabledDays;
 import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
+import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
+import com.infinitum.bookingqba.view.customview.DialogBlockDayView;
+import com.infinitum.bookingqba.view.customview.StateView;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 
 import org.reactivestreams.Publisher;
 
+import java.net.ConnectException;
+import java.net.SocketException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,11 +53,13 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;
+import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import pl.rafman.scrollcalendar.adapter.ScrollCalendarAdapter;
+import pl.rafman.scrollcalendar.adapter.example.DefaultDateScrollCalendarAdapter;
 import pl.rafman.scrollcalendar.adapter.example.DefaultRangeScrollCalendarAdapter;
 import pl.rafman.scrollcalendar.contract.DateWatcher;
 import pl.rafman.scrollcalendar.contract.MonthScrollListener;
@@ -65,7 +72,7 @@ import static com.applandeo.materialcalendarview.CalendarView.RANGE_PICKER;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
-public class CalendarFragment extends BaseNavigationFragment implements View.OnClickListener {
+public class CalendarFragment extends BaseNavigationFragment implements MonthScrollListener, StateView.OnStateViewInteraction {
 
     private FragmentCalendarBinding calendarBinding;
     private RentViewModel rentViewModel;
@@ -89,6 +96,8 @@ public class CalendarFragment extends BaseNavigationFragment implements View.OnC
     private String token;
     private String userid;
     private List<String> unavailableDays;
+    private int lastRentSelected = 0;
+    private CFAlertDialog confirmDialog;
 
     public static CalendarFragment newInstance() {
         return new CalendarFragment();
@@ -110,7 +119,9 @@ public class CalendarFragment extends BaseNavigationFragment implements View.OnC
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        calendarBinding.setLoading(true);
+        calendarBinding.stateView.setHasRefreshButton(true);
+        calendarBinding.stateView.setOnStateViewInteraction(this);
+        initLoading(true, StateView.Status.LOADING, true);
 
         setHasOptionsMenu(true);
 
@@ -125,6 +136,12 @@ public class CalendarFragment extends BaseNavigationFragment implements View.OnC
 
     }
 
+    private void initLoading(boolean loading, StateView.Status status, boolean isEmpty) {
+        calendarBinding.setLoading(loading);
+        calendarBinding.setEmpty(isEmpty);
+        calendarBinding.stateView.setStatus(status);
+    }
+
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
@@ -137,60 +154,75 @@ public class CalendarFragment extends BaseNavigationFragment implements View.OnC
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_block:
-                Toast.makeText(getActivity(), "Hacer algo pa bloquear", Toast.LENGTH_SHORT).show();
+                if (networkHelper.isNetworkAvailable()) {
+                    showConfirmDialog();
+                } else {
+                    AlertUtils.showErrorToast(getActivity(), "Sin conexión");
+                }
                 return true;
             case R.id.action_change_rent:
-                Toast.makeText(getActivity(), "Hacer algo pa cambiar de renta", Toast.LENGTH_SHORT).show();
+                CFAlertDialog.Builder builder = new CFAlertDialog.Builder(getActivity());
+                builder.setTitle("Cambio de Renta");
+                builder.setSingleChoiceItems(rentOptionsNames, lastRentSelected, (dialog, which) -> {
+                    dialog.dismiss();
+                    if (which != lastRentSelected) {
+                        updateUiRangeBar(null, null);
+                        lastRentSelected = which;
+                        getDisabledDayOfARent(rentOptionsUuid[lastRentSelected]);
+                    }
+                });
+                builder.show();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void fetchUserRents() {
-        disposable = rentViewModel.allRentByUserId(token, userid)
-                .map(listResource -> {
-                    if (listResource.data != null && listResource.data.size() > 0) {
-                        rentUuidSelected = listResource.data.get(0).getId();
-                        prepareRentsOptions(listResource.data);
-                        return listResource.data;
-                    }
-                    return new ArrayList<RentEsential>();
-                })
-                .flatMap((Function<List<RentEsential>, Publisher<Resource<DisabledDays>>>) objects -> {
-                    if (objects != null && objects.size() > 0) {
-                        return rentViewModel.disabledDays(token, objects.get(0).getId())
-                                .subscribeOn(Schedulers.io()).toFlowable().onErrorReturn(Resource::error);
-                    }
-                    return Flowable.just(Resource.error("Datos nulos o vacios"));
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(listResource -> {
-                    if (listResource.data != null) {
-                        calendarBinding.setLoading(false);
-                        unavailableDays = getTestDateDisabled();
-                        calendarBinding.scrollCalendar.getAdapter().notifyDataSetChanged();
-                        if (rentOptionsNames != null && rentOptionsNames.length > 1) {
-                            getActivity().invalidateOptionsMenu();
-                        }
-                    } else {
-                        calendarBinding.setLoading(false);
-                    }
-                }, throwable -> {
-                    calendarBinding.setLoading(false);
-                });
-        compositeDisposable.add(disposable);
+        if (networkHelper.isNetworkAvailable()) {
+            disposable = rentViewModel.allRentByUserIdByNightMode(token, userid)
+                    .map(this::getRentEsentials)
+                    .flatMap((Function<List<RentEsential>, Publisher<Resource<DisabledDays>>>) this::getRemoteDisabledDayOrError)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::updateFirstStartedUI, throwable -> {
+                        Timber.e(throwable);
+                        initLoading(false, StateView.Status.EMPTY, true);
+                    });
+            compositeDisposable.add(disposable);
+        } else {
+            initLoading(false, StateView.Status.NO_CONNECTION, true);
+        }
     }
 
-    private void getDisabledDayOfARent(String rentUuid) {
-        disposable = rentViewModel.disabledDays(token, rentUuid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(disabledDaysResource -> {
-//                    if (disabledDaysResource.data != null && disabledDaysResource.status == Resource.Status.SUCCESS)
-//                        calendarBinding.calendarView.setDisabledDays(DateUtils.transformStringDatesToCalendars(disabledDaysResource.data.getDates()));
-                }, Timber::e);
-        compositeDisposable.add(disposable);
+    private void updateFirstStartedUI(Resource<DisabledDays> listResource) {
+        if (listResource.data != null) {
+            unavailableDays = listResource.data.getDates();
+            calendarBinding.scrollCalendar.refresh();
+            if (rentOptionsNames != null && rentOptionsNames.length > 1) {
+                getActivity().invalidateOptionsMenu();
+            }
+            initLoading(false, StateView.Status.SUCCESS, false);
+        } else {
+            initLoading(false, StateView.Status.EMPTY, true);
+        }
+    }
+
+    private Publisher<Resource<DisabledDays>> getRemoteDisabledDayOrError(List<RentEsential> objects) {
+        if (objects != null && objects.size() > 0) {
+            return rentViewModel.disabledDays(token, objects.get(0).getId())
+                    .subscribeOn(Schedulers.io()).toFlowable().onErrorReturn(Resource::error);
+        }
+        return Flowable.just(Resource.error("Datos nulos o vacios"));
+    }
+
+    @NonNull
+    private List<RentEsential>  getRentEsentials(Resource<List<RentEsential>> listResource) {
+        if (listResource.data != null && listResource.data.size() > 0) {
+            rentUuidSelected = listResource.data.get(0).getId();
+            prepareRentsOptions(listResource.data);
+            return listResource.data;
+        }
+        return new ArrayList<RentEsential>();
     }
 
     private void prepareRentsOptions(List<RentEsential> data) {
@@ -202,31 +234,20 @@ public class CalendarFragment extends BaseNavigationFragment implements View.OnC
         }
     }
 
-
-    private ArrayList<String> getTestDateDisabled() {
-        ArrayList<String> dates = new ArrayList<>();
-        dates.add("2019-10-10");
-        dates.add("2019-10-11");
-        dates.add("2019-10-12");
-        dates.add("2019-10-13");
-        return dates;
-    }
-
     private void setupCalendarView() {
         calendarBinding.scrollCalendar.setDateWatcher(this::doGetStateForDate);
-
         calendarBinding.scrollCalendar.setOnDateClickListener(this::doOnCalendarDayClicked);
-        calendarBinding.scrollCalendar.setMonthScrollListener(new MonthScrollListener() {
-            @Override
-            public boolean shouldAddNextMonth(int lastDisplayedYear, int lastDisplayedMonth) {
-                return doShouldAddNextMonth(lastDisplayedYear, lastDisplayedMonth);
-            }
+        calendarBinding.scrollCalendar.setMonthScrollListener(this);
+    }
 
-            @Override
-            public boolean shouldAddPreviousMonth(int firstDisplayedYear, int firstDisplayedMonth) {
-                return false;
-            }
-        });
+    @Override
+    public boolean shouldAddNextMonth(int lastDisplayedYear, int lastDisplayedMonth) {
+        return doShouldAddNextMonth(lastDisplayedYear, lastDisplayedMonth);
+    }
+
+    @Override
+    public boolean shouldAddPreviousMonth(int firstDisplayedYear, int firstDisplayedMonth) {
+        return false;
     }
 
     @State
@@ -329,23 +350,23 @@ public class CalendarFragment extends BaseNavigationFragment implements View.OnC
             updateUiRangeBar(from, null);
             until = null;
         } else if (shouldSetUntil()) {
-            if(isUnavailableRange(clickedOn))
+            if (isUnavailableRange(clickedOn))
                 return;
             until = clickedOn;
             updateUiRangeBar(from, until);
         }
     }
 
-    private boolean isUnavailableRange(Calendar untilClicked){
+    private boolean isUnavailableRange(Calendar untilClicked) {
         boolean isUnDay = false;
-        if(from!=null){
+        if (from != null) {
             Calendar startValue = Calendar.getInstance();
             startValue.setTime(from.getTime());
             Calendar endValue = Calendar.getInstance();
             endValue.setTime(untilClicked.getTime());
-            while (startValue.before(endValue)){
-                startValue.add(Calendar.DATE,1);
-                if(isDisableDay(startValue)){
+            while (startValue.before(endValue)) {
+                startValue.add(Calendar.DATE, 1);
+                if (isDisableDay(startValue)) {
                     isUnDay = true;
                     break;
                 }
@@ -353,7 +374,6 @@ public class CalendarFragment extends BaseNavigationFragment implements View.OnC
         }
         return isUnDay;
     }
-
 
     private boolean shouldSetUntil() {
         return until == null;
@@ -463,28 +483,30 @@ public class CalendarFragment extends BaseNavigationFragment implements View.OnC
     }
 
     private boolean isDisableDay(Calendar dayCalendar) {
-        return isDisableDay(dayCalendar.get(Calendar.YEAR),dayCalendar.get(Calendar.MONTH),dayCalendar.get(Calendar.DATE));
+        return isDisableDay(dayCalendar.get(Calendar.YEAR), dayCalendar.get(Calendar.MONTH), dayCalendar.get(Calendar.DATE));
     }
 
     private boolean isDisableDay(int year, int month, int day) {
-        String textDate = String.valueOf(year) + "-" + (month + 1) + "-" + day;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        Date extraDate = null;
-        try {
-            extraDate = simpleDateFormat.parse(textDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        for (String dateStr : unavailableDays) {
-            Date tempDate = null;
+        if (unavailableDays != null && unavailableDays.size() > 0) {
+            String textDate = String.valueOf(year) + "-" + (month + 1) + "-" + day;
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date extraDate = null;
             try {
-                tempDate = simpleDateFormat.parse(dateStr);
+                extraDate = simpleDateFormat.parse(textDate);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            if (tempDate != null && extraDate != null && tempDate.getTime() == extraDate.getTime()) {
-                return true;
+
+            for (String dateStr : unavailableDays) {
+                Date tempDate = null;
+                try {
+                    tempDate = simpleDateFormat.parse(dateStr);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (tempDate != null && extraDate != null && tempDate.getTime() == extraDate.getTime()) {
+                    return true;
+                }
             }
         }
         return false;
@@ -497,50 +519,91 @@ public class CalendarFragment extends BaseNavigationFragment implements View.OnC
         super.onDestroyView();
     }
 
-
-    @Override
-    public void onClick(View v) {
-//        switch (v.getId()) {
-//            case R.id.btn_send:
-//                if (com.applandeo.materialcalendarview.utils.DateUtils.isFullDatesRange(calendarBinding.calendarView.getSelectedDates())) {
-//                    Calendar startDate = calendarBinding.calendarView.getSelectedDates().get(0);
-//                    Calendar endDate = calendarBinding.calendarView.getSelectedDates().get(calendarBinding.calendarView.getSelectedDates().size() - 1);
-//                    List<Calendar> startEndDates = new ArrayList<>();
-//                    startEndDates.add(startDate);
-//                    startEndDates.add(endDate);
-//                    List<String> textDates = DateUtils.transformCalendarsToStringDates(startEndDates);
-//                    BlockDay blockDay = new BlockDay(rentUuidSelected, "Futura descripcion", textDates.get(0), textDates.get(1));
-//                    disposable = rentViewModel.blockDays(sharedPreferences.getString(USER_TOKEN, ""), blockDay)
-//                            .subscribeOn(Schedulers.io())
-//                            .observeOn(AndroidSchedulers.mainThread())
-//                            .subscribe(resultResource -> {
-//                                if (resultResource.data != null && resultResource.data.getCode() == 200) {
-//                                    AlertUtils.showSuccessToast(getActivity(), "Días bloqueados con éxito");
-//                                    calendarBinding.calendarView.setDisabledDays(calendarBinding.calendarView.getSelectedDates());
-//                                } else {
-//                                    AlertUtils.showErrorToast(getActivity(), "Un error ha ocurrido");
-//                                }
-//                            }, Timber::e);
-//                    compositeDisposable.add(disposable);
-//                } else {
-//                    AlertUtils.showErrorToast(getActivity(), "Seleccione un rango válido");
-//                }
-//                break;
-//            case R.id.tv_rent:
-//                CFAlertDialog.Builder builder = new CFAlertDialog.Builder(getActivity());
-//                builder.setTitle("Cambio de Renta");
-//                builder.setItems(rentOptionsNames, (dialog, which) -> {
-//                    dialog.dismiss();
-//                    calendarBinding.tvRent.setText(rentOptionsNames[which]);
-//                    getDisabledDayOfARent(rentOptionsUuid[which]);
-//                    CalendarProperties calendarProperties = new CalendarProperties(getActivity());
-//                    calendarProperties.se
-//                    CalendarView calendarView = new CalendarView(getActivity());
-//                });
-//                builder.show();
-//                break;
-//        }
+    private void showConfirmDialog() {
+        if (from != null && until != null) {
+            CFAlertDialog.Builder builder = new CFAlertDialog.Builder(getActivity());
+            DialogBlockDayView dialogBlockDayView = new DialogBlockDayView(getActivity());
+            dialogBlockDayView.setFrom(from.getTime());
+            dialogBlockDayView.setUntil(until.getTime());
+            dialogBlockDayView.setDialogBlockDayInteraction(note -> {
+                confirmDialog.dismiss();
+                sendBlockDay(note);
+            });
+            builder.setHeaderView(dialogBlockDayView);
+            confirmDialog = builder.show();
+        } else {
+            AlertUtils.showErrorToast(getActivity(), "Debe seleccionar un rango");
+        }
     }
 
+    private void sendBlockDay(String note) {
+        if (networkHelper.isNetworkAvailable()) {
+            initLoading(true, StateView.Status.LOADING, true);
+            BlockDay blockDay = new BlockDay(rentUuidSelected, note, DateUtils.transformCalendarToStringDate(from), DateUtils.transformCalendarToStringDate(until));
+            disposable = rentViewModel.blockDays(token, blockDay)
+                    .flatMap((Function<Resource<ResponseResult>, SingleSource<Resource<DisabledDays>>>) resultResource -> {
+                        if (resultResource.data != null && resultResource.data.getCode() == 200) {
+                            return rentViewModel.disabledDays(token, rentUuidSelected)
+                                    .subscribeOn(Schedulers.io());
+                        }
+                        return Single.just(Resource.error("Error al ocupar días"));
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(resultResource -> {
+                        if (resultResource.data != null) {
+                            AlertUtils.showSuccessToast(getActivity(), "Días ocupados con éxito");
+                            unavailableDays = resultResource.data.getDates();
+                            from = null;
+                            until = null;
+                            calendarBinding.scrollCalendar.refresh();
+                            initLoading(false, StateView.Status.SUCCESS, false);
+                        } else {
+                            initLoading(false, StateView.Status.EMPTY, true);
+                            AlertUtils.showErrorToast(getActivity(), resultResource.message);
+                        }
 
+                    }, throwable -> {
+                        Timber.e(throwable);
+                        AlertUtils.showErrorToast(getActivity(), "Un error ha ocurrido");
+                        initLoading(false,
+                                throwable instanceof ConnectException ||
+                                        throwable instanceof SocketException ? StateView.Status.NO_CONNECTION : StateView.Status.EMPTY,
+                                true);
+                    });
+            compositeDisposable.add(disposable);
+        } else {
+            initLoading(false, StateView.Status.NO_CONNECTION, true);
+        }
+    }
+
+    private void getDisabledDayOfARent(String rentUuid) {
+        if (networkHelper.isNetworkAvailable()) {
+            initLoading(true, StateView.Status.LOADING, true);
+            disposable = rentViewModel.disabledDays(token, rentUuid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(disabledDaysResource -> {
+                        if (disabledDaysResource.data != null && disabledDaysResource.status == Resource.Status.SUCCESS) {
+                            unavailableDays = disabledDaysResource.data.getDates();
+                            from = null;
+                            until = null;
+                            calendarBinding.scrollCalendar.refresh();
+                        }
+                        initLoading(false, StateView.Status.SUCCESS, false);
+                    }, throwable -> {
+                        Timber.e(throwable);
+                        initLoading(false, StateView.Status.EMPTY, true);
+                    });
+            compositeDisposable.add(disposable);
+        } else {
+            initLoading(false, StateView.Status.NO_CONNECTION, true);
+        }
+    }
+
+    @Override
+    public void onRefreshClick() {
+        initLoading(true, StateView.Status.LOADING, true);
+        fetchUserRents();
+    }
 }

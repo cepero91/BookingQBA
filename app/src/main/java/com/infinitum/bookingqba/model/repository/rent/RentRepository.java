@@ -5,14 +5,18 @@ import android.util.Pair;
 
 import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
+import com.infinitum.bookingqba.model.local.entity.PoiEntity;
 import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
+import com.infinitum.bookingqba.model.local.entity.WishedRentEntity;
 import com.infinitum.bookingqba.model.local.pojo.RentAndDependencies;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
+import com.infinitum.bookingqba.model.local.pojo.RentDetailEsential;
 import com.infinitum.bookingqba.model.local.pojo.RentMostComment;
 import com.infinitum.bookingqba.model.local.pojo.RentMostRating;
+import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.BlockDay;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
@@ -24,6 +28,7 @@ import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
 import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
+import com.infinitum.bookingqba.model.remote.pojo.RentPoiReferenceZone;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.view.adapters.items.home.RentMostCommentItem;
 
@@ -57,15 +62,19 @@ public interface RentRepository {
 
     Flowable<Resource<RentDetail>> getRentDetailById(String uuid);
 
+    Flowable<Resource<List<RentPoiAndRelation>>> getRentPoiById(String uuid);
+
+    Flowable<Resource<WishedRentEntity>> rentIsWished(String rentUudi, String userId);
+
     Completable addOrUpdateRentVisitCount(String id, String rent);
 
     Completable addOrUpdateRating(RatingEntity entity);
 
     Single<RatingEntity> getLastRentVote(String rent);
 
-    Flowable<Resource<List<RentAndGalery>>> allWishedRent(String province);
+    Flowable<Resource<List<RentAndDependencies>>> allWishedRent(String province, String userId);
 
-    Completable updateIsWishedRent(String uuid, int isWished);
+    Completable addOrUpdateWishedRent(String uuid, String userId, int isWished);
 
     Completable update(RentEntity entity);
 
@@ -100,5 +109,9 @@ public interface RentRepository {
     Single<Resource<DisabledDays>> disabledDaysByRent(String token, String uuid);
 
     Single<Resource<ResponseResult>> blockDates(String token, BlockDay blockDay);
+
+    Single<Resource<RentPoiReferenceZone>> referenceZoneAndPoiByLocation(String token, double lat, double lon);
+
+    Single<Resource<ResponseResult>> deleteImage(String token, String uuid);
 
 }

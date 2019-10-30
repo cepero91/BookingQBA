@@ -5,97 +5,110 @@ import com.google.gson.annotations.SerializedName;
 
 public class AnaliticsGroup {
 
-    @SerializedName("GeneralCommentAnalitics")
+    @SerializedName("CommentReport")
     @Expose
-    private GeneralCommentAnalitics generalCommentAnalitics;
+    private CommentReport commentReport;
 
-    @SerializedName("CommentsEmotionAnalitics")
+    @SerializedName("EmotionReport")
     @Expose
-    private CommentsEmotionAnalitics commentsEmotionAnalitics;
+    private EmotionReport emotionReport;
 
-    @SerializedName("RatingStarAnalitics")
+    @SerializedName("RatingReport")
     @Expose
-    private RatingStarAnalitics ratingStarAnalitics;
+    private RatingReport ratingReport;
 
-    @SerializedName("ProfilePercentAnalitics")
+    @SerializedName("VisitReport")
     @Expose
-    private ProfilePercentAnalitics profilePercentAnalitics;
+    private VisitReport visitReport;
 
-    @SerializedName("VisitAnalitics")
+    @SerializedName("WishReport")
     @Expose
-    private VisitAnalitics visitAnalitics;
+    private WishReport wishReport;
 
-    @SerializedName("WishAnalitics")
+    @SerializedName("PositionReport")
     @Expose
-    private WishAnalitics wishAnalitics;
+    private PositionReport positionReport;
 
-    @SerializedName("RentPositionAnalitics")
+    @SerializedName("RevenueReport")
     @Expose
-    private RentPositionAnalitics rentPositionAnalitics;
+    private RevenueReport revenueReport;
 
-    public AnaliticsGroup(GeneralCommentAnalitics generalCommentAnalitics, CommentsEmotionAnalitics commentsEmotionAnalitics, RatingStarAnalitics ratingStarAnalitics, ProfilePercentAnalitics profilePercentAnalitics, VisitAnalitics visitAnalitics, WishAnalitics wishAnalitics, RentPositionAnalitics rentPositionAnalitics) {
-        this.generalCommentAnalitics = generalCommentAnalitics;
-        this.commentsEmotionAnalitics = commentsEmotionAnalitics;
-        this.ratingStarAnalitics = ratingStarAnalitics;
-        this.profilePercentAnalitics = profilePercentAnalitics;
-        this.visitAnalitics = visitAnalitics;
-        this.wishAnalitics = wishAnalitics;
-        this.rentPositionAnalitics = rentPositionAnalitics;
+    @SerializedName("ReservationReport")
+    @Expose
+    private ReservationReport reservationReport;
+
+    public AnaliticsGroup(CommentReport commentReport, EmotionReport emotionReport, RatingReport ratingReport, VisitReport visitReport, WishReport wishReport, PositionReport positionReport, RevenueReport revenueReport, ReservationReport reservationReport) {
+        this.commentReport = commentReport;
+        this.emotionReport = emotionReport;
+        this.ratingReport = ratingReport;
+        this.visitReport = visitReport;
+        this.wishReport = wishReport;
+        this.positionReport = positionReport;
+        this.revenueReport = revenueReport;
+        this.reservationReport = reservationReport;
     }
 
-    public GeneralCommentAnalitics getGeneralCommentAnalitics() {
-        return generalCommentAnalitics;
+    public CommentReport getCommentReport() {
+        return commentReport;
     }
 
-    public void setGeneralCommentAnalitics(GeneralCommentAnalitics generalCommentAnalitics) {
-        this.generalCommentAnalitics = generalCommentAnalitics;
+    public void setCommentReport(CommentReport commentReport) {
+        this.commentReport = commentReport;
     }
 
-    public CommentsEmotionAnalitics getCommentsEmotionAnalitics() {
-        return commentsEmotionAnalitics;
+    public EmotionReport getEmotionReport() {
+        return emotionReport;
     }
 
-    public void setCommentsEmotionAnalitics(CommentsEmotionAnalitics commentsEmotionAnalitics) {
-        this.commentsEmotionAnalitics = commentsEmotionAnalitics;
+    public void setEmotionReport(EmotionReport emotionReport) {
+        this.emotionReport = emotionReport;
     }
 
-    public RatingStarAnalitics getRatingStarAnalitics() {
-        return ratingStarAnalitics;
+    public RatingReport getRatingReport() {
+        return ratingReport;
     }
 
-    public void setRatingStarAnalitics(RatingStarAnalitics ratingStarAnalitics) {
-        this.ratingStarAnalitics = ratingStarAnalitics;
+    public void setRatingReport(RatingReport ratingReport) {
+        this.ratingReport = ratingReport;
     }
 
-    public ProfilePercentAnalitics getProfilePercentAnalitics() {
-        return profilePercentAnalitics;
+    public VisitReport getVisitReport() {
+        return visitReport;
     }
 
-    public void setProfilePercentAnalitics(ProfilePercentAnalitics profilePercentAnalitics) {
-        this.profilePercentAnalitics = profilePercentAnalitics;
+    public void setVisitReport(VisitReport visitReport) {
+        this.visitReport = visitReport;
     }
 
-    public VisitAnalitics getVisitAnalitics() {
-        return visitAnalitics;
+    public WishReport getWishReport() {
+        return wishReport;
     }
 
-    public void setVisitAnalitics(VisitAnalitics visitAnalitics) {
-        this.visitAnalitics = visitAnalitics;
+    public void setWishReport(WishReport wishReport) {
+        this.wishReport = wishReport;
     }
 
-    public WishAnalitics getWishAnalitics() {
-        return wishAnalitics;
+    public PositionReport getPositionReport() {
+        return positionReport;
     }
 
-    public void setWishAnalitics(WishAnalitics wishAnalitics) {
-        this.wishAnalitics = wishAnalitics;
+    public void setPositionReport(PositionReport positionReport) {
+        this.positionReport = positionReport;
     }
 
-    public RentPositionAnalitics getRentPositionAnalitics() {
-        return rentPositionAnalitics;
+    public RevenueReport getRevenueReport() {
+        return revenueReport;
     }
 
-    public void setRentPositionAnalitics(RentPositionAnalitics rentPositionAnalitics) {
-        this.rentPositionAnalitics = rentPositionAnalitics;
+    public void setRevenueReport(RevenueReport revenueReport) {
+        this.revenueReport = revenueReport;
+    }
+
+    public ReservationReport getReservationReport() {
+        return reservationReport;
+    }
+
+    public void setReservationReport(ReservationReport reservationReport) {
+        this.reservationReport = reservationReport;
     }
 }

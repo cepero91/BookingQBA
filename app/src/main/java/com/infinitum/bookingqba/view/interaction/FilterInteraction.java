@@ -1,6 +1,8 @@
 package com.infinitum.bookingqba.view.interaction;
 
 import android.arch.paging.PagedList;
+import android.location.Location;
+import android.support.annotation.Nullable;
 
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
@@ -14,7 +16,7 @@ public interface FilterInteraction {
 
     void closeFilter();
 
-    void onFilterElement(Resource<List<GeoRent>> resourceResult);
+    void onFilterElement(Resource<List<GeoRent>> resourceResult, @Nullable Location lastLocationKnow);
 
     void onFilterClean();
 

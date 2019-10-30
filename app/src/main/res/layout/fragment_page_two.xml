@@ -33,20 +33,22 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="@dimen/pages_title_margin_bottom"
                 android:layout_marginTop="@dimen/pages_title_margin_top"
-                android:fontFamily="@font/poppinsbold"
+                android:fontFamily="@font/montserrat_black"
                 android:text="@string/navega_y_compara"
                 android:textAlignment="center"
-                android:textSize="@dimen/pages_title_dimen" />
+                android:textSize="@dimen/pages_title_dimen"
+                android:textColor="@color/material_color_blue_grey_500"/>
 
             <TextView
                 android:id="@+id/tv_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:fontFamily="@font/poppinsregular"
+                android:fontFamily="@font/montserrat_regular"
                 android:text="@string/page_two_text"
                 android:textAlignment="center"
-                android:textSize="@dimen/pages_desc_dimen" />
+                android:textSize="@dimen/pages_desc_dimen"
+                android:textColor="@color/material_color_blue_grey_400"/>
 
         </LinearLayout>
 

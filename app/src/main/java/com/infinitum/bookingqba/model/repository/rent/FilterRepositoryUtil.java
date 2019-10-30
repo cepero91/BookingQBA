@@ -1,16 +1,22 @@
 package com.infinitum.bookingqba.model.repository.rent;
 
+import android.graphics.PointF;
 import android.util.Pair;
+
+import com.infinitum.bookingqba.util.Constants;
+import com.infinitum.bookingqba.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
 
+import static com.infinitum.bookingqba.util.Constants.FILTER_RADAR_RENT_MODE;
 import static com.infinitum.bookingqba.util.StringUtils.convertListToCommaSeparated;
 
 
 public class FilterRepositoryUtil {
     public static final String RENTMODE = "RentMode";
     public static final String MUNICIPALITY = "Municipality";
+    public static final String LOCATION = "Distance";
     public static final String AMENITIES = "Amenities";
     public static final String PRICE = "Price";
     public static final String POI = "Poi";
@@ -164,15 +170,19 @@ public class FilterRepositoryUtil {
         Pair<String, String> secondLevelPair = buildSecondLevelQuery(filterParams, provinceId);
         if (filterParams.containsKey(ORDER)) {
             String alias;
-            if (filterParams.get(ORDER).get(0).equals("r")) {
-                alias = secondLevelPair.first.isEmpty() ? "Rent" : secondLevelPair.first;
-                return secondLevelPair.second + " ORDER BY " + alias + ".rating DESC, " +
-                        alias + ".ratingCount DESC";
-            } else {
-                alias = secondLevelPair.first.isEmpty() ? "q2" : secondLevelPair.first;
-                return "SELECT q2.*,avg(Comment.emotion) as x, count(Comment.id) as y FROM(" + secondLevelPair.second + ") as q2 " +
-                        "JOIN Comment ON Comment.rent = " + alias + ".id " +
-                        "GROUP BY " + alias + ".id order by x desc, y desc";
+            switch (filterParams.get(ORDER).get(0)) {
+                case "r":
+                    alias = secondLevelPair.first.isEmpty() ? "Rent" : secondLevelPair.first;
+                    return secondLevelPair.second + " ORDER BY " + alias + ".rating DESC, " +
+                            alias + ".ratingCount DESC";
+                case "c":
+                    alias = secondLevelPair.first.isEmpty() ? "q2" : secondLevelPair.first;
+                    return "SELECT q2.*,avg(Comment.emotion) as x, count(Comment.id) as y FROM(" + secondLevelPair.second + ") as q2 " +
+                            "JOIN Comment ON Comment.rent = " + alias + ".id " +
+                            "GROUP BY " + alias + ".id order by x desc, y desc";
+                default:
+                    alias = secondLevelPair.first.isEmpty() ? "Rent" : secondLevelPair.first;
+                    return secondLevelPair.second + " ORDER BY " + alias + ".price ASC ";
             }
         } else {
             return secondLevelPair.second;
@@ -184,18 +194,17 @@ public class FilterRepositoryUtil {
         String principalQuery = "SELECT Rent.* FROM Rent ";
         String provinceJoin = " JOIN Municipality ON Municipality.id = Rent.municipality ";
         generalQueryBuilder.append(principalQuery);
-        if (!filterParams.containsKey(MUNICIPALITY)) {
-            String joinClause = buildJoinClause(filterParams, provinceJoin);
-            String matchClause = buildMatchClause(filterParams, provinceId);
-            String groupClause = buildGroupByClause(filterParams);
-            generalQueryBuilder.append(joinClause).append(matchClause).append(groupClause);
-        } else {
+        if (filterParams.containsKey(MUNICIPALITY) || filterParams.containsKey(LOCATION)) {
             String joinClause = buildJoinClause(filterParams, "");
             String matchClause = buildMatchClause(filterParams, "");
             String groupClause = buildGroupByClause(filterParams);
             generalQueryBuilder.append(joinClause).append(matchClause).append(groupClause);
+        } else {
+            String joinClause = buildJoinClause(filterParams, provinceJoin);
+            String matchClause = buildMatchClause(filterParams, provinceId);
+            String groupClause = buildGroupByClause(filterParams);
+            generalQueryBuilder.append(joinClause).append(matchClause).append(groupClause);
         }
-        String gg = generalQueryBuilder.toString();
         return generalQueryBuilder.toString();
     }
 
@@ -242,6 +251,15 @@ public class FilterRepositoryUtil {
                 hasWhere = true;
             }
         }
+        if (filterParams.containsKey(LOCATION)) {
+            String locationMatch = getLocationMatchStr(filterParams.get(LOCATION));
+            if (hasWhere) {
+                matchBuilder.append(clauseAnd).append(locationMatch);
+            } else {
+                matchBuilder.append(clauseWhere).append(locationMatch);
+                hasWhere = true;
+            }
+        }
         if (filterParams.containsKey(MUNICIPALITY)) {
             String municipalityMatch = " Rent.municipality IN (" + convertListToCommaSeparated(filterParams.get(MUNICIPALITY)) + ")";
             if (hasWhere) {
@@ -283,11 +301,66 @@ public class FilterRepositoryUtil {
         return matchBuilder.toString();
     }
 
+    private static String getLocationMatchStr(List<String> strings) {
+        float userRange = Float.parseFloat(strings.get(0))*1000;
+        float lat = Float.parseFloat(strings.get(1));
+        float lon = Float.parseFloat(strings.get(2));
+        PointF center = new PointF((float) lat, (float) lon);
+        final double mult = 1; // mult = 1.1; is more reliable
+        PointF p1 = calculateDerivedPosition(center, mult * userRange, 0);
+        PointF p2 = calculateDerivedPosition(center, mult * userRange, 90);
+        PointF p3 = calculateDerivedPosition(center, mult * userRange, 180);
+        PointF p4 = calculateDerivedPosition(center, mult * userRange, 270);
+
+        return " Rent.latitude > " + String.valueOf(p3.x) + " AND "
+                + "Rent.latitude < " + String.valueOf(p1.x) + " AND "
+                + "Rent.longitude < " + String.valueOf(p2.y) + " AND "
+                + "Rent.longitude > " + String.valueOf(p4.y);
+    }
+
     private static String buildGroupByClause(Map<String, List<String>> filterParams) {
         if (filterParams.containsKey(AMENITIES)) {
             return " GROUP BY Rent.id HAVING COUNT(RentAmenities.amenityId) = " + filterParams.get(AMENITIES).size() + "";
         }
         return "";
+    }
+
+    /**
+     * Calculates the end-point from a given source at a given range (meters)
+     * and bearing (degrees). This methods uses simple geometry equations to
+     * calculate the end-point.
+     *
+     * @param point   Point of origin
+     * @param range   Range in meters
+     * @param bearing Bearing in degrees
+     * @return End-point from the source given the desired range and bearing.
+     */
+    public static PointF calculateDerivedPosition(PointF point,
+                                                  double range, double bearing) {
+        double EarthRadius = 6371000; // m
+
+        double latA = Math.toRadians(point.x);
+        double lonA = Math.toRadians(point.y);
+        double angularDistance = range / EarthRadius;
+        double trueCourse = Math.toRadians(bearing);
+
+        double lat = Math.asin(
+                Math.sin(latA) * Math.cos(angularDistance) +
+                        Math.cos(latA) * Math.sin(angularDistance)
+                                * Math.cos(trueCourse));
+
+        double dlon = Math.atan2(
+                Math.sin(trueCourse) * Math.sin(angularDistance)
+                        * Math.cos(latA),
+                Math.cos(angularDistance) - Math.sin(latA) * Math.sin(lat));
+
+        double lon = ((lonA + dlon + Math.PI) % (Math.PI * 2)) - Math.PI;
+
+        lat = Math.toDegrees(lat);
+        lon = Math.toDegrees(lon);
+
+        return new PointF((float) lat, (float) lon);
+
     }
 
 

@@ -99,7 +99,9 @@ public class TutorialActivity extends DaggerAppCompatActivity implements ViewPag
         switch (v.getId()) {
             case R.id.btn_begin: {
                 saveFirstOpenToSharePref();
-                startActivity(new Intent(TutorialActivity.this, SyncActivity.class));
+                Intent intent = new Intent(TutorialActivity.this, SyncActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
                 this.finish();
             }
             break;

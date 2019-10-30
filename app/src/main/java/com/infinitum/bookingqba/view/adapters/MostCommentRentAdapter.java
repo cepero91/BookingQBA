@@ -62,6 +62,7 @@ public class MostCommentRentAdapter extends RecyclerView.Adapter<MostCommentRent
         }
 
         public void bind(RentMostCommentItem item) {
+            binding.ivRent.setTransitionName(item.getId());
             binding.setItem(item);
             binding.executePendingBindings();
         }

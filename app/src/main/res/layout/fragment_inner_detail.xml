@@ -11,11 +11,11 @@
 
         <variable
             name="byNight"
-            type="Integer"/>
+            type="Integer" />
 
         <variable
             name="byHours"
-            type="Integer"/>
+            type="Integer" />
 
     </data>
 
@@ -31,130 +31,124 @@
             android:layout_height="match_parent">
 
             <LinearLayout
-                android:id="@+id/ll_room"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="3dp"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/rounded_rect_grey_200"
-                android:orientation="vertical"
-                android:padding="5dp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/ll_bed">
-
-                <android.support.v7.widget.AppCompatImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:tint="@color/material_color_blue_grey_500"
-                    app:srcCompat="@drawable/entrance" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="3dp"
-                    android:fontFamily="@font/poppinslight"
-                    android:text="@{detail.humanRoom()}"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="11sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_bed"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="3dp"
-                android:layout_marginStart="3dp"
-                android:background="@drawable/rounded_rect_grey_200"
-                android:orientation="vertical"
-                android:padding="5dp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline4"
-                app:layout_constraintStart_toStartOf="@+id/guideline5"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <android.support.v7.widget.AppCompatImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:tint="@color/material_color_blue_grey_500"
-                    app:srcCompat="@drawable/bed" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="3dp"
-                    android:fontFamily="@font/poppinslight"
-                    android:text="@{detail.humanBed()}"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="11sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_bath"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="3dp"
-                android:layout_marginStart="3dp"
-                android:background="@drawable/rounded_rect_grey_200"
-                android:orientation="vertical"
-                android:padding="5dp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline6"
-                app:layout_constraintStart_toStartOf="@+id/guideline4"
-                app:layout_constraintTop_toTopOf="@+id/ll_bed">
-
-                <android.support.v7.widget.AppCompatImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:tint="@color/material_color_blue_grey_500"
-                    app:srcCompat="@drawable/bathtub" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="3dp"
-                    android:fontFamily="@font/poppinslight"
-                    android:text="@{detail.humanBath()}"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="11sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_host"
+                android:id="@+id/ll_detail_rent"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:layout_marginStart="3dp"
-                android:background="@drawable/rounded_rect_grey_200"
-                android:orientation="vertical"
-                android:padding="5dp"
+                android:layout_marginStart="8dp"
+                android:orientation="horizontal"
+                android:weightSum="4"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline6"
-                app:layout_constraintTop_toTopOf="@+id/ll_bath">
+                app:layout_constraintStart_toStartOf="parent"
+                android:baselineAligned="false">
 
-                <android.support.v7.widget.AppCompatImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:tint="@color/material_color_blue_grey_500"
-                    app:srcCompat="@drawable/family" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/ll_room"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="3dp"
-                    android:fontFamily="@font/poppinslight"
-                    android:text="@{detail.humanCapability()}"
-                    android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="11sp" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:tint="@color/material_color_blue_grey_500"
+                        app:srcCompat="@drawable/entrance" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/montserrat_light"
+                        android:text="@{detail.humanRoom()}"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_bed"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:tint="@color/material_color_blue_grey_500"
+                        app:srcCompat="@drawable/bed" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/montserrat_light"
+                        android:text="@{detail.humanBed()}"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_bath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:tint="@color/material_color_blue_grey_500"
+                        app:srcCompat="@drawable/bathtub" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/montserrat_light"
+                        android:text="@{detail.humanBath()}"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_host"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="5dp">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:tint="@color/material_color_blue_grey_500"
+                        app:srcCompat="@drawable/family" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/montserrat_light"
+                        android:text="@{detail.humanCapability()}"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -162,18 +156,18 @@
                 android:id="@+id/ll_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ll_room">
+                app:layout_constraintTop_toBottomOf="@+id/ll_detail_rent">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsmedium"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="@string/descripcion"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="14sp" />
@@ -181,7 +175,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinslight"
+                    android:fontFamily="@font/montserrat_light"
                     android:text="@{detail.description}"
                     android:textColor="@color/material_color_blue_grey_300"
                     android:textSize="14sp" />
@@ -192,8 +186,8 @@
                 android:id="@+id/ll_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -203,7 +197,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsmedium"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="Precio"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="14sp" />
@@ -217,17 +211,17 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
-                        android:fontFamily="@font/poppinslight"
+                        android:fontFamily="@font/montserrat_light"
                         android:text="@{detail.humanPrice()}"
                         android:textColor="@color/material_color_blue_grey_300"
                         android:textSize="14sp" />
 
                     <android.support.v7.widget.AppCompatImageView
                         android:layout_width="0dp"
-                        android:layout_height="18dp"
+                        android:layout_height="22dp"
                         android:layout_weight="1"
                         android:tint="@color/material_color_blue_grey_500"
-                        app:srcCompat="@drawable/ic_fa_exchange_line"/>
+                        app:srcCompat="@drawable/ic_repeat_set" />
 
                 </LinearLayout>
 
@@ -247,9 +241,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|start"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:fontFamily="@font/poppinsmedium"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="@string/facilidades"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="14sp" />
@@ -259,8 +253,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginEnd="3dp"
-                    android:layout_marginStart="3dp"
+                    android:layout_marginEnd="11dp"
+                    android:layout_marginStart="11dp"
                     app:alignContent="center"
                     app:flexWrap="wrap" />
 
@@ -279,9 +273,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:fontFamily="@font/poppinsmedium"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="@string/imagenes"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="14sp" />
@@ -291,8 +285,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipToPadding="false"
-                    android:paddingEnd="3dp"
-                    android:paddingStart="3dp" />
+                    android:paddingEnd="11dp"
+                    android:paddingStart="11dp" />
 
             </LinearLayout>
 
@@ -300,8 +294,8 @@
                 android:id="@+id/ll_rules"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -311,7 +305,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinsmedium"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="@string/reglas"
                     android:textColor="@color/material_color_blue_grey_500"
                     android:textSize="14sp" />
@@ -319,7 +313,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fontFamily="@font/poppinslight"
+                    android:fontFamily="@font/montserrat_light"
                     android:text="@{detail.rules}"
                     android:textColor="@color/material_color_blue_grey_300"
                     android:textSize="14sp" />
@@ -330,7 +324,7 @@
                 android:id="@+id/ll_checkin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="4dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/rounded_rect_grey_200"
                 android:orientation="horizontal"
@@ -357,7 +351,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|start"
-                        android:fontFamily="@font/poppinsmedium"
+                        android:fontFamily="@font/montserrat_bold"
                         android:text="Entrada: "
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
@@ -367,7 +361,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|start"
-                        android:fontFamily="@font/poppinslight"
+                        android:fontFamily="@font/montserrat_light"
                         android:text="@{detail.humanChekin()}"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
@@ -380,7 +374,7 @@
                 android:id="@+id/ll_checkout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/rounded_rect_grey_200"
                 android:orientation="horizontal"
@@ -407,7 +401,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|start"
-                        android:fontFamily="@font/poppinsmedium"
+                        android:fontFamily="@font/montserrat_bold"
                         android:text="Salida: "
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
@@ -417,7 +411,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|start"
-                        android:fontFamily="@font/poppinslight"
+                        android:fontFamily="@font/montserrat_light"
                         android:text="@{detail.humanChekout()}"
                         android:textColor="@color/material_color_blue_grey_500"
                         android:textSize="14sp" />
@@ -434,10 +428,10 @@
                 android:background="@color/material_color_blue_grey_50"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ll_checkin"/>
+                app:layout_constraintTop_toBottomOf="@+id/ll_checkin" />
 
             <FrameLayout
-                android:id="@+id/fl_comments_owner"
+                android:id="@+id/fl_email_to_owner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="@{byNight}"
@@ -449,20 +443,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|start"
-                    android:layout_marginStart="8dp"
-                    android:paddingTop="12dp"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/montserrat_bold"
                     android:paddingBottom="12dp"
-                    android:text="Consultar con el anfitrion"
-                    android:fontFamily="@font/poppinsmedium"
-                    android:textColor="@color/material_color_blue_grey_500"/>
+                    android:paddingTop="12dp"
+                    android:text="@string/consultar_con_el_anfitri_n"
+                    android:textColor="@color/material_color_teal_A700" />
 
                 <android.support.v7.widget.AppCompatImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|end"
-                    android:layout_marginEnd="8dp"
-                    app:srcCompat="@drawable/ic_speech_bubble_basic"
-                    android:tint="@color/material_color_blue_grey_500"/>
+                    android:layout_marginEnd="16dp"
+                    android:tint="@color/material_color_teal_A700"
+                    app:srcCompat="@drawable/ic_speech_bubble_basic" />
 
             </FrameLayout>
 
@@ -471,35 +465,37 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/shape_btn_color_primary"
-                android:fontFamily="@font/poppinsregular"
+                android:fontFamily="@font/montserrat_regular"
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:padding="10dp"
-                android:text="Disponibilidad"
+                android:text="@string/disponibilidad"
                 android:textColor="@color/White_100"
                 android:textSize="14sp"
                 android:visibility="@{byNight}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/fl_comments_owner" />
+                app:layout_constraintTop_toBottomOf="@+id/fl_email_to_owner" />
 
             <LinearLayout
                 android:id="@+id/ll_call_now"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:layout_marginEnd="4dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/shape_btn_color_primary"
                 android:orientation="horizontal"
                 android:padding="5dp"
-                android:layout_marginTop="8dp"
                 android:visibility="@{byHours}"
-                app:layout_constraintTop_toBottomOf="@+id/line_comment"
-                app:layout_constraintEnd_toStartOf="@+id/guideline4">
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline4"
+                app:layout_constraintTop_toBottomOf="@+id/line_comment">
 
                 <android.support.v7.widget.AppCompatImageView
                     android:layout_width="32dp"
@@ -519,7 +515,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|start"
-                        android:fontFamily="@font/poppinsmedium"
+                        android:fontFamily="@font/montserrat_bold"
                         android:text="Llame ya!! "
                         android:textColor="@color/White_100"
                         android:textSize="14sp" />
@@ -529,7 +525,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|start"
-                        android:fontFamily="@font/poppinslight"
+                        android:fontFamily="@font/montserrat_light"
                         android:text="53901259"
                         android:textColor="@color/White_100"
                         android:textSize="14sp" />
@@ -546,10 +542,9 @@
                 android:background="@drawable/shape_btn_color_primary"
                 android:orientation="horizontal"
                 android:padding="5dp"
-                android:layout_marginTop="8dp"
                 android:visibility="@{byHours}"
-                app:layout_constraintTop_toBottomOf="@+id/line_comment"
-                app:layout_constraintStart_toStartOf="@+id/guideline4">
+                app:layout_constraintStart_toStartOf="@+id/guideline4"
+                app:layout_constraintTop_toTopOf="@+id/ll_call_now">
 
                 <android.support.v7.widget.AppCompatImageView
                     android:layout_width="32dp"
@@ -569,7 +564,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|start"
-                        android:fontFamily="@font/poppinsmedium"
+                        android:fontFamily="@font/montserrat_bold"
                         android:text="SMS"
                         android:textColor="@color/White_100"
                         android:textSize="14sp" />
@@ -579,7 +574,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|start"
-                        android:fontFamily="@font/poppinslight"
+                        android:fontFamily="@font/montserrat_light"
                         android:text="53901259"
                         android:textColor="@color/White_100"
                         android:textSize="14sp" />

@@ -4,15 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="note"
-            type="Boolean"/>
+            type="Boolean" />
+
         <variable
             name="valoration"
-            type="Boolean"/>
+            type="Boolean" />
+
+        <variable
+            name="comment"
+            type="Boolean" />
+
         <variable
             name="loading"
-            type="Boolean"/>
+            type="Boolean" />
     </data>
 
     <android.support.constraint.ConstraintLayout
@@ -25,18 +32,18 @@
             android:id="@+id/nested_scroll"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:paddingBottom="10dp"
             android:clipToPadding="false"
-            app:layout_constraintBottom_toTopOf="@+id/btn_accept"
+            android:paddingBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:visibleGone="@{!safeUnbox(loading)}">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_content_book"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:animateLayoutChanges="true"
                 android:paddingBottom="10dp">
 
@@ -46,70 +53,119 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/poppinsbold"
+                    android:layout_marginTop="24dp"
+                    android:fontFamily="@font/montserrat_black"
                     android:text="@string/solicitud_de_reserva"
                     android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <LinearLayout
-                    android:id="@+id/linearLayout4"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/ll_view_card_from"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/shape_bg_calendar_card"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toStartOf="@+id/appCompatImageView2"
                     app:layout_constraintTop_toBottomOf="@+id/textView">
 
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/tv_day_short_from"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="5dp"
-                        android:tint="@color/material_color_blue_grey_500"
-                        app:srcCompat="@drawable/ic_fa_calendar_check_line" />
+                        android:background="@drawable/shape_bg_calendar_day_short"
+                        android:fontFamily="@font/montserrat_medium"
+                        android:gravity="center"
+                        android:paddingBottom="3dp"
+                        android:paddingTop="3dp"
+                        android:text="Jue"
+                        android:textColor="@color/White_100"
+                        android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/tv_from_title"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tv_day_week_calue_from"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:includeFontPadding="false"
-                        android:text="@string/desde"
-                        android:textColor="@color/material_color_blue_grey_500" />
+                        android:fontFamily="@font/montserrat_thin"
+                        android:gravity="center"
+                        android:text="21"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="36sp" />
 
                     <TextView
-                        android:id="@+id/tv_start_date_value"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tv_month_from_value"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinslight"
-                        android:includeFontPadding="false"
-                        android:text="@string/empty_text"
-                        android:textColor="@color/material_color_blue_grey_500" />
+                        android:fontFamily="@font/montserrat_bold"
+                        android:gravity="center"
+                        android:paddingBottom="5dp"
+                        android:text="Feb"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/appCompatImageView2"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:tint="@color/material_color_amber_A700"
+                    app:layout_constraintBottom_toBottomOf="@+id/ll_view_card_from"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline11"
+                    app:layout_constraintStart_toStartOf="@+id/guideline11"
+                    app:layout_constraintTop_toTopOf="@+id/ll_view_card_from"
+                    app:srcCompat="@drawable/ic_more_set" />
+
+                <LinearLayout
+                    android:id="@+id/ll_view_card_until"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/shape_bg_calendar_card"
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toEndOf="@+id/appCompatImageView2"
+                    app:layout_constraintTop_toBottomOf="@+id/textView">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tv_day_short_until"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:fontFamily="@font/poppinsbold"
-                        android:includeFontPadding="false"
-                        android:text="@string/hasta"
-                        android:textColor="@color/material_color_blue_grey_500" />
+                        android:background="@drawable/shape_bg_calendar_day_short"
+                        android:fontFamily="@font/montserrat_medium"
+                        android:gravity="center"
+                        android:paddingBottom="3dp"
+                        android:paddingTop="3dp"
+                        android:text="Jue"
+                        android:textColor="@color/White_100"
+                        android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/tv_end_date_value"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/tv_day_week_calue_until"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinslight"
-                        android:includeFontPadding="false"
-                        android:text="@string/empty_text"
-                        android:textColor="@color/material_color_blue_grey_500" />
+                        android:fontFamily="@font/montserrat_thin"
+                        android:gravity="center"
+                        android:text="21"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="36sp" />
+
+                    <TextView
+                        android:id="@+id/tv_month_until_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:gravity="center"
+                        android:paddingBottom="5dp"
+                        android:text="Feb"
+                        android:textColor="@color/material_color_blue_grey_500"
+                        android:textSize="16sp" />
 
                 </LinearLayout>
 
@@ -119,23 +175,27 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:fontFamily="@font/poppinsbold"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="@string/nota_adicional"
                     android:textColor="@color/material_color_blue_grey_500"
-                    android:visibility="gone"
+                    android:textSize="14sp"
+                    android:visibility="visible"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+                    app:layout_constraintTop_toBottomOf="@+id/ll_view_card_from"
                     app:visibleGone="@{safeUnbox(note)}" />
 
                 <TextView
                     android:id="@+id/tv_aditional_note_value"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppinslight"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/montserrat_light"
                     android:includeFontPadding="false"
-                    android:text="@string/empty_short_text"
+                    android:text="Hola, viajamos a Cuba sobre la semana que viene, y tenemos un anciano alergico a los mariscos"
                     android:textColor="@color/material_color_blue_grey_500"
-                    android:visibility="gone"
+                    android:textSize="14sp"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/tv_aditional_note_title"
                     app:layout_constraintTop_toBottomOf="@+id/tv_aditional_note_title"
                     app:visibleGone="@{safeUnbox(note)}" />
@@ -146,9 +206,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:fontFamily="@font/poppinsbold"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="@string/hecha_por"
                     android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_aditional_note_value" />
 
@@ -158,25 +219,27 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/poppinsmedium"
-                    android:includeFontPadding="false"
+                    android:fontFamily="@font/montserrat_medium"
                     android:text="@string/nombre"
                     android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     app:layout_constraintStart_toEndOf="@+id/user_avatar"
                     app:layout_constraintTop_toTopOf="@+id/user_avatar" />
 
                 <TextView
                     android:id="@+id/tv_username_value"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="8dp"
-                    android:fontFamily="@font/poppinslight"
-                    android:includeFontPadding="false"
+                    android:fontFamily="@font/montserrat_light"
                     android:text="@string/empty_text"
                     android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     app:layout_constraintBottom_toBottomOf="@+id/tv_username_title"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/tv_username_title" />
 
                 <TextView
@@ -186,23 +249,26 @@
                     android:layout_marginTop="3dp"
                     android:fontFamily="@font/poppinsmedium"
                     android:includeFontPadding="false"
-                    android:text="@string/usuario_activo"
+                    android:text="Última entrada"
                     android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     app:layout_constraintStart_toStartOf="@+id/tv_username_title"
                     app:layout_constraintTop_toBottomOf="@+id/tv_username_title" />
 
                 <TextView
                     android:id="@+id/tv_time_value"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="8dp"
-                    android:fontFamily="@font/poppinslight"
-                    android:includeFontPadding="false"
+                    android:fontFamily="@font/montserrat_light"
                     android:text="@string/empty_text"
                     android:textColor="@color/material_color_blue_grey_500"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="@+id/tv_time_title"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/tv_time_title" />
 
                 <com.mikhaellopez.circularimageview.CircularImageView
@@ -211,390 +277,218 @@
                     android:layout_height="55dp"
                     android:layout_marginTop="5dp"
                     android:src="@drawable/user_placeholder"
-                    app:civ_border_color="@color/White_100"
+                    app:civ_border_color="@color/material_color_blue_grey_100"
                     app:civ_border_width="3dp"
                     app:layout_constraintStart_toStartOf="@+id/tv_user_owner_title"
                     app:layout_constraintTop_toBottomOf="@+id/tv_user_owner_title" />
 
 
-                <com.github.florent37.shapeofview.shapes.RoundRectView
-                    android:id="@+id/shapes_views"
+                <android.support.constraint.Guideline
+                    android:id="@+id/guideline11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
+
+                <TextView
+                    android:id="@+id/textView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginTop="8dp"
-                    android:elevation="4dp"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline2"
-                    app:layout_constraintTop_toBottomOf="@+id/user_avatar"
-                    app:shape_roundRect_bottomLeftRadius="5dp"
-                    app:shape_roundRect_bottomRightRadius="5dp"
-                    app:shape_roundRect_topLeftRadius="5dp"
-                    app:shape_roundRect_topRightRadius="5dp">
-
-
-                    <LinearLayout
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:background="@color/White_100"
-                        android:orientation="vertical"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp">
-
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
-                            android:scaleType="centerCrop"
-                            android:tint="@color/material_color_blue_grey_500"
-                            app:srcCompat="@drawable/ic_fa_eye_line" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinslight"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:text="@string/vistas"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="12sp" />
-
-                        <View
-                            android:layout_width="50dp"
-                            android:layout_height="0.5dp"
-                            android:layout_gravity="center"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginTop="5dp"
-                            android:background="@color/material_color_blue_grey_100" />
-
-                        <TextView
-                            android:id="@+id/tv_views_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsbold"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:text="@string/empty_short_text"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="18sp" />
-
-                    </LinearLayout>
-
-                </com.github.florent37.shapeofview.shapes.RoundRectView>
-
-                <com.github.florent37.shapeofview.shapes.RoundRectView
-                    android:id="@+id/shapes_wished"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:elevation="4dp"
-                    app:layout_constraintStart_toStartOf="@+id/guideline2"
-                    app:layout_constraintTop_toTopOf="@+id/shapes_views"
-                    app:shape_roundRect_bottomLeftRadius="5dp"
-                    app:shape_roundRect_bottomRightRadius="5dp"
-                    app:shape_roundRect_topLeftRadius="5dp"
-                    app:shape_roundRect_topRightRadius="5dp">
-
-
-                    <LinearLayout
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:background="@color/White_100"
-                        android:orientation="vertical"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp">
-
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
-                            android:scaleType="centerCrop"
-                            android:tint="@color/material_color_blue_grey_500"
-                            app:srcCompat="@drawable/ic_fa_bookmark_line" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinslight"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:text="@string/deseada"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="12sp" />
-
-                        <View
-                            android:layout_width="50dp"
-                            android:layout_height="0.5dp"
-                            android:layout_gravity="center"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginTop="5dp"
-                            android:background="@color/material_color_blue_grey_100" />
-
-                        <TextView
-                            android:id="@+id/tv_wished_value"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsbold"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:text="@string/empty_short_text"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="18sp" />
-
-                    </LinearLayout>
-
-                </com.github.florent37.shapeofview.shapes.RoundRectView>
-
-                <com.github.florent37.shapeofview.shapes.RoundRectView
-                    android:id="@+id/shapes_comment_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginTop="8dp"
-                    android:elevation="4dp"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline2"
-                    app:layout_constraintTop_toBottomOf="@+id/shapes_views"
-                    app:shape_roundRect_bottomLeftRadius="5dp"
-                    app:shape_roundRect_bottomRightRadius="5dp"
-                    app:shape_roundRect_topLeftRadius="5dp"
-                    app:shape_roundRect_topRightRadius="5dp">
-
-                    <LinearLayout
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:background="@color/White_100"
-                        android:orientation="vertical"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp">
-
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
-                            android:scaleType="centerCrop"
-                            android:tint="@color/material_color_blue_grey_500"
-                            app:srcCompat="@drawable/ic_fa_comment_line" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinslight"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:text="@string/comentarios"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="12sp" />
-
-                        <View
-                            android:layout_width="50dp"
-                            android:layout_height="0.5dp"
-                            android:layout_gravity="center"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginTop="5dp"
-                            android:background="@color/material_color_blue_grey_100" />
-
-                        <TextView
-                            android:id="@+id/tv_comment_count_value"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsbold"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:text="@string/empty_short_text"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="18sp" />
-
-                    </LinearLayout>
-
-                </com.github.florent37.shapeofview.shapes.RoundRectView>
-
-                <com.github.florent37.shapeofview.shapes.RoundRectView
-                    android:id="@+id/shapes_book_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:elevation="4dp"
-                    app:layout_constraintStart_toStartOf="@+id/guideline2"
-                    app:layout_constraintTop_toBottomOf="@+id/shapes_wished"
-                    app:shape_roundRect_bottomLeftRadius="5dp"
-                    app:shape_roundRect_bottomRightRadius="5dp"
-                    app:shape_roundRect_topLeftRadius="5dp"
-                    app:shape_roundRect_topRightRadius="5dp">
-
-                    <LinearLayout
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:background="@color/White_100"
-                        android:orientation="vertical"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp">
-
-                        <android.support.v7.widget.AppCompatImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
-                            android:scaleType="centerCrop"
-                            android:tint="@color/material_color_blue_grey_500"
-                            app:srcCompat="@drawable/ic_fa_calendar_line" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinslight"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:text="@string/solicitudes"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="12sp" />
-
-                        <View
-                            android:layout_width="50dp"
-                            android:layout_height="0.5dp"
-                            android:layout_gravity="center"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginTop="5dp"
-                            android:background="@color/material_color_blue_grey_100" />
-
-                        <TextView
-                            android:id="@+id/tv_book_count_value"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/poppinsbold"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:text="@string/empty_short_text"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="18sp" />
-
-                    </LinearLayout>
-
-                </com.github.florent37.shapeofview.shapes.RoundRectView>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:gravity="start|center"
-                    android:orientation="vertical"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="Lista de Deseo"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline11"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/shapes_comment_count"
-                    app:visibleGone="@{safeUnbox(valoration)}">
+                    app:layout_constraintTop_toBottomOf="@+id/user_avatar" />
 
-                    <TextView
-                        android:id="@+id/tv_user_valoration_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:text="@string/valoracion"
-                        android:textColor="@color/material_color_blue_grey_500" />
-
-                    <com.willy.ratingbar.BaseRatingBar
-                        android:id="@+id/sr_scale_rating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:srb_clickable="false"
-                        app:srb_drawableEmpty="@drawable/ic_fa_star_o_line"
-                        app:srb_drawableFilled="@drawable/ic_fa_star_line"
-                        app:srb_scrollable="false"
-                        app:srb_starHeight="16dp"
-                        app:srb_starPadding="2dp"
-                        app:srb_starWidth="16dp"
-                        app:srb_stepSize="0.5" />
-
-                    <TextView
-                        android:id="@+id/tv_user_valoration_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsregular"
-                        android:text="@string/no_me_gusto_ni_el_servicio_ni_el_trato"
-                        android:textColor="@color/material_color_blue_grey_300" />
-
-                </LinearLayout>
-
-                <android.support.constraint.Guideline
-                    android:id="@+id/guideline2"
+                <TextView
+                    android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.50" />
-
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginTop="8dp"
-                    android:indeterminate="true"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="Reservaciones"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:visibleGone="@{safeUnbox(loading)}" />
+                    app:layout_constraintStart_toStartOf="@+id/guideline11"
+                    app:layout_constraintTop_toTopOf="@+id/textView4" />
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_thin"
+                    android:text="No"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="28sp"
+                    app:layout_constraintEnd_toEndOf="@+id/textView4"
+                    app:layout_constraintStart_toStartOf="@+id/textView4"
+                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/montserrat_thin"
+                    android:text="3"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="28sp"
+                    app:layout_constraintEnd_toEndOf="@+id/textView8"
+                    app:layout_constraintStart_toStartOf="@+id/textView8"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="Valoración"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView9"
+                    app:visibleGone="@{safeUnbox(valoration)}" />
+
+                <com.willy.ratingbar.BaseRatingBar
+                    android:id="@+id/sr_scale_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@+id/textView11"
+                    app:layout_constraintTop_toBottomOf="@+id/textView11"
+                    app:srb_clickable="false"
+                    app:srb_drawableEmpty="@drawable/ic_fa_star_o_line"
+                    app:srb_drawableFilled="@drawable/ic_fa_star_line"
+                    app:srb_rating="4"
+                    app:srb_scrollable="false"
+                    app:srb_starHeight="16dp"
+                    app:srb_starPadding="2dp"
+                    app:srb_starWidth="16dp"
+                    app:srb_stepSize="0.5"
+                    app:visibleGone="@{safeUnbox(valoration)}" />
+
+                <TextView
+                    android:id="@+id/tv_rating_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/montserrat_light_italic"
+                    android:text="Me gusto mucho la renta, aunque la lograr la perfeccion pueden mejorar un poquito"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/sr_scale_rating"
+                    app:layout_constraintTop_toBottomOf="@+id/sr_scale_rating"
+                    app:visibleGone="@{safeUnbox(valoration)}" />
+
+                <TextView
+                    android:id="@+id/textView13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="Comentario"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_rating_desc"
+                    app:visibleGone="@{safeUnbox(comment)}" />
+
+                <TextView
+                    android:id="@+id/tv_comment_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:drawableEnd="@drawable/ic_frown_emotion"
+                    android:drawablePadding="5dp"
+                    android:fontFamily="@font/montserrat_light_italic"
+                    android:text="Me gustaria que bajaran un poco el precio de la renta, asi estaria mas asequible"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView13"
+                    app:visibleGone="@{safeUnbox(comment)}" />
 
 
             </android.support.constraint.ConstraintLayout>
 
         </android.support.v4.widget.NestedScrollView>
 
-        <TextView
-            android:id="@+id/btn_accept"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/constraintLayout2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@color/material_color_grey_200"
+            android:elevation="3dp"
+            app:visibleGone="@{!safeUnbox(loading)}">
+
+            <TextView
+                android:id="@+id/btn_accept"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/montserrat_regular"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:padding="12dp"
+                android:text="@string/aceptar"
+                android:textAllCaps="false"
+                android:textColor="@color/material_color_teal_A700"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                android:id="@+id/btn_denied"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/montserrat_regular"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:padding="12dp"
+                android:text="@string/rechazar"
+                android:textAllCaps="false"
+                android:textColor="@color/material_color_red_500"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.857"
+                app:layout_constraintStart_toStartOf="@+id/guideline"/>
+
+        </LinearLayout>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="70dp"
+            android:layout_height="30dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:background="@drawable/shape_btn_color_primary"
-            android:fontFamily="@font/poppinsregular"
-            android:includeFontPadding="false"
-            android:text="@string/aceptar"
-            android:textAllCaps="false"
-            android:textColor="@color/White_100"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/btn_denied"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/shape_btn_color_red"
-            android:fontFamily="@font/poppinsregular"
-            android:includeFontPadding="false"
-            android:text="@string/rechazar"
-            android:textAllCaps="false"
-            android:textColor="@color/White_100"
+            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.857"
-            app:layout_constraintStart_toStartOf="@+id/guideline" />
-
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.70" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_colorFilter="@color/material_color_blue_grey_500"
+            app:lottie_fileName="lottie/loading.json"
+            app:lottie_loop="true"
+            app:lottie_repeatMode="restart"
+            app:visibleGone="@{safeUnbox(loading)}" />
 
     </android.support.constraint.ConstraintLayout>
 

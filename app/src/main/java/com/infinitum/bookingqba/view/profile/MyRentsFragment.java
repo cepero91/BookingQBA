@@ -10,28 +10,20 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.github.siyamed.shapeimageview.RoundedImageView;
-import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
-import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentMyRentsBinding;
+import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.view.adapters.MyRentAdapter;
 import com.infinitum.bookingqba.view.adapters.items.addrent.MyRentItem;
-import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.customview.StateView;
 import com.infinitum.bookingqba.viewmodel.RentFormViewModel;
-import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
-import com.squareup.picasso.Picasso;
-import com.willy.ratingbar.BaseRatingBar;
 
 import java.util.List;
 
@@ -42,11 +34,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import timber.log.Timber;
 
-import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
-import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
+import static com.infinitum.bookingqba.util.Constants.USER_HAS_ACTIVE_RENT;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
@@ -69,6 +59,8 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener, S
 
 
     private RentFormViewModel rentViewModel;
+    private String token;
+    private String userid;
 
 
     public MyRentsFragment() {
@@ -94,12 +86,16 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener, S
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        binding.fabAddRent.setOnClickListener(this);
+        binding.srlRefresh.setOnRefreshListener(this);
+        binding.srlRefresh.setColorSchemeResources(R.color.colorPrimary, R.color.colorAccent, R.color.material_color_lime_A700);
+
+        token = sharedPreferences.getString(USER_TOKEN, "");
+        userid = sharedPreferences.getString(USER_ID, "");
+
         initLoading(true, StateView.Status.LOADING, true);
 
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentFormViewModel.class);
-
-        binding.fabAddRent.setOnClickListener(this);
-        binding.srlRefresh.setOnRefreshListener(this);
 
         rentsByUserId();
     }
@@ -113,25 +109,42 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener, S
 
     private void rentsByUserId() {
         if (networkHelper.isNetworkAvailable()) {
-            String token = sharedPreferences.getString(USER_TOKEN, "");
-            String userid = sharedPreferences.getString(USER_ID, "");
             disposable = rentViewModel.fetchRentByUserId(token, userid)
+                    .map(this::checkActiveRents)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(listResource -> {
-                        if (listResource.data != null && listResource.data.size() > 0) {
+                        if (listResource.second.data != null && listResource.second.data.size() > 0) {
                             initLoading(false, StateView.Status.SUCCESS, false);
-                            setItemsAdapter(listResource.data);
+                            setItemsAdapter(listResource.second.data);
+                            updateMenuIfNeeded(listResource.first);
                         } else {
                             initLoading(false, StateView.Status.EMPTY, true);
                         }
                     }, throwable -> {
+                        Timber.e(throwable);
                         initLoading(false, StateView.Status.EMPTY, true);
                     });
             compositeDisposable.add(disposable);
         } else {
             initLoading(false, StateView.Status.NO_CONNECTION, true);
         }
+    }
+
+    private void updateMenuIfNeeded(Boolean first) {
+        sharedPreferences.edit().putBoolean(USER_HAS_ACTIVE_RENT, first).apply();
+        addRentClick.refreshMenuIfUserIsActiveHost(first);
+    }
+
+    private Pair<Boolean, Resource<List<MyRentItem>>> checkActiveRents(Resource<List<MyRentItem>> listResource) {
+        if (listResource.data != null && listResource.data.size() > 0) {
+            for (MyRentItem myRentItem : listResource.data) {
+                if (myRentItem.isActive()) {
+                    return new Pair<>(true, listResource);
+                }
+            }
+        }
+        return new Pair<>(false, listResource);
     }
 
     @Override
@@ -170,15 +183,17 @@ public class MyRentsFragment extends Fragment implements View.OnClickListener, S
         addRentClick.onEditRent(uuid);
     }
 
-    public interface AddRentClick {
-        void onAddRentClick();
-
-        void onEditRent(String uuid);
-    }
-
     public void setItemsAdapter(List<MyRentItem> rendererViewModelList) {
         MyRentAdapter recyclerViewAdapter = new MyRentAdapter(rendererViewModelList, getLayoutInflater(), this);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.recyclerView.setAdapter(recyclerViewAdapter);
+    }
+
+    public interface AddRentClick {
+        void onAddRentClick();
+
+        void refreshMenuIfUserIsActiveHost(boolean userHasRentActive);
+
+        void onEditRent(String uuid);
     }
 }

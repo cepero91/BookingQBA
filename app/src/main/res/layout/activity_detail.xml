@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="item"
+            type="com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem"/>
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.rents.DetailActivity"
+        android:background="@color/White_100">
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Space
+                    android:id="@+id/space"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="@+id/dv_diagonal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <com.github.florent37.shapeofview.shapes.DiagonalView
+                    android:id="@+id/dv_diagonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shape_diagonal_angle="10"
+                    app:shape_diagonal_position="bottom">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/iv_rent"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_gravity="center"
+                        android:fitsSystemWindows="true"
+                        android:focusableInTouchMode="true"
+                        android:foreground="@drawable/shape_shadow_black"
+                        android:scaleType="centerCrop"/>
+
+                </com.github.florent37.shapeofview.shapes.DiagonalView>
+
+                <com.github.florent37.shapeofview.shapes.CircleView
+                    android:id="@+id/circle"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/White_100"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/dv_diagonal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:shape_circle_borderColor="@android:color/white"
+                    app:shape_circle_borderWidth="1dp">
+
+                    <View
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@color/White_100" />
+
+                </com.github.florent37.shapeofview.shapes.CircleView>
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lv_heart"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/circle"
+                    app:layout_constraintEnd_toEndOf="@+id/circle"
+                    app:layout_constraintStart_toStartOf="@+id/circle"
+                    app:layout_constraintTop_toTopOf="@+id/circle"
+                    app:lottie_fileName="lottie/bookmark.json"
+                    app:lottie_repeatMode="restart" />
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:theme="@style/AppTheme.AppBarOverlay"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
+                    android:background="@drawable/shape_bg_black_round_left"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toTopOf="@+id/space"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat_thin"
+                        android:text="@{item.humanShortPrice}"
+                        android:textColor="@color/White_100"
+                        android:textSize="46sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|start"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:text="cuc"
+                            android:textColor="@color/White_100"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat_light"
+                            android:text="@{item.humanShortRentMode}"
+                            android:textColor="@color/material_color_teal_A200"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <FrameLayout
+                    android:id="@+id/fl_content_detail_fragment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/space" />
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>

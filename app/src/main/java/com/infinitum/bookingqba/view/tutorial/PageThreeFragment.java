@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentPageThreeBinding;
 import com.squareup.picasso.Picasso;

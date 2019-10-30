@@ -13,11 +13,13 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.google.android.flexbox.FlexboxLayout;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.model.local.entity.GalerieEntity;
+import com.infinitum.bookingqba.model.remote.ReservationType;
+import com.infinitum.bookingqba.view.adapters.items.reservation.BookInfoItem;
 import com.moos.library.HorizontalProgressView;
 import com.squareup.picasso.Picasso;
 import com.willy.ratingbar.BaseRatingBar;
@@ -227,11 +229,58 @@ public class BindingAdapters {
     @BindingAdapter("setLockedIcon")
     public static void setLockedIcon(AppCompatImageView view, boolean active) {
         if (active) {
-            view.setImageResource(R.drawable.ic_unlocked_small_set);
+            view.setImageResource(R.drawable.ic_unlocked_2_bold_small_set);
         } else {
-            view.setImageResource(R.drawable.ic_locked_small_set);
+            view.setImageResource(R.drawable.ic_locked_5_bold_small_set);
         }
     }
 
+    @BindingAdapter("setBookState")
+    public static void setBookState(TextView view, ReservationType bookState) {
+        switch (bookState) {
+            case PENDING:
+                view.setText("Pendiente");
+                view.setBackgroundResource(R.drawable.shape_bg_pending);
+                break;
+            case CHECKED:
+                view.setText("Vista");
+                view.setBackgroundResource(R.drawable.shape_bg_checked);
+                break;
+            case ACCEPTED:
+                view.setText("Aceptada");
+                view.setBackgroundResource(R.drawable.shape_bg_accepted);
+                break;
+            case DENIED:
+                view.setText("Cancelada");
+                view.setBackgroundResource(R.drawable.shape_bg_denied);
+                break;
+            case OCUPATE:
+                view.setText("Ocupados");
+                view.setBackgroundResource(R.drawable.shape_bg_ocupate);
+                break;
+            default:
+                view.setText("Pendiente");
+                view.setBackgroundResource(R.drawable.shape_bg_pending);
+                break;
+        }
+    }
+
+    @BindingAdapter("visibilityByNight")
+    public static void visibilityByNight(View view, String rentMode) {
+        if (rentMode != null && rentMode.equalsIgnoreCase("por noche")) {
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.GONE);
+        }
+    }
+
+    @BindingAdapter("visibilityByHour")
+    public static void visibilityByHour(View view, String rentMode) {
+        if (rentMode != null && rentMode.equalsIgnoreCase("por horas")) {
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.GONE);
+        }
+    }
 
 }

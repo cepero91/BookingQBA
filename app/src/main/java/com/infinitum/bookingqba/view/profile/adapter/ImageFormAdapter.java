@@ -46,7 +46,10 @@ public class ImageFormAdapter extends RecyclerView.Adapter<ImageFormAdapter.View
                 .resize(THUMB_WIDTH, THUMB_HEIGHT)
                 .placeholder(R.drawable.placeholder)
                 .into(viewHolder.porterShapeImageView);
-        viewHolder.ll_delete_item.setOnClickListener(v -> onImageDeleteClick.onImageDelete(imagesPath.get(i).getUrl(), i));
+        viewHolder.ll_delete_item.setOnClickListener(v -> {
+                    onImageDeleteClick.onImageDelete(imagesPath.get(i).getUuid(), i);
+                }
+        );
     }
 
     @Override
@@ -71,6 +74,6 @@ public class ImageFormAdapter extends RecyclerView.Adapter<ImageFormAdapter.View
     }
 
     public interface OnImageDeleteClick {
-        void onImageDelete(String imagePath, int pos);
+        void onImageDelete(String uuid, int pos);
     }
 }

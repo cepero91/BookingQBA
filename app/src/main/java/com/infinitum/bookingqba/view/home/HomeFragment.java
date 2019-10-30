@@ -22,6 +22,7 @@ import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.spinneritem.CommonSpinnerList;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.viewmodel.HomeViewModel;
+import com.thekhaeng.pushdownanim.PushDownAnim;
 
 import java.util.List;
 import java.util.Map;
@@ -86,8 +87,8 @@ public class HomeFragment extends BaseNavigationFragment implements View.OnClick
 
         fragmentHomeBinding.spinnerProvinces.setTitle(getResources().getString(R.string.dialog_provinces_title));
         fragmentHomeBinding.spinnerProvinces.setPositiveButton(getResources().getString(R.string.positive_buttom));
-        fragmentHomeBinding.tvMostCommentedViewAll.setOnClickListener(this);
-        fragmentHomeBinding.tvMostRatingViewAll.setOnClickListener(this);
+        PushDownAnim.setPushDownAnimTo(fragmentHomeBinding.tvMostCommentedViewAll).setOnClickListener(this);
+        PushDownAnim.setPushDownAnimTo(fragmentHomeBinding.tvMostRatingViewAll).setOnClickListener(this);
 
     }
 

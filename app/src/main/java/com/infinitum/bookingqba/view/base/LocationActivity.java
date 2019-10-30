@@ -35,6 +35,7 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.service.LocationService;
 import com.infinitum.bookingqba.util.AlertUtils;
+import com.infinitum.bookingqba.util.Constants;
 import com.infinitum.bookingqba.util.LocationHelpers;
 import com.infinitum.bookingqba.util.ParcelableException;
 import com.infinitum.bookingqba.util.PermissionHelper;
@@ -48,6 +49,7 @@ import dagger.android.support.DaggerAppCompatActivity;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.service.LocationService.KEY_REQUESTING_LOCATION_UPDATES;
+import static com.infinitum.bookingqba.util.Constants.LOCATION_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.PERMISSION_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.REQUEST_CHECK_SETTINGS;
 
@@ -154,6 +156,7 @@ public abstract class LocationActivity extends AppCompatActivity implements Shar
         Timber.i("======>> initPermissionRequest");
         permissionHelper = new PermissionHelper(this);
         permissionHelper.check(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                .customRequestCode(LOCATION_REQUEST_CODE)
                 .withCFDialogBeforeRun(R.string.dialog_before_run_title, R.string.dialog_before_run_message, "Otorgar")
                 .onSuccess(this::onPermissionSuccess)
                 .onDenied(this::onPermissionDenied)
@@ -189,7 +192,9 @@ public abstract class LocationActivity extends AppCompatActivity implements Shar
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Timber.i("======>> onRequestPermissionsResult");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        permissionHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == Constants.LOCATION_REQUEST_CODE) {
+            permissionHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     @Override
@@ -202,12 +207,12 @@ public abstract class LocationActivity extends AppCompatActivity implements Shar
                         locationService.requestLocationUpdates();
                         break;
                     case Activity.RESULT_CANCELED:
-                        AlertUtils.showCFErrorAlertWithAction(this, "Aviso!", "Imposible ubicar. Por favor active GPS",
+                        AlertUtils.showCFPositiveInfoAlert(this, "Imposible ubicar. Por favor active GPS", "Activar",
                                 (dialog, view) -> {
+                                    dialog.dismiss();
                                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                                     startActivityForResult(intent, REQUEST_LAST_GPS_CODE);
-                                    dialog.dismiss();
-                                }, "Activar", R.drawable.ic_map_marker_alt_blue_grey);
+                                });
                         break;
                 }
                 break;
@@ -270,5 +275,6 @@ public abstract class LocationActivity extends AppCompatActivity implements Shar
         return (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
     }
+
 
 }

@@ -98,10 +98,9 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentMostRating entity : listResource.data) {
                 String imagePath = entity.getImageAtPos(0);
-                tempItem = new RentMostRatingItem(entity.getId(), entity.getName(), imagePath);
+                tempItem = new RentMostRatingItem(entity.getId(), entity.getName(), imagePath, (float) entity.getPrice(),entity.getRentMode());
                 tempItem.setRating(entity.getRating());
                 tempItem.setRatingCount(entity.getRatingCount());
-                tempItem.setRentMode(entity.getRentMode());
                 compositeList.add(tempItem);
             }
             return Resource.success(compositeList);
@@ -116,9 +115,7 @@ public class HomeViewModel extends android.arch.lifecycle.ViewModel {
         if (listResource.data != null && listResource.data.size() > 0) {
             for (RentMostComment entity : listResource.data) {
                 String imagePath = entity.getImageAtPos(0);
-                tempItem = new RentMostCommentItem(entity.getId(), entity.getName(), imagePath);
-                tempItem.setPrice(entity.getPrice());
-                tempItem.setRentMode(entity.getRentMode());
+                tempItem = new RentMostCommentItem(entity.getId(), entity.getName(), imagePath, (float) entity.getPrice(), entity.getRentMode());
                 tempItem.setTotalComment(entity.getTotalComment());
                 tempItem.setEmotionAvg((int)entity.getEmotionAvg());
                 tempItem.setRating(entity.getRating());

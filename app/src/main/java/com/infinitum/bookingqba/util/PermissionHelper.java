@@ -25,8 +25,6 @@ import com.infinitum.bookingqba.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.infinitum.bookingqba.util.Constants.PERMISSION_REQUEST_CODE;
-
 public class PermissionHelper {
     private Activity activity;
     private Fragment fragment;
@@ -40,6 +38,7 @@ public class PermissionHelper {
     private String stringDialogBeforeAskPositiveButton;
     private int dialogBeforeAskPositiveButtonColor = DIALOG_WITHOUT_CUSTOM_COLOR;
     private final static int DIALOG_WITHOUT_CUSTOM_COLOR = 0;
+    private int customRequestCode = 98;
 
 
     /**
@@ -51,6 +50,10 @@ public class PermissionHelper {
         this.activity = activity;
     }
 
+    public PermissionHelper customRequestCode(int requestCode) {
+        this.customRequestCode = requestCode;
+        return this;
+    }
 
     /**
      * Default fragment constructor
@@ -191,7 +194,6 @@ public class PermissionHelper {
         builder.setTitle(titleRes);
         builder.setMessage(messageRes);
         builder.setTextGravity(Gravity.START);
-        builder.setIcon(R.drawable.ic_unlock_alt);
         builder.setTextColor(Color.parseColor("#607D8B"));
         return builder;
     }
@@ -302,7 +304,7 @@ public class PermissionHelper {
     }
 
     private void showCFDialogBeforeRun(final String[] permissionsForRequest) {
-        cfDialogBeforeRunBuilder.addButton(stringDialogBeforeAskPositiveButton, -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE,
+        cfDialogBeforeRunBuilder.addButton(stringDialogBeforeAskPositiveButton, -1, Color.parseColor("#00BFA5"), CFAlertDialog.CFAlertActionStyle.POSITIVE,
                 CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, (dialog, which) -> {
                     askPermissions(permissionsForRequest);
                     dialog.dismiss();
@@ -318,9 +320,9 @@ public class PermissionHelper {
     @SuppressLint("NewApi")
     private void askPermissions(String[] permissionsForRequest) {
         if (activity != null) {
-            activity.requestPermissions(permissionsForRequest, PERMISSION_REQUEST_CODE);
+            activity.requestPermissions(permissionsForRequest, customRequestCode);
         } else {
-            fragment.requestPermissions(permissionsForRequest, PERMISSION_REQUEST_CODE);
+            fragment.requestPermissions(permissionsForRequest, customRequestCode);
         }
     }
 
@@ -369,7 +371,7 @@ public class PermissionHelper {
      */
     @SuppressLint("NewApi")
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_CODE) {
+        if (requestCode == customRequestCode) {
             for (String permission : permissions) {
                 if (isPermissionNotGranted(permission)) {
                     runDeniedOrNeverAskAgain(permission);

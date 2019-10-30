@@ -12,10 +12,9 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.fujiyuu75.sequent.Animation;
-import com.fujiyuu75.sequent.Sequent;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.view.profile.uploaditem.OfferFormObject;
+import com.thekhaeng.pushdownanim.PushDownAnim;
 
 public class RentListShortCutMapView extends LinearLayout implements View.OnClickListener {
 
@@ -57,9 +56,9 @@ public class RentListShortCutMapView extends LinearLayout implements View.OnClic
         buttonAll = findViewById(R.id.button_all);
         shortCutIcon = findViewById(R.id.iv_short_cut_icon);
         frameLayoutBar.setOnClickListener(this);
-        buttonFive.setOnClickListener(this);
-        buttonTen.setOnClickListener(this);
-        buttonAll.setOnClickListener(this);
+        PushDownAnim.setPushDownAnimTo(buttonFive).setOnClickListener(this);
+        PushDownAnim.setPushDownAnimTo(buttonTen).setOnClickListener(this);
+        PushDownAnim.setPushDownAnimTo(buttonAll).setOnClickListener(this);
     }
 
     @Override
@@ -89,7 +88,7 @@ public class RentListShortCutMapView extends LinearLayout implements View.OnClic
         }else{
             isContentOpen = true;
             llContentButtons.setVisibility(VISIBLE);
-            shortCutIcon.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+            shortCutIcon.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_color_teal_A700)));
         }
     }
 

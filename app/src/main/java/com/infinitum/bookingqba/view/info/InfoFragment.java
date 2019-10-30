@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +44,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 
-public class InfoFragment extends BaseNavigationFragment implements View.OnClickListener {
+public class InfoFragment extends BaseNavigationFragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private FragmentInfoBinding infoBinding;
     private Disposable disposable;
@@ -86,6 +87,8 @@ public class InfoFragment extends BaseNavigationFragment implements View.OnClick
 
         informationViewModel = ViewModelProviders.of(this, viewModelFactory).get(InformationViewModel.class);
 
+        infoBinding.swipeRefresh.setOnRefreshListener(this);
+        infoBinding.swipeRefresh.setColorSchemeResources(R.color.colorPrimary,R.color.colorAccent,R.color.material_color_lime_A700);
         infoBinding.btnSync.setOnClickListener(this);
         infoBinding.btnFeedback.setOnClickListener(this);
         infoBinding.btnPolitics.setOnClickListener(this);
@@ -103,6 +106,7 @@ public class InfoFragment extends BaseNavigationFragment implements View.OnClick
     }
 
     private void loadData() {
+        infoBinding.swipeRefresh.setRefreshing(true);
         disposable = Flowable.combineLatest(informationViewModel.lastLocalDatabaseUpdate(),
                 informationViewModel.lastRemoteDatabaseUpdate(),
                 this::checkCanSync)
@@ -121,7 +125,7 @@ public class InfoFragment extends BaseNavigationFragment implements View.OnClick
                 TimeAgoMessages messages = new TimeAgoMessages.Builder().withLocale(new Locale("es", "ES")).build();
                 String dateRelative = TimeAgo.using(resource.data.getLastDateUpdateEntity().getTime(), messages);
                 dateString.add(dateRelative);
-            }else{
+            } else {
                 dateString.add("No disponible");
             }
         }
@@ -133,7 +137,7 @@ public class InfoFragment extends BaseNavigationFragment implements View.OnClick
         if (local.data != null && remote.data != null) {
             if (local.data.getLastDateUpdateEntity().before(remote.data.getLastDateUpdateEntity())) {
                 canSync = true;
-            }else{
+            } else {
                 canSync = false;
             }
         }
@@ -146,6 +150,7 @@ public class InfoFragment extends BaseNavigationFragment implements View.OnClick
     private void updateUi(List<String> strings) {
         infoBinding.setLocalUpdate(strings.get(0));
         infoBinding.setRemoteAvailable(strings.get(1));
+        infoBinding.swipeRefresh.setRefreshing(false);
     }
 
     @Override
@@ -153,13 +158,13 @@ public class InfoFragment extends BaseNavigationFragment implements View.OnClick
         switch (v.getId()) {
             case R.id.btn_sync:
                 if (networkHelper.isNetworkAvailable()) {
-                    if(canSync) {
+                    if (canSync) {
                         infoInteraction.startSync();
-                    }else{
-                        AlertUtils.showInfoAlert(getActivity(),"Los datos ya estan actualizados");
+                    } else {
+                        AlertUtils.showInfoAlert(getActivity(), "Los datos ya estan actualizados");
                     }
-                }else{
-                    AlertUtils.showErrorAlert(getActivity(),"Sin conexion");
+                } else {
+                    AlertUtils.showErrorAlert(getActivity(), "Sin conexion");
                 }
                 break;
             case R.id.btn_politics:
@@ -169,5 +174,10 @@ public class InfoFragment extends BaseNavigationFragment implements View.OnClick
                 infoInteraction.showFeedbackDialog();
                 break;
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        loadData();
     }
 }

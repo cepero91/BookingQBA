@@ -4,12 +4,14 @@ public class HorizontalItem {
 
     private String uuid;
     private String rentName;
-    private String rating;
+    private String portrait;
+    private String rentMode;
 
-    public HorizontalItem(String uuid, String rentName, String rating) {
+    public HorizontalItem(String uuid, String rentName, String portrait, String rentMode) {
         this.uuid = uuid;
         this.rentName = rentName;
-        this.rating = rating;
+        this.portrait = portrait;
+        this.rentMode = rentMode;
     }
 
     public String getUuid() {
@@ -28,11 +30,19 @@ public class HorizontalItem {
         this.rentName = rentName;
     }
 
-    public String getRating() {
-        return rating;
+    public String getPortrait() {
+        return portrait;
     }
 
-    public void setRating(String rating) {
-        this.rating = rating;
+    public void setPortrait(String portrait) {
+        this.portrait = portrait;
+    }
+
+    public String getRentMode() {
+        return rentMode;
+    }
+
+    public void setRentMode(String rentMode) {
+        this.rentMode = rentMode;
     }
 }

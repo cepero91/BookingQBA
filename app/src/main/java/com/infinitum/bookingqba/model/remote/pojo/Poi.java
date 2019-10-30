@@ -35,6 +35,10 @@ public class Poi {
     @Expose
     private double maxLon;
 
+    @SerializedName("distance")
+    @Expose
+    private double distance;
+
     public String getId() {
         return id;
     }
@@ -97,6 +101,14 @@ public class Poi {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
     @Override

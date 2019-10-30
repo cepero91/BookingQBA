@@ -8,7 +8,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.util.geo.DistanceUtil;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
+
+import org.mapsforge.core.model.LatLong;
 
 import java.util.List;
 
@@ -16,10 +19,12 @@ public class MarkerDetailPoiAdapter extends RecyclerView.Adapter<MarkerDetailPoi
 
     private List<RentPoiItem> poiItems;
     private PoiClick poiClick;
+    private LatLong rentLocation;
 
-    public MarkerDetailPoiAdapter(List<RentPoiItem> poiItems, PoiClick poiClick) {
+    public MarkerDetailPoiAdapter(List<RentPoiItem> poiItems, PoiClick poiClick, LatLong rentLocation) {
         this.poiItems = poiItems;
         this.poiClick = poiClick;
+        this.rentLocation = rentLocation;
     }
 
     @NonNull
@@ -33,6 +38,8 @@ public class MarkerDetailPoiAdapter extends RecyclerView.Adapter<MarkerDetailPoi
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         RentPoiItem poiItem = poiItems.get(i);
         myViewHolder.tvPoi.setText(poiItem.getName());
+        myViewHolder.tvDistance.setText(DistanceUtil.distanceBetween(rentLocation.latitude,rentLocation.longitude,
+                poiItem.getLatitude(),poiItem.getLongitude()));
         myViewHolder.itemView.setOnClickListener(v->{
             if(poiClick!=null)
                 poiClick.onPoiClick(poiItem);
@@ -48,10 +55,12 @@ public class MarkerDetailPoiAdapter extends RecyclerView.Adapter<MarkerDetailPoi
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView tvPoi;
+        private TextView tvDistance;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             tvPoi = itemView.findViewById(R.id.tv_poi);
+            tvDistance = itemView.findViewById(R.id.tv_distance);
         }
     }
 

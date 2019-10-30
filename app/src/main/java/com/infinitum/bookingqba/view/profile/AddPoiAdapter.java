@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.view.profile;
 
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,8 +40,11 @@ public class AddPoiAdapter extends RecyclerView.Adapter<AddPoiAdapter.MyViewHold
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         Poi pointOfInterest = pointOfInterests.get(i);
-        myViewHolder.tvCategory.setText(CategoryUtil.categoryById(pointOfInterest.getCategory()));
-        myViewHolder.tvPoi.setText(pointOfInterest.getName());
+        myViewHolder.tvPoiName.setText(pointOfInterest.getName());
+        String distanceStr = pointOfInterest.getDistance() < 1 ?
+                String.format("(a %.1f m)", pointOfInterest.getDistance() * 1000) :
+                String.format("(a %.1f km)", pointOfInterest.getDistance());
+        myViewHolder.tvDistance.setText(distanceStr);
     }
 
     @Override
@@ -49,15 +53,13 @@ public class AddPoiAdapter extends RecyclerView.Adapter<AddPoiAdapter.MyViewHold
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        private LinearLayout llContentPoi;
-        private TextView tvCategory;
-        private TextView tvPoi;
+        private TextView tvPoiName;
+        private TextView tvDistance;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            llContentPoi = itemView.findViewById(R.id.ll_content_poi);
-            tvCategory = itemView.findViewById(R.id.tv_category);
-            tvPoi = itemView.findViewById(R.id.tv_poi);
+            tvPoiName = itemView.findViewById(R.id.tv_poi);
+            tvDistance = itemView.findViewById(R.id.tv_distance);
         }
     }
 }

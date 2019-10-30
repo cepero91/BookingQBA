@@ -1,6 +1,7 @@
 package com.infinitum.bookingqba.model.local.database;
 
 import android.arch.paging.DataSource;
+import android.arch.persistence.db.SimpleSQLiteQuery;
 import android.arch.persistence.db.SupportSQLiteQuery;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
@@ -12,6 +13,7 @@ import android.arch.persistence.room.RoomWarnings;
 import android.arch.persistence.room.Transaction;
 import android.arch.persistence.room.TypeConverters;
 import android.arch.persistence.room.Update;
+import android.util.Pair;
 
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.AmenitiesEntity;
@@ -32,12 +34,15 @@ import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentModeEntity;
 import com.infinitum.bookingqba.model.local.entity.RentPoiEntity;
 import com.infinitum.bookingqba.model.local.entity.RentVisitCountEntity;
+import com.infinitum.bookingqba.model.local.entity.WishedRentEntity;
 import com.infinitum.bookingqba.model.local.pojo.GaleryUpdateUtil;
 import com.infinitum.bookingqba.model.local.pojo.RentAndDependencies;
 import com.infinitum.bookingqba.model.local.pojo.RentAndGalery;
 import com.infinitum.bookingqba.model.local.pojo.RentDetail;
+import com.infinitum.bookingqba.model.local.pojo.RentDetailEsential;
 import com.infinitum.bookingqba.model.local.pojo.RentMostComment;
 import com.infinitum.bookingqba.model.local.pojo.RentMostRating;
+import com.infinitum.bookingqba.model.local.pojo.RentPoiAndRelation;
 import com.infinitum.bookingqba.model.local.tconverter.DateTypeConverter;
 
 import java.util.List;
@@ -69,12 +74,12 @@ public abstract class BookingQBADao {
 
     @Transaction
     public void upsertDatabaseUpdate(DatabaseUpdateEntity entity) {
-            if (addDatabaseUpdate(entity) == -1) {
-                updateDatabaseUpdate(entity);
-                Timber.d("%s Updated", entity.getId());
-            } else {
-                Timber.d("%s Inserted", entity.getId());
-            }
+        if (addDatabaseUpdate(entity) == -1) {
+            updateDatabaseUpdate(entity);
+            Timber.d("%s Updated", entity.getId());
+        } else {
+            Timber.d("%s Inserted", entity.getId());
+        }
     }
 
 
@@ -231,7 +236,6 @@ public abstract class BookingQBADao {
 
     @Delete
     public abstract void deleteAmenity(AmenitiesEntity... amenitiesEntities);
-
 
 
     //------------------------- TIPO DE LUGAR DE INTERES ---------------------------//
@@ -457,6 +461,7 @@ public abstract class BookingQBADao {
 
     /**
      * Metodo de listado con paginado
+     *
      * @param province
      * @return
      */
@@ -480,12 +485,23 @@ public abstract class BookingQBADao {
     public abstract Flowable<RentDetail> getRentDetailById(String uuid);
 
     @Transaction
-    @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
-            "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
-            "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
-            "LEFT JOIN Province ON Municipality.province = Province.id WHERE " +
-            "Province.id = :province AND Rent.isWished = 1")
-    public abstract Flowable<List<RentAndGalery>> getAllWishedRents(String province);
+    @TypeConverters(DateTypeConverter.class)
+    @Query("SELECT RentPoi.* FROM RentPoi WHERE RentPoi.rentId=:uuid")
+    public abstract Flowable<List<RentPoiAndRelation>> getRentPoiById(String uuid);
+
+    @Transaction
+    @Query("SELECT Wished.* FROM Wished WHERE Wished.rent=:rentUuid AND Wished.userId=:userId")
+    public abstract Flowable<WishedRentEntity> getWishedRent(String rentUuid, String userId);
+
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Transaction
+    @Query("SELECT Rent.* FROM Wished " +
+            "JOIN Rent ON Wished.rent = Rent.id AND Wished.userId =:userId " +
+            "JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
+            "JOIN Municipality ON Rent.municipality = Municipality.id " +
+            "JOIN Province ON Municipality.province = Province.id WHERE " +
+            "Province.id = :province AND Wished.value = 1")
+    public abstract Flowable<List<RentAndDependencies>> getAllWishedRents(String province, String userId);
 
     @Transaction
     @Query("SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished FROM Rent " +
@@ -496,8 +512,8 @@ public abstract class BookingQBADao {
     public abstract DataSource.Factory<Integer, RentAndGalery> getAllRentByZone(String province, String zone);
 
     @Transaction
-    @Query("SELECT * FROM Rent WHERE Rent.isWished = 1")
-    public abstract Single<List<RentEntity>> getAllWishedRents();
+    @Query("SELECT * FROM Wished WHERE Wished.value = 1")
+    public abstract Single<List<WishedRentEntity>> getAllWishedRents();
 
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)
@@ -783,12 +799,20 @@ public abstract class BookingQBADao {
         }
     }
 
-    @Transaction
     @RawQuery
     public abstract long deleteAllRentAmenities(SupportSQLiteQuery query);
 
     @Query("SELECT * FROM RentAmenities")
     public abstract Flowable<List<RentAmenitiesEntity>> getAllRentsAmenities();
+
+    @Transaction
+    public void deleteAndCreateRentAmenities(Pair<String,List<RentAmenitiesEntity>> pair){
+        if(!pair.first.isEmpty()) {
+            String querySql = "DELETE FROM RentAmenities WHERE rentId IN(" + pair.first + ")";
+            deleteAllRentAmenities(new SimpleSQLiteQuery(querySql));
+        }
+        addRentsAmenities(pair.second);
+    }
 
     //------------------------- RENTA_TIPO_MONEDA ---------------------------//
 

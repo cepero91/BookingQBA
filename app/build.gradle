@@ -59,6 +59,7 @@ dependencies {
 
     // Unit test dependencies
     implementation 'junit:junit:4.12'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -105,9 +106,6 @@ dependencies {
     implementation "android.arch.work:work-runtime:$work_version"
     implementation "android.arch.work:work-rxjava2:$work_version"
 
-    //Glide
-    implementation "com.github.bumptech.glide:glide:$glide"
-    // annotationProcessor "com.github.bumptech.glide:compiler:$glide"
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     //VTM-MAP
@@ -146,14 +144,8 @@ dependencies {
         exclude group: 'org.apache.xmlgraphics', module: 'xmlgraphics-commons'
     }
 
-    //Sequence Animation
-    implementation 'com.fujiyuu75:sequent:0.2.1'
-    implementation 'com.mikhaellopez:rxanimation:0.0.7'
-    implementation 'com.ramijemli:easings:1.0.0'
-
     //Button Anim
-    implementation 'com.dagang:gradient-button:1.0.1'
-    implementation ('com.github.thekhaeng:pushdown-anim-click:1.1.1'){
+    implementation('com.github.thekhaeng:pushdown-anim-click:1.1.1') {
         exclude group: 'com.android.support'
     }
 
@@ -164,9 +156,12 @@ dependencies {
 
     //Calendar
     implementation 'com.applandeo:material-calendar-view:1.5.0'
-    implementation ('pl.rafman.widgets:scroll-calendar:2.1.0') {
+    implementation('pl.rafman.widgets:scroll-calendar:2.1.0') {
         exclude group: 'com.android.support'
     }
+    implementation 'com.flaviofaria:kenburnsview:1.0.7'
+    implementation 'com.hendraanggrian:reveallayout:0.5.3'
+    implementation 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.1'
 
     //Timber
     implementation "com.jakewharton.timber:timber:$timber"
@@ -215,9 +210,6 @@ dependencies {
 
     //Shape View
     implementation 'com.github.florent37:shapeofview:1.2.0'
-
-    //Panels
-    implementation 'com.infideap.drawerbehavior:drawer-behavior:0.1.5'
 
     //Expansion panel
     implementation 'com.github.florent37:expansionpanel:1.1.1'

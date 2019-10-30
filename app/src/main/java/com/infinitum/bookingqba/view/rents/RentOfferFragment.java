@@ -1,16 +1,19 @@
 package com.infinitum.bookingqba.view.rents;
 
 
+import android.app.Dialog;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.TextView;
 
 import com.github.marlonlom.utilities.timeago.TimeAgo;
@@ -27,8 +30,10 @@ import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentOfferItem;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import timber.log.Timber;
 
-public class RentOfferFragment extends Fragment {
+
+public class RentOfferFragment extends DialogFragment {
 
     private FragmentInnerOfferBinding innerOfferBinding;
 
@@ -51,9 +56,18 @@ public class RentOfferFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL,R.style.MyDialogFragment);
         if (getArguments() != null) {
             argOffer = getArguments().getParcelableArrayList(ARG_OFFER);
         }
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        return dialog;
     }
 
     @Override
@@ -64,16 +78,20 @@ public class RentOfferFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(false);
         setupOfferAdapter(argOffer);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(false);
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        }
+
     }
 
     private void setupOfferAdapter(ArrayList<RentOfferItem> argOffer) {

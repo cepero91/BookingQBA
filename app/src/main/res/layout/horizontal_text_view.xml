@@ -1,56 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cv_rent_content"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    android:layout_marginBottom="5dp"
-    app:cardCornerRadius="10dp"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="5dp"
     app:cardElevation="5dp">
 
-    <LinearLayout
-        android:id="@+id/ll_content_rent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:alpha="0.6"
-        android:orientation="vertical">
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:id="@+id/ll_content_detail"
-            android:layout_width="match_parent"
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:id="@+id/iv_rent"
+            android:layout_width="180dp"
+            android:layout_height="100dp"
+            android:foreground="@drawable/shape_shadow_black_bottom"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder"
+            app:siBorderAlpha="0"
+            app:siRadius="5dp" />
+
+        <TextView
+            android:id="@+id/tv_rent_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:orientation="vertical">
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:text="Rent Name"
+            android:fontFamily="@font/montserrat_black"
+            android:textSize="16sp"
+            android:textColor="@color/White_100"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:alpha="0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_rent_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppinsbold"
-                android:textSize="12sp"
-                android:textColor="@color/material_color_blue_grey_500"/>
-
-            <com.willy.ratingbar.BaseRatingBar
-                android:id="@+id/sr_scale_rating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srb_clickable="false"
-                app:srb_drawableEmpty="@drawable/ic_star_o"
-                app:srb_drawableFilled="@drawable/ic_star"
-                app:srb_scrollable="false"
-                app:srb_starHeight="12dp"
-                app:srb_starPadding="2dp"
-                app:srb_starWidth="12dp"
-                app:srb_stepSize="0.5" />
-
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
 
 </android.support.v7.widget.CardView>

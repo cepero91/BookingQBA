@@ -3,20 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/material_color_grey_50"
         tools:context=".view.splash.SplashActivity">
 
-        <pl.droidsonroids.gif.GifImageView
-            android:id="@+id/gifview"
-            android:layout_width="@dimen/splash_gif_dimen"
-            android:layout_height="@dimen/splash_gif_dimen"
-            android:src="@drawable/splash"
-            android:layout_centerInParent="true"
-            />
+        <!--<pl.droidsonroids.gif.GifImageView-->
+            <!--android:id="@+id/gifview"-->
+            <!--android:layout_width="@dimen/splash_gif_dimen"-->
+            <!--android:layout_height="@dimen/splash_gif_dimen"-->
+            <!--android:src="@drawable/splash"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--/>-->
 
-    </RelativeLayout>
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lv_intro"
+            android:layout_width="0dp"
+            android:layout_height="250dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_enableMergePathsForKitKatAndAbove="true"
+            app:lottie_fileName="lottie/intro.json"
+            app:lottie_loop="false" />
+
+    </android.support.constraint.ConstraintLayout>
 
 </layout>

@@ -102,7 +102,6 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
         binding.ivLocation.setOnClickListener(this);
 
         binding.setIsLoading(true);
-        binding.progressPvCircularInout.start();
 
     }
 
@@ -119,7 +118,6 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
 
     @Override
     public void onDetach() {
-        Timber.e("Fragment onDetach");
         if (disposable!=null && !disposable.isDisposed())
             disposable.dispose();
         compositeDisposable.clear();
@@ -133,6 +131,9 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
 
     @Override
     public void onDestroyView() {
+        if (disposable!=null && !disposable.isDisposed())
+            disposable.dispose();
+        compositeDisposable.clear();
         binding.mapview.map().layers().remove(mapEventsReceiver);
         binding.mapview.onDestroy();
         super.onDestroyView();
@@ -155,7 +156,6 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
 
     @Override
     protected void showViews() {
-        binding.setIsLoading(false);
         if (!argLatitude.equals("") && !argLongitude.equals("")) {
             //do something with location
             map.animator().animateTo(1000, getMapPositionWithZoom(new GeoPoint(Float.parseFloat(argLatitude),Float.parseFloat(argLongitude)), 15), Easing.Type.SINE_IN);
@@ -163,7 +163,7 @@ public class MapFormFragment extends BaseMapFragment implements ItemizedLayer.On
         } else {
             mapView.map().setMapPosition(23.1165, -82.3882, 2 << 12);
         }
-        binding.progressPvCircularInout.stop();
+        binding.setIsLoading(false);
     }
 
     @Override

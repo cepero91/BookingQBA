@@ -15,10 +15,6 @@ public class RentPoiReferenceZone {
     @Expose
     private String referenceName;
 
-    @SerializedName("pois")
-    @Expose
-    private List<Poi> poiList;
-
     public String getReferenceId() {
         return referenceId;
     }
@@ -35,11 +31,4 @@ public class RentPoiReferenceZone {
         this.referenceName = referenceName;
     }
 
-    public List<Poi> getPoiList() {
-        return poiList;
-    }
-
-    public void setPoiList(List<Poi> poiList) {
-        this.poiList = poiList;
-    }
 }

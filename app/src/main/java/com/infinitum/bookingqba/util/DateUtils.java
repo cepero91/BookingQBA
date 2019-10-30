@@ -25,6 +25,16 @@ public class DateUtils {
         }
     }
 
+    public static Date dateStringToDate(String dateString, String pattern) {
+        SimpleDateFormat parser = new SimpleDateFormat(pattern, Locale.getDefault());
+        try {
+            return parser.parse(dateString);
+        } catch (ParseException e) {
+            Timber.e(String.format("Error parsing date: " + dateString));
+            return null;
+        }
+    }
+
     public static String currentDateToString() {
         SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new Locale("es", "ES"));
         return parser.format(Calendar.getInstance().getTime());
@@ -91,6 +101,13 @@ public class DateUtils {
             }
         }
         return calendarList;
+    }
+
+    public static String transformCalendarToStringDate(Calendar date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String dateStr;
+        dateStr = simpleDateFormat.format(date.getTime());
+        return dateStr;
     }
 
     public static List<String> transformCalendarsToStringDates(List<Calendar> disabledStrDates) {

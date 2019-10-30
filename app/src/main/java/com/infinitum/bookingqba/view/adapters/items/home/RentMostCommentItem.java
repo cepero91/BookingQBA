@@ -11,21 +11,9 @@ public class RentMostCommentItem extends BaseItem {
     private int emotionAvg;
     private float rating;
     private int ratingCount;
-    private String rentMode;
-    private double price;
 
-    public RentMostCommentItem(String id, String name, String imagePath) {
-        super(id, name, imagePath);
-    }
-
-    public RentMostCommentItem(String id, String name, String imagePath, int totalComment, int emotionAvg, float rating, int ratingCount, String rentMode, double price) {
-        super(id, name, imagePath);
-        this.totalComment = totalComment;
-        this.emotionAvg = emotionAvg;
-        this.rating = rating;
-        this.ratingCount = ratingCount;
-        this.rentMode = rentMode;
-        this.price = price;
+    public RentMostCommentItem(String id, String name, String imagePath, float price, String rentMode) {
+        super(id, name, imagePath, price, rentMode);
     }
 
     public int getTotalComment() {
@@ -44,72 +32,6 @@ public class RentMostCommentItem extends BaseItem {
         this.emotionAvg = emotionAvg;
     }
 
-    public String getRentMode() {
-        return rentMode;
-    }
-
-    public void setRentMode(String rentMode) {
-        this.rentMode = rentMode;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public String getHumanPrice(){
-        return String.format("$ %.2f",price);
-    }
-
-    public String getHumanRentMode(){
-        return "/"+rentMode;
-    }
-
-    public String getHumanTotalComment(){
-        if(totalComment > 0){
-            return String.format("%s comentario%s",totalComment,totalComment==1?"":"s");
-        }else{
-            return "Sin comentarios";
-        }
-    }
-
-    public String getHumanRating(){
-        return String.format("$ %.2f",rating);
-    }
-
-    public String getHumanRatingCount(){
-        if(ratingCount > 0){
-            return String.format("(%s voto%s)",ratingCount,ratingCount==1?"":"s");
-        }else{
-            return "(Sin votos)";
-        }
-    }
-
-    public int getEmotionDrawableId() {
-        int id = -1;
-        switch (emotionAvg) {
-            case 1:
-                id = R.drawable.ic_angry_emotion;
-                break;
-            case 2:
-                id = R.drawable.ic_frown_emotion;
-                break;
-            case 3:
-                id = R.drawable.ic_meh_emotion;
-                break;
-            case 4:
-                id = R.drawable.ic_grin_emotion;
-                break;
-            case 5:
-                id = R.drawable.ic_laugh_emotion;
-                break;
-        }
-        return id;
-    }
-
     public float getRating() {
         return rating;
     }
@@ -126,6 +48,10 @@ public class RentMostCommentItem extends BaseItem {
         this.ratingCount = ratingCount;
     }
 
+    public String humanRatingCount(){
+        return String.format("(%s)",ratingCount);
+    }
+
 
     @Override
     public int describeContents() {
@@ -139,8 +65,6 @@ public class RentMostCommentItem extends BaseItem {
         dest.writeInt(this.emotionAvg);
         dest.writeFloat(this.rating);
         dest.writeInt(this.ratingCount);
-        dest.writeString(this.rentMode);
-        dest.writeDouble(this.price);
     }
 
     protected RentMostCommentItem(Parcel in) {
@@ -149,8 +73,6 @@ public class RentMostCommentItem extends BaseItem {
         this.emotionAvg = in.readInt();
         this.rating = in.readFloat();
         this.ratingCount = in.readInt();
-        this.rentMode = in.readString();
-        this.price = in.readDouble();
     }
 
     public static final Creator<RentMostCommentItem> CREATOR = new Creator<RentMostCommentItem>() {

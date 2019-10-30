@@ -1,8 +1,10 @@
 package com.infinitum.bookingqba.view.home;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -11,8 +13,11 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,19 +27,18 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.github.florent37.shapeofview.shapes.RoundRectView;
+import com.github.mikephil.charting.charts.Chart;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityHomeBinding;
 import com.infinitum.bookingqba.model.Resource;
-import com.infinitum.bookingqba.model.remote.pojo.BookRequestInfo;
+import com.infinitum.bookingqba.model.remote.ReservationType;
 import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.util.AlertUtils;
-import com.infinitum.bookingqba.view.adapters.RentBookAdapter;
-import com.infinitum.bookingqba.view.adapters.UserBookRequestInfoAdapter;
 import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.map.GeoRent;
 import com.infinitum.bookingqba.view.adapters.items.reservation.ReservationItem;
@@ -47,12 +51,14 @@ import com.infinitum.bookingqba.view.interaction.FilterInteraction;
 import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.view.filter.FilterFragment;
 import com.infinitum.bookingqba.view.interaction.InfoInteraction;
+import com.infinitum.bookingqba.view.interaction.ProfileInteraction;
 import com.infinitum.bookingqba.view.listwish.ListWishFragment;
 import com.infinitum.bookingqba.view.map.MapFragment;
 import com.infinitum.bookingqba.view.profile.AddRentActivity;
 import com.infinitum.bookingqba.view.profile.MyRentsFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.profile.UserAuthActivity;
+import com.infinitum.bookingqba.view.rents.DetailActivity;
 import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.reservation.BookRequestListFragment;
@@ -84,6 +90,7 @@ import static com.infinitum.bookingqba.service.LocationService.KEY_REQUESTING_LO
 import static com.infinitum.bookingqba.util.Constants.ALTERNATIVE_SYNC;
 import static com.infinitum.bookingqba.util.Constants.BASE_URL_API;
 import static com.infinitum.bookingqba.util.Constants.FROM_DETAIL_TO_MAP;
+import static com.infinitum.bookingqba.util.Constants.FROM_RESERVATION_DETAIL_TO_LIST;
 import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.LOGIN_REQUEST_CODE;
 import static com.infinitum.bookingqba.util.Constants.MY_REQUEST_CODE;
@@ -92,16 +99,15 @@ import static com.infinitum.bookingqba.util.Constants.PERIODICAL_WORK_NAME;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID_DEFAULT;
 import static com.infinitum.bookingqba.util.Constants.USER_AVATAR;
-import static com.infinitum.bookingqba.util.Constants.USER_ID;
+import static com.infinitum.bookingqba.util.Constants.USER_HAS_ACTIVE_RENT;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
-import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
+import static com.infinitum.bookingqba.util.Constants.WRITE_EXTERNAL_REQUEST_CODE;
 
 public class HomeActivity extends LocationActivity implements HasSupportFragmentInjector,
         FragmentNavInteraction, NavigationView.OnNavigationItemSelectedListener,
         FilterInteraction, MapFragment.OnFragmentMapInteraction, InfoInteraction,
-        DialogFeedback.FeedbackInteraction, MyRentsFragment.AddRentClick,
-        RentBookAdapter.RentBookInteraction {
+        DialogFeedback.FeedbackInteraction, MyRentsFragment.AddRentClick, ProfileInteraction {
 
     private static final String STATE_ACTIVE_FRAGMENT = "active_fragment";
     private ActivityHomeBinding homeBinding;
@@ -120,6 +126,8 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     @Inject
     SharedPreferences sharedPreferences;
     private boolean filterActive;
+    private Chart lastChartToExport;
+    private String lastNameToExport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +165,9 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             mFragment = HomeFragment.newInstance();
         }
         fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frame_container,
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit);
+        ft.replace(R.id.frame_container,
                 mFragment).commit();
     }
 
@@ -181,12 +191,21 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
     private void initDrawerLayout() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, homeBinding.drawerLayout, homeBinding.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, homeBinding.drawerLayout, homeBinding.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                if (drawerView.getId() == R.id.nav_view_notification) {
+                    showFilterPanel();
+                }
+            }
+        };
         homeBinding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
         homeBinding.navView.getMenu().getItem(0).setChecked(true);
         homeBinding.navView.setNavigationItemSelectedListener(this);
+        homeBinding.navView.getChildAt(0).setVerticalScrollBarEnabled(false);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -198,9 +217,17 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
         if (sharedPreferences.getBoolean(USER_IS_AUTH, false)) {
             homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(true);
+            homeBinding.navView.getMenu().findItem(R.id.nav_wish_list).setVisible(true);
+            homeBinding.navView.getMenu().findItem(R.id.nav_my_rents).setVisible(true);
+            homeBinding.navView.getMenu().findItem(R.id.nav_my_book_request).setVisible(true);
             homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(false);
             updateNavHeader(sharedPreferences.getString(USER_NAME, ""), sharedPreferences.getString(USER_AVATAR, ""));
         }
+
+        refreshMenuIfUserIsActiveHost(sharedPreferences.getBoolean(USER_HAS_ACTIVE_RENT,false));
+
+        homeBinding.drawerLayout.useCustomBehavior(Gravity.START);
+
     }
 
 
@@ -223,6 +250,13 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                             }
                         }
                         break;
+                    case FROM_RESERVATION_DETAIL_TO_LIST:
+                        if (data != null && data.hasExtra("refresh")) {
+                            boolean needRefresh = data.getBooleanExtra("refresh", false);
+                            if (needRefresh && mFragment instanceof ReservationListFragment)
+                                ((ReservationListFragment) mFragment).onRefresh();
+                        }
+                        break;
                 }
                 break;
             case LOGIN_REQUEST_CODE:
@@ -230,6 +264,9 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                     case Activity.RESULT_OK:
                         if (data != null && data.hasExtra(USER_NAME)) {
                             homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(true);
+                            homeBinding.navView.getMenu().findItem(R.id.nav_wish_list).setVisible(true);
+                            homeBinding.navView.getMenu().findItem(R.id.nav_my_rents).setVisible(true);
+                            homeBinding.navView.getMenu().findItem(R.id.nav_my_book_request).setVisible(true);
                             homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(false);
                             showLoginSuccessAlert();
                         }
@@ -263,11 +300,8 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
 
     private void navigateToDetailActivity(BaseItem baseItem, View view) {
-        Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
-        intent.putExtra("uuid", baseItem.getId());
-        intent.putExtra("url", baseItem.getImagePath());
-        intent.putExtra("name", baseItem.getName());
-        intent.putExtra("wished", 0);
+        Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
+        intent.putExtra("item", baseItem);
         startActivityForResult(intent, MY_REQUEST_CODE);
     }
 
@@ -307,17 +341,22 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_filter_panel:
-                //FILTER
-                if (filterFragment == null) {
-                    String provinceId = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
-                    filterFragment = FilterFragment.newInstance(provinceId);
-                }
                 homeBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
-                homeBinding.drawerLayout.openDrawer(Gravity.END, false);
-                fragmentManager.beginTransaction().replace(R.id.filter_container, filterFragment).commit();
+                homeBinding.drawerLayout.openDrawer(Gravity.END, true);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showFilterPanel() {
+        //FILTER
+        if (filterFragment == null) {
+            String provinceId = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
+            filterFragment = FilterFragment.newInstance(provinceId);
+        }
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit);
+        ft.replace(R.id.filter_container, filterFragment).commit();
     }
 
     private void confirmLogout() {
@@ -331,9 +370,14 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     private void logoutPetition() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(USER_IS_AUTH, false);
+        editor.putBoolean(USER_HAS_ACTIVE_RENT, false);
         editor.apply();
         homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(true);
+        homeBinding.navView.getMenu().findItem(R.id.nav_wish_list).setVisible(false);
         homeBinding.navView.getMenu().findItem(R.id.nav_logout).setVisible(false);
+        homeBinding.navView.getMenu().findItem(R.id.nav_my_rents).setVisible(false);
+        homeBinding.navView.getMenu().findItem(R.id.nav_my_book_request).setVisible(false);
+        refreshMenuIfUserIsActiveHost(false);
         updateNavHeader("", "");
     }
 
@@ -384,17 +428,19 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             // Highlight the selected item has been done by NavigationView
             menuItem.setChecked(true);
             // Close drawer
-            homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
+            homeBinding.drawerLayout.closeDrawer(GravityCompat.START);
             homeBinding.drawerLayout.postDelayed(() -> {
                 // Inflate the new Fragment with the new RecyclerView and a new Adapter
                 fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_container, mFragment).commit();
-
+                FragmentTransaction ft = fragmentManager.beginTransaction();
+                ft.setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit);
+                ft.replace(R.id.frame_container, mFragment).commit();
             }, 700);
+
 
             return true;
         } else {
-            homeBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
+            homeBinding.drawerLayout.closeDrawer(GravityCompat.START);
         }
         return false;
     }
@@ -440,9 +486,9 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     }
 
     private void updateNavHeader(String username, String avatar) {
-        RoundRectView roundRectView = (RoundRectView) homeBinding.navView.getHeaderView(0);
-        CircularImageView circularImageView = roundRectView.findViewById(R.id.user_avatar);
-        TextView tvUsername = roundRectView.findViewById(R.id.tv_username);
+        LinearLayout linearHeader = (LinearLayout) homeBinding.navView.getHeaderView(0);
+        CircularImageView circularImageView = linearHeader.findViewById(R.id.user_avatar);
+        TextView tvUsername = linearHeader.findViewById(R.id.tv_username);
         if (!username.equals("") && !avatar.equals("")) {
             String url = BASE_URL_API + "/" + avatar;
             Picasso.get()
@@ -458,10 +504,11 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
 
     @Override
-    public void onBookReservationClick(ReservationItem item) {
+    public void onBookItemClick(ReservationItem item, ReservationType type) {
         Intent intent = new Intent(HomeActivity.this, ReservationDetailActivity.class);
         intent.putExtra("reservationItem", item);
-        startActivity(intent);
+        intent.putExtra("accepted", type == ReservationType.ACCEPTED);
+        startActivityForResult(intent, MY_REQUEST_CODE);
     }
 
     //---------------------------- MAP ----------------------------------------
@@ -479,8 +526,8 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     public void onMapInteraction(GeoRent geoRent) {
         Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
         intent.putExtra("uuid", geoRent.getId());
+        intent.putExtra("name", geoRent.getName());
         intent.putExtra("url", geoRent.getImagePath());
-        intent.putExtra("wished", 0);
         startActivityForResult(intent, MY_REQUEST_CODE);
     }
 
@@ -498,6 +545,8 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         currentLocation = location;
         if (mFragment instanceof MapFragment && ((MapFragment) mFragment).isMarkerLayerLoaded())
             ((MapFragment) mFragment).updateCurrentLocation(location);
+        if (homeBinding.drawerLayout.isDrawerOpen(GravityCompat.END) && filterFragment != null)
+            filterFragment.setUserLocation(location);
     }
 
     // -------------------------- FILTER --------------------------------------------- //
@@ -511,10 +560,10 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
     }
 
     @Override
-    public void onFilterElement(Resource<List<GeoRent>> resourceResult) {
+    public void onFilterElement(Resource<List<GeoRent>> resourceResult, @Nullable Location lastLocationKnow) {
         if (mFragment instanceof RentListFragment) {
             filterActive = true;
-            ((RentListFragment) mFragment).filterListResult(resourceResult);
+            ((RentListFragment) mFragment).filterListResult(resourceResult, lastLocationKnow);
             invalidateOptionsMenu();
         }
     }
@@ -574,13 +623,73 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         startActivity(intent);
     }
 
+    @Override
+    public void refreshMenuIfUserIsActiveHost(boolean userHasRentActive) {
+        if (userHasRentActive) {
+            homeBinding.navView.getMenu().findItem(R.id.nav_book_request).setVisible(true);
+            homeBinding.navView.getMenu().findItem(R.id.nav_my_calendar).setVisible(true);
+            homeBinding.navView.getMenu().findItem(R.id.nav_profile).setVisible(true);
+        } else {
+            homeBinding.navView.getMenu().findItem(R.id.nav_book_request).setVisible(false);
+            homeBinding.navView.getMenu().findItem(R.id.nav_my_calendar).setVisible(false);
+            homeBinding.navView.getMenu().findItem(R.id.nav_profile).setVisible(false);
+        }
+    }
+
     private void goToRentListWithOrderType(char orderType) {
         String provinceName = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
         mFragment = RentListFragment.newInstance(provinceName, orderType);
         fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frame_container,
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit);
+        ft.replace(R.id.frame_container,
                 mFragment).commit();
         homeBinding.navView.getMenu().getItem(1).setChecked(true);
+    }
+
+    //--------------------------- PROFILE --------------------------------------------
+
+    @Override
+    public void exportToGalery(Chart chart, String name) {
+        lastChartToExport = chart;
+        lastNameToExport = name;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            saveToGallery(chart, name);
+        } else {
+            requestStoragePermission();
+        }
+    }
+
+    private void requestStoragePermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            AlertUtils.showCFInfoNotificationWithAction(this, "Aviso!!", "Permisos de escritura requeridos para exportar imagen.",
+                    (dialog, view) -> {
+                        dialog.dismiss();
+                        ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_REQUEST_CODE);
+                    }, "Otorgar");
+        } else {
+            AlertUtils.showErrorToast(getApplicationContext(), "Permisos requeridos");
+            ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_REQUEST_CODE);
+        }
+    }
+
+    protected void saveToGallery(Chart chart, String name) {
+        if (chart.saveToGallery(name + "_" + System.currentTimeMillis(), 70))
+            AlertUtils.showSuccessToast(getApplicationContext(), "Guardada en galeria");
+        else
+            AlertUtils.showErrorToast(getApplicationContext(), "Error al guardar");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == WRITE_EXTERNAL_REQUEST_CODE) {
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                saveToGallery(lastChartToExport, lastNameToExport);
+            } else {
+                AlertUtils.showErrorToast(getApplicationContext(), "Error al guardar");
+            }
+        }
     }
 
     // -------------------------- LIVECYCLE ACTIVITY METHOD -------------------------- //

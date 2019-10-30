@@ -17,9 +17,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|start"
-            android:fontFamily="@font/poppinsbold"
-            android:text="Mostrar en Mapa"
-            android:textColor="@color/material_color_blue_grey_500" />
+            android:fontFamily="@font/montserrat_medium"
+            android:text="@string/mostrar_en_mapa"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="16sp"/>
 
         <android.support.v7.widget.AppCompatImageView
             android:id="@+id/iv_short_cut_icon"
@@ -45,14 +46,14 @@
             android:id="@+id/button_five"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/poppinslight"
+            android:fontFamily="@font/montserrat_light"
             android:background="@drawable/shape_btn_rounded_white"
             android:includeFontPadding="false"
             android:padding="8dp"
             android:layout_margin="5dp"
             android:elevation="3dp"
-            android:text="Primeros 5"
-            android:textColor="@color/material_color_blue_grey_500" />
+            android:text="@string/primeros_5"
+            android:textColor="@color/material_color_teal_A700" />
 
 
         <TextView
@@ -60,13 +61,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_btn_rounded_white"
-            android:fontFamily="@font/poppinslight"
+            android:fontFamily="@font/montserrat_light"
             android:includeFontPadding="false"
             android:padding="8dp"
             android:layout_margin="5dp"
             android:elevation="3dp"
-            android:text="Primeros 10"
-            android:textColor="@color/material_color_blue_grey_500" />
+            android:text="@string/primeros_10"
+            android:textColor="@color/material_color_teal_A700" />
 
 
         <TextView
@@ -75,12 +76,12 @@
             android:layout_height="wrap_content"
             android:background="@drawable/shape_btn_rounded_white"
             android:elevation="3dp"
-            android:fontFamily="@font/poppinsregular"
+            android:fontFamily="@font/montserrat_light"
             android:includeFontPadding="false"
             android:padding="8dp"
             android:layout_margin="5dp"
-            android:text="Todos"
-            android:textColor="@color/material_color_blue_grey_500" />
+            android:text="@string/todos"
+            android:textColor="@color/material_color_teal_A700" />
 
     </LinearLayout>
 

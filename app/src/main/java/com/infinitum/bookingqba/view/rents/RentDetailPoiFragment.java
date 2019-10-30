@@ -24,6 +24,8 @@ import com.infinitum.bookingqba.view.adapters.items.rentdetail.PoiCategory;
 import com.infinitum.bookingqba.view.adapters.items.rentdetail.RentPoiItem;
 import com.infinitum.bookingqba.view.widgets.CenterSmoothScroller;
 
+import org.mapsforge.core.model.LatLong;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -36,19 +38,25 @@ public class RentDetailPoiFragment extends Fragment implements RDPoiCategoryAdap
 
     private static final String ARG_REFERENCE_ZONE = "refZone";
 
+    private static final String ARG_LAT_LONG = "latLon";
+
+
     private Map<PoiCategory, List<RentPoiItem>> argPoiCategory;
 
     private String argRefZone;
+
+    private String argLatLon;
 
     public RentDetailPoiFragment() {
         // Required empty public constructor
     }
 
-    public static RentDetailPoiFragment newInstance(Map<PoiCategory, List<RentPoiItem>> argPoiCategory, String argRefZone) {
+    public static RentDetailPoiFragment newInstance(Map<PoiCategory, List<RentPoiItem>> argPoiCategory, String argRefZone, String argLatLon) {
         RentDetailPoiFragment fragment = new RentDetailPoiFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_POI_CATEGORY, (Serializable) argPoiCategory);
         args.putString(ARG_REFERENCE_ZONE, argRefZone);
+        args.putString(ARG_LAT_LONG, argLatLon);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,6 +67,7 @@ public class RentDetailPoiFragment extends Fragment implements RDPoiCategoryAdap
         if (getArguments() != null) {
             argPoiCategory = (Map<PoiCategory, List<RentPoiItem>>) getArguments().getSerializable(ARG_POI_CATEGORY);
             argRefZone = getArguments().getString(ARG_REFERENCE_ZONE);
+            argLatLon = getArguments().getString(ARG_LAT_LONG);
         }
     }
 
@@ -129,7 +138,7 @@ public class RentDetailPoiFragment extends Fragment implements RDPoiCategoryAdap
 
     private void setupPoiAdapter(PoiCategory poiCategory) {
         List<RentPoiItem> rentPoiItemList = argPoiCategory.get(poiCategory);
-        RDPoiAdapter adapter = new RDPoiAdapter(rentPoiItemList);
+        RDPoiAdapter adapter = new RDPoiAdapter(rentPoiItemList, LatLong.fromString(argLatLon));
         fragmentRentDetailPoiBinding.rvPoi.setLayoutManager(new LinearLayoutManager(getActivity()));
         fragmentRentDetailPoiBinding.rvPoi.setAdapter(adapter);
         LayoutAnimationController animationController = AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_anim_fall_down);

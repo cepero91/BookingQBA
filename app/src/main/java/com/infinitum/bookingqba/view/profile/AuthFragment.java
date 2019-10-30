@@ -2,6 +2,7 @@ package com.infinitum.bookingqba.view.profile;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -23,9 +24,11 @@ import com.infinitum.bookingqba.model.remote.errors.ErrorUtils;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.util.AlertUtils;
+import com.infinitum.bookingqba.util.Constants;
 import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.viewmodel.UserViewModel;
 import com.infinitum.bookingqba.viewmodel.ViewModelFactory;
+import com.thekhaeng.pushdownanim.PushDownAnim;
 
 import java.net.ConnectException;
 import java.net.SocketException;
@@ -110,7 +113,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         fragmentAuthBinding.llBtnAccount.setTag(SIGNIN);
 
         fragmentAuthBinding.llBtnAccount.setOnClickListener(this);
-        fragmentAuthBinding.send.setOnClickListener(this);
+        PushDownAnim.setPushDownAnimTo(fragmentAuthBinding.send).setOnClickListener(this);
         fragmentAuthBinding.tvResendActivationCode.setOnClickListener(this);
 
         setHasOptionsMenu(true);
@@ -318,7 +321,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                 compositeDisposable.add(disposable);
             }
         } else {
-            showErrorDialog("Aviso!!", "No se puede efectuar la operacion. Sin conexion");
+            showErrorDialog("Oopss!!", Constants.CONNEXION_ERROR_MSG);
         }
     }
 
@@ -421,15 +424,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
     //------------------------------- NOTIFICATION ------------------------------
 
     private void showErrorDialog(String title, String msg) {
-        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(getActivity());
-        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
-        // Title and message
-        builder.setTitle(title);
-        builder.setMessage(msg);
-        builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
-        builder.addButton("Ok, lo entiendo", -1, -1, CFAlertDialog.CFAlertActionStyle.NEGATIVE,
-                CFAlertDialog.CFAlertActionAlignment.CENTER, (dialog, which) -> dialog.dismiss());
-        builder.show();
+        AlertUtils.showCFErrorNotificationWithAction(getActivity(), title, msg, (dialog, which) -> dialog.dismiss(),"Ok, lo entiendo");
     }
 
     private void showSuccessDialog(String title, String msg) {

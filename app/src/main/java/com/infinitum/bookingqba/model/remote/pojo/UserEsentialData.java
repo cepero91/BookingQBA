@@ -16,6 +16,9 @@ public class UserEsentialData {
     @SerializedName("userTime")
     @Expose
     private String userTime;
+    @SerializedName("user_last_login")
+    @Expose
+    private String userLastLogin;
     @SerializedName("rating")
     @Expose
     private String ratingAverage;
@@ -31,6 +34,9 @@ public class UserEsentialData {
     @SerializedName("reserved_count")
     @Expose
     private String reservedCount;
+    @SerializedName("commentLast")
+    @Expose
+    private String commentLast;
 
     public Boolean getWish() {
         return isWish;
@@ -102,5 +108,21 @@ public class UserEsentialData {
 
     public void setReservedCount(String reservedCount) {
         this.reservedCount = reservedCount;
+    }
+
+    public String getCommentLast() {
+        return commentLast;
+    }
+
+    public void setCommentLast(String commentLast) {
+        this.commentLast = commentLast;
+    }
+
+    public String getUserLastLogin() {
+        return userLastLogin;
+    }
+
+    public void setUserLastLogin(String userLastLogin) {
+        this.userLastLogin = userLastLogin;
     }
 }

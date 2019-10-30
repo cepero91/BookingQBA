@@ -15,7 +15,8 @@
         android:id="@+id/cl_root"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp">
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp">
 
         <FrameLayout
             android:id="@+id/fl_iv_rent"
@@ -27,12 +28,12 @@
 
             <com.github.siyamed.shapeimageview.RoundedImageView
                 android:id="@+id/iv_rent"
-                android:layout_width="230dp"
-                android:layout_height="150dp"
+                android:layout_width="260dp"
+                android:layout_height="170dp"
                 android:scaleType="fitCenter"
                 app:setRentListImage="@{item.getImagePath()}"
                 app:siBorderAlpha="0"
-                app:siRadius="10dp" />
+                app:siRadius="5dp" />
 
         </FrameLayout>
 
@@ -41,10 +42,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:fontFamily="@font/montserrat_bold"
+            android:fontFamily="@font/montserrat_medium"
             android:text="@{item.name}"
             android:textColor="@color/material_color_blue_grey_500"
-            android:textSize="14sp"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fl_iv_rent" />
 
@@ -52,56 +53,50 @@
             android:id="@+id/sr_scale_rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_price"
             app:setRating="@{item.rating}"
-            app:srb_clickable="false"
             app:srb_drawableEmpty="@drawable/ic_fa_star_o_line"
             app:srb_drawableFilled="@drawable/ic_fa_star_line"
-            app:srb_scrollable="false"
+            app:srb_isIndicator="true"
             app:srb_starHeight="16dp"
             app:srb_starPadding="2dp"
             app:srb_starWidth="16dp"
             app:srb_stepSize="0.5" />
 
-        <LinearLayout
+
+        <TextView
+            android:id="@+id/tv_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/shape_rent_pop_price_square"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:fontFamily="@font/montserrat_light"
+            android:text="@{item.humanPrice()}"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
-            <TextView
-                android:id="@+id/tv_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/montserrat_bold"
-                android:text="@{item.humanPrice}"
-                android:textColor="@color/White_100"
-                android:textSize="12sp" />
+        <TextView
+            android:id="@+id/tv_rent_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_light"
+            android:text="@{item.humanRentMode()}"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_price"
+            app:layout_constraintStart_toEndOf="@+id/tv_price" />
 
-            <TextView
-                android:id="@+id/tv_rent_mode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/montserrat_light"
-                android:text="@{item.humanRentMode}"
-                android:textColor="@color/White_100"
-                android:textSize="12sp" />
-
-        </LinearLayout>
 
         <TextView
             android:id="@+id/tv_rating_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat_light"
+            android:fontFamily="@font/montserrat_thin"
             android:text="@{item.humanRatingCount}"
-            android:textSize="12sp"
+            android:textColor="@color/material_color_blue_grey_500"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@+id/sr_scale_rating"
             app:layout_constraintStart_toEndOf="@+id/sr_scale_rating"
             app:layout_constraintTop_toTopOf="@+id/sr_scale_rating" />

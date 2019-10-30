@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="16dp"
+    android:background="@color/White_100"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/ic_calendar"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:tint="@color/colorPrimary"
+        app:srcCompat="@drawable/ic_calendar_6_set" />
+
+    <TextView
+        android:id="@+id/tv_sol_accepted_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_black"
+        android:text="Solicitud aceptada"
+        android:textColor="@color/material_color_blue_grey_500"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tv_sol_accepted_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_light"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="El huesped será notificado vía correo electrónico"
+        android:textColor="@color/material_color_blue_grey_500"
+        android:textSize="14sp" />
+
+</LinearLayout>
+

@@ -99,7 +99,9 @@ public class SearchableListDialog extends DialogFragment implements
         alertDialog.setPositiveButton(strPositiveButton, _onClickListener);
 
         String strTitle = _strTitle == null ? "Select Item" : _strTitle;
-        alertDialog.setTitle(strTitle);
+//        alertDialog.setTitle(strTitle);
+        View customTitle = inflater.inflate(R.layout.dialog_title, null);
+        alertDialog.setCustomTitle(customTitle);
 
         final AlertDialog dialog = alertDialog.create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams

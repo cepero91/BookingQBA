@@ -32,6 +32,7 @@ import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoi;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoiAdd;
+import com.infinitum.bookingqba.model.remote.pojo.RentPoiReferenceZone;
 import com.infinitum.bookingqba.model.remote.pojo.RentVisitCountGroup;
 import com.infinitum.bookingqba.model.remote.pojo.RentWished;
 import com.infinitum.bookingqba.model.remote.pojo.Reservation;
@@ -103,10 +104,13 @@ public interface ApiInterface {
     Single<List<Reservation>> pendingReservation(@Header("Authorization") String token, @Query("userId") String userid);
 
     @GET("/api/user-book-request-info/")
-    Single<List<BookRequestInfo>> bookRequestInfo(@Header("Authorization") String token, @Query("userId") String userid);
+    Single<List<Reservation>> bookRequestInfo(@Header("Authorization") String token, @Query("userId") String userid);
 
     @GET("/api/accepted-reservation/")
     Single<List<Reservation>> acceptedReservation(@Header("Authorization") String token, @Query("userId") String userid);
+
+    @GET("/api/checked-reservation/")
+    Single<List<Reservation>> checkedReservation(@Header("Authorization") String token, @Query("userId") String userid);
 
     @FormUrlEncoded
     @POST("/api/accept-reservation/")
@@ -121,7 +125,7 @@ public interface ApiInterface {
     Single<ResponseResult> deniedReservationByUser(@Header("Authorization") String token, @Field("uui") String uuid);
 
     @GET("/api/user-data/")
-    Single<UserEsentialData> userBookOwnerData(@Header("Authorization") String token, @Query("userId") String userid, @Query("rentId") String rentId);
+    Single<UserEsentialData> userBookOwnerData(@Header("Authorization") String token, @Query("userId") String userid, @Query("rentId") String rentId, @Query("reservationId") String reservationId);
 
     //------------------- RENTAS EN LISTA DE DESEO ---------------------------//
 
@@ -185,6 +189,9 @@ public interface ApiInterface {
 
     @GET("/api/pois")
     Single<List<Poi>> getPois(@Header("Authorization") String token, @Query("value") String value);
+
+    @GET("/api/get-referenceZone-pois")
+    Single<RentPoiReferenceZone> getReferenceZoneAndPoisByLocation(@Header("Authorization") String token, @Query("latitude") double latitude, @Query("longitude") double longitude);
 
     //------------------- RENTAS ---------------------//
 
@@ -269,6 +276,10 @@ public interface ApiInterface {
 
     @GET
     Single<ResponseBody> getSingleImage(@Url String url);
+
+    @FormUrlEncoded
+    @POST("/api/image-delete/")
+    Single<ResponseResult> imageDelete(@Header("Authorization") String token, @Field("uuid")String uuid);
 
     //------------------- OFERTA ---------------------//
 

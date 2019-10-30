@@ -3,11 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.v4.widget.DrawerLayout
+    <com.customview.drawerbehavior.AdvanceDrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
+        android:background="@color/White_100"
         tools:openDrawer="start">
 
         <android.support.design.widget.CoordinatorLayout
@@ -73,7 +74,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:background="@color/material_color_grey_100"
+            android:background="@color/White_100"
             android:fitsSystemWindows="false">
 
             <FrameLayout
@@ -84,6 +85,6 @@
         </android.support.design.widget.NavigationView>
 
 
-    </android.support.v4.widget.DrawerLayout>
+    </com.customview.drawerbehavior.AdvanceDrawerLayout>
 
 </layout>

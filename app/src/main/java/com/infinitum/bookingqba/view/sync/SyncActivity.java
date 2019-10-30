@@ -11,10 +11,12 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivitySyncBinding;
 import com.infinitum.bookingqba.model.OperationResult;
@@ -437,17 +439,22 @@ public class SyncActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private void notifyDownloadEnds() {
         saveSuccessDownload();
-        AlertUtils.showCFInfoAlertWithAction(this, getString(R.string.sync_success), "Comenzar ya!!", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                if(alternativeSync){
-                    SyncActivity.this.finish();
-                }else{
-                    startActivity(new Intent(SyncActivity.this, HomeActivity.class));
-                }
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // Title and message
+        builder.setTitle("Aviso!!");
+        builder.setMessage(getString(R.string.sync_success));
+        builder.setTextGravity(Gravity.CENTER);
+        builder.addButton("Comenzar ya!!", -1, Color.parseColor("#00BFA5"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, (dialog, which) -> dialog.dismiss());
+        builder.onDismissListener(dialog -> {
+            if(alternativeSync){
+                SyncActivity.this.finish();
+            }else{
+                startActivity(new Intent(SyncActivity.this, HomeActivity.class));
             }
         });
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.show();
     }
 
     private void prepareForDownload() {

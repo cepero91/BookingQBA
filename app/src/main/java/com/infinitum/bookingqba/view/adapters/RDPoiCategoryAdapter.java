@@ -53,15 +53,17 @@ public class RDPoiCategoryAdapter extends RecyclerView.Adapter<RDPoiCategoryAdap
         myViewHolder.tvCategory.setText(poiCategory.getName());
         myViewHolder.ivCategory.setImageResource(CategoryUtil.getImageResourceByCategoryID(poiCategory.getId()));
         if (selectedCategory[i]) {
+            myViewHolder.clRoot.setBackgroundResource(R.drawable.shape_poi_ship_selected);
             myViewHolder.tvCategory.setVisibility(View.VISIBLE);
             myViewHolder.tvCategory.animate().alpha(1)
                     .setDuration(300)
                     .setInterpolator(new AccelerateInterpolator()).start();
             myViewHolder.ivCategory.setImageTintList(ColorStateList.valueOf(Color.parseColor("#607D8B")));
         } else {
+            myViewHolder.clRoot.setBackgroundResource(R.drawable.shape_poi_ship_unselected);
             myViewHolder.tvCategory.setAlpha(0);
             myViewHolder.tvCategory.setVisibility(View.GONE);
-            myViewHolder.ivCategory.setImageTintList(ColorStateList.valueOf(Color.parseColor("#90A4AE")));
+            myViewHolder.ivCategory.setImageTintList(ColorStateList.valueOf(Color.parseColor("#b0bec5")));
         }
         myViewHolder.itemView.setOnClickListener(v -> {
             changeTextCategoryVisibility(i);

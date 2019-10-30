@@ -1,12 +1,14 @@
 package com.infinitum.bookingqba.view.reservation;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +18,11 @@ import android.widget.Toast;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentRequestBookListBinding;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequestInfo;
+import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.view.adapters.RentBookAdapter;
 import com.infinitum.bookingqba.view.adapters.UserBookRequestInfoAdapter;
+import com.infinitum.bookingqba.view.adapters.items.reservation.BookInfoItem;
 import com.infinitum.bookingqba.view.adapters.items.reservation.ReservationItem;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.customview.StateView;
@@ -37,7 +41,7 @@ import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
 public class BookRequestListFragment extends BaseNavigationFragment implements SwipeRefreshLayout.OnRefreshListener,
-        View.OnClickListener, UserBookRequestInfoAdapter.UserBookRequestInteraction {
+        UserBookRequestInfoAdapter.UserBookRequestInteraction {
 
     private FragmentRequestBookListBinding fragmentRequestBookListBinding;
     private UserViewModel userViewModel;
@@ -48,6 +52,8 @@ public class BookRequestListFragment extends BaseNavigationFragment implements S
 
     @Inject
     SharedPreferences sharedPreferences;
+    private String token;
+    private String userId;
 
     public static BookRequestListFragment newInstance() {
         return new BookRequestListFragment();
@@ -69,7 +75,11 @@ public class BookRequestListFragment extends BaseNavigationFragment implements S
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        token = sharedPreferences.getString(USER_TOKEN, "");
+        userId = sharedPreferences.getString(USER_ID, "");
+
         initLoading(true, StateView.Status.LOADING, true);
+
         fragmentRequestBookListBinding.swipeRefresh.setOnRefreshListener(this);
 
         userViewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel.class);
@@ -80,8 +90,6 @@ public class BookRequestListFragment extends BaseNavigationFragment implements S
 
     private void fetchBookRequetByUser() {
         if (networkHelper.isNetworkAvailable()) {
-            String token = sharedPreferences.getString(USER_TOKEN, "");
-            String userId = sharedPreferences.getString(USER_ID, "");
             disposable = userViewModel.getUserBookRequestInfo(token, userId)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -111,7 +119,7 @@ public class BookRequestListFragment extends BaseNavigationFragment implements S
     }
 
 
-    private void setupReservationAdapter(List<BookRequestInfo> data) {
+    private void setupReservationAdapter(List<BookInfoItem> data) {
         UserBookRequestInfoAdapter infoAdapter = new UserBookRequestInfoAdapter(getLayoutInflater(), data, this);
         fragmentRequestBookListBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         fragmentRequestBookListBinding.recyclerView.setAdapter(infoAdapter);
@@ -129,23 +137,34 @@ public class BookRequestListFragment extends BaseNavigationFragment implements S
         fetchBookRequetByUser();
     }
 
+
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-        }
+    public void onBookRequestDelete(BookInfoItem item) {
+        AlertUtils.showCFInfoAlertWithAction(getActivity(), getString(R.string.cancel_book_confirm), "Cancelar Solicitud",
+                (dialog, which) -> {
+                    dialog.dismiss();
+                    cancelBookRequest(item);
+                });
     }
 
-
-    @Override
-    public void onBookReservationClick(BookRequestInfo item) {
+    private void cancelBookRequest(BookInfoItem item) {
         disposable = userViewModel.deniedReservationByUser(sharedPreferences.getString(USER_TOKEN, ""), item.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resultResource -> {
-                    if (resultResource.data != null && resultResource.data.getCode() == 200){
-                        Toast.makeText(getActivity(), "Si", Toast.LENGTH_SHORT).show();
+                    if (resultResource.data != null && resultResource.data.getCode() == 200) {
+                        AlertUtils.showSuccessToast(getActivity(), "Solicitud cancelada");
+                        fragmentRequestBookListBinding.swipeRefresh.setRefreshing(true);
+                        onRefresh();
+                    } else {
+                        AlertUtils.showErrorToast(getActivity(), "Error al cancelar solicitud");
                     }
-                }, Timber::e);
+                }, throwable -> {
+                    Timber.e(throwable);
+                    AlertUtils.showErrorToast(getActivity(), "Error al cancelar solicitud");
+                });
         compositeDisposable.add(disposable);
     }
+
+
 }

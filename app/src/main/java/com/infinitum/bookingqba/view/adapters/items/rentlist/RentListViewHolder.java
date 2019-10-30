@@ -1,7 +1,9 @@
 package com.infinitum.bookingqba.view.adapters.items.rentlist;
 
+import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 
 import com.infinitum.bookingqba.databinding.RecyclerRentListItemBinding;
@@ -17,15 +19,21 @@ public class RentListViewHolder extends RecyclerView.ViewHolder {
         this.itemBinding = itemBinding;
     }
 
-    public void bind(GeoRent item) {
+    public void bind(GeoRent item, @Nullable Location userLocation) {
         itemBinding.setItem(item);
-        itemBinding.executePendingBindings();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            itemBinding.cvContentRentItem.setTransitionName(item.getId());
+        if(userLocation != null){
+            itemBinding.setActivateDistance(true);
+            itemBinding.setHumanDistance(item.getHumanDistanceBetween(userLocation));
+        }else{
+            itemBinding.setActivateDistance(false);
+            itemBinding.setHumanDistance("");
         }
+        itemBinding.executePendingBindings();
     }
 
     public void clear() {
         itemBinding.setItem(null);
+        itemBinding.setActivateDistance(false);
+        itemBinding.setHumanDistance("");
     }
 }

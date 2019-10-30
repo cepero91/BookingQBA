@@ -2,6 +2,8 @@ package com.infinitum.bookingqba.util;
 
 public final class Constants {
 
+    public static final String DONT_OPEN_SWIPE_TO_DELETE_DIALOG = "swipe";
+
     public static final int PERMISSION_REQUEST_CODE = 98;
 
     //CRASH REPORT
@@ -63,6 +65,7 @@ public final class Constants {
     public static final String RATING_TABLE_NAME = "Rating";
     public static final String REFERENCE_ZONE_TABLE_NAME = "ReferenceZone";
     public static final String OFFER_TABLE_NAME = "Offer";
+    public static final String WISHED_TABLE_NAME = "Wished";
     public static final String RENT_AMENITIES_TABLE_NAME = "RentAmenities";
     public static final String RENT_DRAW_TYPE_TABLE_NAME = "RentDrawType";
     public static final String RENT_POI_TABLE_NAME = "RentPoi";
@@ -86,6 +89,7 @@ public final class Constants {
     public static final int FROM_DETAIL_REFRESH = 12;
     public static final int FROM_DETAIL_REFRESH_SHOW_GROUP = 18;
     public static final int FROM_DETAIL_SHOW_GROUP = 24;
+    public static final int FROM_RESERVATION_DETAIL_TO_LIST = 29;
 
     //USER LOGIN
     public static final String USER_IS_AUTH = "userIsAuth";
@@ -98,6 +102,7 @@ public final class Constants {
     public static final String USER_RENTS = "userRents";
     public static final String USER_AVATAR = "userAvatar";
     public static final String LAST_EMAIL_REGISTER = "lastEmailRegister";
+    public static final String USER_HAS_ACTIVE_RENT = "userHasActiveRent";
 
     public static final String MAP_PATH = "mapDir";
     public static final String ROUTE_PATH = "routeDir";
@@ -122,7 +127,7 @@ public final class Constants {
 
     public static final int LOCATION_REQUEST_CODE = 1240;
     public static final int READ_PHONE_REQUEST_CODE = 1241;
-    public static final int WRITE_EXTERNAL_CODE = 1242;
+    public static final int WRITE_EXTERNAL_REQUEST_CODE = 1242;
 
     public static final int REQUEST_CHECK_SETTINGS = 0x1;
 
@@ -154,6 +159,8 @@ public final class Constants {
     public static final String NATURAL = "Natural";
 
     public static final String CONNEXION_ERROR_MSG = "Al parecer algo ocurre con tu internet. Intente más tarde";
+    public static final String NO_COMMENT_MSG = "No hay comentarios que mostrar. Anímate y sé el primero.";
     public static final String OPERATIONAL_ERROR_MSG = "Al parecer un error ha ocurrido.";
+    public static final String EMPTY_ERROR_MSG = "Lo sentimos, no hay elementos que mostrar";
 
 }

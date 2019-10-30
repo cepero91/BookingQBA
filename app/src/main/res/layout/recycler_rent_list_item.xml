@@ -4,141 +4,146 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="item"
-            type="com.infinitum.bookingqba.view.adapters.items.map.GeoRent"/>
+            type="com.infinitum.bookingqba.view.adapters.items.map.GeoRent" />
+
+        <variable
+            name="activateDistance"
+            type="Boolean" />
+
+        <variable
+            name="humanDistance"
+            type="String" />
     </data>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_rent_item_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp">
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/cv_content_rent_item"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="5dp"
+        <com.github.siyamed.shapeimageview.RoundedImageView
+            android:id="@+id/iv_rent"
+            android:layout_width="100dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:setRentListImage="@{item.getImagePath()}"
+            app:siBorderAlpha="0"
+            app:siRadius="10dp" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout10"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="start|center"
+            android:orientation="vertical"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_rent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <android.support.constraint.ConstraintLayout
+            <TextView
+                android:id="@+id/tv_name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat_medium"
+                android:maxLines="1"
+                android:padding="3dp"
+                android:text="@{item.getName()}"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="16sp" />
 
-                <com.github.siyamed.shapeimageview.RoundedImageView
-                    android:id="@+id/iv_rent"
-                    android:layout_width="100dp"
-                    android:layout_height="120dp"
-                    android:scaleType="centerCrop"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:siShape="@drawable/shape_rent_list_rounded_left"
-                    app:siBorderAlpha="0"
-                    app:setRentListImage="@{item.getImagePath()}"
-                    />
+            <TextView
+                android:id="@+id/tv_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat_light"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:paddingStart="3dp"
+                android:paddingEnd="3dp"
+                android:text="@{item.getAddress()}"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="14sp" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="10dp"
-                    android:orientation="vertical"
-                    android:gravity="start|center"
-                    android:paddingEnd="5dp"
-                    android:paddingTop="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/iv_rent"
-                    app:layout_constraintTop_toTopOf="parent">
+            <com.willy.ratingbar.BaseRatingBar
+                android:id="@+id/sr_scale_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:setRating="@{item.getRating()}"
+                app:srb_clickable="false"
+                app:srb_drawableEmpty="@drawable/ic_fa_star_o_line"
+                app:srb_drawableFilled="@drawable/ic_fa_star_line"
+                app:srb_scrollable="false"
+                app:srb_starHeight="16dp"
+                app:srb_starPadding="2dp"
+                app:srb_starWidth="16dp"
+                app:srb_stepSize="0.5" />
 
-                    <TextView
-                        android:id="@+id/tv_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppinsbold"
-                        android:paddingStart="3dp"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:text="@{item.getName()}"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:textSize="14sp" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:orientation="horizontal"
+                android:paddingStart="3dp"
+                android:paddingEnd="3dp">
 
-                    <TextView
-                        android:id="@+id/tv_address"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawableLeft="@drawable/ic_map_marker"
-                        android:drawablePadding="3dp"
-                        android:ellipsize="end"
-                        android:fontFamily="@font/poppinsregular"
-                        android:includeFontPadding="false"
-                        android:textColor="@color/material_color_blue_grey_500"
-                        android:maxLines="1"
-                        android:textSize="12sp"
-                        android:text="@{item.getAddress()}" />
+                <TextView
+                    android:id="@+id/tv_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="16sp"
+                    android:text="@{item.humanPrice()}" />
 
-                    <com.willy.ratingbar.BaseRatingBar
-                        android:id="@+id/sr_scale_rating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/fl_iv_rent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:srb_drawableEmpty="@drawable/ic_star_o"
-                        app:srb_drawableFilled="@drawable/ic_star"
-                        app:setRating="@{item.getRating()}"
-                        app:srb_scrollable="false"
-                        app:srb_clickable="false"
-                        app:srb_starHeight="16dp"
-                        app:srb_starPadding="2dp"
-                        app:srb_starWidth="16dp"
-                        app:srb_stepSize="0.5" />
+                <TextView
+                    android:id="@+id/tv_rent_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:fontFamily="@font/montserrat_light"
+                    android:text="@{item.humanRentMode()}"
+                    android:textColor="@color/material_color_blue_grey_500"
+                    android:textSize="14sp" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingLeft="3dp"
-                        android:layout_marginTop="3dp">
+            </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tv_price"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:fontFamily="@font/poppinsbold"
-                            app:setPriceText="@{item.getPrice()}"
-                            android:textSize="16sp" />
+        </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tv_rent_mode"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="3dp"
-                            android:textColor="@color/material_color_blue_grey_500"
-                            android:fontFamily="@font/poppinsregular"
-                            android:text="@{item.getRentMode()}"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-
-
-
-                </LinearLayout>
-
-            </android.support.constraint.ConstraintLayout>
-
-        </android.support.v7.widget.CardView>
-
+        <TextView
+            android:id="@+id/tv_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/shape_bg_edit"
+            android:fontFamily="@font/montserrat_bold"
+            android:paddingBottom="5dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:paddingTop="5dp"
+            android:textColor="@color/White_100"
+            android:textSize="12sp"
+            app:visibleGone="@{safeUnbox(activateDistance)}"
+            android:text="@{humanDistance}"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_rent"
+            app:layout_constraintEnd_toStartOf="@+id/linearLayout10"
+            app:layout_constraintStart_toStartOf="@+id/iv_rent" />
 
     </android.support.constraint.ConstraintLayout>
+
 </layout>

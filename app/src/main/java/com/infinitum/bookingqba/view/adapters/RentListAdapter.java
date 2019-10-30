@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.view.adapters;
 import android.arch.paging.PagedList;
 import android.arch.paging.PagedListAdapter;
 import android.databinding.DataBindingUtil;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
@@ -29,13 +30,17 @@ public class RentListAdapter extends RecyclerView.Adapter<RentListViewHolder> im
     private FragmentNavInteraction listener;
     private List<GeoRent> filteredList;
     private List<GeoRent> itemList;
+    private boolean activateDistance;
+    private Location lastLocationKnow;
 
 
-    public RentListAdapter(LayoutInflater inflater, FragmentNavInteraction listener, List<GeoRent> itemList) {
+    public RentListAdapter(LayoutInflater inflater, FragmentNavInteraction listener,
+                           List<GeoRent> itemList, boolean activateDistance) {
         this.inflater = inflater;
         this.listener = listener;
         this.itemList = itemList;
         this.filteredList = itemList;
+        this.activateDistance = activateDistance;
     }
 
     @NonNull
@@ -52,7 +57,7 @@ public class RentListAdapter extends RecyclerView.Adapter<RentListViewHolder> im
             if (item == null) {
                 rentListViewHolder.clear();
             } else {
-                rentListViewHolder.bind(item);
+                rentListViewHolder.bind(item, activateDistance && lastLocationKnow!=null?lastLocationKnow:null);
                 rentListViewHolder.itemView.setOnClickListener(v -> listener.onItemClick(v, item));
             }
         }
@@ -65,6 +70,10 @@ public class RentListAdapter extends RecyclerView.Adapter<RentListViewHolder> im
 
     public List<GeoRent> getFilteredList() {
         return filteredList;
+    }
+
+    public void setLastLocationKnow(Location lastLocationKnow) {
+        this.lastLocationKnow = lastLocationKnow;
     }
 
     @Override

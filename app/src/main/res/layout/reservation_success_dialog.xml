@@ -10,20 +10,33 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/user_avatar"
+        android:id="@+id/ic_calendar"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:tint="@color/colorPrimary"
-        app:srcCompat="@drawable/ic_fa_calendar_check_line" />
+        app:srcCompat="@drawable/ic_calendar_6_set" />
 
     <TextView
-        android:id="@+id/tv_username"
+        android:id="@+id/tv_sol_accepted_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/poppinsbold"
-        android:text="Solicitud enviada"
+        android:fontFamily="@font/montserrat_black"
+        android:text="@string/solicitud_enviada"
         android:textColor="@color/material_color_blue_grey_500"
-        android:textSize="16sp" />
+        android:layout_marginTop="8dp"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tv_sol_accepted_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_light"
+        android:gravity="center"
+        android:text="@string/sol_acepted_text"
+        android:textColor="@color/material_color_blue_grey_500"
+        android:textSize="14sp"
+        android:layout_marginStart="16sp"
+        android:layout_marginEnd="16sp"/>
 
 </LinearLayout>
 

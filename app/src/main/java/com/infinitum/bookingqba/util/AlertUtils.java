@@ -211,7 +211,7 @@ public class AlertUtils {
         builder.setMessage(message);
         builder.setTextGravity(Gravity.CENTER);
         builder.setAutoDismissAfter(8000);
-        builder.addButton(buttonTitle, -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
+        builder.addButton(buttonTitle, -1, Color.parseColor("#00BFA5"), CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
         builder.setTextColor(Color.parseColor("#607D8B"));
         builder.show();
     }
@@ -373,11 +373,23 @@ public class AlertUtils {
         builder.show();
     }
 
-    public static void showCFDialogWithCustomViewAndAction(Context context, @LayoutRes int layout, String buttonText, String parseButtonColor, CFAlertDialog.CFAlertActionStyle buttonType, DialogInterface.OnClickListener onClickListener) {
+    public static void showCFInfo(Context context, String title, String msg, int color) {
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         // Title and message
-        builder.setHeaderView(layout);
+        builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
+        builder.setAutoDismissAfter(3000);
+        builder.setTitle(title);
+        builder.setMessage(msg);
+        builder.setTextColor(color);
+        builder.show();
+    }
+
+    public static void showCFDialogWithCustomViewAndAction(Context context, View headerView, String buttonText, String parseButtonColor, CFAlertDialog.CFAlertActionStyle buttonType, DialogInterface.OnClickListener onClickListener) {
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // Title and message
+        builder.setHeaderView(headerView);
         builder.setTextGravity(Gravity.CENTER_HORIZONTAL);
         builder.addButton(buttonText, -1, Color.parseColor(parseButtonColor), buttonType, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
         builder.show();

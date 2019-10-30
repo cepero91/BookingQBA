@@ -20,9 +20,9 @@ import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
 public class RDGalleryAdapter extends RecyclerView.Adapter<RDGalleryAdapter.MyViewHolder> {
 
     List<RentGalerieItem> galerieItems;
-    InnerDetailInteraction interaction;
+    private GalleryInteration interaction;
 
-    public RDGalleryAdapter(List<RentGalerieItem> galerieItems, InnerDetailInteraction interaction) {
+    public RDGalleryAdapter(List<RentGalerieItem> galerieItems, GalleryInteration interaction) {
         this.galerieItems = galerieItems;
         this.interaction = interaction;
     }
@@ -44,7 +44,7 @@ public class RDGalleryAdapter extends RecyclerView.Adapter<RDGalleryAdapter.MyVi
                 .placeholder(R.drawable.placeholder)
                 .into(myViewHolder.ivRounde);
         myViewHolder.itemView.setOnClickListener(v->{
-            interaction.onGaleryClick(galery.getId());
+            interaction.onGalleryClick(galery.getId());
         });
     }
 
@@ -62,6 +62,10 @@ public class RDGalleryAdapter extends RecyclerView.Adapter<RDGalleryAdapter.MyVi
             super(itemView);
             ivRounde = itemView.findViewById(R.id.iv_galerie);
         }
+    }
+
+    public interface GalleryInteration{
+        void onGalleryClick(String id);
     }
 
 }

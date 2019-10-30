@@ -19,12 +19,13 @@ import com.willy.ratingbar.BaseRatingBar;
 import com.willy.ratingbar.ScaleRatingBar;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HorizontalScrollAdapter extends RecyclerView.Adapter<HorizontalScrollAdapter.ViewHolder> {
 
-    private ArrayList<HorizontalItem> horizontalItems;
+    private List<HorizontalItem> horizontalItems;
 
-    public HorizontalScrollAdapter(ArrayList<HorizontalItem> horizontalItems) {
+    public HorizontalScrollAdapter(List<HorizontalItem> horizontalItems) {
         this.horizontalItems = horizontalItems;
     }
 
@@ -52,37 +53,35 @@ public class HorizontalScrollAdapter extends RecyclerView.Adapter<HorizontalScro
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private LinearLayout linearLayout;
         private TextView tvRentName;
-        private BaseRatingBar baseRatingBar;
+        private RoundedImageView ivRent;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.linearLayout = itemView.findViewById(R.id.ll_content_rent);
             this.tvRentName = itemView.findViewById(R.id.tv_rent_name);
-            this.baseRatingBar = itemView.findViewById(R.id.sr_scale_rating);
+            this.ivRent = itemView.findViewById(R.id.iv_rent);
         }
 
         public void bind(HorizontalItem item) {
-            this.baseRatingBar.setRating(Float.parseFloat(item.getRating()));
             this.tvRentName.setText(item.getRentName());
-        }
-
-        public void updateRating(float rating){
-            this.baseRatingBar.setRating(rating);
+            Picasso.get()
+                    .load(item.getPortrait())
+                    .resize(420, 280)
+                    .placeholder(R.drawable.placeholder)
+                    .into(this.ivRent);
         }
 
         public void showText(){
-            this.linearLayout.animate()
+            this.tvRentName.animate()
                     .alpha(1f)
-                    .setDuration(200)
+                    .setDuration(500)
                     .setInterpolator(new AccelerateInterpolator())
                     .start();
         }
 
         public void hideText(){
-            this.linearLayout.animate()
-                    .alpha(0.6f)
+            this.tvRentName.animate()
+                    .alpha(0f)
                     .setDuration(500)
                     .setInterpolator(new AccelerateInterpolator())
                     .start();

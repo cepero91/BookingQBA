@@ -10,6 +10,7 @@ import com.infinitum.bookingqba.model.local.entity.CommentEntity;
 import com.infinitum.bookingqba.model.local.entity.RatingEntity;
 import com.infinitum.bookingqba.model.local.entity.RentEntity;
 import com.infinitum.bookingqba.model.local.entity.RentVisitCountEntity;
+import com.infinitum.bookingqba.model.local.entity.WishedRentEntity;
 import com.infinitum.bookingqba.model.local.tconverter.CommentEmotion;
 import com.infinitum.bookingqba.model.remote.ApiInterface;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
@@ -206,15 +207,15 @@ public class UserTraceImpl implements UserTraceRepository {
 
     }
 
-    private Resource<RentWished> tranformEntityToRentWished(List<RentEntity> entities) {
+    private Resource<RentWished> tranformEntityToRentWished(List<WishedRentEntity> entities) {
         String userId = sharedPreferences.getString(USER_ID, "");
         if (!sharedPreferences.getBoolean(USER_IS_AUTH, false)) {
             return Resource.error("Rentas deseadas seran validas una vez autenticado el usuario");
         } else {
             RentWished rentWished = new RentWished(userId);
             if (entities.size() > 0) {
-                for (RentEntity entity : entities) {
-                    rentWished.addRentId(entity.getId());
+                for (WishedRentEntity entity : entities) {
+                    rentWished.addRentId(entity.getRent());
                 }
                 return Resource.success(rentWished);
             } else {

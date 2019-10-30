@@ -27,7 +27,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:fontFamily="@font/poppinsblack"
+            android:fontFamily="@font/montserrat_black"
             android:text="Solicitud de Reserva"
             android:textColor="@color/material_color_blue_grey_500"
             android:textSize="18sp"
@@ -35,57 +35,151 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/ll_view_card_from"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
-            android:fontFamily="@font/poppinsmedium"
-            android:text="Estancia:"
-            android:textColor="@color/material_color_blue_grey_500"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            android:background="@drawable/shape_bg_calendar_card"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@+id/appCompatImageView2"
+            app:layout_constraintTop_toBottomOf="@+id/textView2">
 
-        <TextView
-            android:id="@+id/tv_start_end_date"
+            <TextView
+                android:id="@+id/tv_day_short_from"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_bg_calendar_day_short"
+                android:fontFamily="@font/montserrat_medium"
+                android:gravity="center"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp"
+                android:text="Jue"
+                android:textColor="@color/White_100"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_day_week_calue_from"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat_thin"
+                android:gravity="center"
+                android:text="21"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="36sp" />
+
+            <TextView
+                android:id="@+id/tv_month_from_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:text="Feb"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/appCompatImageView2"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:tint="@color/material_color_amber_A700"
+            app:layout_constraintBottom_toBottomOf="@+id/ll_view_card_from"
+            app:layout_constraintEnd_toStartOf="@+id/guideline11"
+            app:layout_constraintStart_toStartOf="@+id/guideline11"
+            app:layout_constraintTop_toTopOf="@+id/ll_view_card_from"
+            app:srcCompat="@drawable/ic_more_set" />
+
+        <LinearLayout
+            android:id="@+id/ll_view_card_until"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/shape_bg_calendar_card"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@+id/appCompatImageView2"
+            app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+            <TextView
+                android:id="@+id/tv_day_short_until"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_bg_calendar_day_short"
+                android:fontFamily="@font/montserrat_medium"
+                android:gravity="center"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp"
+                android:text="Jue"
+                android:textColor="@color/White_100"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_day_week_calue_until"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat_thin"
+                android:gravity="center"
+                android:text="21"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="36sp" />
+
+            <TextView
+                android:id="@+id/tv_month_until_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:text="Feb"
+                android:textColor="@color/material_color_blue_grey_500"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline11"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawablePadding="8dp"
-            android:drawableStart="@drawable/ic_fa_calendar_small_blue_line"
-            android:fontFamily="@font/poppinslight"
-            android:gravity="center|start"
-            android:includeFontPadding="false"
-            android:text="@string/empty_text"
-            android:textColor="@color/material_color_blue_grey_300"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@+id/textView3"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
         <LinearLayout
             android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:gravity="center|start"
+            android:gravity="center"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_start_end_date">
+            app:layout_constraintTop_toBottomOf="@+id/ll_view_card_from">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppinsmedium"
+                android:fontFamily="@font/montserrat_medium"
                 android:text="Huéspedes"
                 android:textColor="@color/material_color_blue_grey_500"
                 android:textSize="14sp" />
 
-            <com.infinitum.bookingqba.view.customview.QuantityPickerView
+            <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
                 android:id="@+id/quantityHost"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:minQuantity="1"
+                app:backGroundColor="@color/material_color_grey_100"
+                app:finalNumber="20"
+                app:initialNumber="1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline3"
+                app:layout_constraintTop_toBottomOf="@+id/tv_bath_title"
+                app:textColor="@color/material_color_blue_grey_500"
                 app:textSize="14sp" />
 
         </LinearLayout>
@@ -97,8 +191,8 @@
             android:layout_marginTop="6dp"
             android:background="@null"
             android:drawablePadding="5dp"
-            android:drawableStart="@drawable/ic_fa_edit_line"
-            android:fontFamily="@font/poppinsregular"
+            android:drawableStart="@drawable/ic_fa_circle_edit_line"
+            android:fontFamily="@font/montserrat_regular"
             android:gravity="start|center"
             android:hint="@string/nota_adicional"
             android:inputType="textMultiLine"
@@ -118,8 +212,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="16dp"
-            android:fontFamily="@font/poppinslight"
-            android:paddingBottom="2dp"
+            android:fontFamily="@font/montserrat_light"
             android:text="@string/empty_text"
             android:textColor="@color/material_color_blue_grey_500"
             android:textSize="14sp"
@@ -131,8 +224,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="3dp"
-            android:fontFamily="@font/poppinsbold"
-            android:includeFontPadding="false"
+            android:fontFamily="@font/montserrat_bold"
             android:text="0"
             android:textColor="@color/material_color_blue_grey_500"
             android:textSize="22sp"
@@ -143,8 +235,7 @@
             android:id="@+id/tv_cuc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/poppinslight"
-            android:includeFontPadding="false"
+            android:fontFamily="@font/montserrat_light"
             android:text="cuc"
             android:textColor="@color/material_color_blue_grey_500"
             android:textSize="22sp"
@@ -156,7 +247,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
-            android:fontFamily="@font/poppinslight"
+            android:fontFamily="@font/montserrat_light"
             android:text="~ € -.-"
             android:textColor="@color/material_color_blue_grey_500"
             app:layout_constraintEnd_toEndOf="@+id/tv_cuc"
@@ -166,37 +257,36 @@
             android:id="@+id/tv_dollar_conver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/poppinslight"
+            android:fontFamily="@font/montserrat_light"
             android:text="~ $ -.-"
             android:textColor="@color/material_color_blue_grey_500"
             app:layout_constraintEnd_toEndOf="@+id/tv_euro_conver"
             app:layout_constraintTop_toBottomOf="@+id/tv_euro_conver" />
 
         <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/lottieAnimationView"
-            android:layout_width="100dp"
-            android:layout_height="60dp"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:visibility="@{visibility}"
+            android:visibility="@{safeUnbox(visibility)}"
             app:layout_constraintBottom_toTopOf="@+id/tv_btn_send"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:lottie_autoPlay="true"
-            app:lottie_fileName="lottie/preloader.json"
+            app:lottie_colorFilter="@color/material_color_blue_grey_500"
+            app:lottie_fileName="lottie/loading.json"
             app:lottie_loop="true"
-            app:lottie_repeatMode="restart"/>
+            app:lottie_repeatMode="restart" />
 
         <TextView
             android:id="@+id/tv_btn_send"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/shape_btn_color_primary"
-            android:fontFamily="@font/poppinsregular"
+            android:fontFamily="@font/montserrat_regular"
             android:gravity="center"
-            android:includeFontPadding="false"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
             android:text="Enviar"

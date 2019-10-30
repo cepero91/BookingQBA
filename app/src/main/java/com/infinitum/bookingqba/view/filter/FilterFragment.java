@@ -4,6 +4,7 @@ package com.infinitum.bookingqba.view.filter;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
@@ -32,6 +36,7 @@ import org.reactivestreams.Publisher;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -58,7 +63,8 @@ import static com.infinitum.bookingqba.util.Constants.FILTER_RENTMODE;
  * Use the {@link FilterFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FilterFragment extends Fragment implements View.OnClickListener, FilterAdapter.OnShipClick {
+public class FilterFragment extends Fragment implements View.OnClickListener,
+        FilterAdapter.OnShipClick, CheckBox.OnCheckedChangeListener, RadioGroup.OnCheckedChangeListener {
 
     @Inject
     protected ViewModelFactory viewModelFactory;
@@ -73,7 +79,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
 
     private Disposable disposable;
 
-    private RendererRecyclerViewAdapter viewAdapter;
+    private Location userLocation;
 
     private FilterAdapter rentModeAdapter;
     private FilterAdapter amenitiesAdapter;
@@ -82,6 +88,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
 
     public static final String PROVINCE = "province";
     private String argProvince;
+    private boolean activateDistance = false;
 
     public FilterFragment() {
         // Required empty public constructor
@@ -115,12 +122,11 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        filterBinding.setIsLoading(true);
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
-
         filterBinding.btnFilter.setOnClickListener(this);
         filterBinding.btnClean.setOnClickListener(this);
-
-        filterBinding.setIsLoading(true);
+        filterBinding.cbUseLocation.setOnCheckedChangeListener(this);
 
         loadFilterParams();
     }
@@ -140,6 +146,11 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
         interaction = null;
         compositeDisposable.clear();
         super.onDestroy();
+    }
+
+    public void setUserLocation(Location userLocation) {
+        this.userLocation = userLocation;
+        filterBinding.flUserLocation.setVisibility(View.VISIBLE);
     }
 
     public void loadFilterParams() {
@@ -170,7 +181,26 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
             updateSeekBarCapability((NumberFilterItem) mapResourse.get(FILTER_CAPABILITY).get(0));
         }
         setupOrderingRadioGroup();
+        setupSeekBarDistance();
         filterBinding.setIsLoading(false);
+    }
+
+    private void setupSeekBarDistance() {
+        filterBinding.rsbDistance.setIndicatorTextDecimalFormat("0.0");
+        filterBinding.rsbDistance.setOnRangeChangedListener(new OnRangeChangedListener() {
+            @Override
+            public void onRangeChanged(RangeSeekBar view, float leftValue, float rightValue, boolean isFromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(RangeSeekBar view, boolean isLeft) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(RangeSeekBar view, boolean isLeft) {
+                onShipClick();
+            }
+        });
     }
 
     private void updateSeekBarCapability(NumberFilterItem numberFilterItem) {
@@ -213,7 +243,7 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
     }
 
     private void setupOrderingRadioGroup() {
-        filterBinding.rgOrdering.setOnCheckedChangeListener((group, checkedId) -> onShipClick());
+        filterBinding.rgOrdering.setOnCheckedChangeListener(this);
     }
 
     private void setPoiTypeAdapter(List<CheckableFilterItem> checkableItems) {
@@ -264,7 +294,17 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
         filterBinding.rvPoiCategory.scrollToPosition(0);
         filterBinding.rsbPrice.setProgress(0, 0);
         filterBinding.rsbCapability.setProgress(0);
+        filterBinding.rgOrdering.setOnCheckedChangeListener(null);
         filterBinding.rgOrdering.clearCheck();
+        filterBinding.rgOrdering.setOnCheckedChangeListener(this);
+        activateDistance = false;
+        filterBinding.rsbDistance.setProgress(0);
+        filterBinding.tvDistanceTitle.setVisibility(View.GONE);
+        filterBinding.rsbDistance.setVisibility(View.GONE);
+        filterBinding.llContentMun.setVisibility(View.VISIBLE);
+        filterBinding.cbUseLocation.setOnCheckedChangeListener(null);
+        filterBinding.cbUseLocation.setChecked(false);
+        filterBinding.cbUseLocation.setOnCheckedChangeListener(this);
     }
 
     private Map<String, List<String>> getFilterParams() {
@@ -303,6 +343,20 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
             params.add("r");
             filterParams.put("Order", params);
         }
+        if (filterBinding.rbPrice.isChecked()) {
+            List<String> params = new ArrayList<>();
+            params.add("p");
+            filterParams.put("Order", params);
+        }
+        if (filterBinding.cbUseLocation.isChecked() && filterBinding.rsbDistance.getLeftSeekBar().getProgress() > 0) {
+            activateDistance = true;
+            Float distance = filterBinding.rsbDistance.getLeftSeekBar().getProgress();
+            List<String> params = new ArrayList<>();
+            params.add(String.valueOf(distance.floatValue()));
+            params.add(String.valueOf(userLocation.getLatitude()));
+            params.add(String.valueOf(userLocation.getLongitude()));
+            filterParams.put("Distance", params);
+        }
         return filterParams;
     }
 
@@ -326,12 +380,41 @@ public class FilterFragment extends Fragment implements View.OnClickListener, Fi
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listResource -> {
-                    interaction.onFilterElement(listResource);
+                    interaction.onFilterElement(listResource, activateDistance && userLocation != null ? userLocation : null);
                 }, Timber::e);
         compositeDisposable.add(disposable);
     }
 
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked) {
+            filterBinding.llContentMun.setVisibility(View.GONE);
+            filterBinding.tvDistanceTitle.setVisibility(View.VISIBLE);
+            filterBinding.rsbDistance.setVisibility(View.VISIBLE);
+            if(munAdapter.isAtLessOneSelected()) {
+                munAdapter.resetSelectedItem();
+                filterBinding.rvMunicipality.scrollToPosition(0);
+                onShipClick();
+            }
+        } else {
+            if(filterBinding.rsbDistance.getLeftSeekBar().getProgress() > 0) {
+                activateDistance = false;
+                filterBinding.rsbDistance.setProgress(0);
+                onShipClick();
+            }
+            filterBinding.tvDistanceTitle.setVisibility(View.GONE);
+            filterBinding.rsbDistance.setVisibility(View.GONE);
+            filterBinding.llContentMun.setVisibility(View.VISIBLE);
+        }
+    }
 
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        RadioButton rb = group.findViewById(checkedId);
+        if (rb.isChecked()) {
+            onShipClick();
+        }
+    }
 }
 
 

@@ -21,26 +21,20 @@ public class GeoRent extends BaseItem {
     private float rating;
     private int ratingCount;
     private String address;
-    private double price;
     private GeoPoint geoPoint;
-    private String rentMode;
-    private int wished;
     private Map<PoiCategory,List<RentPoiItem>> poiItemMap;
     private String referenceZone;
 
-    public GeoRent(String id, String name, String imagePath) {
-        super(id, name, imagePath);
+    public GeoRent(String id, String name, String imagePath, float price, String rentMode) {
+        super(id, name, imagePath, price, rentMode);
     }
 
-    public GeoRent(String id, String name, String imagePath, float rating, int ratingCount, String address, double price, GeoPoint geoPoint, String rentMode, int wished, Map<PoiCategory, List<RentPoiItem>> poiItemMap, String referenceZone) {
-        super(id, name, imagePath);
+    public GeoRent(String id, String name, String imagePath, float price, String rentMode, float rating, int ratingCount, String address, GeoPoint geoPoint, Map<PoiCategory, List<RentPoiItem>> poiItemMap, String referenceZone) {
+        super(id, name, imagePath, price, rentMode);
         this.rating = rating;
         this.ratingCount = ratingCount;
         this.address = address;
-        this.price = price;
         this.geoPoint = geoPoint;
-        this.rentMode = rentMode;
-        this.wished = wished;
         this.poiItemMap = poiItemMap;
         this.referenceZone = referenceZone;
     }
@@ -50,6 +44,11 @@ public class GeoRent extends BaseItem {
         rentLocation.setLatitude(geoPoint.getLatitude());
         rentLocation.setLongitude(geoPoint.getLongitude());
         return userLocation.distanceTo(rentLocation);
+    }
+
+    public String getHumanDistanceBetween(Location userLocation){
+        double distance = getDistanceBetween(userLocation)/1000; //convert to km
+        return distance < 1?String.format("%.1f m",distance * 1000):String.format("%.1f km",distance);
     }
 
     public float getRating() {
@@ -68,12 +67,12 @@ public class GeoRent extends BaseItem {
         this.ratingCount = ratingCount;
     }
 
-    public double getPrice() {
-        return price;
+    public String getAddress() {
+        return address;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public GeoPoint getGeoPoint() {
@@ -84,36 +83,12 @@ public class GeoRent extends BaseItem {
         this.geoPoint = geoPoint;
     }
 
-    public String getRentMode() {
-        return rentMode;
-    }
-
-    public void setRentMode(String rentMode) {
-        this.rentMode = rentMode;
-    }
-
     public Map<PoiCategory, List<RentPoiItem>> getPoiItemMap() {
         return poiItemMap;
     }
 
     public void setPoiItemMap(Map<PoiCategory, List<RentPoiItem>> poiItemMap) {
         this.poiItemMap = poiItemMap;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public int getWished() {
-        return wished;
-    }
-
-    public void setWished(int wished) {
-        this.wished = wished;
     }
 
     public String getReferenceZone() {
@@ -126,22 +101,14 @@ public class GeoRent extends BaseItem {
 
     public String humanRatingCount() {
         if (ratingCount > 0) {
-            return String.format("(%s voto%s)", ratingCount, ratingCount > 1 ? "s" : "");
+            return String.format("(%s)", ratingCount);
         } else {
-            return "(sin votos)";
+            return "(0)";
         }
-    }
-
-    public String humanPrice(){
-        return String.format("%.2f cuc",price);
     }
 
     public String humanRating() {
         return String.format("%.1f", rating);
-    }
-
-    public String humanRentMode() {
-        return "/"+rentMode;
     }
 
 
@@ -156,10 +123,7 @@ public class GeoRent extends BaseItem {
         dest.writeFloat(this.rating);
         dest.writeInt(this.ratingCount);
         dest.writeString(this.address);
-        dest.writeDouble(this.price);
         dest.writeSerializable(this.geoPoint);
-        dest.writeString(this.rentMode);
-        dest.writeInt(this.wished);
         dest.writeInt(this.poiItemMap.size());
         for (Map.Entry<PoiCategory, List<RentPoiItem>> entry : this.poiItemMap.entrySet()) {
             dest.writeParcelable(entry.getKey(), flags);
@@ -173,10 +137,7 @@ public class GeoRent extends BaseItem {
         this.rating = in.readFloat();
         this.ratingCount = in.readInt();
         this.address = in.readString();
-        this.price = in.readDouble();
         this.geoPoint = (GeoPoint) in.readSerializable();
-        this.rentMode = in.readString();
-        this.wished = in.readInt();
         int poiItemMapSize = in.readInt();
         this.poiItemMap = new HashMap<PoiCategory, List<RentPoiItem>>(poiItemMapSize);
         for (int i = 0; i < poiItemMapSize; i++) {

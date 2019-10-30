@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.asksira.bsimagepicker.BSImagePicker;
 import com.crowdfire.cfalertdialog.CFAlertDialog;
@@ -252,7 +253,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         imagesFilesPath = new ArrayList<>();
         for (Galerie galerie : rentEdit.getGalerie()) {
             String filepath = Constants.BASE_URL_API + "/" + galerie.getImage();
-            galeryFormObject = new GaleryFormObject(UUID.randomUUID().toString());
+            galeryFormObject = new GaleryFormObject(galerie.getId());
             galeryFormObject.setRemote(true);
             galeryFormObject.setUrl(filepath);
             imagesFilesPath.add(galeryFormObject);
@@ -300,7 +301,6 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     @Override
     protected void onDestroy() {
-        Timber.e("Activity onDestroy");
         if (disposable != null)
             disposable.dispose();
         compositeDisposable.clear();
@@ -322,7 +322,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     @Override
     protected void updateLocation(Location location) {
         if (binding.slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED &&
-                mapFragment != null && mapFragment.getUserVisibleHint()) {
+                mapFragment != null && mapFragment.isVisible()) {
             mapFragment.updateGPSCurrentLocation(location);
         }
     }
@@ -355,7 +355,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     @Override
     public void showLocationConfirmDialog() {
         builder = new CFAlertDialog.Builder(this);
-        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         dialogLocationConfirmView = new DialogLocationConfirmView(this);
         builder.setHeaderView(dialogLocationConfirmView);
         dialog = builder.show();
@@ -363,32 +363,24 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     @Override
     public void onButtonConfirmClick() {
-        String poiFile = getFilesDir() + File.separator + "map" + File.separator + "cuba.poi";
+        binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        rentFormObject.setLatitude(String.valueOf(mLatitude));
+        rentFormObject.setLongitude(String.valueOf(mLongitude));
+        binding.tvLocation.setText(String.format("Lat: %.4f -- Lon: %.4f", mLatitude, mLongitude));
+        binding.tvLocation.setTextColor(Color.parseColor("#009688"));
         dialogLocationConfirmView.isLoading(true);
-        disposable = rentViewModel.poiAndReferenceZone(userToken, poiFile, mLatitude, mLongitude)
+        disposable = rentViewModel.remoteReferenceZoneAndPoiByLocation(userToken,  mLatitude, mLongitude)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(map -> {
-                    if (map.containsKey("poi")) {
-                        dialogLocationConfirmView.setPoints((HashSet<Poi>) map.get("poi"));
+                .subscribe(rentPoiReferenceZoneResource -> {
+                    if(rentPoiReferenceZoneResource.data!=null){
+                        updateReferenceZone(rentPoiReferenceZoneResource.data.getReferenceId(),rentPoiReferenceZoneResource.data.getReferenceName());
                     }
-                    if (map.containsKey("uuid") && map.containsKey("name")) {
-                        dialogLocationConfirmView.setReferenceZone((String) map.get("name"));
-                        updateReferenceZone((String) map.get("uuid"), (String) map.get("name"));
-                    }
-                    dialogLocationConfirmView.isLoading(false);
+                    dialog.dismiss();
                 });
         compositeDisposable.add(disposable);
     }
 
-    @Override
-    public void onButtonSaveClick() {
-        rentFormObject.setLatitude(String.valueOf(mLatitude));
-        rentFormObject.setLongitude(String.valueOf(mLongitude));
-        dialog.dismiss();
-        binding.tvLocation.setText(String.format("Lat: %.3f -- Lon: %.3f", mLatitude, mLongitude));
-        binding.tvLocation.setTextColor(Color.parseColor("#009688"));
-    }
 
     private void getAddressByLocation() {
         disposable = rentViewModel.addressAndMunicipalityByLocation(userToken, mLatitude, mLongitude)
@@ -741,8 +733,18 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     //--------------------------------- IMAGES ------------------------------------
 
     @Override
-    public void onImageDelete(String imagePath, int pos) {
-        imageFormAdapter.removeItem(pos);
+    public void onImageDelete(String uuid, int pos) {
+        disposable = rentViewModel.deleteImage(userToken,uuid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resultResource -> {
+                    if(resultResource.data!=null && resultResource.data.getCode() == 200){
+                        imageFormAdapter.removeItem(pos);
+                    }else{
+                        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
     }
 
 

@@ -12,16 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapter;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder;
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewProvider;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentListWishBinding;
+import com.infinitum.bookingqba.view.adapters.WishRentAdapter;
+import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 import com.infinitum.bookingqba.view.adapters.items.listwish.ListWishItem;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.customview.StateView;
+import com.infinitum.bookingqba.view.interaction.FragmentNavInteraction;
 import com.infinitum.bookingqba.view.widgets.BetweenSpacesItemDecoration;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
 import com.squareup.picasso.Picasso;
@@ -41,6 +43,7 @@ import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID;
 import static com.infinitum.bookingqba.util.Constants.PROVINCE_UUID_DEFAULT;
 import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
 import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
+import static com.infinitum.bookingqba.util.Constants.USER_ID;
 
 
 public class ListWishFragment extends BaseNavigationFragment {
@@ -52,6 +55,8 @@ public class ListWishFragment extends BaseNavigationFragment {
 
     @Inject
     SharedPreferences sharedPreferences;
+    private String province;
+    private String userId;
 
     public ListWishFragment() {
         // Required empty public constructor
@@ -69,7 +74,8 @@ public class ListWishFragment extends BaseNavigationFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        province = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
+        userId = sharedPreferences.getString(USER_ID, "");
         initLoading(true, StateView.Status.LOADING, true);
 
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
@@ -98,8 +104,7 @@ public class ListWishFragment extends BaseNavigationFragment {
     }
 
     public void loadData() {
-        String province = sharedPreferences.getString(PROVINCE_UUID, PROVINCE_UUID_DEFAULT);
-        disposable = rentViewModel.getRentListWish(province)
+        disposable = rentViewModel.getRentListWish(province, userId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listResource -> setItemsAdapter(listResource.data), throwable -> {
@@ -110,45 +115,16 @@ public class ListWishFragment extends BaseNavigationFragment {
     }
 
 
-    public void setItemsAdapter(List<ListWishItem> rendererViewModelList) {
+    public void setItemsAdapter(List<BaseItem> rendererViewModelList) {
         if (rendererViewModelList.size() > 0) {
-            RendererRecyclerViewAdapter recyclerViewAdapter = new RendererRecyclerViewAdapter();
-            recyclerViewAdapter.registerRenderer(getListWishBinder(R.layout.recycler_list_wish_item));
-            recyclerViewAdapter.setItems(rendererViewModelList);
+            WishRentAdapter recyclerViewAdapter = new WishRentAdapter(rendererViewModelList, getLayoutInflater(), (FragmentNavInteraction) getActivity());
+            wishBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             wishBinding.recyclerView.setAdapter(recyclerViewAdapter);
-            OverScrollDecoratorHelper.setUpOverScroll(wishBinding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
             initLoading(false, StateView.Status.SUCCESS, false);
-            wishBinding.progressPvLinear.stop();
         } else {
             initLoading(false, StateView.Status.EMPTY, true);
-            wishBinding.progressPvLinear.stop();
         }
     }
 
-
-    private ViewBinder<?> getListWishBinder(int layout) {
-        return new ViewBinder<>(
-                layout,
-                ListWishItem.class,
-                (model, finder, payloads) -> finder
-                        .find(R.id.tv_rent_name, (ViewProvider<TextView>) view -> view.setText(model.getName()))
-                        .find(R.id.tv_address, (ViewProvider<TextView>) view -> view.setText(model.getAddress()))
-                        .find(R.id.tv_rent_mode, (ViewProvider<TextView>) view -> view.setText(" /" + model.getRentMode()))
-                        .find(R.id.sr_scale_rating, (ViewProvider<BaseRatingBar>) view -> view.setRating(model.getRating()))
-                        .find(R.id.tv_price, (ViewProvider<TextView>) view -> view.setText(String.format(String.format("$ %.2f", model.getPrice()))))
-                        .find(R.id.siv_rent_image, (ViewProvider<RoundedImageView>) view -> {
-                            String path = model.getImagePath();
-                            if (!path.contains("http")) {
-                                path = "file:" + path;
-                            }
-                            Picasso.get()
-                                    .load(path)
-                                    .resize(THUMB_WIDTH, THUMB_HEIGHT)
-                                    .placeholder(R.drawable.placeholder)
-                                    .into(view);
-                        })
-                        .setOnClickListener(R.id.cv_rent_content, (v -> mListener.onItemClick(v, model)))
-        );
-    }
 
 }

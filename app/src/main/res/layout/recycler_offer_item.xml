@@ -6,8 +6,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:orientation="vertical"
         android:paddingBottom="8dp"
         android:paddingTop="8dp">
@@ -17,9 +17,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:fontFamily="@font/poppinsbold"
+            android:fontFamily="@font/montserrat_bold"
             android:text="Jose"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textColor="@color/material_color_blue_grey_500"/>
 
 
         <TextView
@@ -29,9 +30,10 @@
             android:layout_marginBottom="5dp"
             android:layout_marginEnd="3dp"
             android:layout_marginStart="5dp"
-            android:fontFamily="@font/poppinsregular"
+            android:fontFamily="@font/montserrat_light"
             android:text="Esto es una descripcion de lo que seria el cuerpo del comentario"
-            android:textSize="12sp" />
+            android:textSize="14sp"
+            android:textColor="@color/material_color_blue_grey_500"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -46,9 +48,10 @@
                 android:layout_gravity="bottom"
                 android:includeFontPadding="false"
                 android:layout_marginEnd="8dp"
-                android:fontFamily="@font/poppinsregular"
+                android:fontFamily="@font/montserrat_light"
                 android:text="@string/precio_minimo"
-                android:textSize="12sp" />
+                android:textSize="14sp"
+                android:textColor="@color/material_color_blue_grey_500"/>
 
             <TextView
                 android:id="@+id/tv_price"
@@ -56,10 +59,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_marginEnd="8dp"
-                android:fontFamily="@font/poppinsbold"
-                android:includeFontPadding="false"
+                android:fontFamily="@font/montserrat_bold"
                 android:text="$25.00"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:textColor="@color/material_color_blue_grey_500"/>
 
         </LinearLayout>
 

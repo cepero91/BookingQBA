@@ -7,39 +7,12 @@ import com.infinitum.bookingqba.view.adapters.items.baseitem.BaseItem;
 
 public class RentListItem extends BaseItem {
 
-    private double price;
-    private String rentMode;
     private String address;
     private float rating;
-    private int wished;
+    private int ratingCount;
 
-    public RentListItem(String id, String name, String imagePath) {
-        super(id, name, imagePath);
-    }
-
-    public RentListItem(String id, String name, String imagePath, double price, String rentMode, String address, float rating, int wished) {
-        super(id, name, imagePath);
-        this.price = price;
-        this.rentMode = rentMode;
-        this.address = address;
-        this.rating = rating;
-        this.wished = wished;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public String getRentMode() {
-        return rentMode;
-    }
-
-    public void setRentMode(String rentMode) {
-        this.rentMode = rentMode;
+    public RentListItem(String id, String name, String imagePath, float price, String rentMode) {
+        super(id, name, imagePath, price, rentMode);
     }
 
     public String getAddress() {
@@ -58,12 +31,12 @@ public class RentListItem extends BaseItem {
         this.rating = rating;
     }
 
-    public int getWished() {
-        return wished;
+    public int getRatingCount() {
+        return ratingCount;
     }
 
-    public void setWished(int wished) {
-        this.wished = wished;
+    public void setRatingCount(int ratingCount) {
+        this.ratingCount = ratingCount;
     }
 
 
@@ -75,20 +48,16 @@ public class RentListItem extends BaseItem {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeDouble(this.price);
-        dest.writeString(this.rentMode);
         dest.writeString(this.address);
         dest.writeFloat(this.rating);
-        dest.writeInt(this.wished);
+        dest.writeInt(this.ratingCount);
     }
 
     protected RentListItem(Parcel in) {
         super(in);
-        this.price = in.readDouble();
-        this.rentMode = in.readString();
         this.address = in.readString();
         this.rating = in.readFloat();
-        this.wished = in.readInt();
+        this.ratingCount = in.readInt();
     }
 
     public static final Creator<RentListItem> CREATOR = new Creator<RentListItem>() {

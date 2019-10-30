@@ -6,9 +6,8 @@
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceListItemSmall"
     android:gravity="center_vertical"
-    android:fontFamily="@font/poppinsregular"
-    android:textColor="@color/material_color_grey_700"
-    android:includeFontPadding="false"
+    android:fontFamily="@font/montserrat_regular"
+    android:textColor="@color/material_color_blue_grey_500"
     android:paddingStart="?android:attr/listPreferredItemPaddingStart"
     android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
     android:minHeight="?android:attr/listPreferredItemHeightSmall" />

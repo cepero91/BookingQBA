@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentPageTwoBinding;
 import com.squareup.picasso.Picasso;

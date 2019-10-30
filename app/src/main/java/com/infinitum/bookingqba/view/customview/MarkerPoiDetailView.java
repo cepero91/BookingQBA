@@ -35,6 +35,8 @@ import com.infinitum.bookingqba.view.widgets.CenterSmoothScroller;
 import com.jaygoo.widget.RangeSeekBar;
 import com.squareup.picasso.Picasso;
 
+import org.mapsforge.core.model.LatLong;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +52,7 @@ public class MarkerPoiDetailView extends ConstraintLayout implements RDPoiCatego
     private Map<PoiCategory, List<RentPoiItem>> argPoiCategory;
     private String argReferenceZone;
     private MarkerPoiInteraction markerPoiInteraction;
+    private LatLong rentLocation;
 
     public MarkerPoiDetailView(Context context) {
         this(context, null, 0);
@@ -80,6 +83,10 @@ public class MarkerPoiDetailView extends ConstraintLayout implements RDPoiCatego
         this.markerPoiInteraction = markerPoiInteraction;
     }
 
+    public void setRentLocation(LatLong rentLocation) {
+        this.rentLocation = rentLocation;
+    }
+
     public void setupReferenceZone(String argRefZone) {
         if (argRefZone.equalsIgnoreCase(Constants.URBAN)) {
             tvReferenceTitle.setText(getContext().getString(R.string.neibor_enviroment));
@@ -104,7 +111,8 @@ public class MarkerPoiDetailView extends ConstraintLayout implements RDPoiCatego
         }
     }
 
-    public void setupPoiCategoryAdapter(Map<PoiCategory, List<RentPoiItem>> poiCategories) {
+    public void setupPoiCategoryAdapter(Map<PoiCategory, List<RentPoiItem>> poiCategories, LatLong rentLocation) {
+        this.rentLocation = rentLocation;
         this.argPoiCategory = poiCategories;
         if (poiCategories != null && poiCategories.size() > 0) {
             RDPoiCategoryAdapter adapter = new RDPoiCategoryAdapter(poiCategories.keySet().toArray(new PoiCategory[poiCategories.keySet().size()]), this);
@@ -125,7 +133,7 @@ public class MarkerPoiDetailView extends ConstraintLayout implements RDPoiCatego
 
     private void setupPoiAdapter(PoiCategory poiCategory) {
         List<RentPoiItem> rentPoiItemList = argPoiCategory.get(poiCategory);
-        MarkerDetailPoiAdapter adapter = new MarkerDetailPoiAdapter(rentPoiItemList,this);
+        MarkerDetailPoiAdapter adapter = new MarkerDetailPoiAdapter(rentPoiItemList,this, rentLocation);
         rvPoi.setLayoutManager(new LinearLayoutManager(getContext()));
         rvPoi.setAdapter(adapter);
         LayoutAnimationController animationController = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_anim_fall_down);

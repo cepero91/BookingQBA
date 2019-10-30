@@ -9,6 +9,11 @@
         <variable
             name="loading"
             type="Boolean" />
+
+        <variable
+            name="empty"
+            type="Boolean" />
+
     </data>
 
 
@@ -24,7 +29,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:visibleGone="@{!safeUnbox(loading)}">
+            app:visibleGone="@{!safeUnbox(loading)} &amp;&amp; !safeUnbox(empty)}">
 
             <com.infinitum.bookingqba.view.customview.DateLabel
                 android:id="@+id/from"
@@ -56,7 +61,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout7"
-            app:visibleGone="@{!safeUnbox(loading)}"/>
+            app:visibleGone="@{!safeUnbox(loading)} &amp;&amp; !safeUnbox(empty)}"/>
 
         <pl.rafman.scrollcalendar.ScrollCalendar
             android:id="@+id/scrollCalendar"
@@ -67,12 +72,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view"
-            app:visibleGone="@{!safeUnbox(loading)}"
+            app:visibleGone="@{!safeUnbox(loading)} &amp;&amp; !safeUnbox(empty)}"
             style="@style/RedScrollCalendarStyle"/>
 
         <com.airbnb.lottie.LottieAnimationView
-            android:layout_width="80dp"
-            android:layout_height="40dp"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
@@ -85,7 +90,17 @@
             app:lottie_autoPlay="true"
             app:lottie_fileName="lottie/loading.json"
             app:lottie_loop="true"
-            app:lottie_repeatMode="restart" />
+            app:lottie_repeatMode="restart"
+            app:lottie_colorFilter="@color/material_color_blue_grey_500"/>
+
+        <com.infinitum.bookingqba.view.customview.StateView
+            android:id="@+id/state_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 

@@ -98,7 +98,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
 //        innerDetailBinding.llBtnMovile.setOnClickListener(this);
 //        innerDetailBinding.llBtnSms.setOnClickListener(this);
 //        innerDetailBinding.llBtnHome.setOnClickListener(this);
-//        innerDetailBinding.llBtnEmail.setOnClickListener(this);
+        innerDetailBinding.flEmailToOwner.setOnClickListener(this);
 //        innerDetailBinding.llBookRequest.setOnClickListener(this);
         innerDetailBinding.llPrice.setOnClickListener(this);
         PushDownAnim.setPushDownAnimTo(innerDetailBinding.btnBook).setOnClickListener(this);
@@ -129,7 +129,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
 
     private void setupGalerieAdapter(ArrayList<RentGalerieItem> argGaleries) {
         if (argGaleries != null && argGaleries.size() > 0) {
-            RDGalleryAdapter adapter = new RDGalleryAdapter(argGaleries, (InnerDetailInteraction) getActivity());
+            RDGalleryAdapter adapter = new RDGalleryAdapter(argGaleries, null);
             innerDetailBinding.rvGalery.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
             innerDetailBinding.rvGalery.setAdapter(adapter);
             ViewCompat.setNestedScrollingEnabled(innerDetailBinding.rvGalery, false);
@@ -144,7 +144,7 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
                 innerDetailInteraction.onDrawChangeClick();
                 break;
             case R.id.btn_book:
-                innerDetailInteraction.onBookRequestClick();
+//                innerDetailInteraction.onBookRequestClick();
                 break;
 //            case R.id.ll_content_address:
 //                createGeoRent();
@@ -158,9 +158,9 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
 //            case R.id.ll_btn_home:
 //                innerDetailInteraction.phoneHomeClick(rentInnerDetail.getHomePhone());
 //                break;
-//            case R.id.ll_btn_email:
-//                innerDetailInteraction.phoneEmailClick(rentInnerDetail.getEmail());
-//                break;
+            case R.id.fl_email_to_owner:
+                innerDetailInteraction.phoneEmailClick(rentInnerDetail.getEmail());
+                break;
 //            case R.id.ll_book_request:
 //                innerDetailInteraction.onBookRequestClick();
 //                break;
@@ -168,13 +168,13 @@ public class InnerDetailFragment extends Fragment implements View.OnClickListene
     }
 
     private void createGeoRent() {
-        GeoRent geoRent = new GeoRent(rentInnerDetail.getId(), rentInnerDetail.getName(), rentInnerDetail.firstImage());
-        geoRent.setRentMode(rentInnerDetail.getRentMode());
-        geoRent.setRating(rentInnerDetail.getRating());
-        geoRent.setGeoPoint(new GeoPoint(rentInnerDetail.getLatitude(), rentInnerDetail.getLongitude()));
-        geoRent.setPrice(rentInnerDetail.getPrice());
-        ArrayList<GeoRent> geoRents = new ArrayList<>();
-        geoRents.add(geoRent);
-        innerDetailInteraction.onAddressClick(geoRents);
+//        GeoRent geoRent = new GeoRent(rentInnerDetail.getId(), rentInnerDetail.getName(), rentInnerDetail.firstImage());
+//        geoRent.setRentMode(rentInnerDetail.getRentMode());
+//        geoRent.setRating(rentInnerDetail.getRating());
+//        geoRent.setGeoPoint(new GeoPoint(rentInnerDetail.getLatitude(), rentInnerDetail.getLongitude()));
+//        geoRent.setPrice(rentInnerDetail.getPrice());
+//        ArrayList<GeoRent> geoRents = new ArrayList<>();
+//        geoRents.add(geoRent);
+//        innerDetailInteraction.onAddressClick(geoRents);
     }
 }

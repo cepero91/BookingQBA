@@ -34,6 +34,7 @@ public class RentInnerDetail implements Parcelable {
     private double latitude;
     private double longitude;
     private int wished;
+    private String ownerId;
     private String checkin;
     private String chekout;
     private ArrayList<RentAmenitieItem> amenitieItems;
@@ -251,6 +252,14 @@ public class RentInnerDetail implements Parcelable {
         this.referenceZone = referenceZone;
     }
 
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
     public String humanChekin(){
         SimpleDateFormat formatIn = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         Date date = null;
@@ -331,6 +340,7 @@ public class RentInnerDetail implements Parcelable {
         dest.writeDouble(this.latitude);
         dest.writeDouble(this.longitude);
         dest.writeInt(this.wished);
+        dest.writeString(this.ownerId);
         dest.writeString(this.checkin);
         dest.writeString(this.chekout);
         dest.writeTypedList(this.amenitieItems);
@@ -363,6 +373,7 @@ public class RentInnerDetail implements Parcelable {
         this.latitude = in.readDouble();
         this.longitude = in.readDouble();
         this.wished = in.readInt();
+        this.ownerId = in.readString();
         this.checkin = in.readString();
         this.chekout = in.readString();
         this.amenitieItems = in.createTypedArrayList(RentAmenitieItem.CREATOR);

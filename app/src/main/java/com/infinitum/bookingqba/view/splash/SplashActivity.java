@@ -63,7 +63,7 @@ public class SplashActivity extends DaggerAppCompatActivity {
                 startActivity(intent);
                 SplashActivity.this.finish();
             }
-        }, 2600);
+        }, 3000);
     }
 
     private void paraProbarLeaks() {
