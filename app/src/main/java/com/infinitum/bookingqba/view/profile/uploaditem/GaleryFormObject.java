@@ -4,10 +4,16 @@ public class GaleryFormObject {
 
     private String uuid;
     private String url;
-    private boolean remote;
+    private int version;
 
-    public GaleryFormObject(String uuid) {
+    public GaleryFormObject() {
+        this.version = 0;
+    }
+
+    public GaleryFormObject(String uuid, String url) {
         this.uuid = uuid;
+        this.url = url;
+        this.version = 1;
     }
 
     public String getUuid() {
@@ -26,11 +32,11 @@ public class GaleryFormObject {
         this.url = url;
     }
 
-    public boolean isRemote() {
-        return remote;
+    public int getVersion() {
+        return version;
     }
 
-    public void setRemote(boolean remote) {
-        this.remote = remote;
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

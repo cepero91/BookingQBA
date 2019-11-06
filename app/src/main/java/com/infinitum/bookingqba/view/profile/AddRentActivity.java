@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.view.profile;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -26,11 +28,12 @@ import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.ActivityAddRentBinding;
 import com.infinitum.bookingqba.model.remote.pojo.Galerie;
-import com.infinitum.bookingqba.model.remote.pojo.Poi;
 import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.Constants;
+import com.infinitum.bookingqba.util.DateUtils;
+import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.view.base.LocationActivity;
 import com.infinitum.bookingqba.view.profile.adapter.ImageFormAdapter;
 import com.infinitum.bookingqba.view.profile.adapter.OfferFormAdapter;
@@ -54,11 +57,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -74,6 +78,7 @@ import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
 import timber.log.Timber;
 
 import static com.infinitum.bookingqba.service.LocationService.KEY_REQUESTING_LOCATION_UPDATES;
+import static com.infinitum.bookingqba.util.Constants.DONT_OPEN_FORM_INPUT_HELPER_DIALOG;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
@@ -89,6 +94,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     //----Location
     private RentFormObject rentFormObject;
+    private RentFormObject rentFormObjectCopy;
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -98,6 +104,9 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     @Inject
     SharedPreferences sharedPreferences;
+
+    @Inject
+    NetworkHelper networkHelper;
 
     private Location currentLocation;
     private double mLatitude;
@@ -111,9 +120,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     //-------- Boolean field for panel
     private boolean formLocationOpen = true;
-    private boolean formMunicipalityOpen = true;
     private boolean formEsentialOpen = true;
-    private boolean formFinallyOpen = true;
 
     //------------------- Amenities many to many
     private boolean[] amenitiesSelected;
@@ -163,6 +170,19 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
         initSlidingLayout();
 
+        showInfoDialog();
+
+    }
+
+    private void showInfoDialog() {
+        if (!sharedPreferences.getBoolean(DONT_OPEN_FORM_INPUT_HELPER_DIALOG, false)) {
+            View headerView = getLayoutInflater().inflate(R.layout.dialog_form_input_help, null);
+            AlertUtils.showCFDialogWithCustomViewAndAction(this, headerView, "Ok, lo entiendo",
+                    "#00BFA5", CFAlertDialog.CFAlertActionStyle.POSITIVE, (dialog, which) -> {
+                        sharedPreferences.edit().putBoolean(DONT_OPEN_FORM_INPUT_HELPER_DIALOG, true).apply();
+                        dialog.dismiss();
+                    });
+        }
     }
 
     private void initSlidingLayout() {
@@ -195,7 +215,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
             imagesFilesPath = new ArrayList<>();
             offerFormObjects = new ArrayList<>();
             offerAdapter = new OfferFormAdapter((ArrayList<OfferFormObject>) offerFormObjects, this);
-            binding.rvOffer.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            binding.rvOffer.setLayoutManager(new LinearLayoutManager(this));
             binding.rvOffer.setAdapter(offerAdapter);
         } else {
             prepareForEdit(uuid);
@@ -231,40 +251,46 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         rentFormObject.setRules(rentEdit.getRules());
         rentFormObject.setDescription(rentEdit.getDescription());
         rentFormObject.setPhoneNumber(rentEdit.getPhoneNumber());
-        rentFormObject.setPhoneHomeNumber(rentEdit.getPhoneHomeNumber());
         rentFormObject.setCheckin(rentEdit.getCheckin());
         rentFormObject.setCheckout(rentEdit.getCheckout());
-        rentViewModel.setLocalAmenities(rentEdit.getAmenities());
-        List<String> selected = new ArrayList<>();
+        rentViewModel.setPreviusSelectedAmenities(rentEdit.getAmenities());
+        List<String> amenitiesNameSelected = new ArrayList<>();
+        List<String> amenitiesUuidSelected = new ArrayList<>();
         for (int i = 0; i < rentEdit.getAmenities().size(); i++) {
-            selected.add(rentEdit.getAmenities().get(i).getName());
+            amenitiesNameSelected.add(rentEdit.getAmenities().get(i).getName());
+            amenitiesUuidSelected.add(rentEdit.getAmenities().get(i).getId());
         }
-        updateAmenitiesFlexBox(selected);
+        rentFormObject.setAmenities(amenitiesUuidSelected);
+        updateAmenitiesFlexBox(amenitiesNameSelected);
         offerFormObjects = new ArrayList<>();
-        for (int i = 0; i < rentEdit.getOffer().size(); i++) {
-            offerFormObjects.add(new OfferFormObject(rentEdit.getOffer().get(i).getId(),
-                    rentEdit.getOffer().get(i).getName(), rentEdit.getOffer().get(i).getDescription(),
-                    String.valueOf(rentEdit.getOffer().get(i).getPrice()), rentEdit.getOffer().get(i).getRent()));
+        if (rentEdit.getOffer() != null && rentEdit.getOffer().size() > 0) {
+            for (int i = 0; i < rentEdit.getOffer().size(); i++) {
+                offerFormObjects.add(new OfferFormObject(rentEdit.getOffer().get(i).getId(),
+                        rentEdit.getOffer().get(i).getName(), rentEdit.getOffer().get(i).getDescription(),
+                        String.valueOf(rentEdit.getOffer().get(i).getPrice()), rentEdit.getOffer().get(i).getRent()));
+            }
         }
         offerAdapter = new OfferFormAdapter((ArrayList<OfferFormObject>) offerFormObjects, this);
         binding.rvOffer.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         binding.rvOffer.setAdapter(offerAdapter);
-        GaleryFormObject galeryFormObject;
         imagesFilesPath = new ArrayList<>();
+        GaleryFormObject galeryFormObject;
         for (Galerie galerie : rentEdit.getGalerie()) {
             String filepath = Constants.BASE_URL_API + "/" + galerie.getImage();
-            galeryFormObject = new GaleryFormObject(galerie.getId());
-            galeryFormObject.setRemote(true);
-            galeryFormObject.setUrl(filepath);
+            galeryFormObject = new GaleryFormObject(galerie.getId(), filepath);
             imagesFilesPath.add(galeryFormObject);
         }
         addImageToAdapter(imagesFilesPath);
+        try {
+            rentFormObjectCopy = (RentFormObject) rentFormObject.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateAllInput(RentEdit data) {
         binding.etAddress.setText(data.getAddress());
-        binding.tvLocation.setText(String.format("Lat: %s -- Lon: %s", data.getLatitude(), data.getLongitude()));
-        binding.tvLocation.setTextColor(Color.parseColor("#009688"));
+        binding.etLocation.setText(String.format(Locale.getDefault(), "Lat: %.5f -- Lon: %.5f", Float.parseFloat(data.getLatitude()), Float.parseFloat(data.getLongitude())));
         updateMunicipality(data.getMunicipality().getId(), data.getMunicipality().getName());
         updateReferenceZone(data.getReferenceZone().getId(), data.getReferenceZone().getName());
         updateRentMode(data.getRentMode().getId(), data.getRentMode().getName());
@@ -278,26 +304,24 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         binding.etRules.setText(String.valueOf(data.getRules()));
         binding.etDescription.setText(String.valueOf(data.getDescription()));
         binding.etPersonalPhone.setText(String.valueOf(data.getPhoneNumber()));
-        binding.etHomePhone.setText(String.valueOf(data.getPhoneHomeNumber()));
-        binding.tvCheckin.setText(data.getCheckin());
-        binding.tvCheckout.setText(data.getCheckout());
+        binding.etCheckin.setText(DateUtils.parseToHumanHour("HH:mm", "HH:mm a", data.getCheckin()));
+        binding.etCheckout.setText(DateUtils.parseToHumanHour("HH:mm", "HH:mm a", data.getCheckout()));
     }
 
     private void initViewOnClick() {
         binding.flLocationBar.setOnClickListener(this);
         binding.flEsentialBar.setOnClickListener(this);
-        binding.tvLocation.setOnClickListener(this);
-        binding.flReferenceZone.setOnClickListener(this);
-        binding.flMunicipalities.setOnClickListener(this);
-        binding.flRentMode.setOnClickListener(this);
+        binding.etLocation.setOnClickListener(this);
+        binding.etReferenceZone.setOnClickListener(this);
+        binding.etMunicipality.setOnClickListener(this);
+        binding.etRentMode.setOnClickListener(this);
         binding.flAmenities.setOnClickListener(this);
         binding.flGalery.setOnClickListener(this);
         binding.flOffer.setOnClickListener(this);
         binding.btnUpload.setOnClickListener(this);
-        binding.tvCheckin.setOnClickListener(this);
-        binding.tvCheckout.setOnClickListener(this);
+        binding.etCheckin.setOnClickListener(this);
+        binding.etCheckout.setOnClickListener(this);
     }
-
 
     @Override
     protected void onDestroy() {
@@ -318,7 +342,6 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         }
     }
 
-
     @Override
     protected void updateLocation(Location location) {
         if (binding.slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED &&
@@ -333,7 +356,6 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return fragmentDispatchingAndroidInjector;
     }
-
 
     @Override
     public void onLocationButtonClick() {
@@ -366,21 +388,19 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         rentFormObject.setLatitude(String.valueOf(mLatitude));
         rentFormObject.setLongitude(String.valueOf(mLongitude));
-        binding.tvLocation.setText(String.format("Lat: %.4f -- Lon: %.4f", mLatitude, mLongitude));
-        binding.tvLocation.setTextColor(Color.parseColor("#009688"));
+        binding.etLocation.setText(String.format("Lat: %.5f -- Lon: %.5f", mLatitude, mLongitude));
         dialogLocationConfirmView.isLoading(true);
-        disposable = rentViewModel.remoteReferenceZoneAndPoiByLocation(userToken,  mLatitude, mLongitude)
+        disposable = rentViewModel.remoteReferenceZoneAndPoiByLocation(userToken, mLatitude, mLongitude)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(rentPoiReferenceZoneResource -> {
-                    if(rentPoiReferenceZoneResource.data!=null){
-                        updateReferenceZone(rentPoiReferenceZoneResource.data.getReferenceId(),rentPoiReferenceZoneResource.data.getReferenceName());
+                    if (rentPoiReferenceZoneResource.data != null) {
+                        updateReferenceZone(rentPoiReferenceZoneResource.data.getReferenceId(), rentPoiReferenceZoneResource.data.getReferenceName());
                     }
                     dialog.dismiss();
                 });
         compositeDisposable.add(disposable);
     }
-
 
     private void getAddressByLocation() {
         disposable = rentViewModel.addressAndMunicipalityByLocation(userToken, mLatitude, mLongitude)
@@ -392,7 +412,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                     }
                     if (map.containsKey("uuid") && map.containsKey("name")) {
                         rentFormObject.setMunicipality(map.get("uuid"));
-                        binding.tvMunicipality.setText(map.get("name"));
+                        binding.etMunicipality.setText(map.get("name"));
                     }
                 }, throwable -> {
                     Timber.e(throwable);
@@ -427,7 +447,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                     formEsentialOpen = true;
                 }
                 break;
-            case R.id.tv_location:
+            case R.id.et_location:
                 if (rentFormObject.getLatitude() != null && !rentFormObject.getLatitude().equals("") &&
                         rentFormObject.getLongitude() != null && !rentFormObject.getLongitude().equals("")) {
                     mapFragment = MapFormFragment.newInstance(rentFormObject.getLatitude(), rentFormObject.getLongitude());
@@ -437,13 +457,13 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                 getSupportFragmentManager().beginTransaction().replace(R.id.map_content,
                         mapFragment, "map").runOnCommit(() -> binding.slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED)).commit();
                 break;
-            case R.id.fl_municipalities:
+            case R.id.et_municipality:
                 showMunicipalitiesDialog();
                 break;
-            case R.id.fl_reference_zone:
+            case R.id.et_reference_zone:
                 showReferenceDialog();
                 break;
-            case R.id.fl_rent_mode:
+            case R.id.et_rent_mode:
                 showRentModeDialog();
                 break;
             case R.id.fl_amenities:
@@ -458,70 +478,81 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
             case R.id.btn_upload:
                 uploadRent();
                 break;
-            case R.id.tv_checkin:
+            case R.id.et_checkin:
                 showCheckinDialog();
                 break;
-            case R.id.tv_checkout:
+            case R.id.et_checkout:
                 showCheckoutDialog();
                 break;
         }
     }
 
     private void showCheckinDialog() {
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                StringBuilder timeBuilder = new StringBuilder();
-                timeBuilder.append(hourOfDay).append(":").append(minute > 0 ? minute : "00");
-                SimpleDateFormat parseFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-                SimpleDateFormat displayFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                Date inDate = null;
-                try {
-                    inDate = parseFormat.parse(timeBuilder.toString());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                binding.tvCheckin.setText(displayFormat.format(inDate));
-                binding.tvCheckin.setTextColor(getResources().getColor(R.color.colorPrimary));
-                rentFormObject.setCheckin(timeBuilder.toString());
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+            StringBuilder timeBuilder = new StringBuilder();
+            timeBuilder.append(hourOfDay).append(":").append(minute > 0 ? minute : "00");
+            SimpleDateFormat parseFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            SimpleDateFormat displayFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+            Date inDate = null;
+            try {
+                inDate = parseFormat.parse(timeBuilder.toString());
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+            binding.etCheckin.setText(displayFormat.format(inDate));
+            rentFormObject.setCheckin(timeBuilder.toString());
         }, 12, 0, false);
         timePickerDialog.setTitle("Entrada");
         timePickerDialog.show();
     }
 
     private void showCheckoutDialog() {
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                StringBuilder timeBuilder = new StringBuilder();
-                timeBuilder.append(hourOfDay).append(":").append(minute > 0 ? minute : "00");
-                SimpleDateFormat parseFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-                SimpleDateFormat displayFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                Date inDate = null;
-                try {
-                    inDate = parseFormat.parse(timeBuilder.toString());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                binding.tvCheckout.setText(displayFormat.format(inDate));
-                binding.tvCheckout.setTextColor(getResources().getColor(R.color.colorPrimary));
-                rentFormObject.setCheckout(timeBuilder.toString());
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+            StringBuilder timeBuilder = new StringBuilder();
+            timeBuilder.append(hourOfDay).append(":").append(minute > 0 ? minute : "00");
+            SimpleDateFormat parseFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            SimpleDateFormat displayFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+            Date inDate = null;
+            try {
+                inDate = parseFormat.parse(timeBuilder.toString());
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+            binding.etCheckout.setText(displayFormat.format(inDate));
+            rentFormObject.setCheckout(timeBuilder.toString());
         }, 12, 0, false);
         timePickerDialog.setTitle("Salida");
         timePickerDialog.show();
     }
 
     private void uploadRent() {
-        showLoadingDialog();
-        updateRentFormFromInput();
-        Map<String, Object> params = new HashMap<>();
-        params.put("rent", rentFormObject);
-        params.put("galery", imagesFilesPath);
-        if (offerAdapter.getOfferFormObjects().size() > 0) {
-            params.put("offer", offerAdapter.getOfferFormObjects());
+        if (networkHelper.isNetworkAvailable()) {
+            if (validInput()) {
+                showLoadingDialog();
+                updateRentFormFromInput();
+                Map<String, Object> params = new HashMap<>();
+                params.put("rent", rentFormObject);
+                params.put("galery", imagesFilesPath);
+                if (offerAdapter.getOfferFormObjects().size() > 0) {
+                    params.put("offer", offerAdapter.getOfferFormObjects());
+                }
+                if (edit) {
+                    if (!rentFormObject.equals(rentFormObjectCopy)) {
+                        sendRent(params);
+                    } else {
+                        hideLoadingDialog();
+                    }
+                } else {
+                    sendRent(params);
+                }
+            }
+        } else {
+            AlertUtils.showCFErrorNotificationWithAction(this, "Oopss!!", Constants.CONNEXION_ERROR_MSG,
+                    (dialog, which) -> dialog.dismiss(), "Ok, lo entiendo");
         }
+    }
+
+    private void sendRent(Map<String, Object> params) {
         disposable = rentViewModel.sendRentToServer(userToken, params)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -533,10 +564,100 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                             break;
                         }
                     }
-                    if (isCorrect)
+                    if (isCorrect) {
                         hideLoadingDialog();
+                        AddRentActivity.this.finish();
+                    } else {
+                        hideLoadingDialog();
+                        AlertUtils.showErrorToast(this,Constants.OPERATIONAL_ERROR_MSG);
+                    }
                 }, Timber::e);
         compositeDisposable.add(disposable);
+    }
+
+    private boolean validInput() {
+        boolean valid = true;
+        StringBuilder msgBuilder = new StringBuilder();
+        msgBuilder.append("Algo va mal con los campos:\n");
+        if (binding.etLocation.getText().toString().isEmpty()) {
+            valid = false;
+            msgBuilder.append("- Coordenadas\n");
+        }
+        if (binding.etAddress.getText().toString().isEmpty()) {
+            valid = false;
+            msgBuilder.append("- Dirección\n");
+        }
+        if (binding.etMunicipality.getText().toString().isEmpty()) {
+            valid = false;
+            msgBuilder.append("- Municipio\n");
+        }
+        if (binding.etReferenceZone.getText().toString().isEmpty()) {
+            valid = false;
+            msgBuilder.append("- Entorno predominante\n");
+        }
+        if (binding.etRentName.getText().toString().isEmpty()) {
+            valid = false;
+            msgBuilder.append("- Nombre de renta\n");
+        }
+        if (binding.etRentMode.getText().toString().isEmpty()) {
+            valid = false;
+            msgBuilder.append("- Modo de renta\n");
+        }
+        if (binding.etCheckin.getVisibility() == View.VISIBLE &&
+                binding.etCheckin.getText().toString().isEmpty()) {
+            valid = false;
+            msgBuilder.append("- Entrada\n");
+        }
+        if (binding.etCheckout.getVisibility() == View.VISIBLE &&
+                binding.etCheckout.getText().toString().isEmpty()) {
+            valid = false;
+            msgBuilder.append("- Salida\n");
+        }
+        if (binding.etEmail.getVisibility() == View.VISIBLE &&
+                (binding.etEmail.getText().toString().isEmpty() || !isEmailValid(binding.etEmail.getText().toString()))) {
+            valid = false;
+            msgBuilder.append("- Correo electrónico\n");
+        }
+        if (binding.etPersonalPhone.getVisibility() == View.VISIBLE &&
+                binding.etPersonalPhone.getText().toString().isEmpty()) {
+            valid = false;
+            msgBuilder.append("- Teléfono\n");
+        }
+        if (binding.etPrice.getText().toString().isEmpty()) {
+            valid = false;
+            msgBuilder.append("- Precio\n");
+        }
+        if (binding.etDescription.getText().toString().isEmpty()) {
+            valid = false;
+            msgBuilder.append("- Descripción\n");
+        }
+        if (rentFormObject.getAmenities() == null || rentFormObject.getAmenities().size() == 0) {
+            valid = false;
+            msgBuilder.append("- Facilidades\n");
+        }
+        if (imagesFilesPath == null || imagesFilesPath.size() == 0) {
+            valid = false;
+            msgBuilder.append("- Imágenes\n");
+        }
+        if (!valid) {
+            AlertUtils.showCFErrorNotificationWithActionAndGravity(this, "Error", msgBuilder.toString(),
+                    (dialog, which) -> dialog.dismiss(), "Ok, lo entiendo", Gravity.START);
+        }
+        return valid;
+    }
+
+    public boolean isEmailValid(String email) {
+        String regExpn =
+                "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
+                        + "((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                        + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
+                        + "([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                        + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
+                        + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
+
+        Pattern pattern = Pattern.compile(regExpn, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     private void showLoadingDialog() {
@@ -559,7 +680,6 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         rentFormObject.setDescription(binding.etDescription.getText().toString());
         rentFormObject.setEmail(binding.etEmail.getText().toString());
         rentFormObject.setPhoneNumber(binding.etPersonalPhone.getText().toString());
-        rentFormObject.setPhoneHomeNumber(binding.etHomePhone.getText().toString());
         rentFormObject.setMaxBaths(String.valueOf(binding.quantityBath.getNumber()));
         rentFormObject.setMaxBeds(String.valueOf(binding.quantityBed.getNumber()));
         rentFormObject.setMaxRooms(String.valueOf(binding.quantityRoom.getNumber()));
@@ -573,6 +693,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
         builder.setTitle("Facilidades");
         builder.setMessage("Seleccione las facilidades de su renta");
+        builder.setTextColor(Color.parseColor("#607D8B"));
         disposable = rentViewModel.getAllRemoteAmenities(userToken)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -594,8 +715,10 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
     }
 
     private void populateAmenitiesFlexbox() {
-        List<String> selected = rentViewModel.getAmenitiesSelectedNames();
-        updateAmenitiesFlexBox(selected);
+        List<String> amenitiesSelectedNames = rentViewModel.getAmenitiesSelectedNames();
+        List<String> amenitiesSelectedUuid = rentViewModel.getAmenitiesSelectedUuid();
+        rentFormObject.setAmenities(amenitiesSelectedUuid);
+        updateAmenitiesFlexBox(amenitiesSelectedNames);
     }
 
     private void updateAmenitiesFlexBox(List<String> selected) {
@@ -603,7 +726,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             TextView textView = (TextView) getLayoutInflater().inflate(R.layout.flexbox_ships_form_item, null);
             textView.setText(selected.get(i));
-            params.setMargins(5, 0, 5, 10);
+            params.setMargins(10, 0, 0, 10);
             textView.setLayoutParams(params);
             binding.fbAmenities.addView(textView);
         }
@@ -635,8 +758,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     private void updateMunicipality(String uuid, String name) {
         rentFormObject.setMunicipality(uuid);
-        binding.tvMunicipality.setTextColor(Color.parseColor("#009688"));
-        binding.tvMunicipality.setText(name);
+        binding.etMunicipality.setText(name);
     }
 
     private void showReferenceDialog() {
@@ -658,8 +780,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     private void updateReferenceZone(String uuid, String name) {
         rentFormObject.setReferenceZone(uuid);
-        binding.tvReferenceZone.setTextColor(Color.parseColor("#009688"));
-        binding.tvReferenceZone.setText(name);
+        binding.etReferenceZone.setText(name);
     }
 
     private void showRentModeDialog() {
@@ -681,12 +802,17 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     private void updateRentMode(String uuid, String name) {
         rentFormObject.setRentMode(uuid);
-        binding.tvRentMode.setTextColor(Color.parseColor("#009688"));
-        binding.tvRentMode.setText(name);
+        binding.etRentMode.setText(name);
         if (name.equalsIgnoreCase("por noche")) {
             binding.setPhonesVisibility(View.GONE);
+            binding.etEmail.setVisibility(View.VISIBLE);
+            binding.etCheckin.setVisibility(View.VISIBLE);
+            binding.etCheckout.setVisibility(View.VISIBLE);
         } else {
             binding.setPhonesVisibility(View.VISIBLE);
+            binding.etEmail.setVisibility(View.GONE);
+            binding.etCheckin.setVisibility(View.GONE);
+            binding.etCheckout.setVisibility(View.GONE);
         }
     }
 
@@ -696,7 +822,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         builder = new CFAlertDialog.Builder(this);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
         // Title and message
-        builder.setTitle("Nueva Oferta");
+        builder.setTitle("Oferta");
         builder.setTextGravity(Gravity.CENTER);
         builder.setTextColor(Color.parseColor("#607D8B"));
         builder.setFooterView(dialogAddOffer);
@@ -708,6 +834,21 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         dialogAddOffer = new DialogAddOfferView(this);
         dialogAddOffer.setOfferFormObject(offerFormObject, pos);
         showAddOfferDialog(dialogAddOffer);
+    }
+
+    @Override
+    public void onOfferDelete(String uuid, int pos) {
+        disposable = rentViewModel.deleteOffer(userToken, uuid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resultResource -> {
+                    if (resultResource.data != null && resultResource.data.getCode() == 200) {
+                        offerAdapter.removeItem(pos);
+                    } else {
+                        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+                }, Timber::e);
+        compositeDisposable.add(disposable);
     }
 
     @Override
@@ -734,19 +875,18 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
 
     @Override
     public void onImageDelete(String uuid, int pos) {
-        disposable = rentViewModel.deleteImage(userToken,uuid)
+        disposable = rentViewModel.deleteImage(userToken, uuid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resultResource -> {
-                    if(resultResource.data!=null && resultResource.data.getCode() == 200){
+                    if (resultResource.data != null && resultResource.data.getCode() == 200) {
                         imageFormAdapter.removeItem(pos);
-                    }else{
+                    } else {
                         Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
                     }
                 }, Timber::e);
         compositeDisposable.add(disposable);
     }
-
 
     private void pickGaleryFiles() {
         BSImagePicker pickerDialog = new BSImagePicker.Builder("com.infinitum.bookingqba.fileprovider")
@@ -764,9 +904,9 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
             GaleryFormObject galeryFormObject;
             for (Uri uri : uriList) {
                 String filepath = uri.getPath();
-                galeryFormObject = new GaleryFormObject(UUID.randomUUID().toString());
-                galeryFormObject.setRemote(false);
-                galeryFormObject.setUrl(filepath);
+                galeryFormObject = new GaleryFormObject();
+                galeryFormObject.setUuid(UUID.randomUUID().toString());
+                galeryFormObject.setUrl(String.format("file:%s", filepath));
                 imagesFilesPath.add(galeryFormObject);
             }
             addImageToAdapter(imagesFilesPath);

@@ -129,4 +129,16 @@ public class DateUtils {
         return calendar;
     }
 
+    public static String parseToHumanHour(String patternIn, String patternOut, String hourStr){
+        SimpleDateFormat parseFormat = new SimpleDateFormat(patternIn, Locale.getDefault());
+        SimpleDateFormat displayFormat = new SimpleDateFormat(patternOut, Locale.getDefault());
+        Date inDate = null;
+        try {
+            inDate = parseFormat.parse(hourStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return inDate!=null?displayFormat.format(inDate):"";
+    }
+
 }

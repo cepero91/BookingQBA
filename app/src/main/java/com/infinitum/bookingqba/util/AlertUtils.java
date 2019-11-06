@@ -336,6 +336,18 @@ public class AlertUtils {
         builder.show();
     }
 
+    public static void showCFErrorNotificationWithActionAndGravity(Context context, String title, String message, DialogInterface.OnClickListener onClickListener, String buttonTitle, int gravity) {
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        // Title and message
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setTextGravity(gravity);
+        builder.addButton(buttonTitle, -1, -1, CFAlertDialog.CFAlertActionStyle.NEGATIVE, CFAlertDialog.CFAlertActionAlignment.JUSTIFIED, onClickListener);
+        builder.setTextColor(Color.parseColor("#607D8B"));
+        builder.show();
+    }
+
     public static void showCFErrorNotificationWithAction(Context context, String title, String message, DialogInterface.OnClickListener positiveClick,  DialogInterface.OnClickListener negativeClick, String positiveTitle, String negativeTitle) {
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);

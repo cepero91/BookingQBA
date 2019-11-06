@@ -3,7 +3,6 @@ package com.infinitum.bookingqba.viewmodel;
 import android.arch.lifecycle.ViewModel;
 import android.util.Pair;
 
-import com.infinitum.bookingqba.model.OperationResult;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.remote.pojo.AddressResponse;
 import com.infinitum.bookingqba.model.remote.pojo.Amenities;
@@ -16,7 +15,6 @@ import com.infinitum.bookingqba.model.remote.pojo.RentAmenities;
 import com.infinitum.bookingqba.model.remote.pojo.RentEdit;
 import com.infinitum.bookingqba.model.remote.pojo.RentEsential;
 import com.infinitum.bookingqba.model.remote.pojo.RentMode;
-import com.infinitum.bookingqba.model.remote.pojo.RentPoiAdd;
 import com.infinitum.bookingqba.model.remote.pojo.RentPoiReferenceZone;
 import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.repository.amenities.AmenitiesRepository;
@@ -24,12 +22,10 @@ import com.infinitum.bookingqba.model.repository.municipality.MunicipalityReposi
 import com.infinitum.bookingqba.model.repository.referencezone.ReferenceZoneRepository;
 import com.infinitum.bookingqba.model.repository.rent.RentRepository;
 import com.infinitum.bookingqba.util.CategoryUtil;
-import com.infinitum.bookingqba.util.Constants;
 import com.infinitum.bookingqba.util.geo.POIEntitySort;
 import com.infinitum.bookingqba.view.adapters.items.addrent.MyRentItem;
 import com.infinitum.bookingqba.view.profile.dialogitem.FormSelectorItem;
 import com.infinitum.bookingqba.view.profile.dialogitem.SearchableSelectorModel;
-import com.infinitum.bookingqba.view.profile.uploaditem.AmenitiesRentFormObject;
 import com.infinitum.bookingqba.view.profile.uploaditem.GaleryFormObject;
 import com.infinitum.bookingqba.view.profile.uploaditem.OfferFormObject;
 import com.infinitum.bookingqba.view.profile.uploaditem.RentFormObject;
@@ -43,32 +39,21 @@ import org.mapsforge.poi.storage.PoiCategoryManager;
 import org.mapsforge.poi.storage.PoiPersistenceManager;
 import org.mapsforge.poi.storage.PointOfInterest;
 import org.mapsforge.poi.storage.UnknownPoiCategoryException;
-import org.mapsforge.poi.storage.WhitelistPoiCategoryFilter;
-import org.oscim.utils.ArrayUtils;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.SingleSource;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Response;
-import timber.log.Timber;
 
 public class RentFormViewModel extends ViewModel {
 
@@ -82,7 +67,7 @@ public class RentFormViewModel extends ViewModel {
     private boolean[] amenitiesSelected;
     private String[] amenitiesNames;
     private List<Amenities> remoteAmenities;
-    private List<Amenities> localAmenities;
+    private List<Amenities> previusSelectedAmenities;
 
 
     @Inject
@@ -93,8 +78,8 @@ public class RentFormViewModel extends ViewModel {
         this.amenitiesRepository = amenitiesRepository;
     }
 
-    public void setLocalAmenities(List<Amenities> localAmenities) {
-        this.localAmenities = localAmenities;
+    public void setPreviusSelectedAmenities(List<Amenities> previusSelectedAmenities) {
+        this.previusSelectedAmenities = previusSelectedAmenities;
     }
 
     public Single<Resource<List<RentEdit>>> getRentById(String token, String uuid) {
@@ -103,6 +88,10 @@ public class RentFormViewModel extends ViewModel {
 
     public Single<Resource<ResponseResult>> deleteImage(String token, String uuid) {
         return rentRepository.deleteImage(token, uuid);
+    }
+
+    public Single<Resource<ResponseResult>> deleteOffer(String token, String uuid) {
+        return rentRepository.deleteOffer(token, uuid);
     }
 
     public Single<Resource<Pair<String[], boolean[]>>> getAllRemoteAmenities(String token) {
@@ -127,8 +116,8 @@ public class RentFormViewModel extends ViewModel {
         amenitiesSelected = new boolean[data.size()];
         amenitiesNames = new String[data.size()];
         for (int i = 0; i < data.size(); i++) {
-            if (localAmenities != null && localAmenities.size() > 0 && i < localAmenities.size()) {
-                amenitiesSelected[i] = data.get(i).getId().equals(localAmenities.get(i).getId());
+            if (previusSelectedAmenities != null && previusSelectedAmenities.size() > 0 && i < previusSelectedAmenities.size()) {
+                amenitiesSelected[i] = data.get(i).getId().equals(previusSelectedAmenities.get(i).getId());
             } else {
                 amenitiesSelected[i] = false;
             }
@@ -150,16 +139,16 @@ public class RentFormViewModel extends ViewModel {
         return selectedNames;
     }
 
-    private List<String> getAmenitiesSelectedUuid() {
+    public List<String> getAmenitiesSelectedUuid() {
         List<String> uuidAmenities = new ArrayList<>();
         if (amenitiesSelected != null) {
             for (int i = 0; i < amenitiesSelected.length; i++) {
                 if (amenitiesSelected[i])
                     uuidAmenities.add(remoteAmenities.get(i).getId());
             }
-        } else if (localAmenities != null) {
-            for (int i = 0; i < localAmenities.size(); i++) {
-                uuidAmenities.add(localAmenities.get(i).getId());
+        } else if (previusSelectedAmenities != null) {
+            for (int i = 0; i < previusSelectedAmenities.size(); i++) {
+                uuidAmenities.add(previusSelectedAmenities.get(i).getId());
             }
         }
         return uuidAmenities;
@@ -264,8 +253,7 @@ public class RentFormViewModel extends ViewModel {
     public Single<List<ResponseResult>> sendRentToServer(String token, Map<String, Object> params) {
         Map<String, Object> finalMap = new HashMap<>();
         RentFormObject rentFormObject = (RentFormObject) params.get("rent");
-        ArrayList<String> amenitiesUuid = (ArrayList<String>) getAmenitiesSelectedUuid();
-        RentAmenities rentAmenities = new RentAmenities(rentFormObject.getUuid(), amenitiesUuid);
+        RentAmenities rentAmenities = new RentAmenities(rentFormObject.getUuid(), rentFormObject.getAmenities());
         ArrayList<String> imageFilePath = getImageFilePath((ArrayList<GaleryFormObject>) params.get("galery"));
         Rent newRent = transformRentFormToRent(rentFormObject);
         finalMap.put("rent", newRent);
@@ -282,7 +270,7 @@ public class RentFormViewModel extends ViewModel {
     private ArrayList<String> getImageFilePath(ArrayList<GaleryFormObject> galery) {
         ArrayList<String> imageList = new ArrayList<>();
         for (int i = 0; i < galery.size(); i++) {
-            if (!galery.get(i).isRemote()) {
+            if (galery.get(i).getVersion()==0) {
                 imageList.add(galery.get(i).getUrl());
             }
         }
@@ -313,7 +301,6 @@ public class RentFormViewModel extends ViewModel {
         rent.setDescription(rentFormObject.getDescription());
         rent.setEmail(rentFormObject.getEmail());
         rent.setPhoneNumber(rentFormObject.getPhoneNumber());
-        rent.setPhoneHomeNumber(rentFormObject.getPhoneHomeNumber());
         rent.setMaxRooms(Integer.parseInt(rentFormObject.getMaxRooms()));
         rent.setMaxBath(Integer.parseInt(rentFormObject.getMaxBaths()));
         rent.setMaxBeds(Integer.parseInt(rentFormObject.getMaxBeds()));

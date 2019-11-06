@@ -40,11 +40,14 @@ public class OfferFormAdapter extends RecyclerView.Adapter<OfferFormAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         OfferFormObject offerFormObject = offerFormObjects.get(i);
         viewHolder.name.setText(offerFormObject.getName());
-        viewHolder.desc.setText(offerFormObject.getDescription());
-        viewHolder.price.setText(offerFormObject.getPrice());
-        viewHolder.ivEdit.setOnClickListener(v -> onOfferInteraction.onOfferEdit(offerFormObject,i));
+        viewHolder.price.setText(String.format("%s cuc", offerFormObject.getPrice()));
+        viewHolder.ivEdit.setOnClickListener(v -> onOfferInteraction.onOfferEdit(offerFormObject, i));
         viewHolder.ivTrash.setOnClickListener(v -> {
+            if (offerFormObject.getVersion() == 1) {
+                onOfferInteraction.onOfferDelete(offerFormObject.getUuid(), i);
+            } else {
                 removeItem(i);
+            }
         });
     }
 
@@ -58,7 +61,7 @@ public class OfferFormAdapter extends RecyclerView.Adapter<OfferFormAdapter.View
         notifyDataSetChanged();
     }
 
-    public void updateItem(OfferFormObject object, int pos){
+    public void updateItem(OfferFormObject object, int pos) {
         OfferFormObject finalObject = offerFormObjects.get(pos);
         finalObject.setUuid(object.getUuid());
         finalObject.setName(object.getName());
@@ -67,7 +70,7 @@ public class OfferFormAdapter extends RecyclerView.Adapter<OfferFormAdapter.View
         notifyDataSetChanged();
     }
 
-    public void addOffer(OfferFormObject offerFormObject){
+    public void addOffer(OfferFormObject offerFormObject) {
         this.offerFormObjects.add(offerFormObject);
         notifyDataSetChanged();
     }
@@ -79,19 +82,20 @@ public class OfferFormAdapter extends RecyclerView.Adapter<OfferFormAdapter.View
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private AppCompatImageView ivEdit;
         private AppCompatImageView ivTrash;
-        private TextView name,desc,price;
+        private TextView name, price;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivEdit = itemView.findViewById(R.id.iv_edit);
             ivTrash = itemView.findViewById(R.id.iv_trash);
             name = itemView.findViewById(R.id.tv_title);
-            desc = itemView.findViewById(R.id.tv_description);
             price = itemView.findViewById(R.id.tv_price);
         }
     }
 
     public interface OnOfferInteraction {
         void onOfferEdit(OfferFormObject offerFormObject, int pos);
+
+        void onOfferDelete(String uuid, int pos);
     }
 }

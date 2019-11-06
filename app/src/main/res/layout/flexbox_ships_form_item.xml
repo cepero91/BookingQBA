@@ -5,8 +5,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Amenitie"
-    android:fontFamily="@font/poppinsregular"
-    android:includeFontPadding="false"
-    android:textColor="@color/material_color_orange_200"
+    android:fontFamily="@font/montserrat_regular"
+    android:textSize="14sp"
+    android:padding="10dp"
+    android:textColor="@color/colorAccent"
     android:background="@drawable/shape_ships_orange"/>
 

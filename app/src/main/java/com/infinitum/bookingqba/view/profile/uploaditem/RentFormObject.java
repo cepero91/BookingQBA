@@ -1,13 +1,16 @@
 package com.infinitum.bookingqba.view.profile.uploaditem;
 
-public class RentFormObject {
+import com.infinitum.bookingqba.util.Constants;
+
+import java.util.List;
+
+public class RentFormObject implements Cloneable{
     private String uuid;
     private String rentName;
     private String address;
     private String description;
     private String email;
     private String phoneNumber;
-    private String phoneHomeNumber;
     private String maxRooms;
     private String maxBeds;
     private String maxBaths;
@@ -22,9 +25,15 @@ public class RentFormObject {
     private String checkin;
     private String checkout;
     private String userid;
+    private List<String> amenities;
 
     public RentFormObject(String uuid) {
         this.uuid = uuid;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     public String getUuid() {
@@ -123,14 +132,6 @@ public class RentFormObject {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getPhoneHomeNumber() {
-        return phoneHomeNumber;
-    }
-
-    public void setPhoneHomeNumber(String phoneHomeNumber) {
-        this.phoneHomeNumber = phoneHomeNumber;
-    }
-
     public String getMaxRooms() {
         return maxRooms;
     }
@@ -194,4 +195,88 @@ public class RentFormObject {
     public void setCheckout(String checkout) {
         this.checkout = checkout;
     }
+
+    public List<String> getAmenities() {
+        return amenities;
+    }
+
+    public void setAmenities(List<String> amenities) {
+        this.amenities = amenities;
+    }
+
+    private boolean sameAmenities(List<String> amenitiesUuid) {
+        if (this.amenities.size() == amenitiesUuid.size()) {
+            for (int i = 0; i < amenitiesUuid.size(); i++) {
+                if (!this.amenities.get(i).equals(amenitiesUuid.get(i))) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return this.uuid.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this.getClass() != obj.getClass())
+            return false;
+        RentFormObject other = (RentFormObject) obj;
+        return sameRentObject(other);
+    }
+
+    private boolean sameRentObject(RentFormObject copyRentObject) {
+        return this.uuid.equals(copyRentObject.getUuid()) &&
+                this.rentName.equals(copyRentObject.getRentName()) &&
+                this.address.equals(copyRentObject.getAddress()) &&
+                this.description.equals(copyRentObject.getDescription()) &&
+                this.email.equals(copyRentObject.getEmail()) &&
+                this.phoneNumber.equals(copyRentObject.getPhoneNumber()) &&
+                this.maxRooms.equals(copyRentObject.getMaxRooms()) &&
+                this.maxBaths.equals(copyRentObject.getMaxBaths()) &&
+                this.maxBeds.equals(copyRentObject.getMaxBeds()) &&
+                this.capability.equals(copyRentObject.getCapability()) &&
+                this.rentMode.equals(copyRentObject.getRentMode()) &&
+                this.rules.equals(copyRentObject.getRules()) &&
+                this.price == copyRentObject.getPrice() &&
+                this.latitude.equals(copyRentObject.getLatitude()) &&
+                this.longitude.equals(copyRentObject.getLongitude()) &&
+                this.municipality.equals(copyRentObject.getMunicipality()) &&
+                this.referenceZone.equals(copyRentObject.getReferenceZone()) &&
+                this.checkin.equals(copyRentObject.getCheckin()) &&
+                this.checkout.equals(copyRentObject.getCheckout()) &&
+                this.userid.equals(copyRentObject.getUserid()) &&
+                sameAmenities(copyRentObject.getAmenities());
+    }
+
+    public boolean isAValidObject(){
+        boolean validRentMode = true;
+        boolean validEsential = !this.rentName.isEmpty() &&
+         !this.address.isEmpty() &&
+         !this.description.isEmpty() &&
+         !this.maxBeds.isEmpty() &&
+         !this.maxRooms.isEmpty() &&
+         !this.maxBaths.isEmpty() &&
+         !this.capability.isEmpty() &&
+         this.price > 0 &&
+         !this.latitude.isEmpty() &&
+         !this.longitude.isEmpty() &&
+         !this.municipality.isEmpty() &&
+         !this.referenceZone.isEmpty() &&
+         !this.rentMode.isEmpty() &&
+         !this.userid.isEmpty();
+        if(rentMode.equals(Constants.BY_NIGHT_UUID)){
+            validRentMode = !this.email.isEmpty();
+        }else if(rentMode.equals(Constants.BY_HOURS_UUID)){
+            validRentMode = !this.phoneNumber.isEmpty();
+        }
+        return validEsential &&  validRentMode;
+    }
+
+
 }

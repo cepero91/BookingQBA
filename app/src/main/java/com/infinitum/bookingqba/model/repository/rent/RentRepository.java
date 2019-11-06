@@ -114,4 +114,6 @@ public interface RentRepository {
 
     Single<Resource<ResponseResult>> deleteImage(String token, String uuid);
 
+    Single<Resource<ResponseResult>> deleteOffer(String token, String uuid);
+
 }

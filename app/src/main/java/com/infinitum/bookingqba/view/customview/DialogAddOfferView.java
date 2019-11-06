@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.infinitum.bookingqba.R;
+import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.view.profile.AddPoiAdapter;
 import com.infinitum.bookingqba.view.profile.uploaditem.OfferFormObject;
 
@@ -26,6 +27,7 @@ public class DialogAddOfferView extends LinearLayout implements View.OnClickList
     private AddOfferClick addOfferClick;
     private EditText nameEditText, priceEditText, descEditText;
     private OfferFormObject offerFormObject;
+    private OfferFormObject offerFormObjectCopy;
     private boolean isEditFlag = false;
     private int pos = -1;
 
@@ -64,6 +66,7 @@ public class DialogAddOfferView extends LinearLayout implements View.OnClickList
     public void setOfferFormObject(OfferFormObject offerFormObject, int pos) {
         this.isEditFlag = true;
         this.offerFormObject = offerFormObject;
+        this.offerFormObjectCopy = offerFormObject;
         nameEditText.setText(offerFormObject.getName());
         descEditText.setText(offerFormObject.getDescription());
         priceEditText.setText(offerFormObject.getPrice());
@@ -85,12 +88,18 @@ public class DialogAddOfferView extends LinearLayout implements View.OnClickList
             offerFormObject.setName(nameEditText.getText().toString());
             offerFormObject.setDescription(descEditText.getText().toString());
             offerFormObject.setPrice(priceEditText.getText().toString());
+            offerFormObject.setVersion(0);
             addOfferClick.onButtonSaveClick(offerFormObject, false, -1);
         } else {
-            offerFormObject.setName(nameEditText.getText().toString());
-            offerFormObject.setDescription(descEditText.getText().toString());
-            offerFormObject.setPrice(priceEditText.getText().toString());
-            addOfferClick.onButtonSaveClick(offerFormObject, true, pos);
+            if (!offerFormObject.equals(offerFormObjectCopy)) {
+                offerFormObject.setName(nameEditText.getText().toString());
+                offerFormObject.setDescription(descEditText.getText().toString());
+                offerFormObject.setPrice(priceEditText.getText().toString());
+                offerFormObject.setVersion(0);
+                addOfferClick.onButtonSaveClick(offerFormObject, true, pos);
+            } else {
+                AlertUtils.showErrorTopToast(getContext(),"No hay nada que guardar");
+            }
         }
 
     }

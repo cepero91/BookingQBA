@@ -110,7 +110,7 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="tec_inf_jose_manuel_cepero">Tec. Inf. José Manuel Cepero</string>
     <string name="desarrollo_y_dise_o">Desarrollo y Diseño:</string>
     <string name="politicas">Políticas</string>
-    <string name="precio_minimo">precio mínimo</string>
+    <string name="precio_minimo">precio mínimo:</string>
     <string name="deseada">Deseada</string>
     <string name="votar">Votar</string>
     <string name="comentar">Comentar</string>
@@ -154,7 +154,7 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
 
     <string name="donde_esta_su_renta">Donde esta su Renta?</string>
     <string name="sobre_ubicacion">Sobre ubicacion</string>
-    <string name="informacion_esencial">Informacion Esencial</string>
+    <string name="informacion_esencial">Información Esencial</string>
     <string name="ultimos_detalles">Ultimos detalles</string>
     <string name="title_activity_test">TestActivity</string>
 
@@ -166,7 +166,7 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="direccion">Direccion</string>
     <string name="zona_de_referencia">Zona de referencia</string>
     <string name="nombre_de_renta">Nombre de Renta</string>
-    <string name="modo_de_renta">Modo de Renta</string>
+    <string name="modo_de_renta">Modo de Renta (*)</string>
     <string name="precio">Precio</string>
     <string name="distance_msg">Su destino se encuentra a %.2f km de distancia, con un tiempo de llegada aproximado de: %s</string>
     <string name="min_msg">%d min</string>
@@ -225,9 +225,9 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="calendar_sync_error">Error al sincronizar calendario</string>
     <string name="view_all">Ver todos</string>
     <string name="cerrar_sesi_n">Cerrar Sesión</string>
-    <string name="direcci_n">Dirección</string>
-    <string name="coordenadas">Coordenadas</string>
-    <string name="entorno_dominante">Entorno Dominante</string>
+    <string name="direcci_n">Dirección (*)</string>
+    <string name="coordenadas">Coordenadas (*)</string>
+    <string name="entorno_dominante">Entorno Predominante (*)</string>
 
     <string name="historic_reference">Se caracteriza por contar con un elevado número de Museos, Monumentos, Castillos y otros lugares emblemáticos. Ideal para la fotografía y conocer sobre nuestros antepasados.</string>
     <string name="historic_enviroment">Ubicado en zona histórica</string>
@@ -280,7 +280,7 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="usar_mi_ubicaci_n">Usar mi ubicación</string>
     <string name="distancia">Distancia(km):</string>
     <string name="filtrar">Filtrar</string>
-    <string name="municipio">Municipio</string>
+    <string name="municipio">Municipio (*)</string>
     <string name="cerca_de">Cerca de:</string>
     <string name="capacidad_huespedes">Capacidad (huespedes):</string>
     <string name="precio_entre">Precio entre:</string>
@@ -296,5 +296,23 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="reject_title">Solicitud Rechazada</string>
     <string name="consultar_con_el_anfitri_n">Consultar con el anfitrión</string>
     <string name="disponibilidad">Disponibilidad</string>
+    <string name="nombre_de_la_renta_requerido">Nombre de la Renta (*)</string>
+    <string name="entrada">Entrada (*)</string>
+    <string name="salida">Salida (*)</string>
+    <string name="precio_requerido">precio en cuc (*)</string>
+    <string name="correo_electr_nico">Correo Electrónico (*)</string>
+    <string name="descripci_n">Descripción (*)</string>
+    <string name="telefono_m_vil">Teléfono móvil (*)</string>
+    <string name="capacidad">Capacidad (*)</string>
+    <string name="habitaciones">Dormitorios (*)</string>
+    <string name="camas">Camas (*)</string>
+    <string name="ba_os">Baños (*)</string>
+    <string name="facilidades_requerido">Facilidades (*)</string>
+    <string name="im_genes_requeridos">Imágenes (*)</string>
+    <string name="subiendo">Subiendo...</string>
+    <string name="ofertas">Ofertas</string>
+    <string name="note_form_1">- Llenar correctamente los campos obligatorios <font fgcolor="#ff00BFA5">(*)</font></string>
+    <string name="note_form_2">- Agregar imágenes con una calidad adecuada</string>
+    <string name="note_form_3">- Su anuncio no será visible hasta ser verificado</string>
 
 </resources>

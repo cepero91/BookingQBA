@@ -30,6 +30,10 @@ public class User implements Parcelable {
     @Expose
     private boolean rentOwner;
 
+    @SerializedName("userHasActiveRent")
+    @Expose
+    private boolean userHasActiveRent;
+
     public User(String token, String username) {
         this.token = token;
         this.username = username;
@@ -84,6 +88,14 @@ public class User implements Parcelable {
         this.rentOwner = rentOwner;
     }
 
+    public boolean isUserHasActiveRent() {
+        return userHasActiveRent;
+    }
+
+    public void setUserHasActiveRent(boolean userHasActiveRent) {
+        this.userHasActiveRent = userHasActiveRent;
+    }
+
     @Override
     public boolean equals(Object obj) {
         User otherUser = (User) obj;
@@ -104,6 +116,7 @@ public class User implements Parcelable {
         dest.writeString(this.userid);
         dest.writeString(this.avatar);
         dest.writeByte(this.rentOwner ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.userHasActiveRent ? (byte) 1 : (byte) 0);
     }
 
     protected User(Parcel in) {
@@ -112,9 +125,10 @@ public class User implements Parcelable {
         this.userid = in.readString();
         this.avatar = in.readString();
         this.rentOwner = in.readByte() != 0;
+        this.userHasActiveRent = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+    public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
         public User createFromParcel(Parcel source) {
             return new User(source);

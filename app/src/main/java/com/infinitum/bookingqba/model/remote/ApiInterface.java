@@ -286,6 +286,10 @@ public interface ApiInterface {
     @GET("/api/offers")
     Single<List<Offer>> getOffers(@Header("Authorization") String token, @Query("value") String value);
 
+    @FormUrlEncoded
+    @POST("/api/rentOffer-delete/")
+    Single<ResponseResult> offerDelete(@Header("Authorization") String token, @Field("uuid")String uuid);
+
     //------------------- RENTA_FACILIDAD ---------------------//
 
     @GET("/api/rent/amenities")

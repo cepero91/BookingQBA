@@ -3,6 +3,7 @@ package com.infinitum.bookingqba.util;
 public final class Constants {
 
     public static final String DONT_OPEN_SWIPE_TO_DELETE_DIALOG = "swipe";
+    public static final String DONT_OPEN_FORM_INPUT_HELPER_DIALOG = "formHelper";
 
     public static final int PERMISSION_REQUEST_CODE = 98;
 

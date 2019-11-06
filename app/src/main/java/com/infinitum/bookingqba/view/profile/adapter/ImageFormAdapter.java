@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.github.siyamed.shapeimageview.mask.PorterShapeImageView;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.util.Constants;
@@ -37,17 +38,18 @@ public class ImageFormAdapter extends RecyclerView.Adapter<ImageFormAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        String path = imagesPath.get(i).getUrl();
-        if (!path.contains("static")) {
-            path = "file:" + path;
-        }
+        GaleryFormObject galeryFormObject = imagesPath.get(i);
         Picasso.get()
-                .load(path)
+                .load(galeryFormObject.getUrl())
                 .resize(THUMB_WIDTH, THUMB_HEIGHT)
                 .placeholder(R.drawable.placeholder)
                 .into(viewHolder.porterShapeImageView);
         viewHolder.ll_delete_item.setOnClickListener(v -> {
-                    onImageDeleteClick.onImageDelete(imagesPath.get(i).getUuid(), i);
+                    if (galeryFormObject.getVersion() == 1) {
+                        onImageDeleteClick.onImageDelete(imagesPath.get(i).getUuid(), i);
+                    } else {
+                        removeItem(i);
+                    }
                 }
         );
     }
@@ -63,7 +65,7 @@ public class ImageFormAdapter extends RecyclerView.Adapter<ImageFormAdapter.View
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private PorterShapeImageView porterShapeImageView;
+        private RoundedImageView porterShapeImageView;
         private LinearLayout ll_delete_item;
 
         public ViewHolder(@NonNull View itemView) {

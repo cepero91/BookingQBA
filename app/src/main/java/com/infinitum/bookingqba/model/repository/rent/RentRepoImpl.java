@@ -492,6 +492,15 @@ public class RentRepoImpl implements RentRepository {
                 .onErrorReturn(Resource::error);
     }
 
+    @Override
+    public Single<Resource<ResponseResult>> deleteOffer(String token, String uuid) {
+        return retrofit.create(ApiInterface.class)
+                .offerDelete(token, uuid)
+                .subscribeOn(Schedulers.io())
+                .map(Resource::success)
+                .onErrorReturn(Resource::error);
+    }
+
     /**
      * Calculates the end-point from a given source at a given range (meters)
      * and bearing (degrees). This methods uses simple geometry equations to

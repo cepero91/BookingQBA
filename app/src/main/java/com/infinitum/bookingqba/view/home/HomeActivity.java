@@ -224,7 +224,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             updateNavHeader(sharedPreferences.getString(USER_NAME, ""), sharedPreferences.getString(USER_AVATAR, ""));
         }
 
-        refreshMenuIfUserIsActiveHost(sharedPreferences.getBoolean(USER_HAS_ACTIVE_RENT,false));
+        refreshMenuIfUserIsActiveHost(sharedPreferences.getBoolean(USER_HAS_ACTIVE_RENT, false));
 
         homeBinding.drawerLayout.useCustomBehavior(Gravity.START);
 
@@ -240,9 +240,13 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             case MY_REQUEST_CODE:
                 switch (resultCode) {
                     case FROM_DETAIL_TO_MAP:
-                        if (data.getExtras() != null) {
+                        if (data != null && data.getExtras() != null) {
                             ArrayList<GeoRent> geoRentList = data.getParcelableArrayListExtra("geoRents");
                             if (geoRentList != null && geoRentList.size() > 0) {
+                                if (filterActive) {
+                                    filterFragment.resetAllParams();
+                                    onFilterClean();
+                                }
                                 mFragment = MapFragment.newInstance(geoRentList, true);
                                 fragmentManager = getSupportFragmentManager();
                                 fragmentManager.beginTransaction().replace(R.id.frame_container, mFragment).commit();
@@ -268,6 +272,7 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
                             homeBinding.navView.getMenu().findItem(R.id.nav_my_rents).setVisible(true);
                             homeBinding.navView.getMenu().findItem(R.id.nav_my_book_request).setVisible(true);
                             homeBinding.navView.getMenu().findItem(R.id.nav_auth).setVisible(false);
+                            refreshMenuIfUserIsActiveHost(data.getBooleanExtra(USER_HAS_ACTIVE_RENT, false));
                             showLoginSuccessAlert();
                         }
                         break;

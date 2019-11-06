@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:padding="5dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dp"
+    android:gravity="center">
 
     <com.airbnb.lottie.LottieAnimationView
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        app:lottie_autoPlay="true"
         app:lottie_fileName="lottie/house_upload.json"
         app:lottie_loop="true"
-        android:scaleType="centerCrop"
         app:lottie_scale="0.1"
-        app:lottie_autoPlay="true"/>
+        app:lottie_enableMergePathsForKitKatAndAbove="true"
+        app:lottie_colorFilter="@color/colorAccent"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="  Subiendo..."
+        android:fontFamily="@font/montserrat_regular"
+        android:text="@string/subiendo"
         android:textSize="16sp"
-        android:fontFamily="@font/poppinsregular"/>
+        android:layout_marginStart="8dp"/>
 
 </LinearLayout>

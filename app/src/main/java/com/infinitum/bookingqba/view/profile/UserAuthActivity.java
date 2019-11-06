@@ -28,6 +28,7 @@ import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.LAST_EMAIL_REGISTER;
 import static com.infinitum.bookingqba.util.Constants.NAV_HEADER_REQUIRED_UPDATE;
 import static com.infinitum.bookingqba.util.Constants.USER_AVATAR;
+import static com.infinitum.bookingqba.util.Constants.USER_HAS_ACTIVE_RENT;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_RENTS_OWNER;
@@ -67,6 +68,7 @@ public class UserAuthActivity extends AppCompatActivity implements HasSupportFra
         Intent intent = new Intent(this, HomeActivity.class);
         intent.putExtra(USER_NAME,user.getUsername());
         intent.putExtra(USER_AVATAR,user.getAvatar());
+        intent.putExtra(USER_HAS_ACTIVE_RENT,user.isUserHasActiveRent());
         setResult(Activity.RESULT_OK, intent);
         this.finish();
     }
@@ -75,6 +77,7 @@ public class UserAuthActivity extends AppCompatActivity implements HasSupportFra
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(USER_IS_AUTH, true);
         editor.putBoolean(USER_IS_RENTS_OWNER, user.isRentOwner());
+        editor.putBoolean(USER_HAS_ACTIVE_RENT, user.isUserHasActiveRent());
         editor.putString(USER_TOKEN, "Token "+user.getToken());
         editor.putString(USER_NAME, user.getUsername());
         editor.putString(USER_ID, user.getUserid());
