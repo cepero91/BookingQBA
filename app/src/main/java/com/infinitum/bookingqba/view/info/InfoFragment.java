@@ -22,6 +22,7 @@ import com.infinitum.bookingqba.databinding.FragmentInfoBinding;
 import com.infinitum.bookingqba.model.Resource;
 import com.infinitum.bookingqba.model.local.entity.DatabaseUpdateEntity;
 import com.infinitum.bookingqba.util.AlertUtils;
+import com.infinitum.bookingqba.util.Constants;
 import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.view.base.BaseNavigationFragment;
 import com.infinitum.bookingqba.view.interaction.InfoInteraction;
@@ -161,10 +162,12 @@ public class InfoFragment extends BaseNavigationFragment implements View.OnClick
                     if (canSync) {
                         infoInteraction.startSync();
                     } else {
-                        AlertUtils.showInfoAlert(getActivity(), "Los datos ya estan actualizados");
+                        AlertUtils.showCFInfoNotificationWithAction(getActivity(),
+                                getResources().getString(R.string.oopss), Constants.NO_UPDATE_NEEDED, (dialog, which) -> dialog.dismiss(), "Ok, lo entiendo");
                     }
                 } else {
-                    AlertUtils.showErrorAlert(getActivity(), "Sin conexion");
+                    AlertUtils.showCFErrorNotificationWithAction(getActivity(),
+                            getResources().getString(R.string.oopss), Constants.CONNEXION_ERROR_MSG, (dialog, which) -> dialog.dismiss(), "Ok, lo entiendo");
                 }
                 break;
             case R.id.btn_politics:

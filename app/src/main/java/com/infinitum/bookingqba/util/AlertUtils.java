@@ -216,9 +216,9 @@ public class AlertUtils {
         builder.show();
     }
 
-    public static void showCFPositiveInfoAlert(Context context, String message, String buttonTitle, CFAlertDialog.OnClickListener onClickListener) {
+    public static void showCFPositiveInfoAlert(Context context, String message, String buttonTitle, CFAlertDialog.OnClickListener onClickListener, CFAlertDialog.CFAlertStyle style) {
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(context);
-        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        builder.setDialogStyle(style);
         // Title and message
         builder.setTitle("Aviso!!");
         builder.setMessage(message);
@@ -266,8 +266,9 @@ public class AlertUtils {
         Snacky.builder()
                 .setActivity(activity)
                 .setText(message)
+                .setTextColor(Color.WHITE)
                 .setDuration(8000)
-                .setBackgroundColor(Color.parseColor("#009688"))
+                .setBackgroundColor(Color.parseColor("#00BFA5"))
                 .setIcon(R.drawable.ic_check_circle)
                 .build()
                 .show();
@@ -277,6 +278,7 @@ public class AlertUtils {
         Snacky.builder()
                 .setActivity(activity)
                 .setText(message)
+                .setTextColor(Color.WHITE)
                 .setDuration(5000)
                 .setBackgroundColor(Color.parseColor("#D32F2F"))
                 .setIcon(R.drawable.ic_exclamation_triangle)

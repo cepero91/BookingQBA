@@ -17,8 +17,6 @@ import android.view.Window;
 
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.FragmentFeedbackBinding;
-import com.infinitum.bookingqba.databinding.FragmentRatingBinding;
-import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 
 public class DialogFeedback extends DialogFragment implements View.OnClickListener {
 
@@ -54,7 +52,7 @@ public class DialogFeedback extends DialogFragment implements View.OnClickListen
         super.onActivityCreated(savedInstanceState);
 
 
-        feedbackBinding.fbSend.setOnClickListener(this);
+        feedbackBinding.btnVote.setOnClickListener(this);
 
         int width = getResources().getDimensionPixelSize(R.dimen.dialog_login_width);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -89,9 +87,9 @@ public class DialogFeedback extends DialogFragment implements View.OnClickListen
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.fb_send:
-                if(!feedbackBinding.etComment.getText().toString().equals("")){
-                    feedbackInteraction.sendFeedback(feedbackBinding.etComment.getText().toString());
+            case R.id.btn_vote:
+                if(!feedbackBinding.etFeedback.getText().toString().equals("")){
+                    feedbackInteraction.sendFeedback(feedbackBinding.etFeedback.getText().toString());
                 }
                 dismiss();
                 break;

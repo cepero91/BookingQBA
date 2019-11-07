@@ -538,6 +538,7 @@ public class RentViewModel extends android.arch.lifecycle.ViewModel {
                 geoRent.setGeoPoint(new GeoPoint(rentAndDependencies.getLatitude(), rentAndDependencies.getLongitude()));
                 geoRent.setRating(rentAndDependencies.getRating());
                 geoRent.setRatingCount(rentAndDependencies.getRatingCount());
+                geoRent.setReferenceZone(rentAndDependencies.getReferenceZone());
                 geoRent.setPoiItemMap(convertPoisPojoToParcel(rentAndDependencies.getRentPoiAndRelations()));
                 geoRentList.add(geoRent);
             }

@@ -155,7 +155,7 @@ public class RentRepoImpl implements RentRepository {
         if (orderType == ORDER_TYPE_MOST_RATING) {
             return qbaDao.getAllMostRatingRent(province).map(Resource::success).onErrorReturn(Resource::error).subscribeOn(Schedulers.io());
         } else if (orderType == ORDER_TYPE_MOST_COMMENTED) {
-            String query = "SELECT Rent.id,Rent.name,Rent.address,Rent.price, Rent.rating, Rent.ratingCount, Rent.latitude, Rent.longitude, Rent.rentMode, Rent.isWished, AVG(Comment.emotion) as emotionAvg, COUNT(Comment.id) as totalComment FROM Rent " +
+            String query = "SELECT Rent.*, AVG(Comment.emotion) as emotionAvg, COUNT(Comment.id) as totalComment FROM Rent " +
                     "LEFT JOIN Galerie ON Galerie.id = (SELECT Galerie.id FROM Galerie WHERE rent = Rent.id LIMIT 1) " +
                     "LEFT JOIN Municipality ON Rent.municipality = Municipality.id " +
                     "LEFT JOIN Comment ON Comment.rent = Rent.id " +

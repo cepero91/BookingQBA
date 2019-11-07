@@ -122,7 +122,7 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="movil">Celular</string>
     <string name="sms">SMS</string>
     <string name="usuario">Usuario</string>
-    <string name="contrase_a">Contraseña</string>
+    <string name="contrase_a">Contraseña (*)</string>
     <string name="entrar"> Entrar</string>
     <string name="descargar_imagenes">Descargar Imágenes</string>
     <string name="sincronizacion">Sincronización</string>
@@ -230,19 +230,19 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="entorno_dominante">Entorno Predominante (*)</string>
 
     <string name="historic_reference">Se caracteriza por contar con un elevado número de Museos, Monumentos, Castillos y otros lugares emblemáticos. Ideal para la fotografía y conocer sobre nuestros antepasados.</string>
-    <string name="historic_enviroment">Ubicado en zona histórica</string>
+    <string name="historic_enviroment">Ubicado en zona Histórica</string>
 
     <string name="neiborhood_reference">Cuenta con gran número de bares, restaurantes, cafés, atracciones, entre otros. Generalmente son zonas superpobladas, ideal para conocer nuestra ideosincrasia. </string>
-    <string name="neibor_enviroment">Ubicado en zona urbana</string>
+    <string name="neibor_enviroment">Ubicado en zona Urbana</string>
 
     <string name="culture_reference">Prevalecen los sitios donde la cultura está presente: teatros, óperas, centros de arte, artesanía, entre otros. Ideal para los amantes de las salidas nocturnas</string>
-    <string name="culture_enviroment">Ubicado en zona cultural</string>
+    <string name="culture_enviroment">Ubicado en zona Cultural</string>
 
     <string name="beach_reference">Se encuentra a poca distancia de playas, costas o marinas. Ideal para los amantes del mar, la pesca y los deportes acuáticos.</string>
     <string name="beach_enviroment">Ubicado en zona de Playa</string>
 
     <string name="natural_reference">Prevalece el verde por sobre todos los colores, a poca distancia de reservas naturales, sitios de picnic, campismos, entre otros. Donde se respira aire puro, alejados del ruido y las grandes ciudades.</string>
-    <string name="natural_enviroment">Ubicado en zona de naturaleza</string>
+    <string name="natural_enviroment">Ubicado en zona de Naturaleza</string>
     <string name="location_found">Ubicación encontrada</string>
     <string name="location_found_confirm">¿Está seguro que esta es su ubicación?</string>
     <string name="confirm_btn">Confirmar</string>
@@ -256,7 +256,7 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="rb_my_rent">La Renta</string>
     <string name="rb_poi">Lugar de Interés</string>
     <string name="route_time">Demora</string>
-    <string name="repita_la_contrase_a">Repita la contraseña</string>
+    <string name="repita_la_contrase_a">Repita la contraseña (*)</string>
     <string name="reenviar_c_digo_de_activaci_n">Reenviar código de activación</string>
     <string name="no_tienes_cuenta">No tienes cuenta?</string>
     <string name="reg_strate">Regístrate</string>
@@ -314,5 +314,20 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="note_form_1">- Llenar correctamente los campos obligatorios <font fgcolor="#ff00BFA5">(*)</font></string>
     <string name="note_form_2">- Agregar imágenes con una calidad adecuada</string>
     <string name="note_form_3">- Su anuncio no será visible hasta ser verificado</string>
+    <string name="user_name">Nombre de Usuario (*)</string>
+    <string name="c_digo">Código (*)</string>
+    <string name="enviar">Enviar</string>
+    <string name="ingresa">Ingresa</string>
+    <string name="ya_eres_miembro">Ya eres miembro?</string>
+    <string name="oopss">Oopss!</string>
+    <string name="escribe_aqu">Escribe aquí</string>
+    <string name="hecho">Hecho</string>
+    <string name="campo_requerido">Campo requerido</string>
+    <string name="votacion_enviada">Voloración enviada</string>
+    <string name="votacion_guardada">Voloración guardada</string>
+    <string name="el_anfitrion">El Anfitrión</string>
+    <string name="comentario_enviado">Comentario enviado con éxito</string>
+    <string name="comentario_guardado">Comentario guardado con éxito</string>
+    <string name="danos_tu_opini_n">Danos tu opinión</string>
 
 </resources>

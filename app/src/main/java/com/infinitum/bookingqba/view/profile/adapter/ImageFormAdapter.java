@@ -39,8 +39,9 @@ public class ImageFormAdapter extends RecyclerView.Adapter<ImageFormAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         GaleryFormObject galeryFormObject = imagesPath.get(i);
+        String path = galeryFormObject.getVersion() == 1?galeryFormObject.getUrl():"file:"+galeryFormObject.getUrl();
         Picasso.get()
-                .load(galeryFormObject.getUrl())
+                .load(path)
                 .resize(THUMB_WIDTH, THUMB_HEIGHT)
                 .placeholder(R.drawable.placeholder)
                 .into(viewHolder.porterShapeImageView);

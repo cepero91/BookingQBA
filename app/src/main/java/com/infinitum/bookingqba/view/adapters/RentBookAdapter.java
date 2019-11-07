@@ -71,7 +71,6 @@ public class RentBookAdapter extends RecyclerView.Adapter<RentBookAdapter.MyView
                 notifyItemRemoved(getAdapterPosition());
             });
             itemBinding.clFront.setOnClickListener(v -> {
-                Timber.e("Entro");
                 rentBookInteraction.onBookReservationClick(item,reservationType);
             });
             itemBinding.executePendingBindings();

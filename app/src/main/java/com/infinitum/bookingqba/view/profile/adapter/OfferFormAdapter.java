@@ -15,6 +15,7 @@ import com.infinitum.bookingqba.view.profile.uploaditem.OfferFormObject;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.infinitum.bookingqba.util.Constants.THUMB_HEIGHT;
 import static com.infinitum.bookingqba.util.Constants.THUMB_WIDTH;
@@ -77,6 +78,15 @@ public class OfferFormAdapter extends RecyclerView.Adapter<OfferFormAdapter.View
 
     public ArrayList<OfferFormObject> getOfferFormObjects() {
         return offerFormObjects;
+    }
+
+    public List<OfferFormObject> getOfferFormObjectsVersionCero() {
+        List<OfferFormObject> offerVersion = new ArrayList<>();
+        for(OfferFormObject formObject: offerFormObjects){
+            if(formObject.getVersion() == 0)
+            offerVersion.add(formObject);
+        }
+        return offerVersion;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class DialogAddOfferView extends LinearLayout implements View.OnClickListener {
 
@@ -66,7 +67,11 @@ public class DialogAddOfferView extends LinearLayout implements View.OnClickList
     public void setOfferFormObject(OfferFormObject offerFormObject, int pos) {
         this.isEditFlag = true;
         this.offerFormObject = offerFormObject;
-        this.offerFormObjectCopy = offerFormObject;
+        try {
+            this.offerFormObjectCopy = (OfferFormObject) offerFormObject.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
         nameEditText.setText(offerFormObject.getName());
         descEditText.setText(offerFormObject.getDescription());
         priceEditText.setText(offerFormObject.getPrice());
@@ -85,6 +90,7 @@ public class DialogAddOfferView extends LinearLayout implements View.OnClickList
 
     private void prepareForSave() {
         if (!isEditFlag) {
+            offerFormObject.setUuid(UUID.randomUUID().toString());
             offerFormObject.setName(nameEditText.getText().toString());
             offerFormObject.setDescription(descEditText.getText().toString());
             offerFormObject.setPrice(priceEditText.getText().toString());

@@ -253,6 +253,9 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
         rentFormObject.setPhoneNumber(rentEdit.getPhoneNumber());
         rentFormObject.setCheckin(rentEdit.getCheckin());
         rentFormObject.setCheckout(rentEdit.getCheckout());
+        rentFormObject.setMunicipality(rentEdit.getMunicipality().getId());
+        rentFormObject.setReferenceZone(rentEdit.getReferenceZone().getId());
+        rentFormObject.setRentMode(rentEdit.getRentMode().getId());
         rentViewModel.setPreviusSelectedAmenities(rentEdit.getAmenities());
         List<String> amenitiesNameSelected = new ArrayList<>();
         List<String> amenitiesUuidSelected = new ArrayList<>();
@@ -271,7 +274,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
             }
         }
         offerAdapter = new OfferFormAdapter((ArrayList<OfferFormObject>) offerFormObjects, this);
-        binding.rvOffer.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        binding.rvOffer.setLayoutManager(new LinearLayoutManager(this));
         binding.rvOffer.setAdapter(offerAdapter);
         imagesFilesPath = new ArrayList<>();
         GaleryFormObject galeryFormObject;
@@ -533,14 +536,17 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                 Map<String, Object> params = new HashMap<>();
                 params.put("rent", rentFormObject);
                 params.put("galery", imagesFilesPath);
-                if (offerAdapter.getOfferFormObjects().size() > 0) {
+                if (offerAdapter.getOfferFormObjectsVersionCero().size() > 0) {
                     params.put("offer", offerAdapter.getOfferFormObjects());
                 }
                 if (edit) {
                     if (!rentFormObject.equals(rentFormObjectCopy)) {
                         sendRent(params);
                     } else {
-                        hideLoadingDialog();
+                        AlertUtils.showCFInfoNotificationWithAction(this, "Aviso!!",
+                                "No hay cambios que realizar", (dialog, which) -> {
+                                    dialog.dismiss();
+                                }, "Ok, lo entiendo");
                     }
                 } else {
                     sendRent(params);
@@ -906,7 +912,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                 String filepath = uri.getPath();
                 galeryFormObject = new GaleryFormObject();
                 galeryFormObject.setUuid(UUID.randomUUID().toString());
-                galeryFormObject.setUrl(String.format("file:%s", filepath));
+                galeryFormObject.setUrl(filepath);
                 imagesFilesPath.add(galeryFormObject);
             }
             addImageToAdapter(imagesFilesPath);

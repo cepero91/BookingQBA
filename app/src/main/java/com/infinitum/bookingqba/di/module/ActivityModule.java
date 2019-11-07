@@ -4,9 +4,8 @@ package com.infinitum.bookingqba.di.module;
 import com.infinitum.bookingqba.view.base.LocationActivity;
 import com.infinitum.bookingqba.view.home.HomeActivity;
 import com.infinitum.bookingqba.view.profile.AddRentActivity;
-import com.infinitum.bookingqba.view.profile.UserAuthActivity;
+import com.infinitum.bookingqba.view.auth.UserAuthActivity;
 import com.infinitum.bookingqba.view.rents.DetailActivity;
-import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.ReservationActivity;
 import com.infinitum.bookingqba.view.reservation.ReservationDetailActivity;
 import com.infinitum.bookingqba.view.splash.SplashActivity;
@@ -31,9 +30,6 @@ public interface ActivityModule {
 
     @ContributesAndroidInjector(modules = FragmentModule.class)
     HomeActivity bindHomeActivity();
-
-    @ContributesAndroidInjector(modules = FragmentModule.class)
-    RentDetailActivity bindRentDetailActivity();
 
     @ContributesAndroidInjector(modules = FragmentModule.class)
     AddRentActivity bindAddRentActivity();

@@ -686,6 +686,7 @@ public class MapFragment extends BaseMapFragment implements ItemizedLayer.OnItem
         markerPoiDetailView.setupPoiCategoryAdapter(geoRent.getPoiItemMap(),new LatLong(geoRent.getGeoPoint().getLatitude(),geoRent.getGeoPoint().getLongitude()));
         markerPoiDetailView.setupReferenceZone(geoRent.getReferenceZone());
         markerPoiDetailView.setMarkerPoiInteraction(this);
+        mapBinding.llBtnPoi.setTextColor(getResources().getColor(R.color.material_color_teal_A700));
     }
 
     @Override

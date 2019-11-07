@@ -7,9 +7,8 @@ import com.infinitum.bookingqba.view.home.HomeFragment;
 import com.infinitum.bookingqba.view.info.InfoFragment;
 import com.infinitum.bookingqba.view.listwish.ListWishFragment;
 import com.infinitum.bookingqba.view.map.MapFragment;
-import com.infinitum.bookingqba.view.profile.AuthFragment;
+import com.infinitum.bookingqba.view.auth.AuthFragment;
 import com.infinitum.bookingqba.view.profile.MapFormFragment;
-import com.infinitum.bookingqba.view.profile.LoginFragment;
 import com.infinitum.bookingqba.view.profile.MyRentsFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
 import com.infinitum.bookingqba.view.rents.BookDaysDialog;
@@ -36,9 +35,6 @@ public interface FragmentModule {
 
     @ContributesAndroidInjector
     FilterFragment bindFilterFragment();
-
-    @ContributesAndroidInjector
-    LoginFragment bindLoginFragment();
 
     @ContributesAndroidInjector
     MapFragment bindMapFragment();

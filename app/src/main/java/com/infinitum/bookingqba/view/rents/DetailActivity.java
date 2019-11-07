@@ -61,8 +61,8 @@ import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 
 public class DetailActivity extends DaggerAppCompatActivity implements HasSupportFragmentInjector,
-        InnerDetailInteraction, View.OnClickListener, Animator.AnimatorListener ,
-        BookDaysDialog.BookDaysDialogInteraction{
+        InnerDetailInteraction, View.OnClickListener, Animator.AnimatorListener,
+        BookDaysDialog.BookDaysDialogInteraction {
 
     private final static int REQUEST_PHONE_CALL = 1044;
     private final static int REQUEST_PHONE_SMS = 1045;
@@ -244,6 +244,16 @@ public class DetailActivity extends DaggerAppCompatActivity implements HasSuppor
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.lv_heart:
@@ -300,7 +310,7 @@ public class DetailActivity extends DaggerAppCompatActivity implements HasSuppor
                     }
                 } else if (phoneActionCode == 1) {
                     phoneActionCode = 0;
-                    AlertUtils.showErrorToast(this,"Conceda los permisos para llamar.");
+                    AlertUtils.showErrorToast(this, "Conceda los permisos para llamar.");
                 }
                 break;
             case Manifest.permission.SEND_SMS:
@@ -312,7 +322,7 @@ public class DetailActivity extends DaggerAppCompatActivity implements HasSuppor
                     }
                 } else if (phoneActionCode == 2) {
                     phoneActionCode = 0;
-                    AlertUtils.showErrorToast(this,"Conceda los permisos para enviar mensaje.");
+                    AlertUtils.showErrorToast(this, "Conceda los permisos para enviar mensaje.");
                 }
                 break;
         }

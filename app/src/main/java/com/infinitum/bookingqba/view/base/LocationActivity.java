@@ -27,6 +27,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationCallback;
@@ -212,7 +213,7 @@ public abstract class LocationActivity extends AppCompatActivity implements Shar
                                     dialog.dismiss();
                                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                                     startActivityForResult(intent, REQUEST_LAST_GPS_CODE);
-                                });
+                                }, CFAlertDialog.CFAlertStyle.BOTTOM_SHEET);
                         break;
                 }
                 break;

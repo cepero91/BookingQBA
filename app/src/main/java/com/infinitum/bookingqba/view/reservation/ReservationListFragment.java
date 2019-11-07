@@ -232,13 +232,11 @@ public class ReservationListFragment extends BaseNavigationFragment implements S
 
     @Override
     public void onBookReservationClick(ReservationItem item, ReservationType reservationType) {
-        Toast.makeText(getActivity(), "Aqui se va a detalle", Toast.LENGTH_SHORT).show();
         mListener.onBookItemClick(item, reservationType);
     }
 
     @Override
     public void onBookReservationDelete(ReservationItem item) {
-        Toast.makeText(getActivity(), "Aqui se elimina", Toast.LENGTH_SHORT).show();
         disposable = userViewModel.deniedReservation(token, item.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -163,5 +163,6 @@ public final class Constants {
     public static final String NO_COMMENT_MSG = "No hay comentarios que mostrar. Anímate y sé el primero.";
     public static final String OPERATIONAL_ERROR_MSG = "Al parecer un error ha ocurrido.";
     public static final String EMPTY_ERROR_MSG = "Lo sentimos, no hay elementos que mostrar";
+    public static final String NO_UPDATE_NEEDED = "Los datos ya están actualizados";
 
 }

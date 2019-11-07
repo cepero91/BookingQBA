@@ -47,6 +47,7 @@ import com.infinitum.bookingqba.databinding.FragmentInnerCommentBinding;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.util.AlertUtils;
 import com.infinitum.bookingqba.util.ColorUtil;
+import com.infinitum.bookingqba.util.Constants;
 import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.util.EmotionUtil;
 import com.infinitum.bookingqba.util.NetworkHelper;
@@ -158,6 +159,7 @@ public class RentCommentFragment extends DialogFragment implements View.OnClickL
         rentViewModel = ViewModelProviders.of(this, viewModelFactory).get(RentViewModel.class);
         innerCommentBinding.ivShowRating.setOnClickListener(this);
         innerCommentBinding.ivSend.setOnClickListener(this);
+        innerCommentBinding.ivBtnBack.setOnClickListener(this);
         setupRatingSmileView();
         setupCommentAdapter(argComment);
     }
@@ -219,7 +221,7 @@ public class RentCommentFragment extends DialogFragment implements View.OnClickL
                         .find(R.id.tv_username, (ViewProvider<TextView>) view -> {
                             if (model.isOwner()) {
                                 view.setTextColor(Color.parseColor("#FFC400"));
-                                view.setText("El Anfitrión");
+                                view.setText(R.string.el_anfitrion);
                             } else {
                                 view.setText(model.getUsername());
                             }
@@ -271,6 +273,9 @@ public class RentCommentFragment extends DialogFragment implements View.OnClickL
             case R.id.iv_send:
                 saveComment();
                 break;
+            case R.id.iv_btn_back:
+                dismiss();
+                break;
         }
     }
 
@@ -293,14 +298,14 @@ public class RentCommentFragment extends DialogFragment implements View.OnClickL
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resultResource -> {
                     if (resultResource.data != null && resultResource.data.getCode() == 200) {
-                        AlertUtils.showSuccessToast(getActivity(), "Comentario enviado con éxito");
+                        Toast.makeText(getActivity(), getString(R.string.comentario_enviado), Toast.LENGTH_SHORT).show();
                         resetAllInputs();
                     } else {
-                        AlertUtils.showErrorToast(getActivity(), "Un problema ha ocurrido");
+                        Toast.makeText(getActivity(), Constants.OPERATIONAL_ERROR_MSG, Toast.LENGTH_SHORT).show();
                     }
                 }, throwable -> {
                     Timber.e(throwable);
-                    AlertUtils.showErrorToast(getActivity(), "Un problema ha ocurrido");
+                    Toast.makeText(getActivity(), Constants.OPERATIONAL_ERROR_MSG, Toast.LENGTH_SHORT).show();
                 });
         compositeDisposable.add(disposable);
     }
@@ -317,11 +322,11 @@ public class RentCommentFragment extends DialogFragment implements View.OnClickL
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    AlertUtils.showSuccessToast(getActivity(), "Comentario guardado con éxito");
+                    Toast.makeText(getActivity(), getString(R.string.comentario_guardado), Toast.LENGTH_SHORT).show();
                     resetAllInputs();
                 }, throwable -> {
                     Timber.e(throwable);
-                    AlertUtils.showErrorToast(getActivity(), "Un problema ha ocurrido");
+                    Toast.makeText(getActivity(), Constants.OPERATIONAL_ERROR_MSG, Toast.LENGTH_SHORT).show();
                 });
         compositeDisposable.add(disposable);
     }

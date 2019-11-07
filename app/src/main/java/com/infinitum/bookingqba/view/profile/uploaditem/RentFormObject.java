@@ -231,7 +231,7 @@ public class RentFormObject implements Cloneable{
     }
 
     private boolean sameRentObject(RentFormObject copyRentObject) {
-        return this.uuid.equals(copyRentObject.getUuid()) &&
+        boolean equals = this.uuid.equals(copyRentObject.getUuid()) &&
                 this.rentName.equals(copyRentObject.getRentName()) &&
                 this.address.equals(copyRentObject.getAddress()) &&
                 this.description.equals(copyRentObject.getDescription()) &&
@@ -252,6 +252,7 @@ public class RentFormObject implements Cloneable{
                 this.checkout.equals(copyRentObject.getCheckout()) &&
                 this.userid.equals(copyRentObject.getUserid()) &&
                 sameAmenities(copyRentObject.getAmenities());
+        return equals;
     }
 
     public boolean isAValidObject(){

@@ -10,6 +10,7 @@ import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.databinding.RecyclerBookReservationItemBinding;
 import com.infinitum.bookingqba.databinding.RecyclerUserBookReservationInfoItemBinding;
+import com.infinitum.bookingqba.model.remote.ReservationType;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequest;
 import com.infinitum.bookingqba.model.remote.pojo.BookRequestInfo;
 import com.infinitum.bookingqba.view.adapters.items.reservation.BookInfoItem;
@@ -45,7 +46,10 @@ public class UserBookRequestInfoAdapter extends RecyclerView.Adapter<UserBookReq
         if (item == null) {
             myViewHolder.unbind();
         } else {
-            binderHelper.bind(myViewHolder.itemBinding.swipeLayout,item.getId());
+            binderHelper.bind(myViewHolder.itemBinding.swipeLayout, item.getId());
+            if(item.getState() == ReservationType.DENIED) {
+                binderHelper.lockSwipe(item.getId());
+            }
             myViewHolder.bind(item);
         }
     }

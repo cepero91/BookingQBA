@@ -512,8 +512,8 @@ public abstract class BookingQBADao {
     public abstract DataSource.Factory<Integer, RentAndGalery> getAllRentByZone(String province, String zone);
 
     @Transaction
-    @Query("SELECT * FROM Wished WHERE Wished.value = 1")
-    public abstract Single<List<WishedRentEntity>> getAllWishedRents();
+    @Query("SELECT * FROM Wished WHERE Wished.value = 1 AND Wished.userId = :user")
+    public abstract Single<List<WishedRentEntity>> getAllWishedRents(String user);
 
     @Transaction
     @RawQuery(observedEntities = RentEntity.class)

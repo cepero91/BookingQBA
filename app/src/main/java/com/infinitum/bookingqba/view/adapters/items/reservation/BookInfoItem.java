@@ -157,6 +157,7 @@ public class BookInfoItem {
         this.rentName = rentName;
     }
 
+
     public String humanNightCount() {
         long nightCountInMillis = endDate.getTime() - startDate.getTime();
         int nightCount = (int) TimeUnit.DAYS.convert(nightCountInMillis, TimeUnit.MILLISECONDS);

@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -151,7 +152,7 @@ public class ReservationDetailActivity extends AppCompatActivity implements View
         reservationDetailBinding.tvTimeValue.setText(dateRelative);
         if (Float.parseFloat(data.getRatingAverage()) > 0f) {
             reservationDetailBinding.setValoration(true);
-            reservationDetailBinding.tvRatingDesc.setText(data.getRatingDescription());
+            reservationDetailBinding.tvRatingDesc.setText(Html.fromHtml("&ldquo;" + data.getRatingDescription() + "&rdquo;"));
             reservationDetailBinding.srScaleRating.setRating(Float.parseFloat(data.getRatingAverage()));
         }
         if (!data.getUserName().isEmpty())
@@ -162,10 +163,10 @@ public class ReservationDetailActivity extends AppCompatActivity implements View
         reservationDetailBinding.textView10.setText(data.getReservedCount());
         if (Integer.parseInt(data.getCommentCount()) > 0) {
             reservationDetailBinding.setComment(true);
-            reservationDetailBinding.tvCommentDesc.setText(data.getCommentLast());
-            Float commentAv = Float.parseFloat(data.getCommentAverage());
+            reservationDetailBinding.tvCommentDesc.setText(Html.fromHtml("&ldquo;" + data.getCommentLast() + "&rdquo;"));
+            Float commentAv = Float.parseFloat(data.getCommentLastEmotion());
             Drawable iconEmotion = getDrawable(EmotionUtil.getEmotionDrawableId(commentAv.intValue()));
-            reservationDetailBinding.tvCommentDesc.setCompoundDrawablesWithIntrinsicBounds(null, null, iconEmotion, null);
+            reservationDetailBinding.tvCommentDesc.setCompoundDrawablesWithIntrinsicBounds(iconEmotion, null, null, null);
         }
         Picasso.get()
                 .load(reservationItem.getUserAvatar())

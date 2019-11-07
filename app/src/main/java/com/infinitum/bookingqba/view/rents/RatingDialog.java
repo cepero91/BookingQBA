@@ -28,6 +28,7 @@ import com.infinitum.bookingqba.databinding.DialogRatingBinding;
 import com.infinitum.bookingqba.model.remote.pojo.Comment;
 import com.infinitum.bookingqba.model.remote.pojo.RatingVote;
 import com.infinitum.bookingqba.util.AlertUtils;
+import com.infinitum.bookingqba.util.Constants;
 import com.infinitum.bookingqba.util.DateUtils;
 import com.infinitum.bookingqba.util.NetworkHelper;
 import com.infinitum.bookingqba.viewmodel.RentViewModel;
@@ -171,14 +172,14 @@ public class RatingDialog extends DialogFragment implements View.OnClickListener
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(resultResource -> {
                     if (resultResource.data != null && resultResource.data.getCode() == 200) {
-                        AlertUtils.showSuccessToast(getActivity(), "Votación enviada");
+                        AlertUtils.showSuccessToast(getActivity(), getString(R.string.votacion_enviada));
                         dismiss();
                     } else {
-                        AlertUtils.showErrorToast(getActivity(), "Un problema ha ocurrido");
+                        AlertUtils.showErrorToast(getActivity(), Constants.OPERATIONAL_ERROR_MSG);
                     }
                 }, throwable -> {
                     Timber.e(throwable);
-                    AlertUtils.showErrorToast(getActivity(), "Un problema ha ocurrido");
+                    AlertUtils.showErrorToast(getActivity(), Constants.OPERATIONAL_ERROR_MSG);
                 });
         compositeDisposable.add(disposable);
     }
@@ -198,7 +199,7 @@ public class RatingDialog extends DialogFragment implements View.OnClickListener
         disposable = rentViewModel.addRating(ratingParams)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> AlertUtils.showSuccessToast(getActivity(), "Votación guardada"), Timber::e);
+                .subscribe(() -> AlertUtils.showSuccessToast(getActivity(), getString(R.string.votacion_guardada)), Timber::e);
         compositeDisposable.add(disposable);
     }
 
@@ -208,7 +209,7 @@ public class RatingDialog extends DialogFragment implements View.OnClickListener
             isValid = false;
             Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
             dialogRatingBinding.etVote.startAnimation(animation);
-            dialogRatingBinding.etVote.setError("Este campo es requerido");
+            dialogRatingBinding.etVote.setError(getString(R.string.campo_requerido));
         }
         return isValid;
     }

@@ -34,14 +34,13 @@
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/lottieAnimationView2"
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:scaleType="centerCrop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
                     android:layout_gravity="center"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_trash_fill_set"
+                    app:srcCompat="@drawable/ic_trash_black_set"
                     android:tint="@color/White_100"/>
 
             </FrameLayout>

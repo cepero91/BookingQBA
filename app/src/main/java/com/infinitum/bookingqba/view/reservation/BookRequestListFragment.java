@@ -75,12 +75,13 @@ public class BookRequestListFragment extends BaseNavigationFragment implements S
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        fragmentRequestBookListBinding.swipeRefresh.setOnRefreshListener(this);
+        fragmentRequestBookListBinding.swipeRefresh.setColorSchemeResources(R.color.colorPrimary,R.color.colorAccent,R.color.material_color_lime_A700);
+
         token = sharedPreferences.getString(USER_TOKEN, "");
         userId = sharedPreferences.getString(USER_ID, "");
 
         initLoading(true, StateView.Status.LOADING, true);
-
-        fragmentRequestBookListBinding.swipeRefresh.setOnRefreshListener(this);
 
         userViewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel.class);
 

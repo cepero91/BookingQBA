@@ -1,8 +1,7 @@
-package com.infinitum.bookingqba.view.profile;
+package com.infinitum.bookingqba.view.auth;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -34,6 +33,8 @@ import java.net.ConnectException;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -127,7 +128,6 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onAttach(Context context) {
-        super.onAttach(context);
         AndroidSupportInjection.inject(this);
         super.onAttach(context);
         if (context instanceof AuthInteraction) {
@@ -135,13 +135,15 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
             compositeDisposable = new CompositeDisposable();
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentListener");
+                    + " must implement AuthInteraction");
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        if (disposable != null && !disposable.isDisposed())
+            disposable.dispose();
         compositeDisposable.clear();
     }
 
@@ -150,9 +152,11 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.ll_btn_account:
                 if (fragmentAuthBinding.llBtnAccount.getTag().equals(SIGNIN)) {
-                    changeFormUi("Ya eres miembro?", "Entra", SIGNUP, true);
+                    changeFormUi(getString(R.string.ya_eres_miembro),
+                            getString(R.string.ingresa), SIGNUP, true);
                 } else {
-                    changeFormUi("No tienes cuenta?", "Registrate", SIGNIN, false);
+                    changeFormUi(getResources().getString(R.string.no_tienes_cuenta),
+                            getResources().getString(R.string.reg_strate), SIGNIN, false);
                 }
                 break;
             case R.id.send:
@@ -178,15 +182,6 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         fragmentAuthBinding.setIsSignup(isSignUp);
     }
 
-    private void changeFormUi(String tvAccountText, String tvBtnAccountText, String tag, boolean isSignUp, boolean isActCode) {
-        fragmentAuthBinding.tvAccountQuestion.setText(tvAccountText);
-        fragmentAuthBinding.tvAccountBtn.setText(tvBtnAccountText);
-        fragmentAuthBinding.send.setTag(tag);
-        fragmentAuthBinding.llBtnAccount.setTag(tag);
-        fragmentAuthBinding.setIsSignup(isSignUp);
-        fragmentAuthBinding.setIsCode(isActCode);
-    }
-
     //------------------------------------------ USER LOGIN ---------------------------------
     private void validateUserLogin() {
         if (networkHelper.isNetworkAvailable()) {
@@ -195,7 +190,8 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                 sendUserLoginParams(userLoginParams);
             }
         } else {
-            showErrorDialog("Aviso!!", "No se puede efectuar la operacion. Sin conexion");
+            AlertUtils.showCFErrorNotificationWithAction(getActivity(),
+                    getResources().getString(R.string.oopss), Constants.CONNEXION_ERROR_MSG, (dialog, which) -> dialog.dismiss(), "Ok, lo entiendo");
         }
     }
 
@@ -272,7 +268,8 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                 fragmentAuthBinding.send.setEnabled(true);
             }
         } else {
-            showErrorDialog("Aviso!!", "No se puede efectuar la operacion. Sin conexion");
+            AlertUtils.showCFErrorNotificationWithAction(getActivity(),
+                    getResources().getString(R.string.oopss), Constants.CONNEXION_ERROR_MSG, (dialog, which) -> dialog.dismiss(), "Ok, lo entiendo");
             fragmentAuthBinding.send.setEnabled(true);
         }
     }
@@ -328,7 +325,8 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
     private void verifyActivationCode(Resource<ResponseResult> resultResource) {
         if (resultResource.data != null && resultResource.data.getCode() == 200) {
             AlertUtils.showSuccessSnackbar(getActivity(), "Usuario activado, ya puede autenticarse !!!");
-            changeFormUi("No tienes cuenta?", "Registrate", SIGNIN, false, false);
+            changeFormUi("No tienes cuenta?", "Registrate", SIGNIN, false);
+            fragmentAuthBinding.setIsCode(false);
         } else if (resultResource.data != null && resultResource.data.getCode() != 200) {
             showErrorSnackbar(resultResource.data.getMsg());
         }
@@ -345,7 +343,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
 
     private void setRegisterUserToActivateCount(boolean isPending) {
         AlertUtils.showCFPositiveInfoAlert(getActivity(), isPending ? getString(R.string.user_pending_activation) : getString(R.string.success_register_user), "Ok, lo entiendo",
-                ((dialog, which) -> dialog.dismiss()));
+                ((dialog, which) -> dialog.dismiss()), CFAlertDialog.CFAlertStyle.NOTIFICATION);
         fragmentAuthBinding.send.setTag(CODE);
         fragmentAuthBinding.setIsCode(true);
         fragmentAuthBinding.llBtnAccount.setVisibility(View.GONE);
@@ -397,6 +395,13 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                 fragmentAuthBinding.etEmail.setError("Campo requerido");
 
             }
+            if (!email.isEmpty() && !isEmailValid(email)) {
+                isValid = false;
+                Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
+                fragmentAuthBinding.etEmail.startAnimation(animation);
+                fragmentAuthBinding.etEmail.setError("Correo electrónico incorrecto");
+
+            }
             if (repeatPass.equals("")) {
                 isValid = false;
                 Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
@@ -407,7 +412,7 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
                 isValid = false;
                 Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_animation);
                 fragmentAuthBinding.etPasswordRepeat.startAnimation(animation);
-                fragmentAuthBinding.etPasswordRepeat.setError("Contraseñas diferentes");
+                fragmentAuthBinding.etPasswordRepeat.setError("Ambas Contraseñas no concuerdan");
                 fragmentAuthBinding.etPassword.startAnimation(animation);
             }
         }
@@ -421,10 +426,24 @@ public class AuthFragment extends Fragment implements View.OnClickListener {
         return isValid;
     }
 
+    public boolean isEmailValid(String email) {
+        String regExpn =
+                "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
+                        + "((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                        + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
+                        + "([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                        + "[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
+                        + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
+
+        Pattern pattern = Pattern.compile(regExpn, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
     //------------------------------- NOTIFICATION ------------------------------
 
     private void showErrorDialog(String title, String msg) {
-        AlertUtils.showCFErrorNotificationWithAction(getActivity(), title, msg, (dialog, which) -> dialog.dismiss(),"Ok, lo entiendo");
+        AlertUtils.showCFErrorNotificationWithAction(getActivity(), title, msg, (dialog, which) -> dialog.dismiss(), "Ok, lo entiendo");
     }
 
     private void showSuccessDialog(String title, String msg) {

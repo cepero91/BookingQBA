@@ -187,16 +187,20 @@ public class RentDetailFragment extends Fragment implements View.OnClickListener
         }
         setupAmenitiesAdapter(rentInnerDetail.getAmenitieItems());
         if (rentInnerDetail.getRentMode().equalsIgnoreCase("por horas")) {
-            fragmentRentDetailBinding.llCallNow.setVisibility(View.VISIBLE);
-            fragmentRentDetailBinding.llSendSms.setVisibility(View.VISIBLE);
-            fragmentRentDetailBinding.tvPhoneNumber.setText(rentInnerDetail.getPersonalPhone());
-            fragmentRentDetailBinding.tvPhoneSms.setText(rentInnerDetail.getPersonalPhone());
+            if(!sharedPreferences.getString(USER_ID,"").equals(rentInnerDetail.getOwnerId())) {
+                fragmentRentDetailBinding.llCallNow.setVisibility(View.VISIBLE);
+                fragmentRentDetailBinding.llSendSms.setVisibility(View.VISIBLE);
+                fragmentRentDetailBinding.tvPhoneNumber.setText(rentInnerDetail.getPersonalPhone());
+                fragmentRentDetailBinding.tvPhoneSms.setText(rentInnerDetail.getPersonalPhone());
+            }
         }
         boolean userIsAuth = sharedPreferences.getBoolean(USER_IS_AUTH, false);
-        fragmentRentDetailBinding.tvBtnVote.setVisibility(View.VISIBLE);
+        fragmentRentDetailBinding.tvBtnVote.setVisibility(userIsAuth?View.VISIBLE:View.GONE);
         if(userIsAuth && rentInnerDetail.getRentMode().equalsIgnoreCase("por noche")) {
-            fragmentRentDetailBinding.tvBtnBook.setVisibility(View.VISIBLE);
-            fragmentRentDetailBinding.ivSendEmailToOwner.setVisibility(View.VISIBLE);
+            if(!sharedPreferences.getString(USER_ID,"").equals(rentInnerDetail.getOwnerId())) {
+                fragmentRentDetailBinding.tvBtnBook.setVisibility(View.VISIBLE);
+                fragmentRentDetailBinding.ivSendEmailToOwner.setVisibility(View.VISIBLE);
+            }
         }
         fragmentRentDetailBinding.executePendingBindings();
     }

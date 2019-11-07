@@ -24,6 +24,7 @@ import com.infinitum.bookingqba.model.remote.pojo.ResponseResult;
 import com.infinitum.bookingqba.model.remote.errors.ResponseResultException;
 import com.infinitum.bookingqba.util.DateUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -54,7 +55,7 @@ public class UserTraceImpl implements UserTraceRepository {
     @Override
     public Single<OperationResult> traceRentWishedToServer(String token) {
         if (sharedPreferences.getBoolean(USER_IS_AUTH, false)) {
-            return qbaDao.getAllWishedRents()
+            return qbaDao.getAllWishedRents(sharedPreferences.getString(USER_ID, ""))
                     .map(this::tranformEntityToRentWished)
                     .flatMap(rentWishedResource -> sendWishedToServer(token, rentWishedResource))
                     .map(responseResultResource -> {
@@ -212,15 +213,13 @@ public class UserTraceImpl implements UserTraceRepository {
         if (!sharedPreferences.getBoolean(USER_IS_AUTH, false)) {
             return Resource.error("Rentas deseadas seran validas una vez autenticado el usuario");
         } else {
-            RentWished rentWished = new RentWished(userId);
+            RentWished rentWished = new RentWished(userId, new ArrayList<>());
             if (entities.size() > 0) {
                 for (WishedRentEntity entity : entities) {
                     rentWished.addRentId(entity.getRent());
                 }
-                return Resource.success(rentWished);
-            } else {
-                return Resource.error(new EmptyResultSetException("Datos nulos o vacios"));
             }
+            return Resource.success(rentWished);
         }
 
     }

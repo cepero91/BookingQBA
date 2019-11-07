@@ -57,9 +57,8 @@ import com.infinitum.bookingqba.view.map.MapFragment;
 import com.infinitum.bookingqba.view.profile.AddRentActivity;
 import com.infinitum.bookingqba.view.profile.MyRentsFragment;
 import com.infinitum.bookingqba.view.profile.ProfileFragment;
-import com.infinitum.bookingqba.view.profile.UserAuthActivity;
+import com.infinitum.bookingqba.view.auth.UserAuthActivity;
 import com.infinitum.bookingqba.view.rents.DetailActivity;
-import com.infinitum.bookingqba.view.rents.RentDetailActivity;
 import com.infinitum.bookingqba.view.rents.RentListFragment;
 import com.infinitum.bookingqba.view.reservation.BookRequestListFragment;
 import com.infinitum.bookingqba.view.reservation.ReservationDetailActivity;
@@ -384,6 +383,8 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
         homeBinding.navView.getMenu().findItem(R.id.nav_my_book_request).setVisible(false);
         refreshMenuIfUserIsActiveHost(false);
         updateNavHeader("", "");
+        MenuItem menuItem = homeBinding.navView.getMenu().findItem(R.id.nav_home);
+        onNavigationItemSelected(menuItem);
     }
 
     @Override
@@ -529,10 +530,8 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
 
     @Override
     public void onMapInteraction(GeoRent geoRent) {
-        Intent intent = new Intent(HomeActivity.this, RentDetailActivity.class);
-        intent.putExtra("uuid", geoRent.getId());
-        intent.putExtra("name", geoRent.getName());
-        intent.putExtra("url", geoRent.getImagePath());
+        Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
+        intent.putExtra("item", geoRent);
         startActivityForResult(intent, MY_REQUEST_CODE);
     }
 

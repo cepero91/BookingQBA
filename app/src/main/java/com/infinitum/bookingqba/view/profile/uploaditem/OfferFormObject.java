@@ -2,7 +2,7 @@ package com.infinitum.bookingqba.view.profile.uploaditem;
 
 import java.util.UUID;
 
-public class OfferFormObject extends FormObject {
+public class OfferFormObject extends FormObject implements Cloneable{
 
     private String uuid;
     private String name;
@@ -84,5 +84,10 @@ public class OfferFormObject extends FormObject {
         OfferFormObject other = (OfferFormObject) obj;
         return this.name.equals(other.name) && this.description.equals(other.description)
                 && this.price.equals(other.price);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

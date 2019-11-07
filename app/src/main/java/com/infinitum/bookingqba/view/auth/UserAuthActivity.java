@@ -1,21 +1,15 @@
-package com.infinitum.bookingqba.view.profile;
+package com.infinitum.bookingqba.view.auth;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 
-import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.infinitum.bookingqba.R;
 import com.infinitum.bookingqba.model.remote.pojo.User;
 import com.infinitum.bookingqba.view.home.HomeActivity;
-import com.infinitum.bookingqba.view.interaction.LoginInteraction;
-
-import java.util.HashSet;
 
 import javax.inject.Inject;
 
@@ -26,14 +20,12 @@ import dagger.android.support.HasSupportFragmentInjector;
 
 import static com.infinitum.bookingqba.util.Constants.IMEI;
 import static com.infinitum.bookingqba.util.Constants.LAST_EMAIL_REGISTER;
-import static com.infinitum.bookingqba.util.Constants.NAV_HEADER_REQUIRED_UPDATE;
 import static com.infinitum.bookingqba.util.Constants.USER_AVATAR;
 import static com.infinitum.bookingqba.util.Constants.USER_HAS_ACTIVE_RENT;
 import static com.infinitum.bookingqba.util.Constants.USER_ID;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_AUTH;
 import static com.infinitum.bookingqba.util.Constants.USER_IS_RENTS_OWNER;
 import static com.infinitum.bookingqba.util.Constants.USER_NAME;
-import static com.infinitum.bookingqba.util.Constants.USER_RENTS;
 import static com.infinitum.bookingqba.util.Constants.USER_TOKEN;
 
 public class UserAuthActivity extends AppCompatActivity implements HasSupportFragmentInjector, AuthFragment.AuthInteraction {

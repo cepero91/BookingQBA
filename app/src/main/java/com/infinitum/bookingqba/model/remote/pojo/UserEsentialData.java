@@ -34,9 +34,12 @@ public class UserEsentialData {
     @SerializedName("reserved_count")
     @Expose
     private String reservedCount;
-    @SerializedName("commentLast")
+    @SerializedName("comment_last")
     @Expose
     private String commentLast;
+    @SerializedName("comment_last_emotion")
+    @Expose
+    private String commentLastEmotion;
 
     public Boolean getWish() {
         return isWish;
@@ -124,5 +127,13 @@ public class UserEsentialData {
 
     public void setUserLastLogin(String userLastLogin) {
         this.userLastLogin = userLastLogin;
+    }
+
+    public String getCommentLastEmotion() {
+        return commentLastEmotion;
+    }
+
+    public void setCommentLastEmotion(String commentLastEmotion) {
+        this.commentLastEmotion = commentLastEmotion;
     }
 }
