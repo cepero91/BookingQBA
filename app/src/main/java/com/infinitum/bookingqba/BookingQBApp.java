@@ -11,8 +11,14 @@ import com.infinitum.bookingqba.di.DaggerAppComponent;
 import com.infinitum.bookingqba.service.SendDataWorker;
 import com.infinitum.bookingqba.util.Constants;
 import com.rey.material.app.ThemeManager;
-import com.squareup.leakcanary.LeakCanary;
+//import com.squareup.leakcanary.LeakCanary;
 
+
+import org.acra.ACRA;
+import org.acra.annotation.AcraCore;
+import org.acra.annotation.AcraDialog;
+import org.acra.annotation.AcraMailSender;
+import org.acra.data.StringFormat;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,16 +31,16 @@ import dagger.android.AndroidInjector;
 import dagger.android.DaggerApplication;
 import timber.log.Timber;
 
-//@AcraCore(buildConfigClass = BuildConfig.class, reportFormat = StringFormat.JSON)
-//@AcraMailSender(mailTo = Constants.ACRA_MAIL_TO_REPORT)
-//@AcraDialog(resText = R.string.dialog_acra_text,
-//        resCommentPrompt = R.string.dialog_acra_comment, resTheme = android.R.style.Theme_DeviceDefault_Light_Dialog)
+@AcraCore(buildConfigClass = BuildConfig.class, reportFormat = StringFormat.JSON)
+@AcraMailSender(mailTo = Constants.ACRA_MAIL_TO_REPORT)
+@AcraDialog(resText = R.string.dialog_acra_text,
+        resCommentPrompt = R.string.dialog_acra_comment, resTheme = android.R.style.Theme_DeviceDefault_Light_Dialog)
 public class BookingQBApp extends DaggerApplication{
 
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-//        ACRA.init(this);
+        ACRA.init(this);
         MultiDex.install(this);
     }
 
@@ -45,12 +51,12 @@ public class BookingQBApp extends DaggerApplication{
         ThemeManager.init(this, 1, 0, null);
 
         //METODO PARA INICIALIZAR LEAK CANARY
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this);
+//        if (LeakCanary.isInAnalyzerProcess(this)) {
+//            // This process is dedicated to LeakCanary for heap analysis.
+//            // You should not init your app in this process.
+//            return;
+//        }
+//        LeakCanary.install(this);
 
         if(BuildConfig.DEBUG){
             Timber.plant(new Timber.DebugTree());

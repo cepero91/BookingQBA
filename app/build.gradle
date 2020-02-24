@@ -190,10 +190,10 @@ dependencies {
     implementation 'com.github.sujithkanna:smileyrating:1.6.8'
 
     //Leak Canary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
-    // Optional, if you use support library fragments:
-    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1'
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
+//    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
+//    // Optional, if you use support library fragments:
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1'
 
     //Snacky
     implementation 'com.github.matecode:Snacky:1.0.3'
@@ -252,8 +252,8 @@ dependencies {
     implementation 'com.asksira.android:bsimagepicker:1.2.2'
 
     //Reporte de Fallos
-//    implementation "ch.acra:acra-core:$acraVersion"
-//    implementation "ch.acra:acra-mail:$acraVersion"
-//    implementation "ch.acra:acra-dialog:$acraVersion"
-//    implementation "ch.acra:acra-toast:$acraVersion"
+    implementation "ch.acra:acra-core:$acraVersion"
+    implementation "ch.acra:acra-mail:$acraVersion"
+    implementation "ch.acra:acra-dialog:$acraVersion"
+    implementation "ch.acra:acra-toast:$acraVersion"
 }

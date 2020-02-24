@@ -112,14 +112,15 @@ public class UserViewModel extends ViewModel {
         if (listResource.data != null) {
             BookInfoItem infoItem;
             for (Reservation requestInfo : listResource.data) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                SimpleDateFormat simpleDateFormatLarge = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
+                SimpleDateFormat simpleDateFormatShort = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 Date startDate = null;
                 Date endDate = null;
                 Date created = null;
                 try {
-                    startDate = simpleDateFormat.parse(requestInfo.getStartDate());
-                    endDate = simpleDateFormat.parse(requestInfo.getEndDate());
-                    created = simpleDateFormat.parse(requestInfo.getCreated());
+                    startDate = simpleDateFormatShort.parse(requestInfo.getStartDate());
+                    endDate = simpleDateFormatShort.parse(requestInfo.getEndDate());
+                    created = simpleDateFormatLarge.parse(requestInfo.getCreated());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -150,14 +151,15 @@ public class UserViewModel extends ViewModel {
         if (listResource.data != null) {
             ReservationItem item;
             for (Reservation reservation : listResource.data) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                SimpleDateFormat simpleDateFormatLarge = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
+                SimpleDateFormat simpleDateFormatShort = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 Date startDate = null;
                 Date endDate = null;
                 Date created = null;
                 try {
-                    startDate = simpleDateFormat.parse(reservation.getStartDate());
-                    endDate = simpleDateFormat.parse(reservation.getEndDate());
-                    created = simpleDateFormat.parse(reservation.getCreated());
+                    startDate = simpleDateFormatShort.parse(reservation.getStartDate());
+                    endDate = simpleDateFormatShort.parse(reservation.getEndDate());
+                    created = simpleDateFormatLarge.parse(reservation.getCreated());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

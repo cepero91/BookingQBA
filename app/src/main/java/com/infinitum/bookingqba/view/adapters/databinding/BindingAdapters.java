@@ -43,6 +43,11 @@ public class BindingAdapters {
         }
     }
 
+    @BindingAdapter("visibleBySize")
+    public static void visibleBySize(View view, int size) {
+        view.setVisibility(size > 0 ? View.VISIBLE : View.GONE);
+    }
+
     @BindingAdapter("discreteVisibility")
     public static void discreteVisibility(View view, boolean show) {
         view.setVisibility(show ? View.VISIBLE : View.INVISIBLE);

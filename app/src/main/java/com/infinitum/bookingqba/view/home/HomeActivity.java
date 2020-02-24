@@ -336,7 +336,6 @@ public class HomeActivity extends LocationActivity implements HasSupportFragment
             menu.findItem(R.id.action_filter_panel).setIcon(icon);
         }
         menu.findItem(R.id.action_search).setVisible(mFragment instanceof RentListFragment);
-        menu.findItem(R.id.action_refresh).setVisible(mFragment instanceof ProfileFragment);
         menu.findItem(R.id.action_block).setVisible(mFragment instanceof CalendarFragment);
     }
 

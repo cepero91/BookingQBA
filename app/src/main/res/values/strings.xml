@@ -330,4 +330,11 @@ In conubia lacus scelerisque porttitor maecenas vitae inceptos nulla et, tortor 
     <string name="comentario_guardado">Comentario guardado con éxito</string>
     <string name="danos_tu_opini_n">Danos tu opinión</string>
 
+    <string name="imagepicker_multiselect_done">Hecho</string>
+    <string name="imagepicker_multiselect_not_enough_singular">Debe seleccionar al menos 1 imagen</string>
+    <string name="imagepicker_multiselect_not_enough_plural">Debe seleccionar al menos %d imágenes</string>
+    <string name="imagepicker_multiselect_enough_singular">1 imagen Seleccionada</string>
+    <string name="imagepicker_multiselect_enough_plural">%d imágenes seleccionadas</string>
+    <string name="imagepicker_multiselect_overselect">No puede seleccionar más de %d imágenes</string>
+    <string name="imagepicker_no_image_text_view">No hay imágenes en tu dispositivo</string>
 </resources>

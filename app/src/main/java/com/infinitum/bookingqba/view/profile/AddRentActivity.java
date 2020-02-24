@@ -900,6 +900,7 @@ public class AddRentActivity extends LocationActivity implements HasSupportFragm
                 .isMultiSelect()
                 .setMinimumMultiSelectCount(1)
                 .setMaximumMultiSelectCount(5)
+                .setMultiSelectDoneTextColor(R.color.colorAccent)
                 .build();
         pickerDialog.show(getSupportFragmentManager(), "picker");
     }

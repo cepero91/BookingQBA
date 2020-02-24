@@ -104,8 +104,8 @@
                         bar:show_label="true"
                         bar:spaces="5dp"
                         bar:text_color="#607D8B"
-                        bar:text_size="10sp"
-                        bar:width="12dp" />
+                        bar:text_size="12sp"
+                        bar:width="14dp" />
 
                     <LinearLayout
                         android:id="@+id/ll_content_rating_user"
@@ -151,7 +151,7 @@
                             android:fontFamily="@font/montserrat_regular"
                             android:text="756, 800"
                             android:textColor="@color/material_color_blue_grey_500"
-                            android:textSize="12sp" />
+                            android:textSize="14sp" />
 
                     </LinearLayout>
 
@@ -266,12 +266,12 @@
 
                         <android.support.v7.widget.AppCompatImageView
                             android:id="@+id/iv_export_revenues"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
                             android:layout_gravity="center|end"
                             android:layout_marginEnd="16dp"
                             android:tint="@color/material_color_blue_grey_500"
-                            app:srcCompat="@drawable/ic_photo_camera_black_24dp" />
+                            app:srcCompat="@drawable/ic_photo_camera_black_set" />
 
                     </FrameLayout>
 
@@ -311,12 +311,12 @@
 
                         <android.support.v7.widget.AppCompatImageView
                             android:id="@+id/iv_export_reservation_solved"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
                             android:layout_gravity="center|end"
                             android:layout_marginEnd="16dp"
                             android:tint="@color/material_color_blue_grey_500"
-                            app:srcCompat="@drawable/ic_photo_camera_black_24dp" />
+                            app:srcCompat="@drawable/ic_photo_camera_black_set" />
 
                     </FrameLayout>
 
@@ -357,12 +357,12 @@
 
                         <android.support.v7.widget.AppCompatImageView
                             android:id="@+id/iv_export_reservation"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
                             android:layout_gravity="center|end"
                             android:layout_marginEnd="16dp"
                             android:tint="@color/material_color_blue_grey_500"
-                            app:srcCompat="@drawable/ic_photo_camera_black_24dp" />
+                            app:srcCompat="@drawable/ic_photo_camera_black_set" />
 
                     </FrameLayout>
 
@@ -403,12 +403,12 @@
 
                         <android.support.v7.widget.AppCompatImageView
                             android:id="@+id/iv_export_comment_emotion"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
                             android:layout_gravity="center|end"
                             android:layout_marginEnd="16dp"
                             android:tint="@color/material_color_blue_grey_500"
-                            app:srcCompat="@drawable/ic_photo_camera_black_24dp" />
+                            app:srcCompat="@drawable/ic_photo_camera_black_set" />
 
                     </FrameLayout>
 

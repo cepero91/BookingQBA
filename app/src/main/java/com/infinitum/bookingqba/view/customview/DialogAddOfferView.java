@@ -67,11 +67,6 @@ public class DialogAddOfferView extends LinearLayout implements View.OnClickList
     public void setOfferFormObject(OfferFormObject offerFormObject, int pos) {
         this.isEditFlag = true;
         this.offerFormObject = offerFormObject;
-        try {
-            this.offerFormObjectCopy = (OfferFormObject) offerFormObject.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
         nameEditText.setText(offerFormObject.getName());
         descEditText.setText(offerFormObject.getDescription());
         priceEditText.setText(offerFormObject.getPrice());
@@ -89,6 +84,10 @@ public class DialogAddOfferView extends LinearLayout implements View.OnClickList
     }
 
     private void prepareForSave() {
+        offerFormObjectCopy = new OfferFormObject();
+        offerFormObjectCopy.setName(nameEditText.getText().toString());
+        offerFormObjectCopy.setDescription(descEditText.getText().toString());
+        offerFormObjectCopy.setPrice(priceEditText.getText().toString());
         if (!isEditFlag) {
             offerFormObject.setUuid(UUID.randomUUID().toString());
             offerFormObject.setName(nameEditText.getText().toString());

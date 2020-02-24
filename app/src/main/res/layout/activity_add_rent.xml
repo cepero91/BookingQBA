@@ -535,14 +535,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:drawablePadding="8dp"
-                            android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                            android:fontFamily="@font/montserrat_regular"
+                            android:drawableStart="@drawable/ic_add_2_black_set"
+                            android:fontFamily="@font/montserrat_bold"
                             android:gravity="start|center"
                             android:includeFontPadding="false"
                             android:padding="10dp"
                             android:text="@string/facilidades_requerido"
-                            android:textColor="@color/material_color_grey_500"
-                            android:textSize="13sp" />
+                            android:textColor="@color/material_color_blue_grey_500"
+                            android:textSize="14sp" />
 
                         <ProgressBar
                             android:id="@+id/pb_amenities"
@@ -576,14 +576,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:drawablePadding="8dp"
-                            android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                            android:fontFamily="@font/montserrat_regular"
+                            android:drawableStart="@drawable/ic_add_2_black_set"
+                            android:fontFamily="@font/montserrat_bold"
                             android:gravity="start|center"
                             android:includeFontPadding="false"
                             android:padding="10dp"
                             android:text="@string/im_genes_requeridos"
-                            android:textColor="@color/material_color_grey_500"
-                            android:textSize="13sp" />
+                            android:textColor="@color/material_color_blue_grey_500"
+                            android:textSize="14sp" />
 
                     </LinearLayout>
 
@@ -607,12 +607,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:drawablePadding="8dp"
-                            android:drawableStart="@drawable/ic_fa_circle_edit_line"
-                            android:fontFamily="@font/montserrat_regular"
+                            android:drawableStart="@drawable/ic_add_2_black_set"
+                            android:fontFamily="@font/montserrat_bold"
                             android:gravity="start|center"
                             android:padding="10dp"
                             android:text="@string/ofertas"
-                            android:textColor="@color/material_color_grey_500"
+                            android:textColor="@color/material_color_blue_grey_500"
                             android:textSize="14sp" />
 
 

@@ -121,6 +121,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
     private boolean commentIsAnimated = false;
     private boolean revenueIsAnimated = false;
     private boolean reservationIsAnimated = false;
+    private boolean solvedReservationIsAnimated = false;
 
 
     private HorizontalItem singleHorizontalItem;
@@ -180,6 +181,9 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
 
     private void setupViews() {
         profileBinding.ivExportRevenues.setOnClickListener(this);
+        profileBinding.ivExportReservationSolved.setOnClickListener(this);
+        profileBinding.ivExportCommentEmotion.setOnClickListener(this);
+        profileBinding.ivExportReservation.setOnClickListener(this);
         scrollBounds = new Rect();
         profileBinding.nestedScroll.getHitRect(scrollBounds);
         profileBinding.nestedScroll.setOnScrollChangeListener(this);
@@ -191,7 +195,6 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
         AndroidSupportInjection.inject(this);
         if (context instanceof ProfileInteraction)
             interaction = (ProfileInteraction) context;
-
     }
 
     @Override
@@ -204,7 +207,6 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
     }
 
     private void loadRentAnalitics() {
-//            profileBinding.llRentTitleContent.setVisibility(View.GONE);
         disposable = viewModel.allRentByUserId(token, userId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -214,29 +216,9 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
                     }
                 }, Timber::e);
         compositeDisposable.add(disposable);
-//            disposable = viewModel.getRentByUuidList(Arrays.asList(rentSelect))
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe(rentAndGaleries -> {
-//                        if (rentAndGaleries.size() > 1) {
-//                            updateSpinnerView(rentAndGaleries);
-//                        } else if (rentAndGaleries.size() == 1) {
-//                            updateSingleView(rentAndGaleries);
-//                        }
-//                    }, Timber::e);
-//            compositeDisposable.add(disposable);
     }
 
-//    private void updateSingleView(ArrayList<HorizontalItem> horizontalItems) {
-//        this.singleHorizontalItem = horizontalItems.get(0);
-//        profileBinding.setShowSelect(false);
-//        profileBinding.llRentTitleContent.setVisibility(View.VISIBLE);
-//        profileBinding.tvRentName.setText(singleHorizontalItem.getRentName());
-//        fetchRentAnalitic(singleHorizontalItem.getUuid(), null);
-//    }
-
     private void updateSpinnerView(List<HorizontalItem> horizontalItems) {
-//        profileBinding.setShowSelect(true);
         horizontalScrollAdapter = new HorizontalScrollAdapter(horizontalItems);
         profileBinding.discreteScroll.setSlideOnFling(true);
         profileBinding.discreteScroll.setAdapter(horizontalScrollAdapter);
@@ -257,6 +239,7 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
             commentIsAnimated = false;
             revenueIsAnimated = false;
             reservationIsAnimated = false;
+            solvedReservationIsAnimated = false;
             Picasso.get()
                     .load(horizontalScrollAdapter.getItem(adapterPosition).getPortrait())
                     .placeholder(R.drawable.placeholder)
@@ -307,22 +290,9 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
                             updateRatingLevelUI(analiticsGroup);
                             updateCommentLevelUI(analiticsGroup);
                             updatePositionLevelUI(analiticsGroup);
-
-//                            profileBinding.pbDetailPercent.setProgress(((int) analiticsGroup.getProfilePercentAnalitics().getPercent()), true);
-
-
-//
-//                            configureCommentMPChart(analiticsGroup.getCommentReport(),
-//                                    analiticsGroup.getEmotionReport());
-//                            configureRatingMPChart(analiticsGroup.getRatingReport());
-//
-//                            updateRentDetailMissingFields(analiticsGroup);
-//
-//                            updatePositionView(analiticsGroup.getPositionReport());
-
                         }
                     }, throwable -> {
-//                        Timber.e(throwable);
+                        Timber.e(throwable);
 //                        if (throwable instanceof ConnectException) {
 //                            profileBinding.progressPvCircularInout.stop();
 //                            profileBinding.setNoConnection(true);
@@ -778,6 +748,18 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
                 if (interaction != null)
                     interaction.exportToGalery(profileBinding.lineRevenueChart, "Ganancias");
                 break;
+            case R.id.iv_export_reservation_solved:
+                if (interaction != null)
+                    interaction.exportToGalery(profileBinding.barReservationSolvedChart, "Reservaciones satisfechas");
+                break;
+            case R.id.iv_export_reservation:
+                if (interaction != null)
+                    interaction.exportToGalery(profileBinding.pieReservationChart, "Solicitudes de Reserva");
+                break;
+            case R.id.iv_export_comment_emotion:
+                if (interaction != null)
+                    interaction.exportToGalery(profileBinding.pieEmotionChart, "Estado de opinión");
+                break;
         }
     }
 
@@ -801,6 +783,15 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
                 }
             }
         }
+        if (!solvedReservationIsAnimated && profileBinding.llContentSolvedReservation.getVisibility() == View.VISIBLE) {
+            if (profileBinding.llContentSolvedReservation.getLocalVisibleRect(scrollBounds)) {
+                if (!profileBinding.llContentSolvedReservation.getLocalVisibleRect(scrollBounds)
+                        || scrollBounds.height() < profileBinding.llContentSolvedReservation.getHeight()) {
+                    solvedReservationIsAnimated = true;
+                    profileBinding.barReservationSolvedChart.animateY(1000, Easing.EasingOption.EaseInOutQuad);
+                }
+            }
+        }
         if (!reservationIsAnimated && profileBinding.llContentReservation.getVisibility() == View.VISIBLE) {
             if (profileBinding.llContentReservation.getLocalVisibleRect(scrollBounds)) {
                 if (!profileBinding.llContentReservation.getLocalVisibleRect(scrollBounds)
@@ -811,153 +802,6 @@ public class ProfileFragment extends Fragment implements DiscreteScrollView.OnIt
             }
         }
     }
-
-
-    //----------------------- MP -------------------------------//
-
-//    private void setRatingChartData(RatingReport ratingStarAnalitics) {
-//        int one = ratingStarAnalitics.getOneStar();
-//        int two = ratingStarAnalitics.getTwoStar();
-//        int three = ratingStarAnalitics.getThreeStar();
-//        int four = ratingStarAnalitics.getFourStar();
-//        int five = ratingStarAnalitics.getFiveStar();
-//        if (one + two + three + four + five > 0) {
-//            profileBinding.chartRating.setVisibility(View.VISIBLE);
-//            float barWidth = 8f;
-//            ArrayList<BarEntry> values = new ArrayList<>();
-//            ArrayList<Integer> colors = new ArrayList<>();
-//            colors.add(ColorTemplate.rgb("#F44336"));
-//            colors.add(ColorTemplate.rgb("#FF9800"));
-//            colors.add(ColorTemplate.rgb("#4CAF50"));
-//            colors.add(ColorTemplate.rgb("#00BCD4"));
-//            colors.add(ColorTemplate.rgb("#2196F3"));
-//            values.add(new BarEntry(0, one));
-//            values.add(new BarEntry(10, two));
-//            values.add(new BarEntry(20, three));
-//            values.add(new BarEntry(30, four));
-//            values.add(new BarEntry(40, five));
-//
-//            BarDataSet set1;
-//            set1 = new BarDataSet(values, "Votos efectuados");
-//            set1.setColors(colors);
-//            set1.setDrawIcons(false);
-//            ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-//            dataSets.add(set1);
-//            BarData data = new BarData(dataSets);
-//            data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf((int) value));
-//            data.setValueTextSize(10f);
-//            data.setValueTypeface(tfLight);
-//            data.setBarWidth(barWidth);
-//            profileBinding.chartRating.setData(data);
-//            profileBinding.chartRating.invalidate();
-//        } else {
-//            profileBinding.chartRating.setVisibility(View.GONE);
-//        }
-//    }
-
-//    private void configureCommentMPChart(CommentReport generalCommentAnalitics, EmotionReport commentsEmotionAnalitics) {
-//        profileBinding.tvTotalYearComment.setText(String.valueOf(generalCommentAnalitics.getTotalYear()));
-//        profileBinding.tvTotalMonthComment.setText(String.valueOf(generalCommentAnalitics.getTotalMonth()));
-//        profileBinding.tvTotalTodayComment.setText(String.valueOf(generalCommentAnalitics.getTotalDay()));
-//
-//        profileBinding.pieEmotion.getDescription().setEnabled(false);
-//        profileBinding.pieEmotion.setExtraOffsets(5, 0, 5, 0);
-//
-//        profileBinding.pieEmotion.setCenterTextTypeface(tfLight);
-//        profileBinding.pieEmotion.setCenterText(generateCenterText());
-//        profileBinding.pieEmotion.setCenterTextSize(10);
-//
-//        profileBinding.pieEmotion.setDrawHoleEnabled(true);
-//        profileBinding.pieEmotion.setHoleColor(Color.WHITE);
-//
-//        profileBinding.pieEmotion.setTransparentCircleColor(Color.WHITE);
-//        profileBinding.pieEmotion.setTransparentCircleAlpha(110);
-//
-//        profileBinding.pieEmotion.setHoleRadius(60f);
-//        profileBinding.pieEmotion.setTransparentCircleRadius(63f);
-//
-//        profileBinding.pieEmotion.setDrawCenterText(true);
-//
-//        profileBinding.pieEmotion.setRotationAngle(0);
-//        // enable rotation of the chart by touch
-//        profileBinding.pieEmotion.setRotationEnabled(false);
-//        profileBinding.pieEmotion.setHighlightPerTapEnabled(true);
-//
-//        profileBinding.pieEmotion.animateY(1400);
-//
-//        Legend l = profileBinding.pieEmotion.getLegend();
-//        l.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
-//        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
-//        l.setOrientation(Legend.LegendOrientation.VERTICAL);
-//        l.setDrawInside(false);
-//        l.setXEntrySpace(7f);
-//        l.setYEntrySpace(0f);
-//        l.setYOffset(0f);
-//
-//        // entry label styling
-//        profileBinding.pieEmotion.setDrawEntryLabels(false);
-//
-//        setEmotionChartData(commentsEmotionAnalitics);
-//    }
-
-//    private void setEmotionChartData(EmotionReport commentsEmotionAnalitics) {
-//        int terrible = commentsEmotionAnalitics.getTerribleCount();
-//        int bad = commentsEmotionAnalitics.getBadCount();
-//        int ok = commentsEmotionAnalitics.getOkCount();
-//        int good = commentsEmotionAnalitics.getGoodCount();
-//        int excellent = commentsEmotionAnalitics.getExcellentCount();
-//        ArrayList<PieEntry> entries1 = new ArrayList<>();
-//        ArrayList<Integer> colors = new ArrayList<>();
-//
-//        if (terrible + bad + ok + good + excellent > 0) {
-//            profileBinding.pieEmotion.setVisibility(View.VISIBLE);
-//            if (commentsEmotionAnalitics.getTerribleCount() > 0) {
-//                entries1.add(new PieEntry(commentsEmotionAnalitics.getTerribleCount(), "Terrible "));
-//                colors.add(ColorTemplate.rgb("#F44336"));
-//            }
-//            if (commentsEmotionAnalitics.getBadCount() > 0) {
-//                entries1.add(new PieEntry(commentsEmotionAnalitics.getBadCount(), "Malo "));
-//                colors.add(ColorTemplate.rgb("#FF9800"));
-//            }
-//            if (commentsEmotionAnalitics.getOkCount() > 0) {
-//                entries1.add(new PieEntry(commentsEmotionAnalitics.getOkCount(), "Mejorable "));
-//                colors.add(ColorTemplate.rgb("#4CAF50"));
-//            }
-//            if (commentsEmotionAnalitics.getGoodCount() > 0) {
-//                entries1.add(new PieEntry(commentsEmotionAnalitics.getGoodCount(), "Bueno "));
-//                colors.add(ColorTemplate.rgb("#00BCD4"));
-//            }
-//            if (commentsEmotionAnalitics.getExcellentCount() > 0) {
-//                entries1.add(new PieEntry(commentsEmotionAnalitics.getExcellentCount(), "Excelente "));
-//                colors.add(ColorTemplate.rgb("#2196F3"));
-//            }
-//
-//            PieDataSet ds1 = new PieDataSet(entries1, "");
-//            ds1.setColors(colors);
-//            ds1.setSliceSpace(2f);
-//            ds1.setValueTextColor(Color.WHITE);
-//            ds1.setValueTextSize(12f);
-//
-//            PieData d = new PieData(ds1);
-//            d.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf((int) value));
-//            d.setValueTypeface(tfLight);
-//
-//            profileBinding.pieEmotion.setData(d);
-//            profileBinding.pieEmotion.invalidate();
-//        } else {
-//            profileBinding.pieEmotion.setDrawCenterText(false);
-//            profileBinding.pieEmotion.setVisibility(View.GONE);
-//        }
-//
-//    }
-
-//    private SpannableString generateCenterText() {
-//        SpannableString s = new SpannableString("Clasificación\ndel comentario");
-//        s.setSpan(new RelativeSizeSpan(1f), 0, 13, 0);
-//        s.setSpan(new ForegroundColorSpan(Color.GRAY), 13, s.length(), 0);
-//        return s;
-//    }
-//
 
 
 }
